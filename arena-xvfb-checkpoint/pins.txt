@@ -1,0 +1,12 @@
+mesonbuild/meson 1.12.1 70598bb7825f0f804fb31ec2795de5e79e7692a0 meson
+ninja-build/ninja v1.13.2 3441b633c2fe2c494e958780ba0f4227b1327634 ninja
+pkgconf/pkgconf pkgconf-3.0.10 511e6e6b8c82367e75d02edb56ad98da766e06b6 pkgconf
+X11Libre/mirror.fdo.xorgproto master 6d3907b6d5dc4aa7d7ee6ee5d7d8714e7466630b xorgproto
+X11Libre/mirror.fdo.pixman master e7fd44140fe6edef507d54bdbc25c09543ffc936 pixman
+X11Libre/mirror.fdo.libXau master be1daeb909f1d678e7859ac1555e90b4e768d5c4 libXau
+X11Libre/mirror.fdo.libfontenc master 8f2a514b06584f3efd303fcb99e9fb25f75d0906 libfontenc
+X11Libre/mirror.fdo.libxkbfile master 6289ef997918cafdaae5ddc17a7442e30dede994 libxkbfile
+X11Libre/mirror.fdo.libxtrans master 79f6b0bfe2170496e8c37626043d009f4cd3f1e1 libxtrans
+madler/zlib v1.3.2 da607da739fa6047df13e66a2af6b8bec7c2a498 zlib
+X11Libre/mirror.fdo.libXfont master 1531de719edf74ad76f21f0afcd94db450c65cce libXfont (INSPECT ONLY)
+X11Libre/mirror.fdo.libX11 libX11-1.8.4 fc5ec8edda1efdf5d66db4e76796e3c407527b3b libX11-1.8.4 (header/metadata inspection + validation)

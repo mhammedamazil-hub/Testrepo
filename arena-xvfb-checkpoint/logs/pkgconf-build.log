@@ -1,0 +1,66 @@
+ninja: Entering directory `/tmp/arena-xvfb/src/pkgconf/build'
+[1/65] Compiling C object libpkgconf.a.p/libpkgconf_audit.c.o
+[2/65] Compiling C object libpkgconf.a.p/libpkgconf_argvsplit.c.o
+[3/65] Compiling C object libpkgconf.a.p/libpkgconf_bufferset.c.o
+[4/65] Compiling C object libpkgconf.a.p/libpkgconf_bsdstubs.c.o
+[5/65] Compiling C object libpkgconf.a.p/libpkgconf_buffer.c.o
+[6/65] Compiling C object libpkgconf.a.p/libpkgconf_cache.c.o
+[7/65] Compiling C object libpkgconf.a.p/libpkgconf_bytecode.c.o
+[8/65] Compiling C object libpkgconf.a.p/libpkgconf_dependency.c.o
+[9/65] Compiling C object libpkgconf.a.p/libpkgconf_fileio.c.o
+[10/65] Compiling C object libpkgconf.a.p/libpkgconf_client.c.o
+[11/65] Compiling C object libpkgconf.a.p/libpkgconf_output.c.o
+[12/65] Compiling C object libpkgconf.a.p/libpkgconf_parser.c.o
+[13/65] Compiling C object libpkgconf.a.p/libpkgconf_license.c.o
+[14/65] Compiling C object libpkgconf.a.p/libpkgconf_path.c.o
+[15/65] Compiling C object libpkgconf.a.p/libpkgconf_fragment.c.o
+[16/65] Compiling C object libpkgconf.a.p/libpkgconf_personality.c.o
+[17/65] Compiling C object libpkgconf.a.p/libpkgconf_tuple.c.o
+[18/65] Compiling C object libpkgconf.a.p/libpkgconf_queue.c.o
+[19/65] Compiling C object libpkgconf.a.p/libpkgconf_variable.c.o
+[20/65] Compiling C object libpkgconf.a.p/libpkgconf_pkg.c.o
+[21/65] Compiling C object libpkgconf.a.p/libpkgconf_version.c.o
+[22/65] Linking static target libpkgconf.a
+[23/65] Compiling C object pkgconf.p/cli_main.c.o
+[24/65] Compiling C object pkgconf.p/cli_renderer-msvc.c.o
+[25/65] Compiling C object bomtool.p/cli_bomtool_main.c.o
+[26/65] Compiling C object pkgconf.p/cli_getopt_long.c.o
+[27/65] Compiling C object bomtool.p/cli_getopt_long.c.o
+[28/65] Compiling C object spdxtool.p/cli_spdxtool_main.c.o
+[29/65] Compiling C object pkgconf.p/cli_core.c.o
+[30/65] Compiling C object spdxtool.p/cli_spdxtool_software.c.o
+[31/65] Compiling C object spdxtool.p/cli_spdxtool_simplelicensing.c.o
+[32/65] Compiling C object spdxtool.p/cli_spdxtool_core.c.o
+[33/65] Compiling C object spdxtool.p/cli_spdxtool_serialize.c.o
+[34/65] Compiling C object spdxtool.p/cli_spdxtool_util.c.o
+[35/65] Compiling C object spdxtool.p/cli_spdxtool_generate.c.o
+[36/65] Compiling C object pccritic.p/cli_pccritic_main.c.o
+[37/65] Compiling C object spdxtool.p/cli_getopt_long.c.o
+[38/65] Compiling C object pccritic.p/cli_getopt_long.c.o
+[39/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_argvsplit.c.o
+[40/65] Compiling C object pccritic.p/cli_pccritic_critic.c.o
+[41/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_audit.c.o
+[42/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_bufferset.c.o
+[43/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_buffer.c.o
+[44/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_bsdstubs.c.o
+[45/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_cache.c.o
+[46/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_bytecode.c.o
+[47/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_fileio.c.o
+[48/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_dependency.c.o
+[49/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_client.c.o
+[50/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_license.c.o
+[51/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_output.c.o
+[52/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_parser.c.o
+[53/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_path.c.o
+[54/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_fragment.c.o
+[55/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_personality.c.o
+[56/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_queue.c.o
+[57/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_variable.c.o
+[58/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_tuple.c.o
+[59/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_version.c.o
+[60/65] Linking target pkgconf
+[61/65] Linking target bomtool
+[62/65] Linking target spdxtool
+[63/65] Linking target pccritic
+[64/65] Compiling C object libpkgconf-fault.a.p/libpkgconf_pkg.c.o
+[65/65] Linking static target libpkgconf-fault.a

@@ -1,0 +1,9 @@
+Purpose: isolated validation of a version-matched libX11 development overlay.
+Source: X11Libre/mirror.fdo.libX11 tag libX11-1.8.4
+Source commit: fc5ec8edda1efdf5d66db4e76796e3c407527b3b
+Runtime: Debian libx11-6 2:1.8.4-2+deb12u2 at /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+Runtime sha256: 688d7edc1a02a0e7993722d57a42821b22435e249071554625a5ec4784787d3d
+Generated include/X11/XlibConf.h: XTHREADS=1, XUSE_MTSAFE_API=1
+Generated lib/pkgconfig/x11.pc: expanded from upstream x11.pc.in
+Known integration requirement: a genuine xcb development package for the
+upstream x11.pc Requires.private entry.

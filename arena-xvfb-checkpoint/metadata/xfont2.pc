@@ -1,0 +1,12 @@
+prefix=/tmp/arena-xvfb/prefix
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: Xfont2
+Description: X font Library version 2
+Version: 2.0.9
+Requires: xproto, fontsproto >= 2.1.3
+Requires.private: xtrans, fontenc, zlib
+Libs: -L${libdir} -lXfont2
+Libs.private: -lm
+Cflags: -I${includedir}

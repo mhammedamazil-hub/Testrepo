@@ -1,0 +1,7 @@
+'Xtrans.h' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtrans.h'
+'Xtrans.c' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtrans.c'
+'Xtransint.h' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtransint.h'
+'Xtranslcl.c' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtranslcl.c'
+'Xtranssock.c' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtranssock.c'
+'Xtransutil.c' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/Xtransutil.c'
+'transport.c' -> '/tmp/arena-xvfb/prefix/include/X11/Xtrans/transport.c'

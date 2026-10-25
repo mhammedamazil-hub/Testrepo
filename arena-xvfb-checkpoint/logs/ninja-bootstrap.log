@@ -1,0 +1,40 @@
+[1/36] INLINE build/browse_py.h
+[2/36] CXX build/browse.o
+[3/36] CXX build/lexer.o
+[4/36] CXX build/depfile_parser.o
+[5/36] CXX build/clean.o
+[6/36] CXX build/build_log.o
+[7/36] CXX build/debug_flags.o
+[8/36] CXX build/clparser.o
+[9/36] CXX build/disk_interface.o
+[10/36] CXX build/build.o
+[11/36] CXX build/deps_log.o
+[12/36] CXX build/edit_distance.o
+[13/36] CXX build/elide_middle.o
+[14/36] CXX build/dyndep.o
+[15/36] CXX build/dyndep_parser.o
+[16/36] CXX build/eval_env.o
+[17/36] CXX build/graphviz.o
+[18/36] CXX build/json.o
+[19/36] CXX build/jobserver.o
+[20/36] CXX build/line_printer.o
+[21/36] CXX build/metrics.o
+[22/36] CXX build/graph.o
+[23/36] CXX build/parser.o
+[24/36] CXX build/manifest_parser.o
+[25/36] CXX build/real_command_runner.o
+[26/36] CXX build/missing_deps.o
+[27/36] CXX build/string_piece_util.o
+[28/36] CXX build/status_printer.o
+[29/36] CXX build/version.o
+[30/36] CXX build/state.o
+[31/36] CXX build/jobserver-posix.o
+[32/36] CXX build/subprocess-posix.o
+[33/36] CXX build/util.o
+[34/36] AR build/libninja.a
+[35/36] CXX build/ninja.o
+[36/36] LINK ninja
+bootstrapping ninja...
+warning: A compatible version of re2c (>= 0.15.3) was not found; changes to src/*.in.cc will not affect your build.
+wrote build.ninja.
+bootstrap complete.  rebuilding...

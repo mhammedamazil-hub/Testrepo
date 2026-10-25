@@ -1,0 +1,72 @@
+The Meson build system
+Version: 1.12.1
+Source dir: /tmp/arena-xvfb/src/pixman
+Build dir: /tmp/arena-xvfb/src/pixman/build
+Build type: native build
+Project name: pixman
+Project version: 0.46.5
+C compiler for the host machine: cc (gcc 12.2.0 "cc (Debian 12.2.0-14+deb12u1) 12.2.0")
+C linker for the host machine: cc ld.bfd 2.40
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Compiler for C supports arguments -Wdeclaration-after-statement: YES 
+Compiler for C supports arguments -fno-strict-aliasing: YES 
+Compiler for C supports arguments -fvisibility=hidden: YES 
+Compiler for C supports arguments -Wundef: YES 
+Compiler for C supports arguments -ftrapping-math: YES 
+Compiler for C supports arguments -Wunused-local-typedefs: YES 
+Checking if "SSSE3 Intrinsic Support" compiles: YES 
+Checking if "test for ASM .func directive" compiles: YES 
+Checking if "test for ASM .syntax unified directive" compiles: NO 
+Checking if "test for ASM leading underscore" links: NO 
+Checking if "GNU Inline ASM support." compiles: YES 
+Dependency openmp for host machine skipped: feature openmp disabled
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Did not find CMake 'cmake'
+Found CMake: NO
+Run-time dependency gtk+-3.0 found: NO  (tried pkg-config and cmake)
+Run-time dependency glib-2.0 found: NO  (tried pkg-config and cmake)
+Library m found: YES
+Run-time dependency threads found: YES
+Has header "pthread.h" : YES 
+Checking for function "sigaction" : YES 
+Checking for function "alarm" : YES 
+Checking for function "mprotect" : YES 
+Checking for function "getpagesize" : YES 
+Checking for function "mmap" : YES 
+Checking for function "getisax" : NO 
+Checking for function "gettimeofday" : YES 
+Checking for function "posix_memalign" : YES 
+Checking for function "getauxval" : YES 
+Checking for function "elf_aux_info" : NO 
+Checking for function "feenableexcept" with dependency -lm: YES 
+Header "fenv.h" has symbol "FE_DIVBYZERO" : YES 
+Check usable header "sys/mman.h" : YES 
+Check usable header "fenv.h" : YES 
+Check usable header "unistd.h" : YES 
+Checking if "TLS via __thread" compiles: YES 
+Checking if "__attribute__((constructor))" links: YES 
+Checking if "__attribute__((destructor))" links: YES 
+Checking if "Has float128 support" links: YES 
+Checking for function "clz" : YES 
+Checking if "Support for GCC vector extensions" links: YES 
+Checking for size of "long" : 8 
+Configuring pixman-config.h using configuration
+Configuring pixman-version.h using configuration
+Compiler for C supports function attribute dllexport: NO 
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Build targets in project: 4
+
+pixman 0.46.5
+
+  User defined options
+    buildtype: release
+    demos    : disabled
+    gtk      : disabled
+    libdir   : lib
+    libpng   : disabled
+    openmp   : disabled
+    prefix   : /tmp/arena-xvfb/prefix
+    tests    : disabled
+
+Found ninja-1.13.2 at /tmp/arena-xvfb/prefix/bin/ninja

@@ -1,0 +1,170 @@
+libX11 source pin:       fc5ec8edda1efdf5d66db4e76796e3c407527b3b
+libxkbfile source pin:   6289ef997918cafdaae5ddc17a7442e30dede994
+runtime package:         libx11-6 2:1.8.4-2+deb12u2
+runtime library:         /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0
+runtime library sha256:   688d7edc1a02a0e7993722d57a42821b22435e249071554625a5ec4784787d3d
+--- generated x11.pc ---
+prefix=/tmp/arena-xvfb/validation/libX11-1.8.4-dev
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+xthreadlib=-lpthread
+
+Name: X11
+Description: X Library
+Version: 1.8.4
+Requires: xproto kbproto
+Requires.private: xcb >= 1.11.1
+Cflags: -I${includedir} 
+Libs: -L${libdir} -lX11
+Libs.private: -lpthread
+--- pkg-config module/version check ---
+1.8.4
+Package xcb was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xcb.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xcb', required by 'x11', not found
+EXPECTED BLOCKER: honest x11.pc cannot resolve flags until a genuine xcb.pc/development package exists.
+The Meson build system
+Version: 1.12.1
+Source dir: /tmp/arena-xvfb/src/libxkbfile
+Build dir: /tmp/arena-xvfb/build/libxkbfile-probe
+Build type: native build
+Project name: libxkbfile
+Project version: 1.2.0
+C compiler for the host machine: cc (gcc 12.2.0 "cc (Debian 12.2.0-14+deb12u1) 12.2.0")
+C linker for the host machine: cc ld.bfd 2.40
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Checking for function "reallocf" : NO 
+Checking for function "strndup" : YES 
+Header "string.h" has symbol "strndup" : YES 
+Checking for function "getc_unlocked" : YES 
+Checking for function "strcasecmp" : YES 
+Configuring config.h using configuration
+Configuring xkbfile.pc using configuration
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Run-time dependency kbproto found: YES 1.0.7
+WARNING: Pkg-config error with 'x11': Could not generate cflags for x11:
+Package xcb was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xcb.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xcb', required by 'x11', not found
+
+Did not find CMake 'cmake'
+Found CMake: NO
+Run-time dependency x11 found: NO 
+
+../../../tmp/arena-xvfb/src/libxkbfile/src/meson.build:20:4: ERROR: Dependency lookup for x11 with method 'pkg-config' failed: Could not generate cflags for x11:
+Package xcb was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xcb.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xcb', required by 'x11', not found
+
+
+A full log can be found at /tmp/arena-xvfb/build/libxkbfile-probe/meson-logs/meson-log.txt
+EXPECTED BLOCKER: Meson correctly rejected the incomplete x11 dependency graph.
++ gcc header probe with explicit flags from generated x11.pc
+libX11 header/link probe: PASS (XDisplayName='', SupportsLocale=1)
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/cout.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/maprules.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/srvmisc.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbatom.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbbells.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbconfig.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbdraw.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkberrs.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbmisc.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbout.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkbtext.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkmout.c
++ gcc -c /tmp/arena-xvfb/src/libxkbfile/src/xkmread.c
++ gcc -shared -Wl,--no-undefined manual libxkbfile validation library
+--- DT_NEEDED for manual libxkbfile validation library ---
+  NEEDED               libX11.so.6
+  NEEDED               libc.so.6
+  SONAME               libxkbfile.so.1
+--- undefined libxkbfile symbols exported by installed libX11 ---
+XChangeProperty
+XFree
+XGetAtomName
+XGetWindowProperty
+XInternAtom
+XKeysymToString
+XkbAddGeomColor
+XkbAddGeomDoodad
+XkbAddGeomKey
+XkbAddGeomOutline
+XkbAddGeomOverlay
+XkbAddGeomOverlayRow
+XkbAddGeomProperty
+XkbAddGeomRow
+XkbAddGeomSection
+XkbAddGeomShape
+XkbAllocClientMap
+XkbAllocCompatMap
+XkbAllocControls
+XkbAllocGeometry
+XkbAllocIndicatorMaps
+XkbAllocKeyboard
+XkbAllocNames
+XkbAllocServerMap
+XkbBell
+XkbBellEvent
+XkbGetCompatMap
+XkbGetGeometry
+XkbGetIndicatorMap
+XkbGetMap
+XkbGetNames
+XkbGetUpdatedMap
+XkbResizeKeyActions
+XkbResizeKeySyms
+XkbSetCompatMap
+XkbSetGeometry
+XkbSetIndicatorMap
+XkbSetMap
+XkbSetNames
+XkbVirtualModsToReal
+	linux-vdso.so.1 (0x00007ffd8fbcf000)
+	libX11.so.6 => /tmp/arena-xvfb/validation/libX11-1.8.4-dev/lib/libX11.so.6 (0x00007f396921a000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3969034000)
+	libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x00007f396900a000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f3969385000)
+	libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x00007f3969005000)
+	libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007f3968c00000)
+	libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007f3968fed000)
+	libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x00007f3968fe0000)
++ gcc libxkbfile/libX11 runtime consumer
+--- runtime test via overlay lib path ---
+	linux-vdso.so.1 (0x00007fff39f32000)
+	libxkbfile.so.1 => /tmp/arena-xvfb/validation/libxkbfile-manual/libxkbfile.so.1 (0x00007fbee2b60000)
+	libX11.so.6 => /tmp/arena-xvfb/validation/libX11-1.8.4-dev/lib/libX11.so.6 (0x00007fbee2a1e000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbee2838000)
+	libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x00007fbee280e000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fbee2b8e000)
+	libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x00007fbee2807000)
+	libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007fbee2600000)
+	libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007fbee25ea000)
+	libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x00007fbee25dd000)
+libxkbfile + libX11 runtime: PASS (atom round trip; XkbAllocKeyboard/XkbAllocClientMap/XkbFreeKeyboard)
+--- runtime test resolving libX11 from the normal system path ---
+	linux-vdso.so.1 (0x00007ffe561bd000)
+	libxkbfile.so.1 => /tmp/arena-xvfb/validation/libxkbfile-manual/libxkbfile.so.1 (0x00007fafff97d000)
+	libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x00007fafff837000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fafff655000)
+	libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x00007fafff62b000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fafff9ab000)
+	libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x00007fafff626000)
+	libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007fafff400000)
+	libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007fafff60e000)
+	libmd.so.0 => /lib/x86_64-linux-gnu/libmd.so.0 (0x00007fafff3f3000)
+libxkbfile + libX11 runtime: PASS (atom round trip; XkbAllocKeyboard/XkbAllocClientMap/XkbFreeKeyboard)
+--- validation hashes ---
+eb222d43ff83ddc7f62d4c590fc0f42faaee73eda6f8d7555d00dd6a572b8718  /tmp/arena-xvfb/validation/libxkbfile-manual/libxkbfile.so.1.0.2
+0e5f5adc169c13ee654fadb7fceb399af2a52c1cb3176a860d214a829958ad6f  /tmp/arena-xvfb/validation/libxkbfile-x11-runtime-test
+976698b3d062301f4c472263f2907558913fa77156a7ef553f55041a88743ba0  /tmp/arena-xvfb/validation/libX11-1.8.4-dev/lib/pkgconfig/x11.pc
+93c3f74fd09276442d1e6a3665b6288453c2ddcd0a8a05b08c782589074caca2  /tmp/arena-xvfb/validation/libX11-1.8.4-dev/include/X11/XlibConf.h
+Direct libX11 ABI/header/link/runtime validation: PASS
+Meson/pkg-config libxkbfile integration: BLOCKED by missing genuine xcb development package (xcb.pc)
+Validation result: PARTIAL (ABI passed; Meson integration blocked)

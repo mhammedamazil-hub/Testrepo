@@ -1,0 +1,14 @@
+rm -f /tmp/arena-xvfb/prefix/lib/libz.a
+cp libz.a /tmp/arena-xvfb/prefix/lib
+chmod 644 /tmp/arena-xvfb/prefix/lib/libz.a
+cp libz.so.1.3.2 /tmp/arena-xvfb/prefix/lib
+chmod 755 /tmp/arena-xvfb/prefix/lib/libz.so.1.3.2
+rm -f /tmp/arena-xvfb/prefix/share/man/man3/zlib.3
+cp zlib.3 /tmp/arena-xvfb/prefix/share/man/man3
+chmod 644 /tmp/arena-xvfb/prefix/share/man/man3/zlib.3
+rm -f /tmp/arena-xvfb/prefix/lib/pkgconfig/zlib.pc
+cp zlib.pc /tmp/arena-xvfb/prefix/lib/pkgconfig
+chmod 644 /tmp/arena-xvfb/prefix/lib/pkgconfig/zlib.pc
+rm -f /tmp/arena-xvfb/prefix/include/zlib.h /tmp/arena-xvfb/prefix/include/zconf.h
+cp zlib.h zconf.h /tmp/arena-xvfb/prefix/include
+chmod 644 /tmp/arena-xvfb/prefix/include/zlib.h /tmp/arena-xvfb/prefix/include/zconf.h

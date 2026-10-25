@@ -1,0 +1,9 @@
+export ARENA=/tmp/arena-xvfb
+export PREFIX=$ARENA/prefix
+export PATH=$PREFIX/bin:$PATH
+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig
+export PKG_CONFIG=$PREFIX/bin/pkg-config
+export GIT_TERMINAL_PROMPT=0
+export LD_LIBRARY_PATH=$PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+export PKG_CONFIG_SYSTEM_INCLUDE_PATH=/usr/include
+export PKG_CONFIG_SYSTEM_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu

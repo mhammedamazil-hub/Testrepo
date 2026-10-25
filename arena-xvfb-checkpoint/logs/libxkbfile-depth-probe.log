@@ -1,0 +1,32 @@
+The Meson build system
+Version: 1.12.1
+Source dir: /tmp/arena-xvfb/src/libxkbfile
+Build dir: /tmp/arena-xvfb/build/libxkbfile-depth-probe
+Build type: native build
+Project name: libxkbfile
+Project version: 1.2.0
+C compiler for the host machine: cc (gcc 12.2.0 "cc (Debian 12.2.0-14+deb12u1) 12.2.0")
+C linker for the host machine: cc ld.bfd 2.40
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Checking for function "reallocf" : NO 
+Checking for function "strndup" : YES 
+Header "string.h" has symbol "strndup" : YES 
+Checking for function "getc_unlocked" : YES 
+Checking for function "strcasecmp" : YES 
+Configuring config.h using configuration
+Configuring xkbfile.pc using configuration
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Run-time dependency kbproto found: YES 1.0.7
+Run-time dependency x11 found: YES 1.8.4
+Run-time dependency xproto found: YES 7.0.34
+Build targets in project: 1
+
+libxkbfile 1.2.0
+
+  User defined options
+    buildtype: release
+    libdir   : lib
+    prefix   : /tmp/arena-xvfb/prefix
+
+Found ninja-1.13.2 at /tmp/arena-xvfb/prefix/bin/ninja

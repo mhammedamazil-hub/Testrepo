@@ -1,0 +1,8 @@
+ninja: Entering directory `/tmp/arena-xvfb/src/pixman/build'
+[0/1] Installing files
+Installing pixman/libpixman-1.so.0.46.5 to /tmp/arena-xvfb/prefix/lib
+Installing /tmp/arena-xvfb/src/pixman/pixman/pixman.h to /tmp/arena-xvfb/prefix/include/pixman-1
+Installing /tmp/arena-xvfb/src/pixman/build/pixman/pixman-version.h to /tmp/arena-xvfb/prefix/include/pixman-1
+Installing /tmp/arena-xvfb/src/pixman/build/meson-private/pixman-1.pc to /tmp/arena-xvfb/prefix/lib/pkgconfig
+Installing symlink pointing to libpixman-1.so.0.46.5 to /tmp/arena-xvfb/prefix/lib/libpixman-1.so.0
+Installing symlink pointing to libpixman-1.so.0 to /tmp/arena-xvfb/prefix/lib/libpixman-1.so

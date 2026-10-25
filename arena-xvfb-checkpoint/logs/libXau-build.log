@@ -1,0 +1,22 @@
+ninja: Entering directory `/tmp/arena-xvfb/src/libXau/build'
+[1/21] Compiling C object libXau.so.6.0.0.p/AuFileName.c.o
+[2/21] Compiling C object libXau.so.6.0.0.p/AuDispose.c.o
+[3/21] Compiling C object libXau.so.6.0.0.p/AuGetAddr.c.o
+[4/21] Compiling C object libXau.so.6.0.0.p/AuGetBest.c.o
+[5/21] Compiling C object libXau.so.6.0.0.p/AuLock.c.o
+[6/21] Compiling C object libXau.so.6.0.0.p/AuUnlock.c.o
+[7/21] Compiling C object libXau.so.6.0.0.p/AuRead.c.o
+[8/21] Compiling C object autest.p/Autest.c.o
+[9/21] Compiling C object libXau.so.6.0.0.p/AuWrite.c.o
+[10/21] Generating man/Xau.man with a custom command (wrapped by meson to capture output)
+[11/21] Generating man/XauDisposeAuth.man with a custom command (wrapped by meson to capture output)
+[12/21] Linking target libXau.so.6.0.0
+[13/21] Generating symbol file libXau.so.6.0.0.p/libXau.so.6.0.0.symbols
+[14/21] Linking target autest
+[15/21] Generating man/XauGetAuthByAddr.man with a custom command (wrapped by meson to capture output)
+[16/21] Generating man/XauFileName.man with a custom command (wrapped by meson to capture output)
+[17/21] Generating man/XauGetBestAuthByAddr.man with a custom command (wrapped by meson to capture output)
+[18/21] Generating man/XauUnlockAuth.man with a custom command (wrapped by meson to capture output)
+[19/21] Generating man/XauReadAuth.man with a custom command (wrapped by meson to capture output)
+[20/21] Generating man/XauLockAuth.man with a custom command (wrapped by meson to capture output)
+[21/21] Generating man/XauWriteAuth.man with a custom command (wrapped by meson to capture output)

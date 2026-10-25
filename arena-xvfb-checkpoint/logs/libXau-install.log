@@ -1,0 +1,16 @@
+ninja: Entering directory `/tmp/arena-xvfb/src/libXau/build'
+[0/1] Installing files
+Installing libXau.so.6.0.0 to /tmp/arena-xvfb/prefix/lib
+Installing man/Xau.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauDisposeAuth.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauFileName.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauGetAuthByAddr.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauGetBestAuthByAddr.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauLockAuth.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauReadAuth.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauUnlockAuth.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing man/XauWriteAuth.3 to /tmp/arena-xvfb/prefix/share/man/man3
+Installing /tmp/arena-xvfb/src/libXau/include/X11/Xauth.h to /tmp/arena-xvfb/prefix/include/X11
+Installing /tmp/arena-xvfb/src/libXau/build/meson-private/xau.pc to /tmp/arena-xvfb/prefix/lib/pkgconfig
+Installing symlink pointing to libXau.so.6.0.0 to /tmp/arena-xvfb/prefix/lib/libXau.so.6
+Installing symlink pointing to libXau.so.6 to /tmp/arena-xvfb/prefix/lib/libXau.so

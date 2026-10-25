@@ -1,0 +1,157 @@
++ meson setup /tmp/arena-xvfb/build/libXfont2 /tmp/arena-xvfb/src/libXfont --prefix=/tmp/arena-xvfb/prefix --libdir=lib --buildtype=release
+The Meson build system
+Version: 1.12.1
+Source dir: /tmp/arena-xvfb/src/libXfont
+Build dir: /tmp/arena-xvfb/build/libXfont2
+Build type: native build
+Project name: libXfont2
+Project version: 2.0.9
+C compiler for the host machine: cc (gcc 12.2.0 "cc (Debian 12.2.0-14+deb12u1) 12.2.0")
+C linker for the host machine: cc ld.bfd 2.40
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Has header "endian.h" : YES 
+Has header "poll.h" : YES 
+Has header "sys/poll.h" : YES 
+Has header "err.h" : YES 
+Has header "float.h" : YES 
+Checking for function "poll" : YES 
+Checking for function "readlink" : YES 
+Checking for function "reallocarray" : YES 
+Checking for function "realpath" : YES 
+Checking for function "strlcat" : NO 
+Checking for function "strlcpy" : NO 
+Library m found: YES
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Run-time dependency xproto found: YES 7.0.34
+Run-time dependency xtrans found: YES 1.6.0
+Run-time dependency fontsproto found: YES 2.1.3
+Run-time dependency fontenc found: YES 1.1.9
+Run-time dependency zlib found: YES 1.3.2
+Configuring config.h using configuration
+Compiler for C supports arguments -fvisibility=hidden: YES 
+Compiler for C supports link arguments -Wl,--no-undefined: YES 
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Program python3 found: YES (/usr/bin/python3)
+Build targets in project: 12
+
+libXfont2 2.0.9
+
+  libXfont2 Meson port
+    source files (including replacements): 41
+    FreeType                             : false
+    font-server client (fc)              : false
+    built-ins                            : true
+    PCF                                  : true
+    BDF                                  : true
+    SNF                                  : false
+    gzip                                 : true
+    bzip2                                : false
+
+  User defined options
+    buildtype                            : release
+    libdir                               : lib
+    prefix                               : /tmp/arena-xvfb/prefix
+
+Found ninja-1.13.2 at /tmp/arena-xvfb/prefix/bin/ninja
++ ninja -C /tmp/arena-xvfb/build/libXfont2
+ninja: Entering directory `/tmp/arena-xvfb/build/libXfont2'
+[1/42] Compiling C object libXfont2.so.2.0.0.p/src_util_fontaccel.c.o
+[2/42] Compiling C object libXfont2.so.2.0.0.p/src_util_fontnames.c.o
+[3/42] Compiling C object libXfont2.so.2.0.0.p/src_stubs_libxfontstubs.c.o
+[4/42] Compiling C object libXfont2.so.2.0.0.p/src_stubs_atom.c.o
+[5/42] Compiling C object libXfont2.so.2.0.0.p/src_util_fontutil.c.o
+[6/42] Compiling C object libXfont2.so.2.0.0.p/src_util_format.c.o
+[7/42] Compiling C object libXfont2.so.2.0.0.p/src_util_miscutil.c.o
+[8/42] Compiling C object libXfont2.so.2.0.0.p/src_util_patcache.c.o
+[9/42] Compiling C object libXfont2.so.2.0.0.p/src_util_private.c.o
+[10/42] Compiling C object libXfont2.so.2.0.0.p/src_util_fontxlfd.c.o
+[11/42] Compiling C object libXfont2.so.2.0.0.p/src_util_utilbitmap.c.o
+[12/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_bitsource.c.o
+[13/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_bufio.c.o
+[14/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_defaults.c.o
+[15/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_decompress.c.o
+[16/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_fileio.c.o
+[17/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_filewr.c.o
+[18/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_dirfile.c.o
+[19/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_fontscale.c.o
+[20/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_gunzip.c.o
+[21/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_register.c.o
+[22/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_renderers.c.o
+[23/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_fontdir.c.o
+[24/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_catalogue.c.o
+[25/42] Compiling C object libXfont2.so.2.0.0.p/src_fontfile_fontfile.c.o
+[26/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bitmapfunc.c.o
+[27/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bitmap.c.o
+[28/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bitmaputil.c.o
+[29/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_fontink.c.o
+[30/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bdfutils.c.o
+[31/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bdfread.c.o
+[32/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_bitscale.c.o
+../../src/libXfont/src/bitmap/bitscale.c: In function 'BitmapScaleBitmaps':
+../../src/libXfont/src/bitmap/bitscale.c:1514:54: warning: format '%d' expects argument of type 'int', but argument 3 has type 'size_t' {aka 'long unsigned int'} [-Wformat=]
+ 1514 |  fprintf(stderr, "Error: Couldn't allocate bitmaps (%d)\n", bytestoalloc);
+      |                                                     ~^      ~~~~~~~~~~~~
+      |                                                      |      |
+      |                                                      int    size_t {aka long unsigned int}
+      |                                                     %ld
+[33/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_pcfread.c.o
+[34/42] Compiling C object libXfont2.so.2.0.0.p/src_builtins_dir.c.o
+[35/42] Compiling C object libXfont2.so.2.0.0.p/src_builtins_file.c.o
+[36/42] Compiling C object libXfont2.so.2.0.0.p/src_bitmap_pcfwrite.c.o
+[37/42] Compiling C object libXfont2.so.2.0.0.p/src_builtins_fpe.c.o
+[38/42] Compiling C object libXfont2.so.2.0.0.p/src_builtins_fonts.c.o
+[39/42] Compiling C object libXfont2.so.2.0.0.p/src_builtins_render.c.o
+[40/42] Compiling C object libXfont2.so.2.0.0.p/src_util_strlcat.c.o
+[41/42] Compiling C object libXfont2.so.2.0.0.p/src_util_strlcpy.c.o
+[42/42] Linking target libXfont2.so.2.0.0
++ meson test -C /tmp/arena-xvfb/build/libXfont2 --print-errorlogs
+ninja: Entering directory `/tmp/arena-xvfb/build/libXfont2'
+[1/29] Compiling C object lsfontdir.p/test_utils_lsfontdir.c.o
+[2/29] Generating symbol file libXfont2.so.2.0.0.p/libXfont2.so.2.0.0.symbols
+[3/29] Compiling C object test-pcf-repad.p/test_pcf-test-common.c.o
+[4/29] Compiling C object test-pcf-repad.p/test_test-pcf-repad.c.o
+[5/29] Compiling C object lsfontdir.p/test_utils_font-test-utils.c.o
+[6/29] Compiling C object test-pcf-props.p/test_test-pcf-props.c.o
+[7/29] Compiling C object test-pcf-repad.p/test_utils_font-test-utils.c.o
+[8/29] Compiling C object test-pcf-props.p/test_pcf-test-common.c.o
+[9/29] Compiling C object test-pcf-bitmapscale.p/test_test-pcf-bitmapscale.c.o
+[10/29] Compiling C object test-pcf-props.p/test_utils_font-test-utils.c.o
+[11/29] Compiling C object test-pcf-bitmapscale.p/test_pcf-test-common.c.o
+[12/29] Compiling C object test-pcf-encoding.p/test_test-pcf-encoding.c.o
+[13/29] Compiling C object test-pcf-bitmapscale.p/test_utils_font-test-utils.c.o
+[14/29] Compiling C object test-pcf-encoding.p/test_pcf-test-common.c.o
+[15/29] Compiling C object test-pcf-norepad.p/test_test-pcf-norepad.c.o
+[16/29] Compiling C object test-pcf-encoding.p/test_utils_font-test-utils.c.o
+[17/29] Compiling C object test-pcf-norepad.p/test_pcf-test-common.c.o
+[18/29] Linking target lsfontdir
+[19/29] Linking target test-pcf-repad
+[20/29] Generating pcf-data-props with a custom command
+[21/29] Generating pcf-data-repad with a custom command
+[22/29] Linking target test-pcf-props
+[23/29] Compiling C object test-pcf-norepad.p/test_utils_font-test-utils.c.o
+[24/29] Generating pcf-data-scale with a custom command
+[25/29] Generating pcf-data-encoding with a custom command
+[26/29] Linking target test-pcf-bitmapscale
+[27/29] Linking target test-pcf-encoding
+[28/29] Generating pcf-data-norepad with a custom command
+[29/29] Linking target test-pcf-norepad
+1/6 libXfont2:lsfontdir-built-ins  OK              0.01s
+2/6 libXfont2:test-pcf-repad       OK              0.01s
+3/6 libXfont2:test-pcf-props       OK              0.01s
+4/6 libXfont2:test-pcf-bitmapscale OK              0.01s
+5/6 libXfont2:test-pcf-encoding    OK              0.01s
+6/6 libXfont2:test-pcf-norepad     OK              0.00s
+
+Ok:                6   
+Fail:              0   
+
+Full log written to /tmp/arena-xvfb/build/libXfont2/meson-logs/testlog.txt
++ ninja -C /tmp/arena-xvfb/build/libXfont2 install
+ninja: Entering directory `/tmp/arena-xvfb/build/libXfont2'
+[0/1] Installing files
+Installing libXfont2.so.2.0.0 to /tmp/arena-xvfb/prefix/lib
+Installing /tmp/arena-xvfb/src/libXfont/include/X11/fonts/libxfont2.h to /tmp/arena-xvfb/prefix/include/X11/fonts
+Installing /tmp/arena-xvfb/build/libXfont2/meson-private/xfont2.pc to /tmp/arena-xvfb/prefix/lib/pkgconfig
+Installing symlink pointing to libXfont2.so.2.0.0 to /tmp/arena-xvfb/prefix/lib/libXfont2.so.2
+Installing symlink pointing to libXfont2.so.2 to /tmp/arena-xvfb/prefix/lib/libXfont2.so

@@ -1,0 +1,38 @@
+The Meson build system
+Version: 1.12.1
+Source dir: /tmp/arena-xvfb/src/libxkbfile
+Build dir: /tmp/arena-xvfb/build/libxkbfile-probe
+Build type: native build
+Project name: libxkbfile
+Project version: 1.2.0
+C compiler for the host machine: cc (gcc 12.2.0 "cc (Debian 12.2.0-14+deb12u1) 12.2.0")
+C linker for the host machine: cc ld.bfd 2.40
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Checking for function "reallocf" : NO 
+Checking for function "strndup" : YES 
+Header "string.h" has symbol "strndup" : YES 
+Checking for function "getc_unlocked" : YES 
+Checking for function "strcasecmp" : YES 
+Configuring config.h using configuration
+Configuring xkbfile.pc using configuration
+Found pkg-config: YES (/tmp/arena-xvfb/prefix/bin/pkg-config) 3.0.10
+Run-time dependency kbproto found: YES 1.0.7
+WARNING: Pkg-config error with 'x11': Could not generate cflags for x11:
+Package xcb was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xcb.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xcb', required by 'x11', not found
+
+Did not find CMake 'cmake'
+Found CMake: NO
+Run-time dependency x11 found: NO 
+
+../../../tmp/arena-xvfb/src/libxkbfile/src/meson.build:20:4: ERROR: Dependency lookup for x11 with method 'pkg-config' failed: Could not generate cflags for x11:
+Package xcb was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xcb.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xcb', required by 'x11', not found
+
+
+A full log can be found at /tmp/arena-xvfb/build/libxkbfile-probe/meson-logs/meson-log.txt

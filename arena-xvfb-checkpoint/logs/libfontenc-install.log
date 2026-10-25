@@ -1,0 +1,7 @@
+ninja: Entering directory `/tmp/arena-xvfb/src/libfontenc/build'
+[0/1] Installing files
+Installing libfontenc.so.1.0.0 to /tmp/arena-xvfb/prefix/lib
+Installing /tmp/arena-xvfb/src/libfontenc/include/X11/fonts/fontenc.h to /tmp/arena-xvfb/prefix/include/X11/fonts
+Installing /tmp/arena-xvfb/src/libfontenc/build/meson-private/fontenc.pc to /tmp/arena-xvfb/prefix/lib/pkgconfig
+Installing symlink pointing to libfontenc.so.1.0.0 to /tmp/arena-xvfb/prefix/lib/libfontenc.so.1
+Installing symlink pointing to libfontenc.so.1 to /tmp/arena-xvfb/prefix/lib/libfontenc.so
