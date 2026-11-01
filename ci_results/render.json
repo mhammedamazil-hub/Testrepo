@@ -1,0 +1,33 @@
+{
+  "container": "GLB",
+  "file_size_bytes": 1274956,
+  "generator": "https://github.com/mikedh/trimesh",
+  "nodes": 2,
+  "meshes": 1,
+  "primitives": 1,
+  "materials": 0,
+  "textures": 0,
+  "images": [],
+  "attributes": [
+    "COLOR_0",
+    "POSITION"
+  ],
+  "vertices": 31906,
+  "triangles": 63620,
+  "uv_mapped": false,
+  "vertex_colored": true,
+  "problems": [],
+  "renders": [
+    "work/renders/render_00.png",
+    "work/renders/render_01.png",
+    "work/renders/render_02.png",
+    "work/renders/render_03.png",
+    "work/renders/render_04.png",
+    "work/renders/render_05.png"
+  ],
+  "render_stats": {
+    "triangles_total": 63620,
+    "triangles_rendered": 63620,
+    "frames": 6
+  }
+}

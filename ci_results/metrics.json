@@ -1,0 +1,59 @@
+{
+  "driver": "tools/hfspace_inference.py",
+  "space": "TencentARC/InstantMesh",
+  "authenticated": false,
+  "input_image": "input.jpg",
+  "input_sha256": "68632a41cf1f6ed976614dda155975bc5b53c0f38b6185b7468815a3679446e2",
+  "steps": 30,
+  "seed": 42,
+  "probes": [
+    {
+      "url": "https://huggingface.co",
+      "status": 200,
+      "ms": 39
+    },
+    {
+      "url": "https://tencentarc-instantmesh.hf.space/config",
+      "status": 200,
+      "ms": 335
+    },
+    {
+      "url": "https://api.replicate.com/v1/models",
+      "error": "HTTPError: HTTP Error 401: Unauthorized",
+      "ms": 113
+    }
+  ],
+  "stage_times": {
+    "preprocess_s": 3.3,
+    "generate_mvs_s": 7.4,
+    "make3d_s": 5.3
+  },
+  "total_s": 15.9,
+  "artifacts": [
+    {
+      "kind": "obj",
+      "file": "instantmesh.obj",
+      "bytes": 3425895,
+      "sha256": "69fb32673be4087eb9a00439b3e29beaca68a286f74a462285324678f2bf235d"
+    },
+    {
+      "kind": "glb",
+      "file": "instantmesh.glb",
+      "bytes": 1274956,
+      "sha256": "2458e327f19b9b86489c5df38b119b9c4738b22102175265163925f62da0f0ff"
+    },
+    {
+      "kind": "unknown",
+      "file": "instantmesh.bin",
+      "bytes": 35200,
+      "sha256": "f82f2fe7558094559c79e63e61b891375308a1efd257816ebf1e8b66e171eb0f"
+    },
+    {
+      "kind": "unknown",
+      "file": "instantmesh.bin",
+      "bytes": 86408,
+      "sha256": "4e4e55ede8e6348964c9b78e8faa616409c5477eb4827587e5891bbc37f33f2f"
+    }
+  ],
+  "success": true
+}

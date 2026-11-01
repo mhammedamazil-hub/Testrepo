@@ -1,0 +1,21 @@
+{
+  "container": "GLB",
+  "file_size_bytes": 1274956,
+  "generator": "https://github.com/mikedh/trimesh",
+  "nodes": 2,
+  "meshes": 1,
+  "primitives": 1,
+  "materials": 0,
+  "textures": 0,
+  "images": [],
+  "attributes": [
+    "COLOR_0",
+    "POSITION"
+  ],
+  "vertices": 31906,
+  "triangles": 63620,
+  "uv_mapped": false,
+  "vertex_colored": true,
+  "problems": [],
+  "valid": true
+}
