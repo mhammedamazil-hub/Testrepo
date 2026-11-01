@@ -1,0 +1,9 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+
+# --- optional, only needed for the hf_space provider ---
+# gradio_client>=1.3.0
+#
+# --- optional, only needed for a production object-store backed deployment ---
+# boto3

@@ -1,0 +1,18 @@
+# Put the upstream requirements here when deploying the Space.
+# They mirror github.com/TencentARC/InstantMesh requirements.txt, with the Gradio pin removed
+# so the Space controls its own Gradio version.
+pytorch-lightning==2.1.2
+einops
+omegaconf
+torchmetrics
+webdataset
+accelerate
+PyMCubes
+trimesh
+rembg
+transformers==4.34.1
+diffusers==0.20.2
+imageio[ffmpeg]
+xatlas
+plyfile
+git+https://github.com/NVlabs/nvdiffrast/

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>InstantMesh Studio — image to 3D</title>
+<link rel="stylesheet" href="/static/styles.css" />
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+<div id="sim-banner" class="banner banner-warn" hidden>
+  <strong>SIMULATION MODE.</strong> The <code>mock</code> provider is active: the cube you see is
+  procedurally generated placeholder geometry, <em>not</em> AI inference. Switch providers below to run real InstantMesh.
+</div>
+<div id="net-banner" class="banner banner-error" hidden></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">◈</div>
+    <div>
+      <h1>InstantMesh Studio</h1>
+      <p>Single image → GLB / OBJ mesh · provider-abstracted pipeline</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="provider-chip" class="chip chip-muted">checking…</span>
+    <a class="chip chip-ghost" href="https://github.com/TencentARC/InstantMesh" target="_blank" rel="noreferrer">upstream repo ↗</a>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ---------------- input column ---------------- -->
+  <section class="card panel-left">
+    <h2>1 · Source image</h2>
+    <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload image">
+      <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+      <div id="dropzone-empty">
+        <div class="dz-icon">⤒</div>
+        <p class="dz-title">Drop an image, or click to browse</p>
+        <p class="dz-sub">PNG · JPEG · WebP — max 12 MB. One object, centred, plain background works best.</p>
+      </div>
+      <img id="preview-img" alt="Selected input" hidden />
+    </div>
+    <div class="examples">
+      <span class="examples-label">Samples:</span>
+      <div id="examples" class="examples-row"></div>
+    </div>
+
+    <h2>2 · Settings</h2>
+    <div class="grid-2">
+      <label class="field">
+        <span>Seed</span>
+        <input id="seed" type="number" value="42" min="0" step="1" />
+      </label>
+      <label class="field">
+        <span>Sample steps</span>
+        <input id="steps" type="range" min="30" max="75" step="5" value="75" />
+        <output id="steps-out">75</output>
+      </label>
+    </div>
+    <label class="check"><input id="remove-bg" type="checkbox" checked /> Remove background (rembg, in-pipeline)</label>
+    <label class="check"><input id="texmap" type="checkbox" /> Export texture-mapped OBJ (slower, local GPU only)</label>
+    <label class="check"><input id="video" type="checkbox" checked /> Render turntable video when supported</label>
+
+    <div class="provider-block">
+      <label class="field">
+        <span>Inference provider</span>
+        <select id="provider-select"></select>
+      </label>
+      <p id="provider-detail" class="hint"></p>
+    </div>
+
+    <button id="generate" class="primary" disabled>Generate 3D mesh</button>
+    <p id="form-error" class="error-text" hidden></p>
+  </section>
+
+  <!-- ---------------- output column ---------------- -->
+  <section class="card panel-right">
+    <div class="panel-head">
+      <h2>3 · Result</h2>
+      <span id="job-id" class="mono muted"></span>
+    </div>
+
+    <div id="stage-stepper" class="stepper">
+      <div class="step" data-stage="preprocess">preprocess</div>
+      <div class="step" data-stage="multiview">multi-view</div>
+      <div class="step" data-stage="reconstruct">reconstruct</div>
+      <div class="step" data-stage="export">export</div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress"><div id="progress-bar" class="progress-bar" style="width:0%"></div></div>
+      <div class="progress-meta"><span id="progress-msg">Idle</span><span id="progress-pct" class="mono">0%</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="model">3D model</button>
+      <button class="tab" data-tab="multiview">Multi-view</button>
+      <button class="tab" data-tab="video">Video</button>
+      <button class="tab" data-tab="raw">Raw JSON</button>
+    </div>
+
+    <div class="viewer">
+      <div id="pane-model" class="pane active">
+        <model-viewer id="mv" camera-controls auto-rotate shadow-intensity="0.8" exposure="1.1"
+                      environment-image="neutral" alt="Generated 3D model" touch-action="pan-y">
+          <div class="viewer-empty" slot="poster">No mesh yet — run a generation to preview a real GLB here.</div>
+        </model-viewer>
+      </div>
+      <div id="pane-multiview" class="pane"><div class="viewer-empty">Multi-view grid will appear here.</div></div>
+      <div id="pane-video" class="pane"><div class="viewer-empty">Turntable video will appear here.</div></div>
+      <div id="pane-raw" class="pane"><pre id="raw-json" class="mono">{}</pre></div>
+    </div>
+
+    <div class="downloads">
+      <a id="dl-glb" class="dl dl-primary" hidden download>⤓ GLB</a>
+      <a id="dl-obj" class="dl" hidden download>⤓ OBJ</a>
+      <a id="dl-multiview" class="dl" hidden download>⤓ multi-view PNG</a>
+      <a id="dl-video" class="dl" hidden download>⤓ MP4</a>
+      <span id="dl-none" class="muted">Downloads unlock when a mesh exists.</span>
+    </div>
+
+    <div id="error-panel" class="error-panel" hidden>
+      <h3 id="error-title">Generation failed</h3>
+      <p id="error-body"></p>
+      <p class="hint" id="error-hint"></p>
+    </div>
+
+    <div class="meta-grid" id="meta-grid"></div>
+  </section>
+</main>
+
+<section class="card provider-table">
+  <h2>Provider status <span class="muted">— probed live from the server, not hard-coded</span></h2>
+  <table>
+    <thead><tr><th>Provider</th><th>Kind</th><th>Configured</th><th>Reachable</th><th>Detail</th></tr></thead>
+    <tbody id="provider-rows"><tr><td colspan="5" class="muted">loading…</td></tr></tbody>
+  </table>
+</section>
+
+<footer class="footer">
+  <span>InstantMesh © TencentARC (Apache-2.0). This UI is an independent client; no model weights are bundled.</span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

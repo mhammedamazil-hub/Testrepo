@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# App runtime data (user uploads + generated meshes)
+app/storage/
+
+# Cloned upstream repos (models are ~7GB of weights; never commit)
+vendor/
+
+# Local secrets
+.env
+.env.local
+
+# Results produced by the free-GPU notebook
+outputs/
+*.glb
+*.obj
+*.mtl
