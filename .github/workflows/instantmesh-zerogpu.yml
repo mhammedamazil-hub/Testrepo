@@ -29,7 +29,7 @@ on:
       steps:
         description: "Diffusion steps (30-75)"
         required: false
-        default: "75"
+        default: "30"
 
 permissions:
   contents: read
@@ -70,18 +70,29 @@ jobs:
           python -m pip install --quiet "gradio_client==1.14.0"
 
       - name: Fetch input photograph
+        env:
+          # push events carry no inputs, so every value needs a fallback
+          IMAGE_URL: ${{ github.event.inputs.image_url || 'https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20M5%20F90%20Competition%20(51585150351).jpg?width=1280' }}
         run: |
           mkdir -p work
-          curl -sSL -m 120 --retry 2 \
-            -A "instantmesh-ci/1.0 (research; github actions)" \
-            "${{ github.event.inputs.image_url }}" -o work/input.jpg
+          echo "input url: $IMAGE_URL"
+          ok=0
+          for url in "$IMAGE_URL" \
+                     "https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20F90%20M5%20Competition%20(47090285514).jpg?width=1280" \
+                     "https://raw.githubusercontent.com/TencentARC/InstantMesh/main/examples/fox.jpg"; do
+            [ -z "$url" ] && continue
+            code=$(curl -sSL -m 180 --retry 2 -w "%{http_code}" \
+                     -A "instantmesh-ci/1.0 (research; github actions)" \
+                     "$url" -o work/input.jpg || echo "ERR")
+            echo "  $code  $url"
+            if [ "$code" = "200" ] && python -c "
+import sys
+d = open('work/input.jpg','rb').read()
+sys.exit(0 if d[:3] in (b'\xff\xd8\xff',) or d[:8] == b'\x89PNG\r\n\x1a\n' else 1)
+"; then ok=1; break; fi
+          done
+          if [ "$ok" != "1" ]; then echo "could not fetch any input image"; exit 1; fi
           ls -la work/input.jpg
-          python -c "
-          import struct,sys
-          d=open('work/input.jpg','rb').read()
-          assert d[:3]==b'\xff\xd8\xff', 'not a JPEG'
-          print('input ok:', len(d), 'bytes')
-          "
 
       - name: Run InstantMesh on the free ZeroGPU Space
         env:
@@ -91,8 +102,8 @@ jobs:
           python tools/hfspace_inference.py \
             --image work/input.jpg \
             --out work/out \
-            --steps "${{ github.event.inputs.steps }}" \
-            --seed "${{ github.event.inputs.seed }}"
+            --steps "${{ github.event.inputs.steps || '30' }}" \
+            --seed "${{ github.event.inputs.seed || '42' }}"
         continue-on-error: true
 
       - name: Verify the GLB structurally and render turntable frames
