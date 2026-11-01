@@ -23,6 +23,15 @@ strategy tested, network restrictions, costs, recommended architecture, next ste
 No fake 3D was produced. The only mesh generated in-sandbox came from the `mock` provider and every artifact
 is named `SIMULATED_NOT_AI.*`.
 
+## ✅ Real generation achieved
+
+**[`VALIDATION_RESULTS.md`](./VALIDATION_RESULTS.md)** — a genuine InstantMesh mesh of a BMW M5 was produced
+through the official ZeroGPU Space, driven by GitHub Actions, for **$0**. 1.22 MiB GLB, 31,906 vertices,
+63,620 triangles, verified by an independent software renderer. Artefacts in [`ci_results/`](./ci_results).
+
+Known shortfall: the Space exports **vertex colours, not a texture map** — use the Colab notebook with
+`--export_texmap` for a textured mesh.
+
 ## 👉 Next action
 
 **[`RUN_VALIDATION.md`](./RUN_VALIDATION.md)** — the 3-click Colab run that produces the real mesh.
