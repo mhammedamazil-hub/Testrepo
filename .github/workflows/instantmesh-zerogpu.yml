@@ -1,0 +1,115 @@
+name: InstantMesh ZeroGPU validation
+
+# GitHub-hosted standard runners have NO GPU, and GPU runners are paid-only
+# ($0.052/min, Team/Enterprise + card). So this workflow does not try to compute
+# the inference locally: it drives the free ZeroGPU Space from CI (runners have
+# open egress), then verifies and uploads the real mesh as an artifact.
+#
+# Cost: $0. Public repo => standard runners are free and unlimited; the Space uses
+# the free ZeroGPU quota (≈5 GPU-min/day authenticated, ~2 min anonymous).
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_url:
+        description: "Direct URL of the input photograph (jpg/png)"
+        required: false
+        default: "https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20M5%20F90%20Competition%20(51585150351).jpg?width=1280"
+      seed:
+        description: "Sampling seed"
+        required: false
+        default: "42"
+      steps:
+        description: "Diffusion steps (30-75)"
+        required: false
+        default: "75"
+
+permissions:
+  contents: read
+
+jobs:
+  zerogpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Runner environment + egress diagnostics
+        run: |
+          echo "=== runner ==="
+          uname -a; nproc; free -h | head -2; df -h / | tail -1
+          echo "=== GPU (expected: none on standard runners) ==="
+          (nvidia-smi 2>&1 | head -5) || echo "no nvidia-smi (as expected)"
+          echo "=== egress matrix ==="
+          for url in https://github.com \
+                     https://pypi.org \
+                     https://huggingface.co \
+                     https://tencentarc-instantmesh.hf.space/config \
+                     https://api.replicate.com \
+                     https://colab.research.google.com \
+                     https://www.kaggle.com; do
+            code=$(curl -s -o /dev/null -m 20 -w "%{http_code}" "$url" || echo "ERR")
+            echo "  $url -> $code"
+          done
+
+      - name: Install client + verifier deps
+        run: |
+          python -m pip install --quiet --upgrade pip
+          python -m pip install --quiet "gradio_client==1.14.0"
+
+      - name: Fetch input photograph
+        run: |
+          mkdir -p work
+          curl -sSL -m 120 --retry 2 \
+            -A "instantmesh-ci/1.0 (research; github actions)" \
+            "${{ github.event.inputs.image_url }}" -o work/input.jpg
+          ls -la work/input.jpg
+          python -c "
+          import struct,sys
+          d=open('work/input.jpg','rb').read()
+          assert d[:3]==b'\xff\xd8\xff', 'not a JPEG'
+          print('input ok:', len(d), 'bytes')
+          "
+
+      - name: Run InstantMesh on the free ZeroGPU Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE_ID: TencentARC/InstantMesh
+        run: |
+          python tools/hfspace_inference.py \
+            --image work/input.jpg \
+            --out work/out \
+            --steps "${{ github.event.inputs.steps }}" \
+            --seed "${{ github.event.inputs.seed }}"
+        continue-on-error: true
+
+      - name: Verify the GLB structurally and render turntable frames
+        if: always()
+        run: |
+          python -c "import json;d=json.load(open('work/out/metrics.json'));print(json.dumps(d,indent=2))" || true
+          GLB=$(ls work/out/*.glb 2>/dev/null | head -1)
+          if [ -n "$GLB" ]; then
+            echo "=== inspect ==="
+            python tools/verify_mesh.py inspect "$GLB"
+            echo "=== render ==="
+            python tools/verify_mesh.py render "$GLB" --out work/renders --frames 6 --width 400 --height 300
+          else
+            echo "No GLB produced - nothing to verify."
+          fi
+
+      - name: Upload mesh + renders + metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instantmesh-zerogpu-${{ github.run_id }}
+          path: |
+            work/out/**
+            work/renders/**
+            work/input.jpg
+          if-no-files-found: warn
+          retention-days: 30
