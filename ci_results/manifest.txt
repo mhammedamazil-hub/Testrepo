@@ -1,0 +1,50 @@
+run 41327069116
+
+== ci_results ==
+total 5028
+drwxr-xr-x  3 runner runner    4096 Nov  1 16:35 .
+drwxr-xr-x 11 runner runner    4096 Nov  1 16:35 ..
+-rw-r--r--  1 runner runner  192020 Nov  1 16:35 input.jpg
+-rw-r--r--  1 runner runner     385 Nov  1 16:35 inspect.json
+-rw-r--r--  1 runner runner   86408 Nov  1 16:35 instantmesh.bin
+-rw-r--r--  1 runner runner 1274956 Nov  1 16:35 instantmesh.glb
+-rw-r--r--  1 runner runner 3425895 Nov  1 16:35 instantmesh.obj
+-rw-r--r--  1 runner runner      34 Nov  1 16:35 manifest.txt
+-rw-r--r--  1 runner runner    1462 Nov  1 16:35 metrics.json
+-rw-r--r--  1 runner runner   35200 Nov  1 16:35 multiview.webp
+-rw-r--r--  1 runner runner   86408 Nov  1 16:35 processed_input.webp
+-rw-r--r--  1 runner runner     695 Nov  1 16:35 render.json
+drwxr-xr-x  2 runner runner    4096 Nov  1 16:35 renders
+-rw-r--r--  1 runner runner     109 Nov  1 16:35 run.json
+
+== work ==
+work:
+total 212
+drwxr-xr-x  4 runner runner   4096 Nov  1 16:35 .
+drwxr-xr-x 11 runner runner   4096 Nov  1 16:35 ..
+-rw-r--r--  1 runner runner 192020 Nov  1 16:35 input.jpg
+-rw-r--r--  1 runner runner    385 Nov  1 16:35 inspect.json
+drwxr-xr-x  2 runner runner   4096 Nov  1 16:35 out
+-rw-r--r--  1 runner runner    695 Nov  1 16:35 render.json
+drwxr-xr-x  2 runner runner   4096 Nov  1 16:35 renders
+
+work/out:
+total 4732
+drwxr-xr-x 2 runner runner    4096 Nov  1 16:35 .
+drwxr-xr-x 4 runner runner    4096 Nov  1 16:35 ..
+-rw-r--r-- 1 runner runner 1274956 Nov  1 16:35 instantmesh.glb
+-rw-r--r-- 1 runner runner 3425895 Nov  1 16:35 instantmesh.obj
+-rw-r--r-- 1 runner runner    1462 Nov  1 16:35 metrics.json
+-rw-r--r-- 1 runner runner   35200 Nov  1 16:35 multiview.webp
+-rw-r--r-- 1 runner runner   86408 Nov  1 16:35 processed_input.webp
+
+work/renders:
+total 244
+drwxr-xr-x 2 runner runner  4096 Nov  1 16:35 .
+drwxr-xr-x 4 runner runner  4096 Nov  1 16:35 ..
+-rw-r--r-- 1 runner runner 35092 Nov  1 16:35 render_00.png
+-rw-r--r-- 1 runner runner 42258 Nov  1 16:35 render_01.png
+-rw-r--r-- 1 runner runner 37906 Nov  1 16:35 render_02.png
+-rw-r--r-- 1 runner runner 28414 Nov  1 16:35 render_03.png
+-rw-r--r-- 1 runner runner 40667 Nov  1 16:35 render_04.png
+-rw-r--r-- 1 runner runner 46563 Nov  1 16:35 render_05.png

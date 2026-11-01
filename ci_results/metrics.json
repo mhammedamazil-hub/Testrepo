@@ -10,47 +10,47 @@
     {
       "url": "https://huggingface.co",
       "status": 200,
-      "ms": 39
+      "ms": 22
     },
     {
       "url": "https://tencentarc-instantmesh.hf.space/config",
       "status": 200,
-      "ms": 335
+      "ms": 80
     },
     {
       "url": "https://api.replicate.com/v1/models",
       "error": "HTTPError: HTTP Error 401: Unauthorized",
-      "ms": 113
+      "ms": 26
     }
   ],
   "stage_times": {
-    "preprocess_s": 3.3,
-    "generate_mvs_s": 7.4,
-    "make3d_s": 5.3
+    "preprocess_s": 1.8,
+    "generate_mvs_s": 14.5,
+    "make3d_s": 5.6
   },
-  "total_s": 15.9,
+  "total_s": 22.0,
   "artifacts": [
     {
       "kind": "obj",
       "file": "instantmesh.obj",
       "bytes": 3425895,
-      "sha256": "69fb32673be4087eb9a00439b3e29beaca68a286f74a462285324678f2bf235d"
+      "sha256": "e659222b07fba753f659cad7e487f40dd43b4d656bd751f84963c2fa40b09f80"
     },
     {
       "kind": "glb",
       "file": "instantmesh.glb",
       "bytes": 1274956,
-      "sha256": "2458e327f19b9b86489c5df38b119b9c4738b22102175265163925f62da0f0ff"
+      "sha256": "b93dd7934474c28feb6005a75b0f884dd36a6c808137514b8c0c0fc6223af362"
     },
     {
-      "kind": "unknown",
-      "file": "instantmesh.bin",
+      "kind": "webp",
+      "file": "multiview.webp",
       "bytes": 35200,
       "sha256": "f82f2fe7558094559c79e63e61b891375308a1efd257816ebf1e8b66e171eb0f"
     },
     {
-      "kind": "unknown",
-      "file": "instantmesh.bin",
+      "kind": "webp",
+      "file": "processed_input.webp",
       "bytes": 86408,
       "sha256": "4e4e55ede8e6348964c9b78e8faa616409c5477eb4827587e5891bbc37f33f2f"
     }
