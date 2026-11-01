@@ -10,6 +10,13 @@ name: InstantMesh ZeroGPU validation
 
 on:
   workflow_dispatch:
+  # Push trigger exists so the workflow can be started without Actions:write
+  # permission (workflow_dispatch is a privileged endpoint; `push` is not).
+  push:
+    branches: [arena/bd775bb6-testrepo]
+    paths:
+      - ".github/workflows/instantmesh-zerogpu.yml"
+      - "tools/hfspace_inference.py"
     inputs:
       image_url:
         description: "Direct URL of the input photograph (jpg/png)"
