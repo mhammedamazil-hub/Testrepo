@@ -23,6 +23,14 @@ strategy tested, network restrictions, costs, recommended architecture, next ste
 No fake 3D was produced. The only mesh generated in-sandbox came from the `mock` provider and every artifact
 is named `SIMULATED_NOT_AI.*`.
 
+## 🔧 CPU refinement pipeline
+
+**[`REFINEMENT.md`](./REFINEMENT.md)** — `tools/refine_mesh.py` repairs and upgrades the generated asset
+offline: fixes Meshy's inward-facet warning, corrects the 36%-too-tall / 56%-too-wide proportions to real
+M5 dimensions, bakes a real UV texture, adds normals, and exports print-ready STL + web GLB + engine OBJ.
+Before/after renders in [`comparison/`](./comparison), deliverables in [`refined_web/`](./refined_web) and
+[`refined_high/`](./refined_high).
+
 ## ✅ Real generation achieved
 
 **[`VALIDATION_RESULTS.md`](./VALIDATION_RESULTS.md)** — a genuine InstantMesh mesh of a BMW M5 was produced

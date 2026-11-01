@@ -1,0 +1,104 @@
+{
+  "input": "ci_results/instantmesh.glb",
+  "steps": {
+    "heal": {
+      "faces_before": 63620,
+      "watertight_before": true,
+      "winding_consistent_before": false,
+      "removed_degenerate_or_duplicate": 0,
+      "faces_after_heal": 63620,
+      "vertices_after_heal": 31906,
+      "watertight_after": true,
+      "winding_consistent_after": true,
+      "volume": 0.9607892318778658,
+      "vertex_delta": 0
+    },
+    "proportions": {
+      "axes": {
+        "length": "Z",
+        "height": "Y",
+        "width": "X"
+      },
+      "dims_before_m": [
+        1.1763,
+        0.7965,
+        1.9746
+      ],
+      "scale_applied": [
+        1.6178,
+        1.8493,
+        2.52
+      ],
+      "dims_after_m": [
+        1.903,
+        1.473,
+        4.976
+      ],
+      "target_m": [
+        1.903,
+        1.473,
+        4.976
+      ],
+      "strength": 1.0
+    },
+    "denoise": {
+      "smoothing": "taubin",
+      "iterations": 2,
+      "vertices": 31906
+    },
+    "texture": {
+      "texture_size": 4096,
+      "uv_coverage": 0.7118,
+      "sharpen": 1.0,
+      "unwrap_s": 47.9,
+      "uv_vertices": 34247,
+      "texture_file": "texture.png",
+      "texture_bytes": 9894122
+    }
+  },
+  "input_mesh": {
+    "faces": 63620,
+    "vertices": 31906,
+    "has_vertex_colours": true,
+    "dims": [
+      1.1763,
+      0.7965,
+      1.9746
+    ]
+  },
+  "exports": {
+    "stl": {
+      "file": "print_mm.stl",
+      "bytes": 3181084,
+      "faces": 63620,
+      "watertight": true,
+      "winding_consistent": true,
+      "dims_mm": [
+        1895.3,
+        1471.4,
+        4972.6
+      ],
+      "volume_cm3": 7235312.45
+    },
+    "glb": {
+      "file": "model_textured.glb",
+      "bytes": 9915020,
+      "faces": 63620,
+      "textured": true,
+      "decimated_from": null
+    },
+    "obj": {
+      "file": "model_textured.obj",
+      "bytes": 6745882,
+      "mtl": null,
+      "texture": "texture.png"
+    }
+  },
+  "total_s": 60.0,
+  "honest_limits": [
+    "Repair + re-projection only: no geometric detail is invented.",
+    "Proportion fit is a global anisotropic scale, so surface features stretch with it.",
+    "Texture is baked from existing vertex colours; resolution is limited by the mesh, not the PNG size.",
+    "This cannot reach Meshy/Tripo quality, which comes from far larger generative models on GPUs."
+  ]
+}
