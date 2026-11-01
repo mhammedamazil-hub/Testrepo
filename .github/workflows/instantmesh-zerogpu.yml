@@ -136,13 +136,18 @@ jobs:
           git config user.email "ci@users.noreply.github.com"
           mkdir -p ci_results
           cp -r work/out/. ci_results/ 2>/dev/null || true
-          cp -r work/renders ci_results/renders 2>/dev/null || true
+          mkdir -p ci_results/renders
+          cp work/renders/*.png ci_results/renders/ 2>/dev/null || true
           cp work/input.jpg ci_results/input.jpg 2>/dev/null || true
           cp work/inspect.json ci_results/inspect.json 2>/dev/null || true
           cp work/render.json ci_results/render.json 2>/dev/null || true
           echo "{\"run_id\": \"${{ github.run_id }}\", \"sha\": \"${{ github.sha }}\", \"server\": \"${{ github.server_url }}\"}" > ci_results/run.json
-          ls -laR ci_results | head -40
-          git add -A ci_results
+          # manifest: what actually exists, so the run is diagnosable without log access
+          { echo "run ${{ github.run_id }}"; echo; echo "== ci_results =="; ls -la ci_results;
+            echo; echo "== work =="; ls -laR work | head -60; } > ci_results/manifest.txt 2>&1
+          cat ci_results/manifest.txt | head -50
+          # -f because the root .gitignore must never be able to drop a real mesh again
+          git add -f -A ci_results
           git commit -m "ci: InstantMesh ZeroGPU results from run ${{ github.run_id }}" || echo "nothing to commit"
           git push origin HEAD:${{ github.ref_name }} || echo "push failed (non-fatal; artifacts still uploaded)"
 

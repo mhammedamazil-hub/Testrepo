@@ -76,6 +76,8 @@ def sniff(path: Path) -> str:
         return "obj"
     if head[4:8] == b"ftyp":
         return "mp4"
+    if head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return "webp"
     if path.suffix.lower() == ".mtl":
         return "mtl"
     return "unknown"
@@ -181,13 +183,22 @@ def main() -> int:
         candidates.append(proc_path)
 
     saved = []
+    used: set[str] = set()
     for src in candidates:
         kind = sniff(src)
-        dest = out / f"instantmesh.{kind if kind != 'unknown' else 'bin'}"
-        if kind == "png" and "multiview" not in dest.name and mv_path and src == mv_path:
-            dest = out / "multiview.png"
-        if kind == "png" and proc_path and src == proc_path:
-            dest = out / "processed_input.png"
+        if src == proc_path:
+            stem = "processed_input"
+        elif src == mv_path:
+            stem = "multiview"
+        elif kind in ("glb", "obj", "mtl"):
+            stem = "instantmesh"
+        else:
+            stem = "artifact"
+        name = f"{stem}.{kind if kind != 'unknown' else src.suffix.lstrip('.') or 'bin'}"
+        if name in used:                      # never overwrite: keep both
+            name = f"{stem}_{len(used)}.{kind if kind != 'unknown' else 'bin'}"
+        used.add(name)
+        dest = out / name
         dest.write_bytes(src.read_bytes())
         saved.append({"kind": kind, "file": dest.name, "bytes": dest.stat().st_size,
                       "sha256": hashlib.sha256(dest.read_bytes()).hexdigest()})

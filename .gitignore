@@ -15,11 +15,12 @@ vendor/
 .env
 .env.local
 
-# Results produced by the free-GPU notebook
-outputs/
-*.glb
-*.obj
-*.mtl
+# Local notebook output (kept narrow on purpose: broad *.glb/*.obj globs once
+# silently excluded a real generated mesh from the CI commit-back)
+/outputs/
+
+# CI results ARE committed on purpose - they are the evidence
+!ci_results/**
 
 # scratch
 image-search/
