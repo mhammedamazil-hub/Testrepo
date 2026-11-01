@@ -30,6 +30,10 @@ Input: the 9-cell turnaround sheet (front, rear, right side, top, and four three
 Turntables in [`comparison_carve/`](./comparison_carve) (`web_vs_high.png` is the two tiers side by side,
 four camera angles each). Per-view validation overlays are in [`carved/validate/`](./carved/validate).
 
+Both GLBs were imported into the running app (`POST /api/import`) and round-trip byte-identically: job
+`cf58e52dfee54ba1` (web, SHA-256 `97a311cb…63d`) and job `5de389b85d2a440c` (high, 13,419,020 B), each with
+`NORMAL`, `POSITION`, `TEXCOORD_0`, one material and one embedded 2048²/4096² image.
+
 ## 2. Dimensions — exact, not "close"
 
 | axis | model | real M5 F90 | error |
