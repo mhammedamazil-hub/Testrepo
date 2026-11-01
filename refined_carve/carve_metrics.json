@@ -1,0 +1,59 @@
+{
+  "tier": "web",
+  "extents_m": [
+    4.976,
+    2.126,
+    1.473
+  ],
+  "target_dimensions_m": {
+    "width": 1.903,
+    "height": 1.473,
+    "length": 4.976,
+    "mirror_span": 2.126
+  },
+  "real_world_error_pct": {
+    "length": 0.0,
+    "width_including_mirrors": 0.0,
+    "height": 0.0
+  },
+  "faces": 44998,
+  "vertices": 22501,
+  "watertight": true,
+  "winding_consistent": true,
+  "volume_m3": 9.906,
+  "taubin_iterations": 18,
+  "exact_fit": {
+    "before_m": [
+      4.9651,
+      2.1052,
+      1.4652
+    ],
+    "applied_axis_scale": [
+      1.0022,
+      1.0099,
+      1.0053
+    ],
+    "after_m": [
+      4.976,
+      2.126,
+      1.473
+    ]
+  },
+  "texture": {
+    "texture_size": 2048,
+    "atlas_coverage": 0.6806,
+    "texels_photo_coloured": 2145425,
+    "texels_total": 2854559
+  },
+  "files": {
+    "carve_metrics.json": 1086,
+    "material.mtl": 198,
+    "material_0.png": 2720095,
+    "model_textured.glb": 4037136,
+    "model_textured.mtl": 141,
+    "model_textured.obj": 4702570,
+    "print_mm.stl": 2249984,
+    "texture.png": 2720095
+  },
+  "seconds": 43.1
+}

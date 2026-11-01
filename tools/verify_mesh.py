@@ -279,7 +279,7 @@ class Glb:
 def _sample(tex: dict, u: float, v: float):
     w, h, ch, px = tex["width"], tex["height"], tex["channels"], tex["pixels"]
     x = min(w - 1, max(0, int(u * w)))
-    y = min(h - 1, max(0, int((1.0 - v) * h)))  # glTF UV origin is top-left
+    y = min(h - 1, max(0, int(v * h)))  # glTF: UV (0,0) is the TOP-LEFT texel
     o = (y * w + x) * ch
     if ch >= 3:
         return px[o] / 255.0, px[o + 1] / 255.0, px[o + 2] / 255.0

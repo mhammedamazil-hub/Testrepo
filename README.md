@@ -31,6 +31,25 @@ M5 dimensions, bakes a real UV texture, adds normals, and exports print-ready ST
 Before/after renders in [`comparison/`](./comparison), deliverables in [`refined_web/`](./refined_web) and
 [`refined_high/`](./refined_high).
 
+## 🪨 Photo carving — geometry the photographs actually support
+
+**[`CARVING.md`](./CARVING.md)** — the opposite approach to generation: carve the car out of the 9-view
+turnaround sheet so nothing is invented. Four orthographic silhouettes plus four pose-estimated three-quarter
+views are intersected in signed-distance space (voxel pitch 10 mm), marched to a **watertight** surface, then
+textured by projecting the photographs per texel through a UV atlas.
+
+| | |
+|---|---|
+| dimensions | **4.976 × 2.126 × 1.473 m** — the real M5 F90, to the millimetre |
+| silhouette agreement | front 0.929 · rear 0.954 · side 0.984 · top 0.997 · 3/4 views 0.90–0.94 IoU |
+| web tier | 45k tris, 2048² texture, 4.0 MB GLB, watertight |
+| high tier | 160k tris, 4096² texture, 13.4 MB GLB, watertight |
+| runtime / cost | 286 s carve + 43 s bake, CPU only, **$0** |
+
+Deliverables in [`refined_carve/`](./refined_carve) and [`refined_carve_high/`](./refined_carve_high),
+turntables in [`comparison_carve/`](./comparison_carve), per-view IoU overlays in
+[`carved/validate/`](./carved/validate).
+
 ## ✅ Real generation achieved
 
 **[`VALIDATION_RESULTS.md`](./VALIDATION_RESULTS.md)** — a genuine InstantMesh mesh of a BMW M5 was produced
@@ -59,11 +78,16 @@ one. Everything needed on this side (notebook, verifier, import endpoint) is bui
 | `notebooks/instantmesh_real_validation.ipynb` | the free-T4 inference run + metrics collection |
 | `tools/verify_mesh.py` | stdlib GLB inspector **and software renderer** (evidence without a browser) |
 | `tools/make_test_mesh.py` | textured fixture that proves the verifier itself works |
+| `tools/carve_car.py` | segment + calibrate the turnaround sheet, estimate 3/4-view poses, carve the visual hull |
+| `tools/carve_finish.py` | Taubin smooth, decimate, xatlas unwrap, per-texel photo bake, GLB/OBJ/STL export |
+| `tools/render_mesh.py` | dependency-free triangle rasteriser with per-pixel texturing (the verifier's renderer subsamples big meshes and samples textures per triangle) |
+| `carve_src/` | the nine cells of the turnaround sheet |
+| `refined_carve/`, `refined_carve_high/` | carved deliverables (web and high tier) |
 
 ```bash
 pip install -r app/requirements.txt
 python -m uvicorn app.server.main:app --host 0.0.0.0 --port 8000   # mock mode by default
-python -m pytest app/tests -q                                      # 13 tests
+python -m pytest app/tests -q                                      # 28 tests
 ```
 
 InstantMesh is © TencentARC, Apache-2.0. This repo is an independent client and bundles no weights.
