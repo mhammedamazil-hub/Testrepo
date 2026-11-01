@@ -25,3 +25,4 @@ outputs/
 image-search/
 tmp_gtest/
 renders/
+ci_run/
