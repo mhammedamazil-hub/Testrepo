@@ -78,6 +78,24 @@ makes the report complete, so attach both if you can.
 4. A written report: generation time, GPU, peak VRAM, output size, texture presence, and quality issues
    specific to your image.
 
+## Alternative: run it via GitHub Actions instead of Colab
+
+`.github/workflows/instantmesh-zerogpu.yml` does the whole thing with no Colab UI: it calls the free
+ZeroGPU Space from CI, verifies the GLB, renders turntable frames and uploads them as an artifact.
+
+**Two blockers, both verified (audit §11.7):**
+1. Standard runners have **no GPU** and GPU runners are **paid** — so the workflow cannot compute the mesh,
+   it can only *drive* the free Space.
+2. Actions is currently **not enabled/usable on this repo**: `workflows` returns 0 entries and dispatch
+   returns **403** (`actions:write` missing on the integration).
+
+To use it: enable Actions in `Settings → Actions → General`, then either add an `HF_TOKEN` repo secret
+(raises the ZeroGPU quota and is needed for a reliable run) and click *Run workflow*, or re-connect the
+Arena GitHub integration with Actions permission and I can trigger it myself.
+
+**Caveat:** the Space path returns a **vertex-coloured** mesh (`use_texture_map=False` in the live Space),
+not a textured one — so it does not satisfy the "textured" criterion. For that, use Colab above.
+
 ## Honesty note
 
 Nothing in this repo has claimed a real generated asset yet. The `mock` provider's cube is watermarked

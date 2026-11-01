@@ -662,3 +662,54 @@ byte-identical import roundtrip, OBJ+MTL+texture retention, and "import is never
 
 **Real generation time, GPU, peak VRAM and output size are deliberately left blank rather than guessed.**
 They will be filled from `metrics.json` returned by the Colab run — see `RUN_VALIDATION.md`.
+
+## 11.7 GitHub Actions as a runner — investigated, and it splits in two
+
+The question "can't you use a GitHub workflow?" has two different answers.
+
+### (a) Can Actions *compute* the inference for free? — **No.**
+
+| Runner | GPU? | Cost |
+|---|---|---|
+| `ubuntu-latest` (standard, public repo) | ❌ none | **free, unlimited** |
+| `ubuntu-latest` (standard, private repo) | ❌ none | 2,000 min/month free |
+| Larger runner, **4-core + NVIDIA T4 (16 GB)** | ✅ T4 | **$0.052/min ($3.12/h)**, Team/Enterprise plan + card |
+
+Verified against GitHub's runner reference and billing docs (Oct 2026): standard runners are CPU-only;
+GPU runners are "larger runners", which are **always billed even on public repositories**, require the
+Team/Enterprise plan and a payment method, and never draw on included minutes. Self-hosted runners are
+free *of GitHub charges* but you must own the GPU — which is circular for this task.
+
+So a free GitHub Actions job cannot run InstantMesh. It would also fail on resources even if CUDA were
+patched out: the public runner is 4 vCPU / 16 GB with no CUDA toolkit and a 6 h job ceiling.
+
+### (b) Can Actions *drive* a free GPU host? — **Yes in principle, blocked in this repo.**
+
+Runners have open egress, unlike this sandbox. So `.github/workflows/instantmesh-zerogpu.yml` +
+`tools/hfspace_inference.py` were written to: probe egress → call the Space's three endpoints on one
+client (the session-bound `gr.State` chain) → download the mesh → verify it with `tools/verify_mesh.py` →
+render turntable frames → upload everything as a workflow artifact. That would make the real-mesh run
+**zero-touch**.
+
+Empirically blocked here:
+
+```
+GET  /repos/.../actions/workflows        → 200 {"total_count": 0, "workflows": []}
+POST /repos/.../actions/workflows/instantmesh-zerogpu.yml/dispatches → 403 Resource not accessible by integration
+GET  /repos/mhammedamazil-hub/Testrepo   → permissions.admin = true   (but App token lacks actions:write)
+```
+
+The workflow file is present on the branch (verified via the contents API), so this is not a push problem:
+Actions is either disabled for the repository or the GitHub connection lacks Actions write. Enabling it
+needs a human in `Settings → Actions → General → Allow all actions`, or a reconnection of the Arena GitHub
+integration with Actions permission.
+
+### Why (b) is still not a full substitute for Colab
+
+Even once enabled, this route produces a **vertex-coloured** mesh: the live Space calls
+`extract_mesh(..., use_texture_map=False)` (§11.2). It also runs against the free ZeroGPU quota
+(~2 GPU-min/day anonymous, ~5 authenticated), and a 75-step diffusion pass plus FlexiCubes extraction can
+exceed the anonymous allowance, so it would want an `HF_TOKEN` repository secret.
+
+**Net:** Actions is a legitimate free *orchestrator* and a poor free *computer*. For a textured mesh with
+predictable quota, free Colab (T4, ~15–30 GPU-h/week) remains the reliable route — `RUN_VALIDATION.md`.
