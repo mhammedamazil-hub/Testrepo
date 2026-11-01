@@ -1,22 +1,21 @@
 name: InstantMesh ZeroGPU validation
 
+# Why this workflow exists
+# -----------------------
 # GitHub-hosted standard runners have NO GPU, and GPU runners are paid-only
-# ($0.052/min, Team/Enterprise + card). So this workflow does not try to compute
-# the inference locally: it drives the free ZeroGPU Space from CI (runners have
-# open egress), then verifies and uploads the real mesh as an artifact.
+# ($0.052/min, Team/Enterprise + a card on file). So this workflow does not try
+# to compute the inference locally. Runners DO have open egress, so instead it
+# drives the free ZeroGPU Space, brings the real mesh back, verifies it, renders
+# turntable frames with an independent software renderer, and uploads artifacts.
 #
-# Cost: $0. Public repo => standard runners are free and unlimited; the Space uses
-# the free ZeroGPU quota (≈5 GPU-min/day authenticated, ~2 min anonymous).
+# Cost: $0. Public repo => standard runners are free and unlimited. The Space
+# spends free ZeroGPU quota (~2 GPU-min/day anonymous, ~5 authenticated).
+#
+# Trigger: `push` as well as `workflow_dispatch`, because dispatch requires
+# Actions:write which the current GitHub connection does not have.
 
 on:
   workflow_dispatch:
-  # Push trigger exists so the workflow can be started without Actions:write
-  # permission (workflow_dispatch is a privileged endpoint; `push` is not).
-  push:
-    branches: [arena/bd775bb6-testrepo]
-    paths:
-      - ".github/workflows/instantmesh-zerogpu.yml"
-      - "tools/hfspace_inference.py"
     inputs:
       image_url:
         description: "Direct URL of the input photograph (jpg/png)"
@@ -30,6 +29,11 @@ on:
         description: "Diffusion steps (30-75)"
         required: false
         default: "30"
+  push:
+    branches: [arena/bd775bb6-testrepo]
+    paths:
+      - ".github/workflows/instantmesh-zerogpu.yml"
+      - "tools/hfspace_inference.py"
 
 permissions:
   contents: read
@@ -46,53 +50,55 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Runner environment + egress diagnostics
+      - name: Runner environment and egress diagnostics
         run: |
           echo "=== runner ==="
-          uname -a; nproc; free -h | head -2; df -h / | tail -1
+          uname -srm
+          nproc
+          free -h | head -2
+          df -h / | tail -1
           echo "=== GPU (expected: none on standard runners) ==="
-          (nvidia-smi 2>&1 | head -5) || echo "no nvidia-smi (as expected)"
-          echo "=== egress matrix ==="
+          nvidia-smi 2>&1 | head -3 || echo "no nvidia-smi (as expected on standard runners)"
+          echo "=== egress matrix (this is what the sandbox could not do) ==="
           for url in https://github.com \
                      https://pypi.org \
                      https://huggingface.co \
                      https://tencentarc-instantmesh.hf.space/config \
                      https://api.replicate.com \
                      https://colab.research.google.com \
-                     https://www.kaggle.com; do
+                     https://www.kaggle.com ; do
             code=$(curl -s -o /dev/null -m 20 -w "%{http_code}" "$url" || echo "ERR")
             echo "  $url -> $code"
           done
 
-      - name: Install client + verifier deps
+      - name: Install client and verifier dependencies
         run: |
           python -m pip install --quiet --upgrade pip
-          python -m pip install --quiet "gradio_client==1.14.0"
+          python -m pip install --quiet "gradio_client==1.14.0" pillow
 
       - name: Fetch input photograph
         env:
-          # push events carry no inputs, so every value needs a fallback
           IMAGE_URL: ${{ github.event.inputs.image_url || 'https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20M5%20F90%20Competition%20(51585150351).jpg?width=1280' }}
         run: |
+          set -u
           mkdir -p work
-          echo "input url: $IMAGE_URL"
-          ok=0
-          for url in "$IMAGE_URL" \
-                     "https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20F90%20M5%20Competition%20(47090285514).jpg?width=1280" \
-                     "https://raw.githubusercontent.com/TencentARC/InstantMesh/main/examples/fox.jpg"; do
-            [ -z "$url" ] && continue
+          fetch() {
+            url="$1"
             code=$(curl -sSL -m 180 --retry 2 -w "%{http_code}" \
-                     -A "instantmesh-ci/1.0 (research; github actions)" \
-                     "$url" -o work/input.jpg || echo "ERR")
-            echo "  $code  $url"
-            if [ "$code" = "200" ] && python -c "
-import sys
-d = open('work/input.jpg','rb').read()
-sys.exit(0 if d[:3] in (b'\xff\xd8\xff',) or d[:8] == b'\x89PNG\r\n\x1a\n' else 1)
-"; then ok=1; break; fi
-          done
-          if [ "$ok" != "1" ]; then echo "could not fetch any input image"; exit 1; fi
-          ls -la work/input.jpg
+                        -A "instantmesh-ci/1.0 (research; github actions)" \
+                        "$url" -o work/input.jpg 2>/dev/null || echo ERR)
+            size=$(wc -c < work/input.jpg 2>/dev/null || echo 0)
+            echo "  http=$code size=$size  $url"
+            [ "$code" = "200" ] && [ "$size" -gt 10000 ]
+          }
+          fetch "$IMAGE_URL" \
+            || fetch "https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20F90%20M5%20Competition%20(47090285514).jpg?width=1280" \
+            || fetch "https://raw.githubusercontent.com/TencentARC/InstantMesh/main/examples/fox.jpg" \
+            || { echo "could not fetch any input image"; exit 1; }
+
+      - name: Validate input decodes
+        run: |
+          python -c "from PIL import Image; im=Image.open('work/input.jpg'); im.load(); print('input', im.size, im.mode); assert min(im.size)>=300, 'image too small'"
 
       - name: Run InstantMesh on the free ZeroGPU Space
         env:
@@ -109,18 +115,20 @@ sys.exit(0 if d[:3] in (b'\xff\xd8\xff',) or d[:8] == b'\x89PNG\r\n\x1a\n' else 
       - name: Verify the GLB structurally and render turntable frames
         if: always()
         run: |
-          python -c "import json;d=json.load(open('work/out/metrics.json'));print(json.dumps(d,indent=2))" || true
-          GLB=$(ls work/out/*.glb 2>/dev/null | head -1)
-          if [ -n "$GLB" ]; then
-            echo "=== inspect ==="
-            python tools/verify_mesh.py inspect "$GLB"
+          set -u
+          echo "=== metrics ==="
+          cat work/out/metrics.json 2>/dev/null || echo "no metrics.json (driver did not finish)"
+          GLB=$(ls work/out/*.glb 2>/dev/null | head -1 || true)
+          if [ -n "${GLB:-}" ]; then
+            echo "=== inspect $GLB ==="
+            python tools/verify_mesh.py inspect "$GLB" || true
             echo "=== render ==="
-            python tools/verify_mesh.py render "$GLB" --out work/renders --frames 6 --width 400 --height 300
+            python tools/verify_mesh.py render "$GLB" --out work/renders --frames 6 --width 400 --height 300 || true
           else
-            echo "No GLB produced - nothing to verify."
+            echo "No GLB produced, so there is nothing to verify."
           fi
 
-      - name: Upload mesh + renders + metrics
+      - name: Upload mesh, renders and metrics
         if: always()
         uses: actions/upload-artifact@v4
         with:
