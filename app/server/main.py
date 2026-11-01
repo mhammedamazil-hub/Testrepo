@@ -8,9 +8,13 @@ from __future__ import annotations
 import mimetypes
 from pathlib import Path
 
+from typing import List
+
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+import json
 
 from .config import APP_ROOT, settings
 from .jobs import JobStore
@@ -95,6 +99,74 @@ async def create_job(
     )
     job = store.create(data, image.filename or "upload.png", options, selected)
     return JSONResponse(job.to_dict(), status_code=202)
+
+
+@app.post("/api/import")
+async def import_mesh(
+    files: List[UploadFile] = File(...),
+    metrics: str | None = Form(None),
+    origin_note: str | None = Form(None),
+):
+    """Accept a mesh produced elsewhere (GLB, or OBJ + MTL + texture) for preview/download.
+
+    The GLB is structurally validated here before it is accepted, so a truncated or
+    corrupt file is rejected with a reason instead of being shown as a broken viewer.
+    Imported jobs are stamped origin='external_import'; they are never reported as
+    inference performed by this app.
+    """
+    blobs: dict[str, tuple[str, bytes]] = {}
+    for f in files:
+        name = f.filename or "upload.bin"
+        data = await f.read()
+        if not data:
+            continue
+        if len(data) > settings.max_upload_bytes * 4:
+            raise HTTPException(413, f"{name} is too large")
+        blobs[name.lower()] = (name, data)
+
+    glb = next(((n, d) for k, (n, d) in blobs.items() if k.endswith(".glb")), None)
+    obj = next(((n, d) for k, (n, d) in blobs.items() if k.endswith(".obj")), None)
+    if not glb and not obj:
+        raise HTTPException(415, "provide a .glb, or an .obj (optionally with .mtl and texture images)")
+
+    meta: dict = {"import": {"note": origin_note or "mesh produced outside this app"}}
+    if metrics:
+        try:
+            meta["reported_metrics"] = json.loads(metrics)
+        except json.JSONDecodeError as exc:
+            raise HTTPException(422, f"metrics is not valid JSON: {exc}") from exc
+
+    if glb:
+        from tools.verify_mesh import Glb
+
+        tmp = settings.storage_dir / "_incoming.glb"
+        tmp.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_bytes(glb[1])
+        try:
+            parsed = Glb(tmp)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(422, f"GLB failed structural validation: {exc}") from exc
+        finally:
+            tmp.unlink(missing_ok=True)
+        if parsed.problems:
+            raise HTTPException(422, f"GLB failed structural validation: {'; '.join(parsed.problems)}")
+        summary = parsed.summary()
+        summary.pop("images", None)
+        meta["glb"] = summary
+
+    artifacts: dict[str, tuple[str, bytes]] = {}
+    for name, data in blobs.values():
+        low = name.lower()
+        if low.endswith(".glb"):
+            artifacts["glb"] = (name, data)
+        elif low.endswith(".obj"):
+            artifacts["obj"] = (name, data)
+        elif low.endswith((".mtl", ".png", ".jpg", ".jpeg", ".webp", ".bin")):
+            # kept as an extra download so a textured OBJ stays usable
+            artifacts[f"extra_{len(artifacts)}"] = (name, data)
+
+    job = store.create_import(artifacts, meta)
+    return JSONResponse(job.to_dict(), status_code=201)
 
 
 @app.get("/api/jobs")

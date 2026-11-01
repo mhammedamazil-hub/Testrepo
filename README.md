@@ -23,6 +23,12 @@ strategy tested, network restrictions, costs, recommended architecture, next ste
 No fake 3D was produced. The only mesh generated in-sandbox came from the `mock` provider and every artifact
 is named `SIMULATED_NOT_AI.*`.
 
+## 👉 Next action
+
+**[`RUN_VALIDATION.md`](./RUN_VALIDATION.md)** — the 3-click Colab run that produces the real mesh.
+Nothing else in this repo can generate a genuine asset from here: the sandbox has no GPU and no route to
+one. Everything needed on this side (notebook, verifier, import endpoint) is built and tested.
+
 ## What's in here
 
 | Path | Contents |
@@ -33,6 +39,9 @@ is named `SIMULATED_NOT_AI.*`.
 | `notebooks/instantmesh_free_gpu.ipynb` | official pipeline on a free Colab T4 / Kaggle GPU → real GLB |
 | `space/` | your own ZeroGPU Gradio Space with a clean single-call `/generate` API |
 | `integrations/local_gpu/instantmesh_generate.py` | GLB export for the official CLI (which only writes OBJ) |
+| `notebooks/instantmesh_real_validation.ipynb` | the free-T4 inference run + metrics collection |
+| `tools/verify_mesh.py` | stdlib GLB inspector **and software renderer** (evidence without a browser) |
+| `tools/make_test_mesh.py` | textured fixture that proves the verifier itself works |
 
 ```bash
 pip install -r app/requirements.txt

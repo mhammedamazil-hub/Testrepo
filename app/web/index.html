@@ -72,13 +72,22 @@
 
     <button id="generate" class="primary" disabled>Generate 3D mesh</button>
     <p id="form-error" class="error-text" hidden></p>
+
+    <details class="import-block">
+      <summary>Already have a mesh? Import a GLB / OBJ</summary>
+      <p class="hint">For a mesh produced elsewhere (e.g. the Colab run). It is validated, stored and
+        downloadable here — it is <strong>not</strong> reported as inference performed by this server.</p>
+      <input id="import-input" type="file" accept=".glb,.obj,.mtl,.png,.jpg,.jpeg" multiple />
+      <button id="import-btn" class="secondary" disabled>Import mesh</button>
+      <p id="import-status" class="hint"></p>
+    </details>
   </section>
 
   <!-- ---------------- output column ---------------- -->
   <section class="card panel-right">
     <div class="panel-head">
       <h2>3 · Result</h2>
-      <span id="job-id" class="mono muted"></span>
+      <span><span id="origin-badge" class="pill" hidden></span> <span id="job-id" class="mono muted"></span></span>
     </div>
 
     <div id="stage-stepper" class="stepper">

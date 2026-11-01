@@ -20,3 +20,8 @@ outputs/
 *.glb
 *.obj
 *.mtl
+
+# scratch
+image-search/
+tmp_gtest/
+renders/

@@ -524,3 +524,141 @@ add rate limiting, and decide retention for uploaded images (they are user conte
 | **Real inference** | — | **not executed (impossible here); no real asset produced or claimed** |
 
 *Audit prepared 2026-11-01. Vendor pricing and quotas change; re-verify §7 before committing budget.*
+
+---
+
+# 11. Validation milestone (real end-to-end image-to-3D)
+
+Objective: one photograph → genuine InstantMesh inference → real textured mesh → downloadable GLB →
+verified rendering. This section records what was verified, what was **empirically tested**, and what is
+still outstanding.
+
+## 11.1 Notebook fidelity to the official pipeline — verified ✅
+
+`notebooks/instantmesh_real_validation.ipynb` was line-checked against the official `README.md` and `run.py`:
+
+| Official requirement | Notebook | Status |
+|---|---|---|
+| `git clone` official repo | cell 2 | ✅ same commit line |
+| `torch==2.1.0 + torchvision 0.16.0 + torchaudio 2.1.0` (cu121 index) | cell 2 | ✅ exact pins, with a documented fallback |
+| `xformers==0.0.22.post7` | cell 2 | ✅ |
+| `pip install -r requirements.txt` (incl. `nvdiffrast` from source) | cell 2 | ✅ |
+| Auto-download of `instant_mesh_large.ckpt` + `diffusion_prompt…bin` + Zero123++ | cells 3 | ✅ pre-fetched into `ckpts/`, which `run.py` prefers |
+| `python run.py configs/instant-mesh-large.yaml <img> --seed 42 --diffusion_steps 75` | cell 5 | ✅ verbatim |
+| Texture map export `--export_texmap` | cell 5 (attempt 1) | ✅ added — required by the "textured" criterion |
+| Output layout `outputs/<config>/meshes/*.obj` | cell 6 glob | ✅ matches `run.py` |
+
+**One documented deviation:** the official CLI writes **OBJ only** (no GLB). The notebook converts with
+`trimesh` and validates the GLB header before offering it for download. This is an export step, not a
+change to the model or the inference path. (The official *Gradio demo* does the same thing in-process via
+`src/utils/mesh_util.save_glb`.)
+
+Two bugs were found and fixed during this review:
+1. **Peak-VRAM measurement was wrong.** `torch.cuda.max_memory_allocated()` in the notebook's parent
+   process reads ~0 when inference runs in a subprocess. Replaced with `nvidia-smi memory.used` sampled
+   every 0.5 s during the child process (plus a recorded baseline).
+2. **Textured OBJ loads as a `trimesh.Scene`, not a `Trimesh`.** `len(mesh.faces)` raises on a Scene, so the
+   conversion cell now concatenates scene geometry and reports the visual kind.
+
+## 11.2 Official Space contract — verified from live source *and* empirically ✅
+
+The repository's `app.py` and the **live Space's** `app.py` are different files. The live one
+(`huggingface.co/spaces/TencentARC/InstantMesh/raw/main/app.py`, fetched 2026-11-01) shows:
+
+```python
+mv_images = gr.State()
+
+submit.click(fn=check_input_image, inputs=[input_image]).success(
+    fn=preprocess,   inputs=[input_image, do_remove_background], outputs=[processed_image],
+).success(
+    fn=generate_mvs, inputs=[processed_image, sample_steps, sample_seed],
+                     outputs=[mv_images, mv_show_images],
+).success(
+    fn=make3d,       inputs=[mv_images],          # ← state consumed here
+                     outputs=[output_model_obj, output_model_glb],
+)
+```
+
+Findings:
+
+1. **`/make3d` advertises no parameters** while its Python signature *is* `make3d(images)`. That is Gradio
+   hiding `gr.State` inputs from the API schema — not a bug in the Space.
+2. **The state is server-side and session-scoped.** To confirm the consequence rather than assume it, the
+   identical wiring was reproduced locally (Gradio 5.50, same versions as the Space) and driven with
+   `gradio_client` 1.14:
+
+   | Test | Result |
+   |---|---|
+   | Same `Client`: `generate_mvs` → `make3d()` | ✅ works — state persisted between `predict()` calls |
+   | Fresh `Client`: `make3d()` with no prior call | ❌ `AppError` — server raised `ValueError: make3d received None: the gr.State was not populated in this session` |
+   | Passing the state explicitly: `make3d(grid)` | ❌ `IndexError: list index out of range` — State cannot be supplied by a client |
+
+   **Therefore an integration must keep one Gradio session alive and call the steps in order.** It cannot
+   be parallelised, cannot be retried from a cold client, and silently produces wrong/failed results if any
+   step is skipped. This is exactly the fragility the `hf_space` provider in this repo guards against by
+   failing loudly.
+3. **The Space cannot produce a textured mesh.** Its live code calls
+   `model.extract_mesh(planes, use_texture_map=False, **infer_config)` — vertex colours only. The turntable
+   video is also commented out. So the Space route **cannot** satisfy the "textured" requirement.
+4. The Space builds `nvdiffrast` at runtime on first GPU call (`@spaces.GPU(duration=210)`) against a
+   hard-coded `CUDA_HOME = /cuda-image/usr/local/cuda-13.0`, and raises a clear error if nvcc moved. ZeroGPU
+   hardware has also moved to RTX Pro 6000 Blackwell (48 GB / 96 GB), not A10G.
+
+## 11.3 Which free route is actually most reliable
+
+| Route | Free? | Produces **textured** mesh? | Effort for you | Verdict |
+|---|---|---|---|---|
+| **Colab free (T4 16 GB)** | ✅ | **✅ yes** (`--export_texmap`) | 3 clicks, one file back | **recommended** |
+| Kaggle (T4/P100, 30 GPU-h/wk) | ✅ | ✅ yes | 3 clicks + 1-line tweak | good alternative |
+| Official HF Space (ZeroGPU) | ✅ 5 GPU-min/day | ❌ **no** (vertex colours only) | needs app hosted with open egress | not sufficient for this criterion |
+| Your own ZeroGPU Space (`space/`) | ✅ | ⚠️ only if you enable `use_texture_map=True` and accept slower runs | deploy + 115 s GPU budget/run | possible, more work |
+| Replicate | ❌ ~$0.14/run | ✅ | 1 API call | **excluded** (no paid credits) |
+
+**Conclusion: Colab free is the only genuinely free route that satisfies "textured mesh".** It is also the
+only one where the GPU is not time-sliced mid-run, which matters because a 75-step diffusion pass plus
+128³ FlexiCubes extraction should not be interrupted.
+
+## 11.4 Application can accept the resulting mesh — implemented & tested ✅
+
+`POST /api/import` (multipart: `files[]`, optional `metrics`, optional `origin_note`):
+
+* accepts `.glb`, or `.obj` + `.mtl` + texture images (siblings are retained as extra downloads)
+* **structurally validates the GLB before accepting it** — bufferView bounds, accessor sizes, magic, total length
+* stamps `origin: "external_import"`, `provider: "external_import"`, message *"External mesh imported (not
+  generated by this server)"* — an imported mesh can never be reported as inference
+* returns byte-identical artefacts (verified by SHA-256 roundtrip test)
+* the UI shows a persistent badge: `imported mesh — not generated by this server`
+
+## 11.5 In-sandbox verification tooling — built and proven ✅
+
+`tools/verify_mesh.py` (stdlib only: no numpy, no GPU, no browser):
+
+* `inspect` — parses the GLB container byte-by-byte per the glTF 2.0 spec, checks every bufferView stays
+  inside the BIN chunk, counts vertices/triangles, detects `TEXCOORD_0` + `baseColorTexture` (textured) vs
+  `COLOR_0` (vertex-coloured), decodes embedded PNGs.
+* `render` — software rasteriser (perspective projection, z-buffer, flat shading, UV texture sampling,
+  embedded PNG decoding incl. all five PNG filter types) writing real turntable PNGs. **This is the
+  "opens in a 3D viewer" evidence that does not depend on the notebook's own preview.**
+
+Proven against a purpose-built fixture (`tools/make_test_mesh.py`, a 9,216-triangle UV-mapped
+checkerboard sphere with an embedded 512×512 PNG): the verifier reports `uv_mapped: true`, and its rendered
+output shows the checkerboard correctly from all angles, so a failure on a real mesh means the *mesh* is bad,
+not the tool.
+
+**Test suite: 22 tests passing** (`python -m pytest app/tests -q`), including corrupt-GLB rejection,
+byte-identical import roundtrip, OBJ+MTL+texture retention, and "import is never labelled inference".
+
+## 11.6 Evidence status
+
+| Claim | Status |
+|---|---|
+| Sandbox cannot run InstantMesh | ✅ proven (no GPU, weights unreachable) |
+| Official Space API is stateful and fragile | ✅ proven (live source + local empirical reproduction) |
+| Space cannot output textures | ✅ proven (live source: `use_texture_map=False`) |
+| App accepts and validates external meshes | ✅ proven (byte-identical roundtrip, corrupt file rejected) |
+| Verifier can render a real GLB | ✅ proven on a synthetic textured fixture |
+| Notebook follows the official pipeline | ✅ verified line-by-line (+ 3 bugs fixed) |
+| **A real InstantMesh mesh was generated** | ⏳ **pending the Colab run — cannot be done in this sandbox** |
+
+**Real generation time, GPU, peak VRAM and output size are deliberately left blank rather than guessed.**
+They will be filled from `metrics.json` returned by the Colab run — see `RUN_VALIDATION.md`.
