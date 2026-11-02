@@ -83,3 +83,53 @@ def test_print_stl_matches_the_mesh_in_millimetres():
     m = trimesh.load(stl)
     assert np.allclose(m.extents, [4976, 2126, 1473], atol=5)
     assert m.is_watertight
+
+
+# --------------------------------------------------------------- basketball ---
+@pytest.mark.parametrize("tier,faces,tex", [("basketball", 20_480, 2048),
+                                            ("basketball_high", 81_920, 4096)])
+def test_basketball_glb_has_a_full_pbr_stack(tier, faces, tex):
+    glb = ROOT / tier / "model.glb"
+    if not glb.exists():
+        pytest.skip(f"{tier} not built")
+    import trimesh
+    mesh = trimesh.load(glb, force="mesh")
+    mat = mesh.visual.material
+    assert len(mesh.faces) == faces
+    assert mesh.visual.uv is not None
+    for map_ in (mat.baseColorTexture, mat.normalTexture, mat.metallicRoughnessTexture):
+        assert map_ is not None and map_.size == (tex, tex)
+    assert mat.metallicFactor == 0.0
+    # a size-7 ball is 241.3-242.6 mm across, and the seam grooves sit inside it
+    assert np.allclose(mesh.extents * 1000, 241.9, atol=1.5)
+    assert mesh.is_watertight
+    metrics = json.loads((ROOT / tier / "metrics.json").read_text())
+    assert metrics["watertight"] is True
+    assert metrics["seam_depth_mm"] == 1.9
+
+
+def test_basketball_maps_are_jpeg_not_png():
+    """Uncompressed maps made a 20 MB GLB; the exporter must keep JPEG."""
+    glb = ROOT / "basketball" / "model.glb"
+    if not glb.exists():
+        pytest.skip("basketball not built")
+    import struct
+    data = glb.read_bytes()
+    length = struct.unpack("<I", data[12:16])[0]
+    doc = json.loads(data[20:20 + length])
+    assert doc["images"], "no images embedded"
+    assert all(img.get("mimeType") == "image/jpeg" for img in doc["images"])
+
+
+def test_seam_field_matches_a_real_eight_panel_layout():
+    from tools import ball_material as bm
+    # every seam plane passes through the pinch axis (+-Y), so the seam distance
+    # is zero on the four great circles and maximal on the panel centres
+    poles = np.array([[0.0, 1.0, 0.0], [0.0, -1.0, 0.0]])
+    assert np.allclose(bm.seam_chord(poles), 0.0, atol=1e-9)
+    # four distinct panels meet at the pinch point: check the four directions
+    dirs = np.array([[1.0, 0, 0], [0, 0, 1.0], [0.7071, 0, 0.7071], [-0.7071, 0, 0.7071]])
+    assert np.allclose(bm.seam_chord(dirs), 0.0, atol=1e-4)
+    # a panel centre is the furthest point from any seam
+    mid = np.array([[0.9239, 0.0, 0.3827]])
+    assert bm.seam_chord(mid)[0] > 0.03

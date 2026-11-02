@@ -31,6 +31,23 @@ M5 dimensions, bakes a real UV texture, adds normals, and exports print-ready ST
 Before/after renders in [`comparison/`](./comparison), deliverables in [`refined_web/`](./refined_web) and
 [`refined_high/`](./refined_high).
 
+## 🏀 Photoreal basketball — full PBR material
+
+**[`BASKETBALL.md`](./BASKETBALL.md)** — a size-7 ball built to be looked at close up: analytic seam grooves
+cut into the mesh, a pebble grain synthesised on the sphere, and a complete PBR stack (base colour + normal +
+ORM) that survives the trip into a glTF viewer.
+
+| | |
+|---|---|
+| diameter | **241.86 mm**, circumference 760.3 mm, watertight |
+| seams | 5.2 mm wide × **1.9 mm deep grooves in the geometry**, 8 panels from four great circles |
+| grain | 24,000 pebbles at a 2.1 mm pitch, 0.34 mm relief in the normal map |
+| web GLB | 20,480 tris, 2 k maps, **3.07 MB** |
+| high GLB | 81,920 tris, 4 k maps, **9.98 MB** |
+| runtime / cost | 6 s / 22 s, CPU only, **$0** |
+
+Renders, a 30-frame turntable and a contact sheet in [`basketball/renders/`](./basketball/renders).
+
 ## 🪨 Photo carving — geometry the photographs actually support
 
 **[`CARVING.md`](./CARVING.md)** — the opposite approach to generation: carve the car out of the 9-view
@@ -80,6 +97,9 @@ one. Everything needed on this side (notebook, verifier, import endpoint) is bui
 | `tools/make_test_mesh.py` | textured fixture that proves the verifier itself works |
 | `tools/carve_car.py` | segment + calibrate the turnaround sheet, estimate 3/4-view poses, carve the visual hull |
 | `tools/carve_finish.py` | Taubin smooth, decimate, xatlas unwrap, per-texel photo bake, GLB/OBJ/STL export |
+| `tools/basketball.py`, `tools/ball_material.py`, `tools/pebble_field.py` | parametric basketball: seam layout, pebble field, PBR map bake |
+| `tools/ball_render.py` | ray tracer with GGX specular, environment lighting and a studio sweep |
+| `basketball/`, `basketball_high/` | the ball, web and high tier |
 | `tools/render_mesh.py` | dependency-free triangle rasteriser with per-pixel texturing (the verifier's renderer subsamples big meshes and samples textures per triangle) |
 | `carve_src/` | the nine cells of the turnaround sheet |
 | `refined_carve/`, `refined_carve_high/` | carved deliverables (web and high tier) |

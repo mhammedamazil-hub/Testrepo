@@ -1,0 +1,34 @@
+{
+  "tier": "high",
+  "diameter_mm": 241.87,
+  "extents_mm": [
+    241.87,
+    241.23,
+    241.86
+  ],
+  "circumference_mm": 760.27,
+  "seam_depth_mm": 1.9,
+  "seam_width_mm": 5.2,
+  "faces": 81920,
+  "vertices": 40962,
+  "watertight": true,
+  "volume_cm3": 7396.2,
+  "leather_repeat": [
+    17.2,
+    8.7
+  ],
+  "pebble_relief_mm": 0.34,
+  "pebbles": 24000,
+  "pebble_spacing_mm": 2.09,
+  "maps": {
+    "size": 4096,
+    "encoding": "JPEG q95 (normal q95)"
+  },
+  "files": {
+    "material.mtl": 215,
+    "metrics.json": 686,
+    "model.glb": 9973216,
+    "print_mm.stl": 4096084
+  },
+  "seconds": 17.7
+}

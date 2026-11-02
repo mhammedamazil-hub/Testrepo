@@ -1,0 +1,10 @@
+newmtl basketball_leather
+Ka 1 1 1
+Kd 1 1 1
+Ks 0.15 0.15 0.15
+Ns 42
+d 1
+illum 2
+map_Kd basecolor.jpg
+map_Bump normal.jpg
+map_Ks orm.jpg

@@ -1,0 +1,40 @@
+{
+  "tier": "web",
+  "diameter_mm": 241.86,
+  "extents_mm": [
+    241.86,
+    240.89,
+    241.81
+  ],
+  "circumference_mm": 760.27,
+  "seam_depth_mm": 1.9,
+  "seam_width_mm": 5.2,
+  "faces": 20480,
+  "vertices": 10242,
+  "watertight": true,
+  "volume_cm3": 7394.8,
+  "leather_repeat": [
+    17.2,
+    8.7
+  ],
+  "pebble_relief_mm": 0.34,
+  "pebbles": 24000,
+  "pebble_spacing_mm": 2.09,
+  "maps": {
+    "size": 2048,
+    "encoding": "JPEG q92 (normal q95)"
+  },
+  "files": {
+    "basecolor.jpg": 1627977,
+    "basketball_leather.jpeg": 566488,
+    "material.mtl": 215,
+    "metrics.json": 770,
+    "model.glb": 3065068,
+    "model.mtl": 136,
+    "model.obj": 1960764,
+    "normal.jpg": 5448632,
+    "orm.jpg": 1954658,
+    "print_mm.stl": 1024084
+  },
+  "seconds": 4.7
+}
