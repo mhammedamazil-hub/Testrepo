@@ -1,0 +1,1416 @@
+{
+ "house": "modern single-storey villa, 19.0 x 12.5 m, 3.0 m ceilings",
+ "rooms": {
+  "living": [
+   0.3,
+   0.3,
+   7.1,
+   6.55
+  ],
+  "dining": [
+   7.1,
+   0.3,
+   10.7,
+   6.55
+  ],
+  "kitchen": [
+   10.7,
+   0.3,
+   15.2,
+   6.55
+  ],
+  "utility": [
+   15.2,
+   0.3,
+   18.7,
+   3.4
+  ],
+  "foyer": [
+   15.2,
+   3.4,
+   18.7,
+   6.55
+  ],
+  "corridor": [
+   0.3,
+   6.55,
+   18.7,
+   7.85
+  ],
+  "master": [
+   0.3,
+   7.85,
+   5.4,
+   12.2
+  ],
+  "robe": [
+   5.4,
+   7.85,
+   7.6,
+   9.6
+  ],
+  "ensuite": [
+   5.4,
+   9.6,
+   7.6,
+   12.2
+  ],
+  "bed2": [
+   7.6,
+   7.85,
+   11.6,
+   12.2
+  ],
+  "laundry": [
+   11.6,
+   7.85,
+   13.6,
+   9.6
+  ],
+  "bath2": [
+   11.6,
+   9.6,
+   13.6,
+   12.2
+  ],
+  "bed3": [
+   13.6,
+   7.85,
+   16.6,
+   12.2
+  ],
+  "study": [
+   16.6,
+   7.85,
+   18.7,
+   12.2
+  ]
+ },
+ "pieces": [
+  {
+   "name": "bath2_mirror",
+   "kind": "mirror",
+   "file": "furniture/bath2_mirror.glb",
+   "pivot": [
+    13.44,
+    10.42,
+    1.5
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bath2_shower",
+   "kind": "shower",
+   "file": "furniture/bath2_shower.glb",
+   "pivot": [
+    12.2,
+    11.55,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bath2_toilet",
+   "kind": "toilet",
+   "file": "furniture/bath2_toilet.glb",
+   "pivot": [
+    13.2,
+    11.62,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bath2_towel",
+   "kind": "towel_rail",
+   "file": "furniture/bath2_towel.glb",
+   "pivot": [
+    12.4,
+    9.74,
+    1.25
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bath2_vanity",
+   "kind": "vanity",
+   "file": "furniture/bath2_vanity.glb",
+   "pivot": [
+    13.22,
+    10.42,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bed2_art",
+   "kind": "art",
+   "file": "furniture/bed2_art.glb",
+   "pivot": [
+    10.7,
+    8.02,
+    1.62
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "bed2_bed",
+   "kind": "bed",
+   "file": "furniture/bed2_bed.glb",
+   "pivot": [
+    8.78,
+    10.05,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "bed2_chair",
+   "kind": "office_chair",
+   "file": "furniture/bed2_chair.glb",
+   "pivot": [
+    10.3,
+    11.28,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "bed2_desk",
+   "kind": "desk",
+   "file": "furniture/bed2_desk.glb",
+   "pivot": [
+    11.18,
+    11.28,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bed2_lamp",
+   "kind": "table_lamp",
+   "file": "furniture/bed2_lamp.glb",
+   "pivot": [
+    8.0,
+    8.9,
+    0.52
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bed2_nightstand",
+   "kind": "nightstand",
+   "file": "furniture/bed2_nightstand.glb",
+   "pivot": [
+    7.98,
+    8.9,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "bed2_plant",
+   "kind": "plant",
+   "file": "furniture/bed2_plant.glb",
+   "pivot": [
+    8.15,
+    11.78,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bed2_rug",
+   "kind": "rug",
+   "file": "furniture/bed2_rug.glb",
+   "pivot": [
+    9.75,
+    9.6,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bed2_wardrobe",
+   "kind": "wardrobe",
+   "file": "furniture/bed2_wardrobe.glb",
+   "pivot": [
+    11.2,
+    9.3,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bed3_art",
+   "kind": "art",
+   "file": "furniture/bed3_art.glb",
+   "pivot": [
+    15.8,
+    8.03,
+    1.6
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "bed3_bed",
+   "kind": "bed",
+   "file": "furniture/bed3_bed.glb",
+   "pivot": [
+    15.1,
+    11.05,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "bed3_chair",
+   "kind": "office_chair",
+   "file": "furniture/bed3_chair.glb",
+   "pivot": [
+    14.72,
+    8.7,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bed3_desk",
+   "kind": "desk",
+   "file": "furniture/bed3_desk.glb",
+   "pivot": [
+    14.0,
+    8.7,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "bed3_lamp",
+   "kind": "table_lamp",
+   "file": "furniture/bed3_lamp.glb",
+   "pivot": [
+    16.15,
+    11.55,
+    0.52
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bed3_nightstand",
+   "kind": "nightstand",
+   "file": "furniture/bed3_nightstand.glb",
+   "pivot": [
+    16.15,
+    11.55,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "bed3_rug",
+   "kind": "rug",
+   "file": "furniture/bed3_rug.glb",
+   "pivot": [
+    15.1,
+    9.45,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "bed3_wardrobe",
+   "kind": "wardrobe",
+   "file": "furniture/bed3_wardrobe.glb",
+   "pivot": [
+    13.98,
+    10.55,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "corridor_art_0",
+   "kind": "art",
+   "file": "furniture/corridor_art_0.glb",
+   "pivot": [
+    4.3,
+    6.66,
+    1.6
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_1",
+   "kind": "art",
+   "file": "furniture/corridor_art_1.glb",
+   "pivot": [
+    5.45,
+    6.66,
+    1.6
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_2",
+   "kind": "art",
+   "file": "furniture/corridor_art_2.glb",
+   "pivot": [
+    6.6,
+    6.66,
+    1.6
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_b0",
+   "kind": "art",
+   "file": "furniture/corridor_art_b0.glb",
+   "pivot": [
+    8.1,
+    6.66,
+    1.62
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_b1",
+   "kind": "art",
+   "file": "furniture/corridor_art_b1.glb",
+   "pivot": [
+    9.55,
+    6.66,
+    1.62
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_b2",
+   "kind": "art",
+   "file": "furniture/corridor_art_b2.glb",
+   "pivot": [
+    13.6,
+    6.66,
+    1.62
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_art_b3",
+   "kind": "art",
+   "file": "furniture/corridor_art_b3.glb",
+   "pivot": [
+    14.8,
+    6.66,
+    1.62
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "corridor_bowl",
+   "kind": "bowl",
+   "file": "furniture/corridor_bowl.glb",
+   "pivot": [
+    10.1,
+    7.56,
+    0.78
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "corridor_console",
+   "kind": "console",
+   "file": "furniture/corridor_console.glb",
+   "pivot": [
+    10.1,
+    7.56,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "corridor_plant",
+   "kind": "plant",
+   "file": "furniture/corridor_plant.glb",
+   "pivot": [
+    3.05,
+    7.55,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "corridor_plant_b",
+   "kind": "plant",
+   "file": "furniture/corridor_plant_b.glb",
+   "pivot": [
+    15.3,
+    7.58,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "corridor_runner_a",
+   "kind": "rug",
+   "file": "furniture/corridor_runner_a.glb",
+   "pivot": [
+    5.2,
+    7.2,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "corridor_runner_b",
+   "kind": "rug",
+   "file": "furniture/corridor_runner_b.glb",
+   "pivot": [
+    12.6,
+    7.2,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_art",
+   "kind": "art",
+   "file": "furniture/dining_art.glb",
+   "pivot": [
+    9.55,
+    6.42,
+    1.62
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_chair_0",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_0.glb",
+   "pivot": [
+    8.2,
+    2.44,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "dining_chair_1",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_1.glb",
+   "pivot": [
+    9.6,
+    2.44,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "dining_chair_2",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_2.glb",
+   "pivot": [
+    8.2,
+    4.16,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_chair_3",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_3.glb",
+   "pivot": [
+    9.6,
+    4.16,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_chair_4",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_4.glb",
+   "pivot": [
+    7.45,
+    3.3,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "dining_chair_5",
+   "kind": "dining_chair",
+   "file": "furniture/dining_chair_5.glb",
+   "pivot": [
+    10.35,
+    3.3,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "dining_pendant",
+   "kind": "pendant",
+   "file": "furniture/dining_pendant.glb",
+   "pivot": [
+    8.9,
+    3.3,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_plant",
+   "kind": "plant",
+   "file": "furniture/dining_plant.glb",
+   "pivot": [
+    10.35,
+    0.8,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_rug",
+   "kind": "rug",
+   "file": "furniture/dining_rug.glb",
+   "pivot": [
+    8.9,
+    3.3,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_sideboard",
+   "kind": "sideboard",
+   "file": "furniture/dining_sideboard.glb",
+   "pivot": [
+    9.55,
+    6.22,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_table",
+   "kind": "dining_table",
+   "file": "furniture/dining_table.glb",
+   "pivot": [
+    8.9,
+    3.3,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "dining_vase",
+   "kind": "vase",
+   "file": "furniture/dining_vase.glb",
+   "pivot": [
+    9.0,
+    6.22,
+    0.74
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "ensuite_mirror",
+   "kind": "mirror",
+   "file": "furniture/ensuite_mirror.glb",
+   "pivot": [
+    7.44,
+    10.95,
+    1.52
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "ensuite_shower",
+   "kind": "shower",
+   "file": "furniture/ensuite_shower.glb",
+   "pivot": [
+    6.05,
+    11.55,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "ensuite_toilet",
+   "kind": "toilet",
+   "file": "furniture/ensuite_toilet.glb",
+   "pivot": [
+    7.16,
+    10.05,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "ensuite_towel",
+   "kind": "towel_rail",
+   "file": "furniture/ensuite_towel.glb",
+   "pivot": [
+    6.6,
+    9.72,
+    1.25
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "ensuite_vanity",
+   "kind": "vanity",
+   "file": "furniture/ensuite_vanity.glb",
+   "pivot": [
+    7.22,
+    10.95,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "foyer_bowl",
+   "kind": "bowl",
+   "file": "furniture/foyer_bowl.glb",
+   "pivot": [
+    18.34,
+    3.98,
+    0.8
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "foyer_console",
+   "kind": "console",
+   "file": "furniture/foyer_console.glb",
+   "pivot": [
+    18.34,
+    3.98,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "foyer_mirror",
+   "kind": "mirror",
+   "file": "furniture/foyer_mirror.glb",
+   "pivot": [
+    18.52,
+    3.98,
+    1.55
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "foyer_plant",
+   "kind": "plant",
+   "file": "furniture/foyer_plant.glb",
+   "pivot": [
+    16.35,
+    4.2,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "foyer_vase",
+   "kind": "vase",
+   "file": "furniture/foyer_vase.glb",
+   "pivot": [
+    18.34,
+    3.72,
+    0.8
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_bowl",
+   "kind": "bowl",
+   "file": "furniture/kitchen_bowl.glb",
+   "pivot": [
+    12.1,
+    3.45,
+    0.945
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_fridge",
+   "kind": "tall_unit",
+   "file": "furniture/kitchen_fridge.glb",
+   "pivot": [
+    14.79,
+    5.98,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "kitchen_hood",
+   "kind": "range_hood",
+   "file": "furniture/kitchen_hood.glb",
+   "pivot": [
+    14.86,
+    3.1,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "kitchen_island",
+   "kind": "kitchen_island",
+   "file": "furniture/kitchen_island.glb",
+   "pivot": [
+    12.55,
+    3.45,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_pendant_0",
+   "kind": "pendant",
+   "file": "furniture/kitchen_pendant_0.glb",
+   "pivot": [
+    11.8,
+    3.45,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_pendant_1",
+   "kind": "pendant",
+   "file": "furniture/kitchen_pendant_1.glb",
+   "pivot": [
+    12.55,
+    3.45,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_pendant_2",
+   "kind": "pendant",
+   "file": "furniture/kitchen_pendant_2.glb",
+   "pivot": [
+    13.3,
+    3.45,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_plant",
+   "kind": "plant",
+   "file": "furniture/kitchen_plant.glb",
+   "pivot": [
+    10.95,
+    6.1,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "kitchen_run_east",
+   "kind": "kitchen_base_run",
+   "file": "furniture/kitchen_run_east.glb",
+   "pivot": [
+    14.79,
+    3.1,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "kitchen_run_south",
+   "kind": "kitchen_base_run",
+   "file": "furniture/kitchen_run_south.glb",
+   "pivot": [
+    13.85,
+    0.63,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "kitchen_stool_a",
+   "kind": "bar_stool",
+   "file": "furniture/kitchen_stool_a.glb",
+   "pivot": [
+    11.95,
+    2.62,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "kitchen_stool_b",
+   "kind": "bar_stool",
+   "file": "furniture/kitchen_stool_b.glb",
+   "pivot": [
+    12.75,
+    2.62,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "kitchen_stool_c",
+   "kind": "bar_stool",
+   "file": "furniture/kitchen_stool_c.glb",
+   "pivot": [
+    13.55,
+    2.62,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "kitchen_wall_units",
+   "kind": "wall_cabinets",
+   "file": "furniture/kitchen_wall_units.glb",
+   "pivot": [
+    14.96,
+    4.42,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "laundry_dryer",
+   "kind": "dryer",
+   "file": "furniture/laundry_dryer.glb",
+   "pivot": [
+    13.18,
+    9.02,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "laundry_shelf",
+   "kind": "shelving_unit",
+   "file": "furniture/laundry_shelf.glb",
+   "pivot": [
+    11.92,
+    8.7,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "laundry_washer",
+   "kind": "washer",
+   "file": "furniture/laundry_washer.glb",
+   "pivot": [
+    13.18,
+    8.32,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "living_armchair_a",
+   "kind": "armchair",
+   "file": "furniture/living_armchair_a.glb",
+   "pivot": [
+    3.28,
+    4.55,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "living_armchair_b",
+   "kind": "armchair",
+   "file": "furniture/living_armchair_b.glb",
+   "pivot": [
+    6.72,
+    4.55,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "living_art_a",
+   "kind": "art",
+   "file": "furniture/living_art_a.glb",
+   "pivot": [
+    4.05,
+    6.4,
+    1.58
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_books",
+   "kind": "books",
+   "file": "furniture/living_books.glb",
+   "pivot": [
+    4.9,
+    4.29,
+    0.401
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_bowl",
+   "kind": "bowl",
+   "file": "furniture/living_bowl.glb",
+   "pivot": [
+    5.45,
+    4.44,
+    0.401
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_coffee_table",
+   "kind": "coffee_table",
+   "file": "furniture/living_coffee_table.glb",
+   "pivot": [
+    5.1,
+    4.35,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_floor_lamp",
+   "kind": "floor_lamp",
+   "file": "furniture/living_floor_lamp.glb",
+   "pivot": [
+    6.9,
+    5.95,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_plant_a",
+   "kind": "plant",
+   "file": "furniture/living_plant_a.glb",
+   "pivot": [
+    0.78,
+    1.25,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_plant_b",
+   "kind": "plant",
+   "file": "furniture/living_plant_b.glb",
+   "pivot": [
+    1.05,
+    5.9,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_reading_chair",
+   "kind": "armchair",
+   "file": "furniture/living_reading_chair.glb",
+   "pivot": [
+    1.35,
+    3.55,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "living_rug",
+   "kind": "rug",
+   "file": "furniture/living_rug.glb",
+   "pivot": [
+    5.1,
+    4.2,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_side_table",
+   "kind": "side_table",
+   "file": "furniture/living_side_table.glb",
+   "pivot": [
+    2.05,
+    3.15,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_sofa",
+   "kind": "sofa",
+   "file": "furniture/living_sofa.glb",
+   "pivot": [
+    5.1,
+    2.9,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "living_tv_unit",
+   "kind": "tv_unit",
+   "file": "furniture/living_tv_unit.glb",
+   "pivot": [
+    5.35,
+    6.14,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "living_vase",
+   "kind": "vase",
+   "file": "furniture/living_vase.glb",
+   "pivot": [
+    2.05,
+    3.15,
+    0.54
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_armchair",
+   "kind": "armchair",
+   "file": "furniture/master_armchair.glb",
+   "pivot": [
+    4.55,
+    11.35,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "master_art",
+   "kind": "art",
+   "file": "furniture/master_art.glb",
+   "pivot": [
+    5.28,
+    10.05,
+    1.55
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "master_art_head",
+   "kind": "art",
+   "file": "furniture/master_art_head.glb",
+   "pivot": [
+    0.36,
+    10.05,
+    1.66
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "master_bed",
+   "kind": "bed",
+   "file": "furniture/master_bed.glb",
+   "pivot": [
+    1.6,
+    10.05,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "master_bench",
+   "kind": "bed_bench",
+   "file": "furniture/master_bench.glb",
+   "pivot": [
+    3.15,
+    10.05,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "master_curtain_a",
+   "kind": "curtain",
+   "file": "furniture/master_curtain_a.glb",
+   "pivot": [
+    1.1,
+    12.06,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_curtain_b",
+   "kind": "curtain",
+   "file": "furniture/master_curtain_b.glb",
+   "pivot": [
+    4.5,
+    12.06,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_lamp_a",
+   "kind": "table_lamp",
+   "file": "furniture/master_lamp_a.glb",
+   "pivot": [
+    0.8,
+    8.68,
+    0.52
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_lamp_b",
+   "kind": "table_lamp",
+   "file": "furniture/master_lamp_b.glb",
+   "pivot": [
+    0.8,
+    11.42,
+    0.52
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_nightstand_a",
+   "kind": "nightstand",
+   "file": "furniture/master_nightstand_a.glb",
+   "pivot": [
+    0.78,
+    8.68,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "master_nightstand_b",
+   "kind": "nightstand",
+   "file": "furniture/master_nightstand_b.glb",
+   "pivot": [
+    0.78,
+    11.42,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "master_plant",
+   "kind": "plant",
+   "file": "furniture/master_plant.glb",
+   "pivot": [
+    4.85,
+    8.35,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_rug",
+   "kind": "rug",
+   "file": "furniture/master_rug.glb",
+   "pivot": [
+    2.95,
+    10.05,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "master_side_table",
+   "kind": "side_table",
+   "file": "furniture/master_side_table.glb",
+   "pivot": [
+    5.02,
+    10.15,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "robe_rug",
+   "kind": "rug",
+   "file": "furniture/robe_rug.glb",
+   "pivot": [
+    6.4,
+    8.7,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "robe_shelving",
+   "kind": "shelving_unit",
+   "file": "furniture/robe_shelving.glb",
+   "pivot": [
+    5.68,
+    8.35,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "robe_wardrobe",
+   "kind": "wardrobe",
+   "file": "furniture/robe_wardrobe.glb",
+   "pivot": [
+    7.18,
+    8.72,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "study_art",
+   "kind": "art",
+   "file": "furniture/study_art.glb",
+   "pivot": [
+    17.9,
+    8.06,
+    1.6
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "study_books",
+   "kind": "books",
+   "file": "furniture/study_books.glb",
+   "pivot": [
+    18.14,
+    10.02,
+    0.75
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "study_bookshelf",
+   "kind": "bookshelf",
+   "file": "furniture/study_bookshelf.glb",
+   "pivot": [
+    16.82,
+    9.3,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "study_bowl",
+   "kind": "bowl",
+   "file": "furniture/study_bowl.glb",
+   "pivot": [
+    18.14,
+    10.72,
+    0.75
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "study_chair",
+   "kind": "office_chair",
+   "file": "furniture/study_chair.glb",
+   "pivot": [
+    17.48,
+    10.4,
+    0.0
+   ],
+   "rotation_deg": 90.0
+  },
+  {
+   "name": "study_desk",
+   "kind": "desk",
+   "file": "furniture/study_desk.glb",
+   "pivot": [
+    18.14,
+    10.4,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "study_floor_lamp",
+   "kind": "floor_lamp",
+   "file": "furniture/study_floor_lamp.glb",
+   "pivot": [
+    17.05,
+    11.85,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "study_plant",
+   "kind": "plant",
+   "file": "furniture/study_plant.glb",
+   "pivot": [
+    18.2,
+    8.4,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "utility_bench",
+   "kind": "kitchen_base_run",
+   "file": "furniture/utility_bench.glb",
+   "pivot": [
+    17.6,
+    0.62,
+    0.0
+   ],
+   "rotation_deg": 180.0
+  },
+  {
+   "name": "utility_dryer",
+   "kind": "dryer",
+   "file": "furniture/utility_dryer.glb",
+   "pivot": [
+    16.7,
+    2.85,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "utility_shelving",
+   "kind": "shelving_unit",
+   "file": "furniture/utility_shelving.glb",
+   "pivot": [
+    18.3,
+    2.4,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "utility_vase",
+   "kind": "vase",
+   "file": "furniture/utility_vase.glb",
+   "pivot": [
+    17.5,
+    0.62,
+    0.945
+   ],
+   "rotation_deg": 0.0
+  },
+  {
+   "name": "utility_washer",
+   "kind": "washer",
+   "file": "furniture/utility_washer.glb",
+   "pivot": [
+    16.05,
+    2.85,
+    0.0
+   ],
+   "rotation_deg": 0.0
+  }
+ ],
+ "counts": {
+  "pieces": 120,
+  "objects": 483,
+  "polygons": 121608
+ }
+}

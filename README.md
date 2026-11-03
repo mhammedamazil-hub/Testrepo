@@ -3,6 +3,14 @@
 This repository answers one question honestly: **can InstantMesh run here, and if not, what is the cheapest
 path to a genuine image-to-3D asset?**
 
+## 🏠 Modern villa (fully furnished, procedural)
+
+**[`VILLA.md`](./VILLA.md)** — a 19 × 12.5 m single-storey modern villa: 3 bed + 2 bath,
+open-plan living / dining / kitchen, every room furnished and styled. Built entirely from
+code in Blender (bpy 5.0.1) — procedural PBR textures, 113 parametric furniture pieces,
+Cycles stills, a camera walkthrough, an editable `.blend`, a whole-house GLB and one
+pivoted GLB per furniture piece. Cost **$0**.
+
 ## Read this first
 
 **[`SANDBOX_INSTANTMESH_AUDIT.md`](./SANDBOX_INSTANTMESH_AUDIT.md)** — full technical audit: verified

@@ -27,3 +27,12 @@ image-search/
 tmp_gtest/
 renders/
 ci_run/
+
+# Villa: generated texture sets and render frames (regenerate with villa_src/tex_gen.py)
+villa/tex/
+villa/tex_512/
+villa/walkthrough_frames/
+villa/villa.blend1
+*.blend1
+.glstub/*.so
+.glstub/*.so.*
