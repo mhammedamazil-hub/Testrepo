@@ -1,0 +1,1358 @@
+[
+ {
+  "script": "skills/local/camera-composition/scripts/compose.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "advice": [
+     "100 mm compresses perspective a lot; good for products, risky for interiors"
+    ],
+    "azimuth_deg": -35.0,
+    "camera": "cam_compose",
+    "elevation_deg": 12.0,
+    "focus_m": 0.004,
+    "fstop": 8.0,
+    "lens_mm": 100.0,
+    "mode": "persp 100mm f/8.0",
+    "ok": true,
+    "preset": "product",
+    "render": "/tmp/sk_compose.png",
+    "sensor_mm": 36.0
+   }
+  ]
+ },
+ {
+  "script": "skills/local/lighting-studio/scripts/studio_lighting.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "center": [
+     0.0,
+     0.0,
+     0.2
+    ],
+    "created": [
+     "studio_floor",
+     "key",
+     "fill",
+     "rim",
+     "top"
+    ],
+    "exposure": 0.0,
+    "ok": true,
+    "rig": "studio3",
+    "span": 0.69282
+   }
+  ]
+ },
+ {
+  "script": "skills/local/materials-automotive-paint/scripts/car_paint.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "assigned": [
+     "Box"
+    ],
+    "colorspace": "pass linear RGB (0-1), not sRGB hex",
+    "gltf_note": "procedural flake/peel do not export; bake a normal map with blender-texture-baking if the GLB must match",
+    "kind": "metallic",
+    "material": "paint_metallic",
+    "ok": true
+   }
+  ]
+ },
+ {
+  "script": "skills/local/materials-glass/scripts/glass_materials.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "assigned": [
+     "Box"
+    ],
+    "ior": 1.52,
+    "kind": "architectural",
+    "material": "glass_architectural",
+    "note": "thin = sheet reflection (no refraction); others = full transmission with shadow-ray transparency",
+    "ok": true,
+    "roughness": 0.02
+   }
+  ]
+ },
+ {
+  "script": "skills/local/materials-imperfections/scripts/imperfections.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "masks": {
+     "dust": 0.2,
+     "fingerprints": 0.0,
+     "grime": 0.0,
+     "scratches": 0.0,
+     "wear": 0.3
+    },
+    "materials": [
+     "Painted"
+    ],
+    "note": "geometry-driven masks; no image maps needed (and none exported)",
+    "ok": true
+   }
+  ]
+ },
+ {
+  "script": "skills/local/materials-surfaces/scripts/surface_materials.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "assigned": [
+     "Box"
+    ],
+    "kind": "rubber",
+    "material": "surf_rubber",
+    "metallic": 0.0,
+    "ok": true,
+    "roughness": 0.82
+   }
+  ]
+ },
+ {
+  "script": "skills/local/modeling-automotive/scripts/car_body.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "body": "CarBody",
+    "body_dims_mm": [
+     1860.0,
+     4900.0,
+     802.0
+    ],
+    "greenhouse": "Greenhouse",
+    "objects": 2,
+    "ok": true,
+    "preset": "sedan",
+    "proportion_ok": true,
+    "proportions": [
+     {
+      "check": "wheelbase/length",
+      "note": null,
+      "ok": true,
+      "range": [
+       0.55,
+       0.63
+      ],
+      "value": 0.586
+     },
+     {
+      "check": "wheel_diameter/height",
+      "note": null,
+      "ok": true,
+      "range": [
+       0.4,
+       0.6
+      ],
+      "value": 0.471
+     },
+     {
+      "check": "height/width",
+      "note": null,
+      "ok": true,
+      "range": [
+       0.7,
+       0.95
+      ],
+      "value": 0.777
+     },
+     {
+      "check": "greenhouse/height",
+      "note": null,
+      "ok": true,
+      "range": [
+       0.22,
+       0.4
+      ],
+      "value": 0.3
+     },
+     {
+      "check": "front overhang/length",
+      "note": null,
+      "ok": true,
+      "range": [
+       0.13,
+       0.22
+      ],
+      "value": 0.207
+     }
+    ],
+    "spec_mm": {
+     "height": 1445,
+     "length": 4900,
+     "track": 1580,
+     "tyre_d": 680,
+     "wheelbase": 2870,
+     "width": 1860
+    },
+    "subsurf": 1,
+    "tris": 4928
+   }
+  ]
+ },
+ {
+  "script": "skills/local/modeling-blockout/scripts/blockout.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "bbox_max": [
+     2250.0,
+     950.0,
+     1850.0
+    ],
+    "bbox_min": [
+     -2250.0,
+     -950.0,
+     0.0
+    ],
+    "collection": "Blockout",
+    "drift_over_tolerance": [],
+    "envelope_m": [
+     4500.0,
+     1900.0,
+     1850.0
+    ],
+    "ok": true,
+    "parts": [
+     {
+      "dims_m": [
+       4500.0,
+       1900.0,
+       1400.0
+      ],
+      "max_drift_pct": 0.0,
+      "part": "Hull",
+      "target_m": [
+       4500,
+       1900,
+       1400
+      ]
+     },
+     {
+      "dims_m": [
+       2400.0,
+       1600.0,
+       500.0
+      ],
+      "max_drift_pct": 0.0,
+      "part": "Cabin",
+      "target_m": [
+       2400,
+       1600,
+       500
+      ]
+     }
+    ],
+    "verdict": "BLOCKOUT OK"
+   }
+  ]
+ },
+ {
+  "script": "skills/local/modeling-detail/scripts/detail_pass.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "audit": [
+     {
+      "after": {
+       "curved_ngons": 0,
+       "faces": 98,
+       "loose_verts": 0,
+       "ngons": 0,
+       "non_manifold_edges": 0,
+       "object": "Box",
+       "ok": true,
+       "problems": [],
+       "sharp_edges": 0,
+       "tris": 188,
+       "verts": 96,
+       "volume": 0.064,
+       "zero_area_faces": 0
+      },
+      "before": {
+       "curved_ngons": 0,
+       "faces": 98,
+       "loose_verts": 0,
+       "ngons": 0,
+       "non_manifold_edges": 0,
+       "object": "Box",
+       "ok": true,
+       "problems": [],
+       "sharp_edges": 0,
+       "tris": 188,
+       "verts": 96,
+       "volume": 0.064,
+       "zero_area_faces": 0
+      }
+     }
+    ],
+    "audit_only": false,
+    "grooves": {
+     "Box": []
+    },
+    "objects": [
+     "Box"
+    ],
+    "ok": true,
+    "repairs": {
+     "Box": {
+      "before": {
+       "faces": 98,
+       "verts": 96
+      },
+      "changed": [
+       "merge 1e-05"
+      ]
+     }
+    },
+    "stack": {
+     "Box": [
+      "Bevel",
+      "shade_auto_smooth(40)",
+      "WeightedNormal"
+     ]
+    },
+    "verdict": "MESH SOUND"
+   }
+  ]
+ },
+ {
+  "script": "skills/local/qa-export-verify/scripts/verify_export.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "checks": {
+     "materials": {
+      "imported": [
+       "Painted"
+      ],
+      "missing": [],
+      "pass": true,
+      "src": [
+       "Painted"
+      ]
+     },
+     "size": {
+      "axis_note": "sorted triple unless --strict-axis",
+      "imported_dims_m": [
+       1.15,
+       0.5,
+       0.5
+      ],
+      "max_delta_pct": 187.5,
+      "pass": false,
+      "src_dims_m": [
+       0.4,
+       0.4,
+       0.4
+      ]
+     },
+     "textures": {
+      "count": 2,
+      "expected": true,
+      "images": [
+       {
+        "name": "Albedo",
+        "packed": true,
+        "size": [
+         64,
+         64
+        ]
+       },
+       {
+        "name": "Albedo.001",
+        "packed": true,
+        "size": [
+         64,
+         64
+        ]
+       }
+      ],
+      "pass": true
+     },
+     "tri_count": {
+      "delta_pct": 510.64,
+      "imported": 1148,
+      "pass": false,
+      "src": 188
+     },
+     "uvs": {
+      "imported_objects_with_uv": 2,
+      "pass": true,
+      "src_objects_with_uv": 1
+     }
+    },
+    "file": "/tmp/skilltest_src.glb",
+    "file_mb": 0.033,
+    "ok": true,
+    "pass": false,
+    "verdict": "EXPORT PROBLEM"
+   }
+  ]
+ },
+ {
+  "script": "skills/local/qa-render-review/scripts/review_render.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "contact_sheet": "/tmp/sk_review/contact_sheet.png",
+    "geometry": [
+     {
+      "dims_m": [
+       0.4,
+       0.4,
+       0.4
+      ],
+      "materials": [
+       "Painted"
+      ],
+      "object": "Box",
+      "tris": 188,
+      "uv_layers": 1,
+      "verts": 96
+     },
+     {
+      "dims_m": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "materials": [],
+      "object": "Sphere",
+      "tris": 960,
+      "uv_layers": 1,
+      "verts": 482
+     }
+    ],
+    "note": "verdict=PASS means no silent render failures; it does NOT mean the art direction is good - look at the contact sheet",
+    "ok": true,
+    "problems": {},
+    "verdict": "PASS",
+    "views": [
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.1115,
+      "mean_luma": 0.5606,
+      "path": "/tmp/sk_review/front.png",
+      "problems": [],
+      "subject_aspect": 2.2714,
+      "subject_bbox_px": [
+       38,
+       86,
+       196,
+       155
+      ],
+      "touching_edge": false,
+      "view": "front"
+     },
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.1048,
+      "mean_luma": 0.5558,
+      "path": "/tmp/sk_review/rear.png",
+      "problems": [],
+      "subject_aspect": 2.2714,
+      "subject_bbox_px": [
+       43,
+       86,
+       201,
+       155
+      ],
+      "touching_edge": false,
+      "view": "rear"
+     },
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.0599,
+      "mean_luma": 0.5913,
+      "path": "/tmp/sk_review/left.png",
+      "problems": [],
+      "subject_aspect": 1.0,
+      "subject_bbox_px": [
+       82,
+       81,
+       157,
+       156
+      ],
+      "touching_edge": false,
+      "view": "left"
+     },
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.0809,
+      "mean_luma": 0.5353,
+      "path": "/tmp/sk_review/right.png",
+      "problems": [],
+      "subject_aspect": 0.9444,
+      "subject_bbox_px": [
+       86,
+       90,
+       153,
+       161
+      ],
+      "touching_edge": false,
+      "view": "right"
+     },
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.1214,
+      "mean_luma": 0.5677,
+      "path": "/tmp/sk_review/top.png",
+      "problems": [],
+      "subject_aspect": 2.3582,
+      "subject_bbox_px": [
+       39,
+       87,
+       196,
+       153
+      ],
+      "touching_edge": false,
+      "view": "top"
+     },
+     {
+      "clipped_high": 0.0,
+      "clipped_low": 0.0,
+      "coverage": 0.1351,
+      "mean_luma": 0.5499,
+      "path": "/tmp/sk_review/three_quarter.png",
+      "problems": [],
+      "subject_aspect": 1.5102,
+      "subject_bbox_px": [
+       37,
+       81,
+       184,
+       178
+      ],
+      "touching_edge": false,
+      "view": "three_quarter"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "script": "skills/local/reference-analysis/scripts/reference_report.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "images": [
+     {
+      "background_rgb": [
+       0.961,
+       0.961,
+       0.961
+      ],
+      "file": "/tmp/sk_ref.png",
+      "mask_quality": "good",
+      "measured": {
+       "extent_x_mm": 4500.0,
+       "extent_y_mm": 1131.5,
+       "known_axis": "x",
+       "note": "only the two screen axes are measurable from one view; the third needs a side/top reference"
+      },
+      "mm_per_px": 8.6372,
+      "palette": [
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 1.0
+       },
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 0.0
+       },
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 0.0
+       },
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 0.0
+       },
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 0.0
+       },
+       {
+        "rgb": [
+         0.588,
+         0.078,
+         0.098
+        ],
+        "share": 0.0
+       }
+      ],
+      "silhouette_aspect_w_over_h": 3.9771,
+      "silhouette_bbox_px": [
+       40,
+       70,
+       560,
+       200
+      ],
+      "silhouette_fill_frac": 0.474,
+      "size_px": [
+       600,
+       240
+      ],
+      "width_profile_bottom_to_top": [
+       0.958,
+       0.985,
+       0.996,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       1.0,
+       0.988,
+       0.965
+      ]
+     }
+    ],
+    "model": null,
+    "ok": true
+   }
+  ]
+ },
+ {
+  "script": "skills/local/render-optimize/scripts/render_plan.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "alternatives": [
+     {
+      "estimated_min": 0.02,
+      "samples": 8
+     },
+     {
+      "estimated_min": 0.02,
+      "samples": 16
+     },
+     {
+      "estimated_min": 0.03,
+      "samples": 32
+     },
+     {
+      "estimated_min": 0.05,
+      "samples": 64
+     },
+     {
+      "estimated_min": 0.08,
+      "samples": 128
+     },
+     {
+      "estimated_min": 0.15,
+      "samples": 256
+     }
+    ],
+    "calibration": {
+     "fixed_overhead_s": 0.386,
+     "note": "fit from two renders: fixed cost (BVH/shader) separated from per-sample cost",
+     "res": [
+      256,
+      144
+     ],
+     "sec_per_sample_kpx": 0.00028,
+     "seconds_at_64spp": 1.05,
+     "seconds_at_8spp": 0.47
+    },
+    "note": "estimate = one measured calibration render x sample count x pixel count x shots; it ignores per-shot scene differences",
+    "ok": true,
+    "plan": {
+     "adaptive": true,
+     "denoise": true,
+     "estimated_min": 0.15,
+     "max_bounces": 6,
+     "res": [
+      320,
+      180
+     ],
+     "samples": 256,
+     "shots": 2
+    },
+    "scene_load": {
+     "biggest_texture": [
+      64,
+      64
+     ],
+     "image_textures": 1,
+     "lights": 1,
+     "materials": 1,
+     "mesh_objects": 2,
+     "texture_mem_mb": 0.0,
+     "tris": 1148
+    },
+    "warnings": []
+   }
+  ]
+ },
+ {
+  "script": "skills/local/uv-texel-audit/scripts/texel_audit.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "objects": [
+     {
+      "density_spread": 1.98,
+      "object": "Box",
+      "out_of_bounds_faces": 0,
+      "overlap_faces_approx": 28,
+      "stretch": {
+       "interpretation": "0 = perfectly uniform; >0.5 = visibly stretched islands",
+       "mean_dev_from_1": 0.3117
+      },
+      "texel_density_px_per_m": {
+       "max": 868.4,
+       "mean": 603.4,
+       "min": 437.7,
+       "res": 512
+      },
+      "tris": 188,
+      "uv_area_used": 0.6421,
+      "uv_layers": 1
+     }
+    ],
+    "ok": true,
+    "problems": [
+     "Box: 28 possibly overlapping faces (mirrored/shared UVs are OK if intentional)"
+    ],
+    "target": {
+     "min_density_px_per_m": 256.0,
+     "res": 512
+    },
+    "verdict": "UV PROBLEMS"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-asset-qa/scripts/qa_check.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "pass": false,
+    "errors": [
+     "Painted: Albedo feeds ['Roughness'] but is sRGB (must be Non-Color)",
+     "Sphere: faces use empty/missing material slot(s) [0] (grey in engines)",
+     "floating/detached part in Box (96 verts at [0.0, 0.0, 0.2])"
+    ],
+    "warnings": [],
+    "ground_z": 0.0,
+    "zfighting": [],
+    "floating": [
+     {
+      "object": "Box",
+      "island_verts": 96,
+      "center": [
+       0.0,
+       0.0,
+       0.2
+      ]
+     }
+    ],
+    "back_to_back": [],
+    "enclosed": [],
+    "objects": {
+     "Box": {
+      "verts": 96,
+      "faces": 98,
+      "tris": 188,
+      "ngons": 0,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "wire_edges": 0,
+      "loose_verts": 0,
+      "degenerate_faces": 0,
+      "zero_length_edges": 0,
+      "inconsistent_normals_edges": 0,
+      "duplicate_verts": 0,
+      "islands": 1,
+      "inside_out_islands": 0,
+      "scale": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "materials": 1,
+      "uv_maps": 1,
+      "uv_oob_pct": 0.0,
+      "uv_zero_area_faces": 0,
+      "uv_overlap_pct": 0.0,
+      "uv_coverage_pct": 63.6
+     },
+     "Sphere": {
+      "verts": 482,
+      "faces": 512,
+      "tris": 960,
+      "ngons": 0,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "wire_edges": 0,
+      "loose_verts": 0,
+      "degenerate_faces": 0,
+      "zero_length_edges": 0,
+      "inconsistent_normals_edges": 0,
+      "duplicate_verts": 0,
+      "islands": 1,
+      "inside_out_islands": 0,
+      "scale": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "materials": 0,
+      "uv_maps": 1,
+      "uv_oob_pct": 0.0,
+      "uv_zero_area_faces": 0,
+      "uv_overlap_pct": 0.0,
+      "uv_coverage_pct": 93.8
+     }
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-asset-qa/scripts/review_shots.py",
+  "import_ok": true,
+  "err": ""
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-export-pipelines/scripts/export_asset.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": false,
+    "preset": "gltf",
+    "format": "gltf",
+    "files": [
+     {
+      "file": "/tmp/sk_export",
+      "ok": false,
+      "kb": 0,
+      "objects": [
+       "Box"
+      ]
+     }
+    ],
+    "warnings": []
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-game-optimization/scripts/make_lods.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "lods": {
+     "Sphere": {
+      "LOD0": 960,
+      "LOD1": 480,
+      "LOD2": 240
+     }
+    },
+    "screen_size_hint": {
+     "LOD1": 0.5,
+     "LOD2": 0.25,
+     "LOD3": 0.125
+    },
+    "note": "check each LOD silhouette (look/review_shots) and UV seams; LOD3+ may need a billboard/imposter"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-game-optimization/scripts/mesh_stats.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "objects": {
+     "Box": {
+      "tris": 188,
+      "verts": 96,
+      "materials": 1,
+      "modifiers": [],
+      "uv_maps": 1,
+      "shape_keys": 0
+     },
+     "Sphere": {
+      "tris": 960,
+      "verts": 482,
+      "materials": 0,
+      "modifiers": [],
+      "uv_maps": 1,
+      "shape_keys": 0
+     }
+    },
+    "total_tris": 1148,
+    "total_verts": 578,
+    "draw_calls_est": 2,
+    "unique_materials": 1,
+    "textures": [
+     {
+      "name": "Albedo",
+      "size": [
+       64,
+       64
+      ],
+      "mb": 0.0
+     }
+    ],
+    "texture_vram_mb_uncompressed": 0.0,
+    "bones": 0,
+    "kind": "prop",
+    "budget": {
+     "name": "web",
+     "limits": {
+      "char_tris": 30000,
+      "prop_tris": 10000,
+      "materials": 2,
+      "tex": 2048,
+      "bones": 100
+     },
+     "over": [],
+     "pass": true
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-geometry-nodes/scripts/gn_builder.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "tree": "GN_ProbeScatter",
+    "nodes": 6,
+    "links": 8,
+    "evaluated": {
+     "verts": 482,
+     "faces": 512
+    },
+    "modifier": "GN_ProbeScatter"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-hardsurface-modeling/scripts/apply_stack.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "preset": "midpoly",
+    "objects": {
+     "Box": {
+      "bevel_width": 0.004,
+      "tris_base": 188,
+      "tris_final": 572,
+      "stack": [
+       "HS_Bevel",
+       "HS_WeightedNormal"
+      ],
+      "applied": []
+     }
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-lighting-lookdev/scripts/turntable.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "camera": "LD_Cam",
+    "lens": 85.0,
+    "distance": 3.222,
+    "lights": 3,
+    "frames": 4,
+    "pivot": "LD_Pivot",
+    "collection": "LD_Lookdev",
+    "note": "frame N+1 == frame 1, so 1..N loops seamlessly"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-pbr-materials/scripts/build_pbr_material.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "material": "ProbeMat",
+    "maps": {},
+    "assigned": []
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-pipeline-automation/scripts/batch_process.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "file": "/tmp/skilltest_src.glb",
+    "objects": {
+     "MESH": 2
+    },
+    "tris": 1148,
+    "materials": 1,
+    "images": 2,
+    "missing_images": [],
+    "actions": 0,
+    "ok": true,
+    "sec": 0.07
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-rendering/scripts/render_batch.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "ok": true,
+    "files": [
+     "/tmp/sk_render/0001.png"
+    ],
+    "sec_per_image": 0.22,
+    "res": [
+     80,
+     60
+    ],
+    "view": "AgX"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-retopology-uv/scripts/auto_retopo.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "method": "decimate",
+    "objects": {
+     "Sphere": {
+      "low": "Sphere_low",
+      "faces_before": 512,
+      "faces_after": 512,
+      "tris_after": 960,
+      "uvs_kept": true
+     }
+    },
+    "next": "check edge flow (look wireframe), unwrap (uv_pack.py), bake (blender-texture-baking)"
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-retopology-uv/scripts/texel_density.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "res": 512,
+    "objects": {
+     "Box": {
+      "px_per_m": 428.6,
+      "island_min": 427.4,
+      "island_max": 430.8,
+      "islands": 6,
+      "spread": 1.01
+     }
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-retopology-uv/scripts/uv_pack.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "method": "smart",
+    "margin_fraction": 0.00391,
+    "objects": {
+     "Box": {
+      "uv_maps": [
+       "UVMap"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-scene-setup/scripts/scene_audit.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "units": {
+     "system": "METRIC",
+     "scale_length": 1.0,
+     "length": "METERS",
+     "warn": null
+    },
+    "objects": 1,
+    "issues": {
+     "in_scene_root": [
+      "Box"
+     ]
+    },
+    "images": {
+     "missing": [],
+     "packed": 0,
+     "absolute_paths": []
+    },
+    "orphans": 0,
+    "linked_libraries": [],
+    "fixed": []
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-sculpting/scripts/sculpt_ops.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "objects": {
+     "Sphere": {
+      "ops": [
+       "smooth=2",
+       "detail=0.002,0.05"
+      ],
+      "base_faces": 512,
+      "evaluated_tris": 960,
+      "multires_levels": 0,
+      "stack": [
+       "Smooth",
+       "Detail"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-texture-baking/scripts/bake_maps.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "device": "CPU",
+    "extrusion": 0.01386,
+    "res": 256,
+    "maps": {
+     "normal": "//textures/T_Box_N.png",
+     "ao": "//textures/T_Box_AO.png"
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-texturing/scripts/decal.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "decal": "DC_Decal",
+    "target": "Box",
+    "size_m": [
+     0.1,
+     0.1
+    ],
+    "offset_m": 0.002,
+    "subdiv": 16,
+    "gap_min_m": 0.002,
+    "gap_max_m": 0.002
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-texturing/scripts/smart_material.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "objects": [
+     "Box"
+    ],
+    "materials": [
+     "Painted"
+    ],
+    "curvature": {
+     "Box": {
+      "convex_verts_pct": 100.0,
+      "concave_verts_pct": 0.0
+     }
+    },
+    "params": {
+     "Wear": 0.5,
+     "Grime": 0.3,
+     "Dust": 0.0,
+     "Rust": 0.0,
+     "Breakup": 0.3,
+     "Scale": 0.1
+    }
+   }
+  ]
+ },
+ {
+  "script": "skills/vendor/blender-skills/blender-time-of-day/scripts/scene_mood.py",
+  "import_ok": true,
+  "err": "",
+  "func_ok": true,
+  "func_err": "",
+  "result": [
+   {
+    "ok": true,
+    "time": "golden",
+    "mood": "none",
+    "heading": 93.7,
+    "key": {
+     "light": "ENV_Mood_Sun",
+     "strength": 4.0932,
+     "color": [
+      1.0,
+      0.554,
+      0.158
+     ],
+     "elevation": 6.0
+    },
+    "exposure": 1.5,
+    "practical_scale": 1.0,
+    "ambient": 0.421
+   }
+  ]
+ }
+]

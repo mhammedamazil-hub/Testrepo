@@ -11,6 +11,21 @@ code in Blender (bpy 5.0.1) — procedural PBR textures, 113 parametric furnitur
 Cycles stills, a camera walkthrough, an editable `.blend`, a whole-house GLB and one
 pivoted GLB per furniture piece. Cost **$0**.
 
+## 🎛️ Blender skill system (13 local skills + 17 vendored)
+
+**[`skills/README.md`](./skills/README.md)** — the router. **Read a skill's `SKILL.md`
+before every Blender operation.** Local skills cover reference measurement, spec-driven
+blockout, parametric automotive bodies, hard-surface detail/repair, glass/paint/surface
+materials, lighting rigs without HDRI, camera composition, render planning, texel audit and
+two QA gates (multi-view self-critique, export round-trip verification).
+
+- **[`skills/WORKFLOW.md`](./skills/WORKFLOW.md)** — the 19-step modelling procedure, the
+  photorealism rules and the self-critique loop.
+- **[`docs/BLENDER_SKILLS_AUDIT.md`](./docs/BLENDER_SKILLS_AUDIT.md)** — environment audit,
+  the eight researched repositories and their verdicts, real test numbers and honest limits.
+- **[`skills/vendor/ATTRIBUTION.md`](./skills/vendor/ATTRIBUTION.md)** — MIT attribution for
+  the vendored `EL4CTEO/blender-skills` subset and the one local patch.
+
 ## Read this first
 
 **[`SANDBOX_INSTANTMESH_AUDIT.md`](./SANDBOX_INSTANTMESH_AUDIT.md)** — full technical audit: verified
