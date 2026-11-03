@@ -8,6 +8,7 @@ from . import kit, layout, lighting, mats, shell
 
 def reset():
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    mats.reset_cache()
     sc = bpy.context.scene
     sc.unit_settings.system = 'METRIC'
     sc.unit_settings.scale_length = 1.0

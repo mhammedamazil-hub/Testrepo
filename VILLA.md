@@ -2,7 +2,7 @@
 
 A 19.0 × 12.5 m single-storey modern villa: 3 bedrooms + 2 bathrooms, open-plan
 living / dining / kitchen, fully furnished and styled, rendered with real path
-tracing, exported as a walkaround GLB plus 120 individually named, pivoted
+tracing, exported as a walkaround GLB plus 121 individually named, pivoted
 furniture GLBs.
 
 Everything is generated from source — no downloaded models, no paid services, no
@@ -16,10 +16,10 @@ GPU. Total cost **$0**.
 |---|---|
 | `villa/villa.blend` | Editable Blender scene (all geometry, materials packed, lights, cameras) |
 | `villa/villa.glb` | Whole-house walkaround model, PBR materials, 1024² textures |
-| `villa/furniture/*.glb` | **120 pieces**, one file each, named by room + piece, pivot at the footprint centre on the floor, front facing **−Y** |
+| `villa/furniture/*.glb` | **121 pieces**, one file each, named by room + piece, pivot at the footprint centre on the floor, front facing **−Y** |
 | `villa/manifest.json` | Every piece with its kind, pivot and rotation; room rectangles; scene counts |
 | `villa/renders/*.png` | 12 hero stills, 1280 × 720, Cycles + OIDN (+ `contact_sheet.png`) |
-| `villa/walkthrough.mp4` | Camera fly-through of the interior (+ `walkthrough.gif`) |
+| `villa/walkthrough.mp4` | 10 s camera fly-through, entry → foyer → kitchen → dining → living (512×288, 15 fps, + `walkthrough.gif`) |
 | `villa/tex/` | The generated PBR texture set (regenerable, see below) |
 
 ### Numbers
@@ -28,11 +28,11 @@ GPU. Total cost **$0**.
 |---|---|
 | Footprint / height | 19.0 × 12.5 m · 3.0 m ceilings · 237.5 m² under roof |
 | Rooms | 14 spaces (see plan) |
-| Scene | 483 objects · 121,608 polygons · 38 materials |
-| Furniture | 120 placed pieces from 39 parametric builders |
+| Scene | 484 objects · 121,770 polygons · 40 materials |
+| Furniture | 121 placed pieces from 41 parametric builders |
 | Textures | 77 procedural maps (albedo + normal + roughness), 1024², tileable |
 | Whole-house GLB | 20.2 MB, 1024² textures |
-| Furniture GLBs | 120 files, 25.5 MB total, 512² textures |
+| Furniture GLBs | 121 files, 25.8 MB total, 512² textures |
 | Stills | 12 × 1280 × 720 @ 32 spp, ~2.5 min each on 2 vCPU |
 | Collision check | 0 furniture/furniture or furniture/wall intersections |
 

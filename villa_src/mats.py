@@ -76,6 +76,12 @@ _CACHE = {}
 _TILE = {}
 
 
+def reset_cache():
+    """Drop cached materials/tile sizes -- required after read_factory_settings()."""
+    _CACHE.clear()
+    _TILE.clear()
+
+
 def _img(name, suffix, non_color=False):
     path = os.path.abspath(os.path.join(TEX, f"{name}_{suffix}.png"))
     if not os.path.exists(path):

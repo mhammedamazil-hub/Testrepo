@@ -16,16 +16,17 @@ SHOTS = {
     "study": ((17.52, 8.06, 1.52), (18.02, 11.55, 1.08), 17.0),
 }
 
-# walkthrough path: (position, look-at, seconds)
+# walkthrough path: (position, look-at, hold seconds) -- routed along real doorways
+# and clear floor lanes so the camera never enters a wall or a piece of furniture.
 WALK = [
-    ((17.90, 5.20, 1.55), (14.30, 5.10, 1.35), 3.0),   # entry looking in
-    ((16.40, 6.40, 1.55), (12.00, 3.60, 1.30), 3.5),   # into the kitchen
-    ((13.40, 2.30, 1.55), (10.40, 4.90, 1.25), 3.5),   # past the island
-    ((10.30, 2.40, 1.55), (6.60, 3.60, 1.30), 3.5),    # dining to living
-    ((7.30, 3.30, 1.55), (2.40, 4.90, 1.25), 3.5),     # living
-    ((3.60, 5.60, 1.55), (1.20, 10.20, 1.30), 3.0),    # toward the bedroom wing
-    ((2.20, 7.20, 1.55), (5.40, 7.20, 1.30), 3.0),     # corridor
-    ((6.20, 7.30, 1.55), (11.00, 7.20, 1.25), 3.0),    # corridor east
-    ((9.60, 9.20, 1.50), (8.20, 11.80, 1.15), 3.5),    # bedroom 2
-    ((5.90, 7.60, 1.50), (3.00, 10.60, 1.10), 3.5),    # master
+    ((18.55, 5.15, 1.55), (15.40, 5.02, 1.35), 2.6),   # front door
+    ((17.10, 5.10, 1.55), (14.60, 4.85, 1.32), 2.4),   # foyer
+    ((15.60, 4.90, 1.55), (13.20, 4.75, 1.28), 2.4),   # through the kitchen door
+    ((14.10, 5.05, 1.55), (11.60, 4.85, 1.26), 2.4),   # past the fridge
+    ((12.60, 5.35, 1.55), (10.20, 4.70, 1.24), 2.6),   # past the island
+    ((10.60, 5.35, 1.55), (8.40, 4.60, 1.22), 2.6),    # dining
+    ((8.60, 5.45, 1.55), (6.20, 4.60, 1.20), 2.6),     # toward the living room
+    ((6.60, 5.50, 1.55), (4.00, 4.80, 1.18), 2.6),     # living, past the TV wall
+    ((4.60, 5.35, 1.52), (1.20, 2.60, 1.10), 3.0),     # turn to the glazing
+    ((2.90, 4.90, 1.50), (1.10, 1.30, 1.05), 3.0),     # settle on the garden view
 ]

@@ -753,7 +753,7 @@
    "file": "furniture/kitchen_hood.glb",
    "pivot": [
     14.86,
-    3.1,
+    2.62,
     0.0
    ],
    "rotation_deg": -90.0
@@ -819,7 +819,7 @@
    "file": "furniture/kitchen_run_east.glb",
    "pivot": [
     14.79,
-    3.1,
+    2.62,
     0.0
    ],
    "rotation_deg": -90.0
@@ -869,12 +869,23 @@
    "rotation_deg": 180.0
   },
   {
-   "name": "kitchen_wall_units",
+   "name": "kitchen_wall_units_a",
    "kind": "wall_cabinets",
-   "file": "furniture/kitchen_wall_units.glb",
+   "file": "furniture/kitchen_wall_units_a.glb",
    "pivot": [
     14.96,
-    4.42,
+    3.66,
+    0.0
+   ],
+   "rotation_deg": -90.0
+  },
+  {
+   "name": "kitchen_wall_units_b",
+   "kind": "wall_cabinets",
+   "file": "furniture/kitchen_wall_units_b.glb",
+   "pivot": [
+    14.96,
+    1.7,
     0.0
    ],
    "rotation_deg": -90.0
@@ -1409,8 +1420,8 @@
   }
  ],
  "counts": {
-  "pieces": 120,
-  "objects": 483,
-  "polygons": 121608
+  "pieces": 121,
+  "objects": 484,
+  "polygons": 121770
  }
 }

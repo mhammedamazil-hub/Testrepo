@@ -69,14 +69,16 @@ def furnish(colls):
     add(F.plant, "dining_plant", 10.35, 0.80, 0, kind="monstera", scale=0.95)
 
     # ------------------------------------------------------------ KITCHEN
-    add(F.base_run, "kitchen_run_east", 14.79, 3.10, -90, length=3.90, depth=0.64,
+    add(F.base_run, "kitchen_run_east", 14.79, 2.62, -90, length=2.86, depth=0.64,
         worktop="marble", splash_h=0.52, hob=True)
     add(F.base_run, "kitchen_run_south", 13.85, 0.63, 180, length=2.30, depth=0.64,
         worktop="marble", sink=True, doors=4, splash_h=0.52)
     add(F.tall_unit, "kitchen_fridge", 14.79, 5.98, -90, w=0.92, h=2.20, d=0.66,
         mat="oak_veneer", fridge=True)
-    add(F.range_hood, "kitchen_hood", 14.86, 3.10, -90, w=0.92, z=1.62)
-    add(F.wall_cabinets, "kitchen_wall_units", 14.96, 4.42, -90, length=1.15, h=0.72,
+    add(F.range_hood, "kitchen_hood", 14.86, 2.62, -90, w=0.92, z=1.62)
+    add(F.wall_cabinets, "kitchen_wall_units_a", 14.96, 3.66, -90, length=0.86, h=0.72,
+        z=1.50, depth=0.36)
+    add(F.wall_cabinets, "kitchen_wall_units_b", 14.96, 1.70, -90, length=0.76, h=0.72,
         z=1.50, depth=0.36)
     add(F.kitchen_island, "kitchen_island", 12.55, 3.45, 0, w=2.85, d=1.08, h=0.92,
         overhang=0.32)
