@@ -29,6 +29,11 @@ on:
     # 'created' is drafts, 'published' is a normal release - both should attach the APK
     types: [created, published]
 
+# needed to attach the APK to a release; without it the upload step gets
+# "Resource not accessible by integration"
+permissions:
+  contents: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
