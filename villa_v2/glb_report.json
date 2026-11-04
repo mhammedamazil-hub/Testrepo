@@ -1,0 +1,47 @@
+{
+ "pass": true,
+ "source": {
+  "meshes": 703,
+  "tris": 598226,
+  "materials": 74,
+  "bbox_m": [
+   700.0,
+   315.0,
+   19.75
+  ],
+  "images": 113
+ },
+ "reimported": {
+  "meshes": 703,
+  "tris": 598226,
+  "materials": 74,
+  "bbox_m": [
+   700.0,
+   315.0,
+   19.75
+  ],
+  "images": 110
+ },
+ "dims_match": true,
+ "alpha_materials_in_glb": 6,
+ "alpha_material_names": [
+  "grass_blade",
+  "leaf_card_c",
+  "spray_a",
+  "spray_b",
+  "spray_dark",
+  "spray_olive"
+ ],
+ "alpha_mask_patched": [
+  "grass_blade",
+  "spray_dark",
+  "spray_a",
+  "spray_olive",
+  "spray_b",
+  "leaf_card_c"
+ ],
+ "file": "/home/user/Testrepo/villa_v2/villa_v2_web.glb",
+ "tex_px": 512,
+ "bytes": 40854900,
+ "mb": 40.85
+}
