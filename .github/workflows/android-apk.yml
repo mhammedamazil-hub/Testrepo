@@ -32,8 +32,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # The ubuntu runner image ships the Android SDK; only the platform/build-tools
+      # that AGP wants may be missing, and sdkmanager can add those.
+      - name: Android SDK
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-$ANDROID_SDK_ROOT}" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME"
+          ls "$ANDROID_HOME" || true
+          SDKM=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)
+          echo "sdkmanager: $SDKM"
+          if [ -n "$SDKM" ]; then
+            "$SDKM" --list_installed | head -20 || true
+            yes | "$SDKM" --licenses > /dev/null 2>&1 || true
+            "$SDKM" "platforms;android-34" "build-tools;34.0.0" "platform-tools" || true
+          fi
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -72,7 +84,22 @@ jobs:
           python -c "from PIL import Image; Image.open('/tmp/front.ppm').save('/tmp/front.png'); Image.open('/tmp/garden.ppm').save('/tmp/garden.png')"
 
       - name: Build debug APK
-        run: gradle -p android/viewer --no-daemon assembleDebug
+        run: |
+          set -o pipefail
+          gradle -p android/viewer --no-daemon --console=plain --stacktrace assembleDebug \
+            2>&1 | tee /tmp/gradle.log
+
+      # Artifact storage is not always reachable from a reviewer's sandbox, so the useful
+      # part of the build log is re-emitted as check-run annotations as well.
+      - name: Surface build errors
+        if: failure()
+        run: |
+          set +e
+          grep -E "error:|error \[|Unresolved|FAILURE:|Caused by|What went wrong|Could not" \
+            /tmp/gradle.log | head -30 | while IFS= read -r line; do
+            echo "::error::$line"
+          done
+          exit 1
 
       - name: Report APK size
         run: |
