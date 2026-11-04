@@ -37,8 +37,8 @@ villa/villa.blend1
 .glstub/*.so
 .glstub/*.so.*
 
-# v2 deliverable: the 50 MB GLBs are build artefacts (reproducible with
-# `villa_src/export_v2.py`), the .blend and renders are the deliverable
-villa_v2/*.glb
+# v2 deliverable: the GLBs ARE committed (both sizes, ~93 MB) because they are the
+# hand-off artefact. The .blend stays out: 15 MB, and it is rebuilt by one command.
+# villa_v2/*.glb        <- deliberately NOT ignored
 villa_v2/*.blend
 villa_v2/*.blend1
