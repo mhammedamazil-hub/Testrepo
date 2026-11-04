@@ -1,0 +1,4 @@
+// Root build file: one module, one plugin. No repositories are needed for the app itself.
+plugins {
+    id 'com.android.application' version '8.1.4' apply false
+}

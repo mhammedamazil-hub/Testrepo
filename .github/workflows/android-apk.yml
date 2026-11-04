@@ -1,0 +1,104 @@
+name: Build villa viewer APK
+
+# Produces an installable APK from this repo, with the model packed into the APK as
+# assets/model.vpk. Nothing is downloaded except the Android SDK/AGP themselves.
+
+on:
+  push:
+    paths:
+      - 'android/**'
+      - 'tools/villa_pack.py'
+      - 'tools/vpk_preview.cpp'
+      - 'villa_v2/*.glb'
+      - '.github/workflows/android-apk.yml'
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'tools/villa_pack.py'
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.3'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install packer deps
+        run: pip install --quiet numpy pillow
+
+      # The lite GLB (256 px textures) is committed, so no Blender is needed here.
+      - name: Pack the model for the viewer
+        run: |
+          set -euo pipefail
+          test -f villa_v2/villa_v2_lite.glb || { echo "::error::villa_v2_lite.glb missing"; exit 1; }
+          python tools/villa_pack.py villa_v2/villa_v2_lite.glb \
+            -o android/viewer/app/src/main/assets/model.vpk \
+            --json-out /tmp/pack.json
+          python tools/verify_pack.py /tmp/pack.json --tris 500000 --max-mb 60
+          ls -l android/viewer/app/src/main/assets/model.vpk
+
+      # Real verification, not a smoke test: the SAME loader and shading code the app uses
+      # is compiled for the host and rasterised in software, so a broken pack fails here.
+      - name: Verify the pack by rendering it (host build of the app's loader)
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 tools/vpk_preview.cpp \
+              android/viewer/app/src/main/cpp/vpk.cpp \
+              -Iandroid/viewer/app/src/main/cpp -o /tmp/vpkpreview
+          /tmp/vpkpreview android/viewer/app/src/main/assets/model.vpk /tmp/front.ppm 0 10 0
+          /tmp/vpkpreview android/viewer/app/src/main/assets/model.vpk /tmp/garden.ppm 210 8 0
+          python -c "from PIL import Image; Image.open('/tmp/front.ppm').save('/tmp/front.png'); Image.open('/tmp/garden.ppm').save('/tmp/garden.png')"
+
+      - name: Build debug APK
+        run: gradle -p android/viewer --no-daemon assembleDebug
+
+      - name: Report APK size
+        run: |
+          set -euo pipefail
+          f=android/viewer/app/build/outputs/apk/debug/app-debug.apk
+          ls -l "$f"
+          cp "$f" villa-viewer.apk
+          { echo "### villa-viewer.apk"; echo; echo "size: $(du -h villa-viewer.apk | cut -f1)"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: villa-viewer-apk
+          path: villa-viewer.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pack-preview
+          path: |
+            /tmp/front.png
+            /tmp/garden.png
+            /tmp/pack.json
+          if-no-files-found: error
+
+      - name: Attach APK to a release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: villa-viewer.apk

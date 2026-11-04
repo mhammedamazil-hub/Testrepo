@@ -1,0 +1,37 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ai.arena.villaviewer'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'ai.arena.villaviewer'
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        debug {
+            // the model is the biggest thing in the APK; keep it compressed
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+        }
+    }
+
+    // no NDK, no CMake: the renderer is Java + GLES2 on purpose, so the build needs
+    // nothing but the Android SDK (no downloads beyond the SDK/AGP themselves)
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // deliberately empty
+}
