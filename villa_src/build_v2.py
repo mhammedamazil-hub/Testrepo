@@ -132,6 +132,68 @@ def build(with_site=True):
     return sc_, ext
 
 
+def _sky_clouds(world, scale=9.0, cover0=0.50, cover1=0.61, brightness=3.1):
+    """Put a cumulus field in the world shader.
+
+    A physical sky on its own renders as a flat, pale gradient, which is the loudest
+    "this is CGI" tell in an exterior. Clouds are a noise field sampled along the view
+    direction: they converge at the horizon for free (perspective of the dome), cost one
+    texture lookup, and they also break up the environment light so surfaces are not lit
+    by a perfectly uniform dome.
+    """
+    if not (world and world.node_tree):
+        return None
+    nt = world.node_tree
+    bg = next((n for n in nt.nodes if n.type == "BACKGROUND"), None)
+    if bg is None or not bg.inputs["Color"].links:
+        return None
+    base = bg.inputs["Color"].links[0].from_socket
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    tc.location = (-1000, 300)
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    sep.location = (-820, 420)
+    nt.links.new(tc.outputs["Generated"], sep.inputs["Vector"])
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.location = (-820, 200)
+    mp.inputs["Scale"].default_value = (1.0, 1.0, 2.6)   # squash z: flat, layer-like cloud
+    nt.links.new(tc.outputs["Generated"], mp.inputs["Vector"])
+    n1 = nt.nodes.new("ShaderNodeTexNoise")
+    n1.location = (-620, 240)
+    n1.inputs["Scale"].default_value = scale
+    n1.inputs["Detail"].default_value = 5.0
+    n1.inputs["Roughness"].default_value = 0.58
+    n1.inputs["Distortion"].default_value = 0.18
+    nt.links.new(mp.outputs["Vector"], n1.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-420, 240)
+    ramp.color_ramp.elements[0].position = cover0
+    ramp.color_ramp.elements[1].position = cover1
+    nt.links.new(n1.outputs["Fac"], ramp.inputs["Fac"])
+    # no clouds below the horizon (they would show through the ground edges)
+    hmask = nt.nodes.new("ShaderNodeMapRange")
+    hmask.location = (-420, 20)
+    hmask.inputs["From Min"].default_value = 0.03
+    hmask.inputs["From Max"].default_value = 0.30
+    nt.links.new(sep.outputs["Z"], hmask.inputs["Value"])
+    mul = nt.nodes.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    mul.location = (-200, 140)
+    nt.links.new(ramp.outputs["Color"], mul.inputs[0])
+    nt.links.new(hmask.outputs["Result"], mul.inputs[1])
+    clim = nt.nodes.new("ShaderNodeRGB")
+    clim.location = (-200, -120)
+    clim.outputs[0].default_value = (brightness, brightness * 0.985, brightness * 0.96, 1.0)
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.location = (60, 40)
+    mix.inputs[0].default_value = 0.0
+    nt.links.new(mul.outputs["Value"], mix.inputs[0])
+    nt.links.new(base, mix.inputs[6])
+    nt.links.new(clim.outputs[0], mix.inputs[7])
+    nt.links.new(mix.outputs[2], bg.inputs["Color"])
+    return mix
+
+
 def lighting_v2(sc):
     """Late-afternoon raking sun: the single biggest change in the whole rebuild."""
     world = sc.world
@@ -143,10 +205,11 @@ def lighting_v2(sc):
             sky.sun_rotation = math.radians(232.0)      # from the south-west, low
             sky.sun_intensity = 1.0
             sky.altitude = 40.0
-            sky.aerosol_density = 2.6
+            sky.aerosol_density = 1.55
             sky.air_density = 1.1
         if bg:
-            bg.inputs["Strength"].default_value = 0.30   # sky as light
+            bg.inputs["Strength"].default_value = 0.42   # sky as light (fill for shade)
+    _sky_clouds(world)
     sun = bpy.data.objects.get("Sun")
     if sun:
         el = math.radians(20.0)
@@ -179,9 +242,9 @@ def lighting_v2(sc):
     # otherwise be the only dead-black wall on the house
     lg2 = bpy.data.lights.new("entry_bounce", type="AREA")
     lg2.shape = "RECTANGLE"
-    lg2.size, lg2.size_y = 4.0, 3.0
-    lg2.energy = 260.0
-    lg2.color = (1.0, 0.94, 0.88)
+    lg2.size, lg2.size_y = 6.0, 4.0
+    lg2.energy = 420.0
+    lg2.color = (1.0, 0.92, 0.84)
     ob2 = bpy.data.objects.new("entry_bounce", lg2)
     sc.collection.objects.link(ob2)
     ob2.location = (24.5, 5.2, 2.2)
@@ -218,7 +281,7 @@ def _setup_view(name):
     interior = name in ("living", "living_wide", "kitchen", "dining", "master", "corridor",
                         "foyer", "bed2", "bath", "study")
     sc = bpy.context.scene
-    sc.view_settings.exposure = (0.55 if interior else -0.25)
+    sc.view_settings.exposure = (0.55 if interior else -0.55)
     for ob in bpy.data.objects:
         if ob.type != "LIGHT":
             continue
@@ -226,7 +289,9 @@ def _setup_view(name):
             ob.data.energy = ob.get("_base", ob.data.energy)
             if "_base" not in ob:
                 ob["_base"] = ob.data.energy
-            if not interior and ob.name != "terrace_bounce":
+            # the terrace bounce stays for every view; the entry bounce is only ever
+            # there to lift the shaded east facade, so it is *not* cut on exteriors
+            if not interior and ob.name not in ("terrace_bounce", "entry_bounce"):
                 ob.data.energy *= 0.35
     return interior
 

@@ -218,8 +218,9 @@ def build_shell(colls):
 
     doors = []
     D_ = colls["doors"]
-    doors.append(door_leaf("door_front", "y", 4.45, 5.95, IX1 + 0.15, 2.35, "walnut",
-                           D_, swing=26))
+    # closed and set 0.19 m inside the outer face, so the opening reads as a real recess
+    doors.append(door_leaf("door_front", "y", 4.45, 5.95, IX1 - 0.07, 2.35, "walnut",
+                           D_, swing=0))
     doors.append(door_leaf("door_master", "x", 4.15, 5.05, 7.85, 2.10, coll=D_, swing=100))
     doors.append(door_leaf("door_bed2", "x", 8.05, 8.95, 7.85, 2.10, coll=D_, swing=96))
     doors.append(door_leaf("door_laundry", "x", 11.85, 12.60, 7.85, 2.10, coll=D_, swing=98))

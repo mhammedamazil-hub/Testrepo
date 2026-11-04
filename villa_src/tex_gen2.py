@@ -343,21 +343,27 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     print("tex_gen2 ->", os.path.abspath(OUT), flush=True)
     # vegetation: spray cards (canopies) + single-leaf cards (palms, agave, grass)
+    # Leaf albedo is a *linear* value: v1's 0.04 read as sRGB 0.22 and, once a hedge is
+    # out of direct sun, rendered almost black (measured mean RGB 14/14/12). A real leaf
+    # is 0.09-0.15 linear, so the sprays are lifted by ~1.6x.
     leaf_spray("spray_a", 2001, leaves=9, spread=58, leaf_len=0.21, leaf_w=0.055,
-               hue=(0.050, 0.120, 0.025), tip=(0.10, 0.210, 0.048), droop=0.30)
+               hue=(0.080, 0.190, 0.040), tip=(0.160, 0.330, 0.076), droop=0.30)
     leaf_spray("spray_b", 2013, leaves=11, spread=48, leaf_len=0.17, leaf_w=0.042,
-               hue=(0.042, 0.105, 0.023), tip=(0.085, 0.190, 0.042), droop=0.20)
+               hue=(0.068, 0.168, 0.037), tip=(0.135, 0.300, 0.067), droop=0.20)
     leaf_spray("spray_c", 2027, leaves=7, spread=64, leaf_len=0.24, leaf_w=0.062,
-               hue=(0.070, 0.145, 0.035), tip=(0.130, 0.240, 0.060), droop=0.40)
+               hue=(0.110, 0.230, 0.055), tip=(0.205, 0.380, 0.095), droop=0.40)
+    # the "inner canopy" spray is the workhorse of every shrub in the model: at v1's
+    # near-black (0.012) the whole hedge rendered as a black smear, so it is lifted to a
+    # believable shaded-leaf green and relies on the lighting to keep it dark
     leaf_spray("spray_dark", 2051, leaves=10, spread=52, leaf_len=0.19, leaf_w=0.048,
-               hue=(0.012, 0.030, 0.008), tip=(0.030, 0.065, 0.016), droop=0.25)
+               hue=(0.062, 0.128, 0.037), tip=(0.125, 0.235, 0.070), droop=0.25)
     leaf_spray("spray_olive", 2039, leaves=13, spread=40, leaf_len=0.15, leaf_w=0.022,
-               hue=(0.100, 0.130, 0.070), tip=(0.170, 0.190, 0.110), droop=0.15)
-    leaf_card("leaf_card_a", 1001, hue=(0.10, 0.235, 0.045), tip=(0.24, 0.44, 0.11),
+               hue=(0.140, 0.180, 0.098), tip=(0.235, 0.262, 0.152), droop=0.15)
+    leaf_card("leaf_card_a", 1001, hue=(0.075, 0.175, 0.034), tip=(0.18, 0.33, 0.082),
               width=0.40, veins=7, dry=0.10)
-    leaf_card("leaf_card_b", 1013, hue=(0.075, 0.185, 0.038), tip=(0.20, 0.36, 0.085),
+    leaf_card("leaf_card_b", 1013, hue=(0.056, 0.139, 0.028), tip=(0.15, 0.27, 0.064),
               width=0.34, serrate=1.0, veins=6)
-    leaf_card("leaf_card_c", 1027, hue=(0.13, 0.265, 0.06), tip=(0.32, 0.46, 0.15),
+    leaf_card("leaf_card_c", 1027, hue=(0.098, 0.199, 0.045), tip=(0.24, 0.345, 0.113),
               width=0.46, veins=8, dry=0.18)
     leaf_card("leaf_card_olive", 1031, hue=(0.17, 0.21, 0.095), tip=(0.30, 0.34, 0.165),
               width=0.22, veins=5)

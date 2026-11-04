@@ -254,11 +254,11 @@ def build(name):
             nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
         # Foliage transmits light: a mix of diffuse and translucent is what makes a
         # canopy glow at the edges instead of reading as painted cardboard. Kept low
-        # (0.28) because full translucency washes the leaves out to near-white.
+        # (0.30) because full translucency washes the leaves out to near-white.
         tr = _node(nt, "ShaderNodeBsdfTranslucent", (0, 120))
         nt.links.new(tex.outputs["Color"], tr.inputs["Color"])
         mix = _node(nt, "ShaderNodeMixShader", (300, 60))
-        mix.inputs["Fac"].default_value = 0.22
+        mix.inputs["Fac"].default_value = 0.30
         nt.links.new(bsdf.outputs["BSDF"], mix.inputs[1])
         nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
         nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])

@@ -77,14 +77,43 @@ def facade_extras(coll):
                          mat="travertine_clad", bevel=0.006, coll=coll))
         out.append(K.box(f"head_n{i}", (b - a + 0.16, 0.20, 0.06), ((a + b) / 2, D + 0.04, 2.44),
                          mat="lime_render", bevel=0.004, coll=coll))
-    # east side: entry canopy + door surround
-    out.append(K.box("entry_canopy", (0.30, 2.60, 0.16), (W + 0.30, 5.20, 2.62),
-                     mat="timber_slat", bevel=0.008, coll=coll))
-    for i in range(6):
-        out.append(K.box(f"canopy_batten{i}", (0.10, 2.60, 0.05), (W + 0.44, 5.20,
-                                                                 2.48 - i * 0.055),
-                         mat="timber_slat", coll=coll))
-    out.append(K.box("entry_step", (0.90, 2.40, 0.09), (W + 0.42, 5.20, 0.045),
+    # ---- entry: a recessed, lined doorway under a real canopy on two posts.
+    # The v1 entrance was a flat walnut panel stuck on a blank wall - that is what made
+    # the front of the house read as a garage. A doorway reads as an entrance when it has
+    # (a) depth, (b) a lining that catches light differently from the render, (c) a
+    # shadow across the head, and (d) something to touch: hardware.
+    # `door_front` now sits closed and 0.19 m inside the outer wall face (shell.py).
+    for i, (y0, y1) in enumerate(((4.45, 4.51), (5.89, 5.95))):
+        out.append(K.slab(f"entry_jamb{i}", 18.74, y0, W, y1, 0.0, 2.36, "cedar",
+                          bevel=0.005, coll=coll))
+    out.append(K.slab("entry_head", 18.74, 4.45, W, 5.95, 2.29, 2.36, "cedar",
+                      bevel=0.005, coll=coll))
+    out.append(K.slab("entry_thresh", 18.62, 4.45, W, 5.95, 0.0, 0.028, "black_steel",
+                      coll=coll))
+    # long vertical pull bar + its standoffs (a pivot-door handle)
+    out.append(K.cyl("entry_pull", 0.019, 1.10, (18.85, 5.78, 1.15),
+                     mat="black_steel", seg=16, coll=coll))
+    for i, z in enumerate((0.64, 1.66)):
+        out.append(K.box(f"entry_pull_mtg{i}", (0.055, 0.028, 0.028), (18.83, 5.78, z),
+                         mat="black_steel", coll=coll))
+    # canopy: 1.45 m deep slab over the door, dark fascia, timber soffit, steel posts
+    out.append(K.slab("entry_canopy", W, 4.00, W + 1.45, 6.40, 2.62, 2.78, "lime_render",
+                      bevel=0.01, coll=coll))
+    out.append(K.slab("canopy_fascia_e", W + 1.37, 4.00, W + 1.46, 6.40, 2.55, 2.78,
+                      "black_steel", bevel=0.006, coll=coll))
+    for nm, y0, y1 in (("s", 4.00, 4.09), ("n", 6.31, 6.40)):
+        out.append(K.slab(f"canopy_fascia_{nm}", W, y0, W + 1.46, y1, 2.55, 2.78,
+                          "black_steel", bevel=0.006, coll=coll))
+    n_bat = 14
+    for i in range(n_bat):
+        y = 4.12 + i * (2.16 / (n_bat - 1))
+        out.append(K.box(f"canopy_batten{i}", (1.30, 0.085, 0.045),
+                         (W + 0.70, y, 2.575), mat="timber_slat", coll=coll))
+    for i, y in enumerate((4.13, 6.27)):
+        out.append(K.box(f"canopy_post{i}", (0.085, 0.085, 2.62),
+                         (W + 1.32, y, 1.31), mat="black_steel", bevel=0.004,
+                         coll=coll))
+    out.append(K.box("entry_step", (1.05, 2.40, 0.09), (W + 0.38, 5.20, 0.045),
                      mat="stone_paving", bevel=0.01, coll=coll))
 
     # ---- timber-slat soffit under the roof overhang (south + entry sides)
@@ -187,8 +216,10 @@ def site_v2(coll):
     for i, y in enumerate((2.60, 9.00)):
         out.append(K.box(f"gate_pier{i}", (0.55, 0.55, 1.55), (24.60, y, 0.72),
                          mat="board_concrete", bevel=0.01, coll=coll))
-        out.append(K.box(f"gate_cap{i}", (0.65, 0.65, 0.07), (24.60, y, 1.52),
-                         mat="alu_trim", bevel=0.006, coll=coll))
+        # a dark stone cap, not polished metal: a metal top face mirrors the sky and
+        # renders as a glowing white box, which is what killed the first entry shot
+        out.append(K.box(f"gate_cap{i}", (0.60, 0.60, 0.07), (24.60, y, 1.52),
+                         mat="roof_membrane", bevel=0.006, coll=coll))
     # forecourt paving in front of the entry, with a planting strip either side
     out.append(K.slab("forecourt", 19.55, 3.60, 24.30, 8.20, -0.19, 0.04, "stone_paving",
                       coll=coll))
