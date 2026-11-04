@@ -119,9 +119,11 @@ def build(with_site=True):
     t0 = time.time()
     A.facade_extras(ext)
     A.roof(ceiling)
+    A.roof_plant(ceiling)
     if with_site:
         _ground(site)
         A.site_v2(site)
+        A.terrace_detail(site, veg)
         objs = A.garden(veg, site)
         _grass_fringe(site)
     print(f"site+planting {time.time() - t0:.1f}s ({removed} v1 site objects replaced, "

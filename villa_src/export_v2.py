@@ -143,6 +143,71 @@ def _stats():
     }
 
 
+# Objects that exist only to make the *renders* look like a place: a 700 m ridge, 150 m
+# lawns, a 92 m boundary bed. They are correct for a camera 20 m away and ruinous for a
+# glTF viewer, which frames the whole scene: a 19.7 m house inside a 700 m box is 3 % of
+# the frame, i.e. a speck. `--trim` drops them and lays a small ground plane instead.
+BACKDROP = ("ridge", "lawn_", "field_", "boundary_bed")
+
+
+def _bbox(ob):
+    from mathutils import Vector as _V
+    pts = [ob.matrix_world @ _V(c) for c in ob.bound_box]
+    return (_V((min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts))),
+            _V((max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts))))
+
+
+def trim_scene(metres=70.0, recentre=True):
+    """Make the export *about the villa*, not about the landscape.
+
+    Removes the backdrop by name AND by size, then adds a ground plane just big enough to
+    sit the house in, optionally recentred so the house is at the origin (some viewers put
+    the camera at the origin, and the house would otherwise start behind it).
+    Returns a report dict for glb_report.json.
+    """
+    from villa_src import kit as K
+    house_objs = [o for o in bpy.data.objects if o.type == "MESH"
+                  and o.name.startswith(("wall", "plinth", "pier", "glass", "soffit",
+                                         "par_", "roof_deck", "door_", "canopy"))]
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for o in house_objs:
+        a, b = _bbox(o)
+        lo = Vector((min(lo.x, a.x), min(lo.y, a.y), min(lo.z, a.z)))
+        hi = Vector((max(hi.x, b.x), max(hi.y, b.y), max(hi.z, b.z)))
+    cx, cy = (lo.x + hi.x) / 2, (lo.y + hi.y) / 2
+
+    removed = []
+    for ob in list(bpy.data.objects):
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        drop = base.startswith(BACKDROP)
+        if not drop:
+            a, b = _bbox(ob)
+            extent = max(b.x - a.x, b.y - a.y)
+            far = max(abs(a.x - cx), abs(b.x - cx), abs(a.y - cy), abs(b.y - cy))
+            drop = extent > metres * 1.4 or far > metres * 0.75
+        if drop:
+            removed.append(ob.name.split(".")[0])
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+    site = bpy.data.collections.get("Site")
+    K.slab("ground_trim", cx - metres / 2, cy - metres / 2, cx + metres / 2,
+           cy + metres / 2, -0.34, -0.06, "lawn_v2", coll=site)
+
+    shifted = 0.0
+    if recentre:
+        # move everything so the house sits on the origin, ground at z = 0
+        for ob in bpy.data.objects:
+            ob.location.x -= cx
+            ob.location.y -= cy
+        shifted = round(cx, 3)
+    return {"trim_m": metres, "removed": len(removed),
+            "removed_names": sorted(set(removed))[:10],
+            "recentred_by_m": shifted}
+
+
 def export_house(path, tex_size=1024):
     if tex_size != 1024:
         relink(downscale(tex_size))
@@ -198,12 +263,19 @@ def main():
     ap.add_argument("--tex", type=int, default=1024)
     ap.add_argument("--pieces", action="store_true", help="also export per-piece GLBs")
     ap.add_argument("--name", default="villa_v2.glb", help="output file name")
+    ap.add_argument("--trim", type=float, default=0.0,
+                    help="export only the villa + this many metres of ground (0 = whole "
+                         "site, which no auto-framing viewer can show)")
     ns = ap.parse_args(argv)
 
     out = os.path.join(ROOT, ns.out)
     os.makedirs(out, exist_ok=True)
     sc, ext = B.build()
     print("alpha materials marked:", _set_alpha_modes(), flush=True)
+    trim_info = None
+    if ns.trim > 0:
+        trim_info = trim_scene(ns.trim)
+        print("TRIM", json.dumps(trim_info), flush=True)
 
     path = os.path.join(out, ns.name)
     size = export_house(path, tex_size=ns.tex)
@@ -212,6 +284,7 @@ def main():
     size = os.path.getsize(path)
     report = verify(path)
     report["alpha_mask_patched"] = masked
+    report["trim"] = trim_info
     report["file"] = path
     report["tex_px"] = ns.tex
     report["bytes"] = size

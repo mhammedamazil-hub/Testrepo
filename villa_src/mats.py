@@ -113,6 +113,12 @@ PLAIN = {
     "roof_membrane": ((0.085, 0.085, 0.090), 0.78, 0.0, {}),
     "alu_trim":      ((0.52, 0.53, 0.545), 0.28, 1.0, {}),
     "downpipe":      ((0.10, 0.10, 0.105), 0.42, 0.8, {}),
+    # ---- roof plant + terrace furniture
+    "roof_gravel":   ((0.20, 0.19, 0.18), 0.92, 0.0, {}),
+    "canvas_cream":  ((0.74, 0.70, 0.61), 0.90, 0.0, {}),
+    "teak_outdoor":  ((0.22, 0.135, 0.075), 0.62, 0.0, {}),
+    "concrete_grey": ((0.36, 0.355, 0.35), 0.80, 0.0, {}),
+    "plant_pot":     ((0.16, 0.155, 0.15), 0.72, 0.0, {}),
 }
 
 # Specular level per material. Physically, base Fresnel is ~0.04 (Specular IOR Level 0.5);
@@ -129,6 +135,9 @@ SPECULAR = {
     "lime_render": 0.30, "lime_warm": 0.30, "board_concrete": 0.25,
     "travertine_clad": 0.35, "stone_paving": 0.35, "timber_slat": 0.22,
     "roof_membrane": 0.12, "edging": 0.25, "alu_trim": 0.5, "downpipe": 0.5,
+    # wet/rough surfaces that must not mirror the sky at grazing angles
+    "roof_gravel": 0.14, "concrete_grey": 0.18, "canvas_cream": 0.12,
+    "teak_outdoor": 0.20, "plant_pot": 0.22,
 }
 
 # facades that get the low-frequency weathering multiply

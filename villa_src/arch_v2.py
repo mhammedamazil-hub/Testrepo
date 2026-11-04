@@ -165,6 +165,136 @@ def roof(current_roof):
     return out
 
 
+# ----------------------------------------------------------------- roof plant
+def roof_plant(coll):
+    """Everything a real flat roof carries, so the aerial is not an empty tray.
+
+    A bare membrane reads as a missing object from above; the fix is ballast, rooflights,
+    plant, a hatch and an aerial - the same clutter that tells you a building is used.
+    """
+    out = []
+    z = H + 0.22                                    # top of the membrane deck
+    # ballast: 20/40 washed gravel over the membrane, stopping at the parapet
+    out.append(K.slab("roof_ballast", -0.24, -0.24, W + 0.24, D + 0.24, z, z + 0.035,
+                      "gravel", coll=coll))
+    # two rooflights over the living/kitchen with aluminium kerbs
+    for i, (x, y, sx, sy) in enumerate(((6.4, 9.4, 1.30, 1.00), (11.2, 4.2, 1.05, 0.85))):
+        out.append(K.slab(f"roof_light_kerb{i}", x - sx / 2, y - sy / 2, x + sx / 2,
+                          y + sy / 2, z, z + 0.26, "alu_trim", bevel=0.006, coll=coll))
+        out.append(K.slab(f"roof_light_glass{i}", x - sx / 2 + 0.07, y - sy / 2 + 0.07,
+                          x + sx / 2 - 0.07, y + sy / 2 - 0.07, z + 0.20, z + 0.245,
+                          "glass_ribbed", coll=coll))
+    # condenser / plant units on anti-vibration feet, with louvred faces
+    for i, (x, y, rot) in enumerate(((2.30, 2.10, 0.0), (3.45, 2.10, 0.0),
+                                     (16.55, 9.55, 1.5708))):
+        out.append(K.box(f"ac_unit{i}", (1.00, 0.62, 0.72), (x, y, z + 0.40),
+                         rot=(0, 0, rot), mat="alu_trim", bevel=0.008, coll=coll))
+        for k in range(7):
+            out.append(K.box(f"ac_louvre{i}_{k}", (0.86, 0.02, 0.045),
+                             (x, y - 0.32, z + 0.14 + k * 0.075), rot=(0, 0, rot),
+                             mat="black_steel", coll=coll))
+        for k in range(4):
+            out.append(K.box(f"ac_foot{i}_{k}", (0.10, 0.10, 0.10),
+                             (x + (0.4 if k % 2 else -0.4), y + (0.22 if k < 2 else -0.22),
+                              z + 0.05), rot=(0, 0, rot), mat="black_steel", coll=coll))
+    # roof access hatch near the service corner
+    out.append(K.slab("roof_hatch", 17.20, 2.10, 18.00, 2.90, z, z + 0.24, "alu_trim",
+                      bevel=0.006, coll=coll))
+    # drainage outlets at each corner, with a dark leaf guard
+    for i, (x, y) in enumerate(((0.55, 0.55), (W - 0.55, 0.55), (0.55, D - 0.55),
+                                (W - 0.55, D - 0.55))):
+        out.append(K.cyl(f"roof_outlet{i}", 0.11, 0.05, (x, y, z + 0.045),
+                         mat="black_steel", seg=14, coll=coll))
+        out.append(K.slab(f"roof_leafguard{i}", x - 0.14, y - 0.14, x + 0.14, y + 0.14,
+                          z + 0.06, z + 0.08, "gravel", coll=coll))
+    # an aerial mast: the house had no verticals at all from above
+    out.append(K.cyl("roof_mast", 0.028, 2.30, (9.10, 10.60, z + 1.15), mat="alu_trim",
+                     seg=10, coll=coll))
+    for i, (dz, ln) in enumerate(((1.55, 0.62), (1.30, 0.48), (1.05, 0.36))):
+        out.append(K.box(f"roof_mast_bar{i}", (0.035, ln, 0.02),
+                         (9.10, 10.60 - ln / 2, z + dz), mat="alu_trim", coll=coll))
+    # service sleeves where the flues leave the deck (roofs are never seamless)
+    for i, (x, y) in enumerate(((13.90, 8.90), (4.20, 10.20))):
+        out.append(K.cyl(f"roof_sleeve{i}", 0.20, 0.10, (x, y, z + 0.06),
+                         mat="black_steel", seg=18, coll=coll))
+    return out
+
+
+# ------------------------------------------------------- terrace + entry detail
+def terrace_detail(coll, veg_coll):
+    """Outdoor furniture, planters and small fittings.
+
+    An empty paving slab is the single strongest cue that a render is unoccupied. Two
+    loungers, a side table and planted pots also give the eye a known size to compare the
+    house against - scale cues are half of what "realistic" means.
+    """
+    from . import vegetation as V
+    out = []
+    zt = 0.06                                   # terrace surface
+    # two low teak loungers with canvas pads, along the pool side of the terrace
+    for i, (x, y) in enumerate(((11.30, -3.05, ), (12.75, -3.05))):
+        out.append(K.box(f"lounger{i}_frame", (0.74, 1.92, 0.10), (x, y, zt + 0.16),
+                         mat="teak_outdoor", bevel=0.006, coll=coll))
+        for k in range(4):
+            out.append(K.box(f"lounger{i}_leg{k}", (0.07, 0.07, 0.20),
+                             (x + (0.30 if k % 2 else -0.30), y + (0.82 if k < 2 else -0.82),
+                              zt + 0.10), mat="teak_outdoor", coll=coll))
+        # pad: flat seat + raised back
+        out.append(K.box(f"lounger{i}_pad", (0.66, 1.24, 0.09), (x, y + 0.30, zt + 0.26),
+                         mat="canvas_cream", bevel=0.02, coll=coll))
+        back = K.box(f"lounger{i}_back", (0.66, 0.78, 0.09), (x, y - 0.52, zt + 0.36),
+                     rot=(-0.62, 0, 0), mat="canvas_cream", bevel=0.02, coll=coll)
+        out.append(back)
+        out.append(K.box(f"lounger{i}_towel", (0.42, 0.30, 0.05),
+                         (x, y + 0.62, zt + 0.32), rot=(0, 0, 0.2), mat="towel",
+                         bevel=0.01, coll=coll))
+    # side table between the loungers
+    out.append(K.cyl("terrace_table_top", 0.30, 0.05, (12.02, -4.15, zt + 0.52),
+                     mat="teak_outdoor", seg=24, coll=coll))
+    out.append(K.cyl("terrace_table_stem", 0.05, 0.50, (12.02, -4.15, zt + 0.27),
+                     mat="black_steel", seg=12, coll=coll))
+    out.append(K.cyl("terrace_table_base", 0.20, 0.03, (12.02, -4.15, zt + 0.02),
+                     mat="black_steel", seg=20, coll=coll))
+    out.append(K.cyl("terrace_glass", 0.045, 0.13, (12.02, -4.15, zt + 0.60),
+                     mat="glass_ribbed", seg=14, coll=coll))
+
+    # ---- planted pots: three against the glazing, two flanking the front door
+    def pot(name, x, y, r, h, seed, scale=1.0):
+        out.append(K.cyl(name + "_pot", r, h, (x, y, zt + h / 2), mat="plant_pot",
+                         seg=20, r2=r * 0.86, coll=coll))
+        out.append(K.cyl(name + "_rim", r * 1.03, 0.04, (x, y, zt + h - 0.01),
+                         mat="plant_pot", seg=20, coll=coll))
+        out.append(K.cyl(name + "_soil", r * 0.92, 0.03, (x, y, zt + h - 0.03),
+                         mat="soil", seg=18, coll=coll))
+        # a clipped topiary in a pot: squatter than a garden shrub, and with fewer, larger
+        # cards so it does not read as a golf ball at 3 m
+        sh = V.shrub(seed, 0.52 * scale, 0.52 * scale, coll=veg_coll, cards=420)
+        sh.location = (x, y, zt + h - 0.02)
+        gr = V.ornamental_grass(seed + 100, 0.42 * scale, 0.55 * scale, coll=veg_coll,
+                                blades=70)
+        gr.location = (x, y, zt + h - 0.02)
+        return sh
+
+    pot("pot_glaze1", 1.60, -0.95, 0.30, 0.62, 61, 0.95)
+    pot("pot_glaze2", 6.10, -0.95, 0.26, 0.55, 62, 0.85)
+    pot("pot_glaze3", 10.30, -0.95, 0.30, 0.62, 63, 0.95)
+    pot("pot_entry1", W + 0.86, 3.92, 0.28, 0.58, 64, 0.9)
+    pot("pot_entry2", W + 0.86, 6.44, 0.28, 0.58, 65, 0.9)
+
+    # ---- entry fittings: a wall light and a house number, both tiny, both sell it
+    out.append(K.box("entry_light", (0.09, 0.16, 0.30), (W + 0.05, 4.20, 1.95),
+                     mat="black_steel", bevel=0.01, coll=coll))
+    out.append(K.box("entry_light_face", (0.02, 0.13, 0.24), (W + 0.10, 4.20, 1.95),
+                     mat="ceramic", coll=coll))
+    out.append(K.box("entry_number", (0.02, 0.30, 0.16), (W + 0.03, 4.20, 2.30),
+                     mat="alu_trim", bevel=0.004, coll=coll))
+    # ---- wall-washer up-lights on the west garden wall
+    for i, y in enumerate((-1.2, 3.4, 7.2)):
+        out.append(K.box(f"wall_light{i}", (0.10, 0.10, 0.16), (-0.42, y, 0.52),
+                         mat="black_steel", bevel=0.008, coll=coll))
+    return out
+
+
 # ----------------------------------------------------------------------- site
 def site_v2(coll):
     """Terrace, pool, gravel margins, planting beds, driveway and garden walls."""

@@ -1,24 +1,24 @@
 {
  "pass": true,
  "source": {
-  "meshes": 723,
-  "tris": 599282,
-  "materials": 75,
+  "meshes": 823,
+  "tris": 609862,
+  "materials": 76,
   "bbox_m": [
-   700.0,
-   315.0,
-   19.75
+   80.06,
+   77.83,
+   12.88
   ],
   "images": 113
  },
  "reimported": {
-  "meshes": 723,
-  "tris": 599282,
-  "materials": 75,
+  "meshes": 823,
+  "tris": 609862,
+  "materials": 76,
   "bbox_m": [
-   700.0,
-   315.0,
-   19.75
+   80.06,
+   77.83,
+   12.88
   ],
   "images": 110
  },
@@ -35,13 +35,28 @@
  "alpha_mask_patched": [
   "grass_blade",
   "spray_dark",
+  "spray_b",
   "spray_a",
   "spray_olive",
-  "spray_b",
   "leaf_card_c"
  ],
+ "trim": {
+  "trim_m": 70.0,
+  "removed": 8,
+  "removed_names": [
+   "boundary_bed",
+   "boundary_bed_n",
+   "lawn_e",
+   "lawn_n",
+   "lawn_s",
+   "lawn_w",
+   "ridge0",
+   "ridge1"
+  ],
+  "recentred_by_m": 9.954
+ },
  "file": "/home/user/Testrepo/villa_v2/villa_v2_lite.glb",
  "tex_px": 256,
- "bytes": 37694724,
- "mb": 37.69
+ "bytes": 38410032,
+ "mb": 38.41
 }

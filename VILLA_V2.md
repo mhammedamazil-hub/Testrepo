@@ -81,6 +81,16 @@ light so surfaces are no longer lit by a perfectly uniform dome. Cloud frequency
 trick: scale 2.4 gives one blurry smear (nothing), scale 26 gives TV static, scale 9 reads as
 weather.
 
+**A roof from above is a plan.** The aerial showed a bare membrane, which reads as a
+missing object. Real flat roofs carry ballast, rooflights with a kerb, condensers on feet
+with louvred faces, a hatch, outlets, a mast. Every piece is cheap; together they turn an
+empty tray into a building.
+
+**Empty paving is the strongest tell.** Two loungers with canvas pads and a towel, a side
+table with a glass, three planted pots against the glazing, two flanking the door, a wall
+light and a house number. Small objects also give the eye a known size, and scale cues are
+half of what "realistic" means.
+
 **An entrance needs depth.** The v1 front door was a flat walnut panel on a blank wall, which
 is why the east elevation read as a garage. The door is now closed and set 0.19 m inside the
 outer face, lined with cedar jambs and head, with a threshold, a vertical pull bar and a
@@ -93,13 +103,38 @@ non-metallic stone — the same lesson as the khaki lawn, one storey up.
 
 ---
 
+## Why viewers showed a speck (fixed)
+
+The first v2 GLB was **700 x 315 m**: the distant ridges (700 m span) and the 150 m lawn
+slabs were exported along with the house, which is 19.7 m wide. Correct for a render - the
+ridge is what gives the horizon depth - and terrible in any viewer that frames the whole
+file. Every auto-framing glTF viewer, from the web previewers to a phone app, fitted 700 m
+into the frame, so the villa occupied about 3 % of the image and read as a speck on a plane.
+No amount of texture work can fix framing.
+
+`export_v2.py --trim M` deletes the backdrop by name *and* by size, lays a ground plane just
+big enough to sit the house in, and recentres the model on the origin:
+
+```
+TRIM {"trim_m": 70.0, "removed": 8,
+      "removed_names": ["boundary_bed", "boundary_bed_n", "lawn_e", "lawn_n", "lawn_s",
+                        "lawn_w", "ridge0", "ridge1"], "recentred_by_m": 9.954}
+```
+
+![a viewer framing the old 700 m scene vs the trimmed 80 m one](docs/glb_framing_before_after.png)
+
+Scene extent 700 m -> **80 m**, and the house goes from 3 % to 25 % of the frame at the same
+camera distance. The committed GLBs are the trimmed ones; the renders still use the full
+site, because a camera can point at what it likes and a viewer cannot.
+
 ## Deliverables
 
 | File | What |
 |---|---|
 | `villa_v2/villa_v2.blend` | editable scene: v1 shell + furniture + v2 exterior, garden, lights, cameras |
-| **`villa_v2/villa_v2.glb`** | **whole-site GLB, 51.9 MB, 1024² textures, 723 meshes, 599 k tris, Y-up** |
-| **`villa_v2/villa_v2_web.glb`** | same model at 512² textures, 40.9 MB — use this for web viewers |
+| **`villa_v2/villa_v2.glb`** | **villa + 70 m of garden, 52.6 MB, 1024² textures, 823 meshes, 610 k tris, Y-up** |
+| **`villa_v2/villa_v2_web.glb`** | same model at 512² textures, 41.7 MB — use this for web viewers |
+| **`villa_v2/villa_v2_lite.glb`** | same model at 256² textures, 38.4 MB (the asset the Android viewer packs) |
 | `villa_v2/glb_report.json` | the export verification (source vs re-imported) |
 | `villa_v2/*.png` | renders (1440 × 810, Cycles, 96 spp, denoised) |
 | `villa_v2/contact_sheet.png` | all 8 shots on one page |
@@ -109,7 +144,7 @@ should have to install Blender to look at the model. The `.blend` (15 MB) is not
 it is rebuilt by the command below, as are the GLBs.
 
 ```bash
-# regenerate the GLBs + verification (~50 s for both)
+# regenerate the GLBs + verification (~50 s for all three)
 .venv/bin/python tools/bpy_run.py villa_src/export_v2.py -- --out villa_v2 --tex 1024
 .venv/bin/python tools/bpy_run.py villa_src/export_v2.py -- --out villa_v2 --tex 512 --name villa_v2_web.glb
 ```
@@ -118,8 +153,8 @@ it is rebuilt by the command below, as are the GLBs.
 
 | Check | Result |
 |---|---|
-| Re-import into an empty scene | 723 meshes, 599,282 tris — identical to the source |
-| Bounding box after re-import (Y-up) | `[700.0, 315.0, 19.75]` m — identical |
+| Re-import into an empty scene | 823 meshes, 609,862 tris — identical to the source |
+| Bounding box after re-import (Y-up) | `[80.06, 77.83, 12.88]` m — identical, and small enough for a viewer to frame |
 | Materials | 75 / 75 |
 | Images | 110 packed (104 JPEG + 6 PNG, from 113 material slots) |
 | Foliage alpha | 6 materials, `alphaMode: MASK`, `alphaCutoff 0.4`, `doubleSided: true` |
@@ -167,9 +202,9 @@ Render times measured on 2 vCPU: 900 × 506 @ 24 spp ≈ 35–46 s per view; 144
 - **The interior is v1 geometry** with better light; it has not been re-modelled.
 - **The pool water** is a ripple normal map on a flat plane — no refraction through depth, no
   caustics.
-- **`hero_aerial` shows the roof as a bare plane.** There is a membrane, parapet, coping,
-  chimney and flues, but no ballast, rooflights, plant or AC units, so from above the
-  building reads as an empty tray. Roof clutter is the next thing I would add.
+- **The roof is dressed but not lived-in.** Ballast, two rooflights, three condensers with
+  louvres and feet, a hatch, four outlets, a mast and service sleeves are there now, which
+  is what stopped the aerial reading as an empty tray. No ducting runs between the units.
 - **Trees crop at the top of the aerial** and read as dark silhouettes against a bright lawn:
   card canopies have no self-shadow variation at that scale.
 - **`hero_entry` is the weakest exterior.** The east elevation faces away from the sun, so it
