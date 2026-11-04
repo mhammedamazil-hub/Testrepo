@@ -166,6 +166,11 @@ Render times measured on 2 vCPU: 900 × 506 @ 24 spp ≈ 35–46 s per view; 144
 - **The interior is v1 geometry** with better light; it has not been re-modelled.
 - **The pool water** is a ripple normal map on a flat plane — no refraction through depth, no
   caustics.
+- **`hero_aerial` shows the roof as a bare plane.** There is a membrane, parapet, coping,
+  chimney and flues, but no ballast, rooflights, plant or AC units, so from above the
+  building reads as an empty tray. Roof clutter is the next thing I would add.
+- **Trees crop at the top of the aerial** and read as dark silhouettes against a bright lawn:
+  card canopies have no self-shadow variation at that scale.
 - **`hero_entry` is the weakest exterior.** The east elevation faces away from the sun, so it
   is lit by sky and a 420 W bounce card. It is plausible archviz lighting, not great archviz
   lighting; the fix would be a second sun or a full HDRI, which the environment cannot
