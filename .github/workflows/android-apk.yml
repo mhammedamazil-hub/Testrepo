@@ -16,8 +16,14 @@ on:
       - 'android/**'
       - 'tools/villa_pack.py'
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Attach the APK to this release tag (leave empty to only use artifacts)'
+        required: false
+        default: ''
   release:
-    types: [created]
+    # 'created' is drafts, 'published' is a normal release - both should attach the APK
+    types: [created, published]
 
 jobs:
   apk:
@@ -124,8 +130,11 @@ jobs:
             /tmp/pack.json
           if-no-files-found: error
 
+      # A public release asset is a far friendlier download than a login-gated workflow
+      # artifact: on a tablet you can tap the link and install.
       - name: Attach APK to a release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || inputs.release_tag != ''
         uses: softprops/action-gh-release@v2
         with:
           files: villa-viewer.apk
+          tag_name: ${{ inputs.release_tag || github.event.release.tag_name }}
