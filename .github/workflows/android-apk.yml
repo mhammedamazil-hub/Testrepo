@@ -5,6 +5,10 @@ name: Build villa viewer APK
 
 on:
   push:
+    # Tag pushes are how a release asset gets built: `release` and `workflow_dispatch`
+    # events only run workflow files that exist on the DEFAULT branch, and this one lives
+    # on the work branch, whereas a tag push runs the workflow from the tagged commit.
+    tags: ['villa-viewer-v*']
     paths:
       - 'android/**'
       - 'tools/villa_pack.py'
@@ -133,8 +137,8 @@ jobs:
       # A public release asset is a far friendlier download than a login-gated workflow
       # artifact: on a tablet you can tap the link and install.
       - name: Attach APK to a release
-        if: github.event_name == 'release' || inputs.release_tag != ''
+        if: github.event_name == 'release' || inputs.release_tag != '' || startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: villa-viewer.apk
-          tag_name: ${{ inputs.release_tag || github.event.release.tag_name }}
+          tag_name: ${{ inputs.release_tag || github.event.release.tag_name || github.ref_name }}
