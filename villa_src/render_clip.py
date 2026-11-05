@@ -33,8 +33,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 # One motivated move: crane down behind the garden hedge, drift east along the terrace and
 # settle on the pool corner. Slow, eased, no cuts - the archviz "reveal", not a flythrough.
 # (position, aim point) at the start and the end; the aim interpolates too.
-CAM_A = ((5.20, -21.60, 5.60), (9.60, 1.20, 2.60))
-CAM_B = ((23.90, -8.40, 1.90), (12.20, 0.60, 1.55))
+# v2 path: y stays south of the tree line (the cypresses sit at y = -8 to -15) until the
+# camera is past them, then curves in to the pool corner. v1 cut straight through one.
+CAM_A = ((4.60, -19.80, 6.30), (9.60, 1.20, 2.45))
+CAM_B = ((25.20, -9.20, 1.95), (12.20, 0.60, 1.50))
 
 
 def build_camera(sc, lens=32.0, shift_y=0.05, fstop=6.3, focus=None):
@@ -92,7 +94,8 @@ def keyframe_move(cam, aim, frames):
                 kp.interpolation = "BEZIER"
                 kp.handle_left_type = kp.handle_right_type = "AUTO_CLAMPED"
     # a mid keyframe keeps the camera from cutting the corner through the hedge
-    cam.location = a.lerp(b, 0.5) + Vector((0.0, -1.6, 0.35))
+    # bow the path further out into the lawn, not into the planting
+    cam.location = a.lerp(b, 0.5) + Vector((0.0, -2.2, 0.55))
     aim.location = ta.lerp(tb, 0.5)
     cam.keyframe_insert("location", frame=frames // 2)
     aim.keyframe_insert("location", frame=frames // 2)

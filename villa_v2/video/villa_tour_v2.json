@@ -1,0 +1,44 @@
+{
+ "frames": 96,
+ "fps": 24,
+ "res": [
+  854,
+  480
+ ],
+ "samples": 24,
+ "seconds": 4.0,
+ "render_minutes": 74.1,
+ "per_frame_s": 46.3,
+ "camera": {
+  "from": [
+   4.6,
+   -19.8,
+   6.3
+  ],
+  "to": [
+   25.2,
+   -9.2,
+   1.95
+  ]
+ },
+ "file": "/home/user/Testrepo/villa_v2/video/villa_tour_v2.mp4",
+ "bytes": 2941852,
+ "mb": 2.94,
+ "lookdev": {
+  "grime": [
+   "lime_render",
+   "board_concrete",
+   "travertine_clad",
+   "stone_paving",
+   "asphalt",
+   "timber_slat"
+  ],
+  "edge": [
+   "board_concrete",
+   "travertine_clad",
+   "lime_render",
+   "stone_paving",
+   "timber_slat"
+  ]
+ }
+}

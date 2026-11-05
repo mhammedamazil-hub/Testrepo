@@ -121,6 +121,12 @@ stops at TIFF), so frames are PNGs first and the clip is encoded after.
     --res 854 480 --samples 16 --frames 96 --fps 24 --out villa_v2/video/villa_tour.mp4
 ```
 
-**v1 has a defect, kept honest:** the mid-point of the move passes through a cypress, so
-frames ~40–60 have a tree across the frame. The camera path was re-routed south of the
-tree line for the next render (`CAM_A/CAM_B` in `render_clip.py`).
+| version | what | result |
+|---|---|---|
+| `villa_tour.mp4` | v1 path | 96 f, 24 fps, 16 spp, 54 min — **defect:** the mid-point passes through a cypress, frames ~40–60 have a tree across the frame |
+| `villa_tour_v2.mp4` | path re-routed south of the tree line, bowed through the lawn | 96 f, 24 fps, **24 spp**, 74 min — subject readable for the whole move; near-field foliage sweeps past the lens in the second half, which is parallax, not an occlusion |
+
+![tour v2 key frames](video_frames_v2.png)
+
+Frames are PNGs first, then encoded, so an interrupted render keeps the frames it finished
+and a re-run only re-encodes.
