@@ -356,7 +356,7 @@ def main():
     # near-black (0.012) the whole hedge rendered as a black smear, so it is lifted to a
     # believable shaded-leaf green and relies on the lighting to keep it dark
     leaf_spray("spray_dark", 2051, leaves=10, spread=52, leaf_len=0.19, leaf_w=0.048,
-               hue=(0.062, 0.128, 0.037), tip=(0.125, 0.235, 0.070), droop=0.25)
+               hue=(0.105, 0.205, 0.062), tip=(0.180, 0.320, 0.105), droop=0.25)
     leaf_spray("spray_olive", 2039, leaves=13, spread=40, leaf_len=0.15, leaf_w=0.022,
                hue=(0.140, 0.180, 0.098), tip=(0.235, 0.262, 0.152), droop=0.15)
     leaf_card("leaf_card_a", 1001, hue=(0.075, 0.175, 0.034), tip=(0.18, 0.33, 0.082),
@@ -377,7 +377,7 @@ def main():
     paving("stone_paving", 1341)
     asphalt("asphalt", 1351)
     gravel("gravel", 1361, c0=(0.30, 0.285, 0.26), c1=(0.48, 0.46, 0.42))
-    lawn("lawn_v2", 1391, c0=(0.012, 0.048, 0.004), c1=(0.055, 0.150, 0.018))
+    lawn("lawn_v2", 1391, c0=(0.022, 0.078, 0.010), c1=(0.075, 0.190, 0.028))
     timber_slat("timber_slat", 1371)
     water_ripple("water_ripple", 1381)
     print("done:", len([f for f in os.listdir(OUT) if f.endswith(".png")]), "maps", flush=True)

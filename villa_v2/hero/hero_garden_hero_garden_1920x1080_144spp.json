@@ -1,0 +1,72 @@
+{
+ "shot": "hero_garden",
+ "res": [
+  1920,
+  1080
+ ],
+ "samples": 144,
+ "camera": [
+  [
+   6.6,
+   -18.2,
+   2.35
+  ],
+  [
+   9.4,
+   1.4,
+   2.0
+  ],
+  30.0
+ ],
+ "lens_mm": 30.0,
+ "shift_y": 0.06,
+ "fstop": 7.1,
+ "view_transform": "AgX",
+ "look": "AgX - Medium High Contrast",
+ "exposure": -0.3499999940395355,
+ "mist": {
+  "mist_start": 18.0,
+  "mist_depth": 280.0,
+  "mist_amount": 0.62
+ },
+ "sun": {
+  "sun_elevation": 22.0,
+  "sun_azimuth": 205.0,
+  "sun_energy": 4.6
+ },
+ "lookdev": {
+  "grime": [
+   "lime_render",
+   "board_concrete",
+   "travertine_clad",
+   "stone_paving",
+   "asphalt",
+   "timber_slat"
+  ],
+  "edge": [
+   "board_concrete",
+   "travertine_clad",
+   "lime_render",
+   "stone_paving",
+   "timber_slat"
+  ]
+ },
+ "build_seconds": 15.4,
+ "render_seconds": 1087.6,
+ "file": "/home/user/Testrepo/villa_v2/hero/hero_garden_hero_garden_1920x1080_144spp.png",
+ "bytes": 10397157,
+ "render": {
+  "max_bounces": 12,
+  "adaptive_threshold": 0.004999999888241291,
+  "denoiser": "OPENIMAGEDENOISE",
+  "caustics": [
+   false,
+   false
+  ]
+ },
+ "villa": {
+  "objects": 883,
+  "polygons": 299910,
+  "materials": 81
+ }
+}

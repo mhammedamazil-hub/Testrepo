@@ -449,8 +449,11 @@ def garden(veg_coll, site_coll):
         place(lambda i=i: V.cypress(3 + i, 7.6 + (i % 3) * 1.1, 0.78, coll=veg_coll), x, y,
               1.0, i * 0.7)
     # palms flank the pool, as a Mediterranean garden would
-    place(lambda: V.palm(4, 9.4, coll=veg_coll), 21.9, -2.6, 1.0, 0.5)
-    place(lambda: V.palm(14, 8.0, coll=veg_coll), 24.0, -9.4, 1.0, 2.2)
+    # Palms sit behind the pool, not between a camera and the facade: a palm 4 m from a
+    # 30 mm lens puts its trunk across the whole frame and (because the fronds are cards)
+    # leaves them reading as detached paddles against the sky.
+    place(lambda: V.palm(4, 9.4, coll=veg_coll), 25.4, 1.4, 1.0, 0.5)
+    place(lambda: V.palm(14, 8.0, coll=veg_coll), 29.0, -6.2, 1.0, 2.2)
 
     # ---- clipped hedge line tying the beds together
     for i, (x0, x1) in enumerate(((0.2, 4.4), (5.1, 8.6), (9.3, 12.6), (16.8, 19.1))):
