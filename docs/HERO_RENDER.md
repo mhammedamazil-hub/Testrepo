@@ -106,3 +106,21 @@ like. Verified by rendering and measuring, not by reading docs:
 - **No people, cars or clutter** beyond the terrace furniture — real photos of buildings
   have humans in them, and that absence is felt even when it is not noticed.
 - The aerial still carries the v2 background (ridges are silhouettes, no cloud shadows).
+
+## Video (`villa_v2/video/villa_tour.mp4`)
+
+`villa_src/render_clip.py` renders a keyframed camera move: crane down behind the garden
+hedge, drift east along the terrace, settle on the pool corner. 96 frames, 24 fps, 854×480,
+16 samples, ~34 s per frame (54 min total), encoded to H.264 by the static ffmpeg inside
+`imageio-ffmpeg` — the bpy wheel has **no video encoder** (`image_settings.file_format`
+stops at TIFF), so frames are PNGs first and the clip is encoded after.
+
+```bash
+.venv/bin/pip install imageio-ffmpeg
+.venv/bin/python tools/bpy_run.py villa_src/render_clip.py -- \
+    --res 854 480 --samples 16 --frames 96 --fps 24 --out villa_v2/video/villa_tour.mp4
+```
+
+**v1 has a defect, kept honest:** the mid-point of the move passes through a cypress, so
+frames ~40–60 have a tree across the frame. The camera path was re-routed south of the
+tree line for the next render (`CAM_A/CAM_B` in `render_clip.py`).
