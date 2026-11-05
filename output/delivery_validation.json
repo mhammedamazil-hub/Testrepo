@@ -1,0 +1,17 @@
+{
+  "status": "TECHNICAL_PASS",
+  "file": "Alpine_Mirror_1080p_20s.mp4",
+  "native_frames": 480,
+  "decoded_frames": 480,
+  "width": 1920,
+  "height": 1080,
+  "fps": 24,
+  "duration_seconds": 20.0,
+  "codec": "h264",
+  "bytes": 28668630,
+  "audio": "none requested; silent",
+  "interpolated_or_duplicated_frames": false,
+  "assembly": "verified segments, stream-copy without second lossy encode",
+  "scene_sha256": "dc2f96a21f2ddf89c3e70a878b7bf2cdc5615617ae609b80e0fa968b433060ac",
+  "visual_approval": "Separate artistic review required; technical pass is not a photorealism certification."
+}

@@ -1,0 +1,41 @@
+{
+  "technical_status": "PASS",
+  "checks": {
+    "native_full_hd": true,
+    "twenty_seconds_at_24fps": true,
+    "cycles_cpu": true,
+    "denoising": true,
+    "agx": true,
+    "real_3d_mountain": true,
+    "forest_instances": true,
+    "no_external_image_projections": true,
+    "no_missing_asset_dependencies": true,
+    "actual_water_surface": true,
+    "water_dielectric": true,
+    "animated_ripples": true,
+    "real_camera_parallax": true,
+    "deep_focus_landscape": true,
+    "short_clip_safe": true
+  },
+  "camera_positions": [
+    [
+      0.0,
+      -74.0,
+      8.0
+    ],
+    [
+      0.6499999761581421,
+      -72.69999694824219,
+      8.119999885559082
+    ],
+    [
+      1.5,
+      -71.0,
+      8.300000190734863
+    ]
+  ],
+  "objects": 5718,
+  "unique_polygons": 2277832,
+  "visual_status": "NOT_CERTIFIED: consult preview and QA notes",
+  "blender": "4.2.23 LTS"
+}

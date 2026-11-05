@@ -1,0 +1,14 @@
+{
+  "objects": 5718,
+  "mesh_datablocks": 23,
+  "unique_polygons": 2277832,
+  "trees": 5199,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 24,
+  "frames": 480,
+  "seconds": 20,
+  "blender": "4.2.23 LTS"
+}
