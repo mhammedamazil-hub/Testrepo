@@ -537,7 +537,8 @@ static void init_gl() {
     glBufferData(GL_ARRAY_BUFFER, sizeof gquad, gquad, GL_STATIC_DRAW);
     glGenBuffers(1, &G.orb_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, G.orb_vbo);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(6 * 8 * 5 * sizeof(float)), nullptr,
+    // 8 orbs x 2 billboards x 6 vertices x 6 floats (clip xyzw + corner xy)
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(8 * 2 * 6 * 6 * sizeof(float)), nullptr,
                  GL_DYNAMIC_DRAW);
 
     glEnable(GL_DEPTH_TEST);
@@ -617,11 +618,16 @@ static void draw_orbs(const float eye[3], const float yaw, const float pitch) {
     const Mat4 vp = mat4_mul(pm, v);
 
     // 4 vertices per billboard: (clip x,y,z,w) + (corner x,y) = 6 floats
-    float buf[8 * 2 * 4 * 6];
+    float buf[8 * 2 * 6 * 6] = {0};   // 8 orbs x 2 quads x 6 verts x 6 floats
+    static_assert(sizeof(buf) / sizeof(float) >= 8 * 2 * 6 * 6, "orb buffer too small");
     int vi = 0;
     const int order[6] = {0, 1, 2, 2, 1, 3};
-    for (size_t i = 0; i < G.game.lv.objs.size(); ++i) {
+    // 8 orbs x 2 quads x 6 verts x 6 floats fits the buffer exactly; more objectives than
+    // that and the list is simply drawn in batches of eight
+    size_t drawn = 0;
+    for (size_t i = 0; i < G.game.lv.objs.size() && drawn < 8; ++i) {
         if (G.game.taken[i]) continue;
+        ++drawn;
         const LevelObj& o = G.game.lv.objs[i];
         for (int layer = 0; layer < 2; ++layer) {
             const float halfw = layer == 0 ? 0.42f : 0.9f;
@@ -662,7 +668,7 @@ static void draw_orbs(const float eye[3], const float yaw, const float pitch) {
     glDepthMask(GL_FALSE);
     // halos first, then the faint columns, so a column never washes out the orb inside it
     int first = 0;
-    for (size_t i = 0; i < G.game.lv.objs.size(); ++i) {
+    for (size_t i = 0; i < G.game.lv.objs.size() && first / 12 < 8; ++i) {
         if (G.game.taken[i]) continue;
         glUniform1f(G.o_alpha, 0.80f);
         glDrawArrays(GL_TRIANGLES, first, 6);

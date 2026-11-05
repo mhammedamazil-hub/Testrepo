@@ -138,6 +138,27 @@ jobs:
           done
           exit 1
 
+      # Artifacts are awkward to reach from some networks, so prove the APK's contents in
+      # the log: the native library for both ABIs, the DEX, the packed model and level, and
+      # the generated audio all have to be inside it.
+      - name: Verify the APK contents
+        run: |
+          set -euo pipefail
+          apk=android/game/app/build/outputs/apk/debug/app-debug.apk
+          unzip -l "$apk" > /tmp/apk.txt
+          for want in classes.dex lib/arm64-v8a/libvillagame.so lib/armeabi-v7a/libvillagame.so \
+                      assets/model.vpk assets/level.bin res/raw/wind.wav res/raw/step.wav \
+                      res/raw/chime.wav; do
+            if ! grep -q " $want$" /tmp/apk.txt; then
+              echo "::error::APK is missing $want"
+              exit 1
+            fi
+            echo "ok  $(grep " $want$" /tmp/apk.txt | awk '{print $1, $4}')"
+          done
+          # the packed model must be the whole villa, not a truncated copy
+          size=$(unzip -l "$apk" | awk '/assets\/model.vpk/ {print $1}')
+          test "$size" -gt 20000000 || { echo "::error::model.vpk is only $size bytes"; exit 1; }
+
       - name: Report APK
         run: |
           set -euo pipefail

@@ -11,6 +11,16 @@ code in Blender (bpy 5.0.1) — procedural PBR textures, 113 parametric furnitur
 Cycles stills, a camera walkthrough, an editable `.blend`, a whole-house GLB and one
 pivoted GLB per furniture piece. Cost **$0**.
 
+## 🎮 Villa Garden — a playable APK of the villa
+
+**[`android/game/README.md`](./android/game/README.md)** — a first-person game built out of
+the villa model: eight orbs scattered over the 87 × 84 m garden, a timer, a thumb stick.
+Blender makes the assets, `tools/villa_pack.py` packs them, `tools/game_level.py` bakes the
+collision level from the actual triangles, and a ~1 400-line C++/GLES2 renderer draws it.
+GitHub Actions builds the APK.
+
+**[⬇ Download `villa-garden.apk`](https://github.com/mhammedamazil-hub/Testrepo/releases)** (≈ 28 MB, Android 5.0+, phone or tablet).
+
 ## 🎛️ Blender skill system (13 local skills + 17 vendored)
 
 **[`skills/README.md`](./skills/README.md)** — the router. **Read a skill's `SKILL.md`
