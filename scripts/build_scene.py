@@ -173,7 +173,7 @@ def shores(y):
 def landz(x,y):
     left,right=shores(y)
     dist=max(left-x,x-right)
-    if y>318: dist=max(dist,(y-318)*.8)
+    if y>318: dist=max(dist,(y-318)*.10)
     # Foreground rocky shelf at right, with an irregular curve toward the lake.
     fore=(-33-y)*.24 + (x-12)*.15
     if y < -19: dist=max(dist,fore)
@@ -273,6 +273,15 @@ for i in range(1950):
     z=landz(x,y)
     h=R.uniform(8,17)
     instance(R.choice(protos),'TREE_ValleySlope_%04d'%i,(x,y,z-.1),h,'Forest',R.random()*6.28)
+    count+=1
+# Dense back-shore forest; a low valley floor must not become a bare ramp
+# hiding the massif. Stop trees at the rocky alpine elevation.
+for i in range(1450):
+    x=R.uniform(-165,165); y=R.uniform(322,640)
+    z=max(landz(x,y),mountainz(x,y) if y>=355 else 0)
+    if z>76: continue
+    h=R.uniform(7,14)
+    instance(R.choice(protos),'TREE_BackShore_%04d'%i,(x,y,z-.08),h,'Forest',R.random()*6.28)
     count+=1
 print('Forest instances',count,flush=True)
 
