@@ -24,7 +24,7 @@ Downloaded and installed the 94-skill MIT pack from https://github.com/arjun988/
 - No exposed `/dev/dri` or NVIDIA device. Use Cycles CPU only.
 - Blender not initially installed. Installed `bpy==4.2.23` (Blender 4.2 LTS), Pillow, NumPy, imageio-ffmpeg from PyPI.
 - Debian package mirror inaccessible under outbound allowlist. bpy's linked display libraries are missing. Headless-only no-op UI link shims permit background CPU Cycles; not suitable for interactive Blender/Eevee. Actual Cycles test render succeeded. See bootstrap script for details.
-- GitHub Actions permissions endpoint returned HTTP 403; no remote runner capacity assumed.
+- GitHub Actions administrative permissions endpoint returned HTTP 403. Subsequent workflow list/read calls and a source push succeeded; the distributed CPU workflow has been started. Real OS display-link libraries are installed on runners; sandbox UI shims are not used remotely.
 
 ## Delivery standards
 Native 1080p, no reference-photo projection, actual 3D reflections and camera parallax. All procedural geometry/materials editable and no external commercial asset dependencies. This is an artistic reconstruction, not a photogrammetric or pixel-exact reproduction.

@@ -38,7 +38,9 @@ Those shims are **not** for UI, Eevee, OpenGL or GPU use. GitHub runners use rea
 
 `render_frames.py` validates and skips already-complete PNGs; interrupted frames are written to temporary filenames and are not considered finished. All animation frames are rendered at native resolution; no upscaling, frame duplication or optical-flow interpolation is used. Cycles CPU, adaptive sampling, OpenImageDenoise, AgX color management, dielectric water and geometric instancing keep the scene within a small RAM budget.
 
-The workflow `.github/workflows/alpine-render.yml` builds the scene once, distributes 480 frames over 48 ten-frame CPU jobs (at most 20 in parallel), renders the hero still separately, then assembles and fully decodes the MP4 for verification. It publishes compact requested deliverables only on `arena/f0bb5c2d-testrepo`; temporary PNG sequences remain short-retention Actions artifacts, not Git files. The workflow is intentionally restricted to this session branch.
+Run the isolated codec smoke tests with `python -m unittest discover -s tests -v`. Synthetic test colors are temporary test fixtures, never delivery footage.
+
+The workflow `.github/workflows/alpine-render.yml` builds the scene once, distributes 480 frames over 48 ten-frame CPU jobs (at most 20 in parallel), renders the hero still separately, encodes each ten-frame segment once, then stream-copies the segments into the final MP4 and fully decodes it for verification. It publishes compact requested deliverables only on `arena/f0bb5c2d-testrepo`; raw PNG sequences stay on the temporary workers; compact encoded segments are short-retention Actions artifacts, not Git files. The workflow is intentionally restricted to this session branch.
 
 Final output binaries are normally ignored. The publishing job explicitly adds only the requested compact `.blend`, PNG, MP4 and small validation manifests for durable delivery; raw sequences, caches and logs never enter Git.
 

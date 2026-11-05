@@ -48,6 +48,7 @@ jobs:
           path: |
             output/Alpine_Mirror.blend
             output/scene_manifest.json
+            output/scene_validation.json
           retention-days: 7
 
   render:
@@ -82,10 +83,11 @@ jobs:
           START=$(( ${{ matrix.chunk }} * 10 + 1 ))
           END=$(( START + 9 ))
           python -u scripts/render_frames.py --start "$START" --end "$END" --samples 64 --threads 4
+          python scripts/encode_chunk.py --chunk ${{ matrix.chunk }}
       - uses: actions/upload-artifact@v4
         with:
-          name: alpine-frames-${{ matrix.chunk }}
-          path: output/frames/*.png
+          name: alpine-segment-${{ matrix.chunk }}
+          path: output/segments/*
           compression-level: 0
           retention-days: 3
 
@@ -133,8 +135,8 @@ jobs:
       - run: pip install Pillow imageio-ffmpeg==0.8.1
       - uses: actions/download-artifact@v4
         with:
-          pattern: alpine-frames-*
-          path: output/frames
+          pattern: alpine-segment-*
+          path: output/segments
           merge-multiple: true
       - uses: actions/download-artifact@v4
         with:
@@ -145,7 +147,7 @@ jobs:
           name: alpine-still
           path: output
       - name: Encode and verify all 480 decoded frames
-        run: python scripts/encode_verify.py
+        run: python scripts/encode_verify.py --segments
       - uses: actions/upload-artifact@v4
         with:
           name: Alpine-Mirror-1080p-delivery
@@ -154,6 +156,7 @@ jobs:
             output/Alpine_Mirror_1080p.png
             output/Alpine_Mirror.blend
             output/scene_manifest.json
+            output/scene_validation.json
             output/delivery_validation.json
           compression-level: 0
           retention-days: 30
@@ -162,6 +165,6 @@ jobs:
           git config user.name 'Alpine Render Bot'
           git config user.email 'alpine-render@users.noreply.github.com'
           git pull --ff-only origin arena/f0bb5c2d-testrepo
-          git add -f output/Alpine_Mirror_1080p_20s.mp4 output/Alpine_Mirror_1080p.png output/Alpine_Mirror.blend output/scene_manifest.json output/delivery_validation.json
+          git add -f output/Alpine_Mirror_1080p_20s.mp4 output/Alpine_Mirror_1080p.png output/Alpine_Mirror.blend output/scene_manifest.json output/scene_validation.json output/delivery_validation.json
           git commit -m 'Deliver verified full-HD 20-second Alpine Mirror render and Blender scene'
           git push origin arena/f0bb5c2d-testrepo

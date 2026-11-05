@@ -12,7 +12,8 @@ Neither a running render nor a workflow definition is a completed movie. The 20-
 2. Corrected lake opening and world shader; changed rock/snow masks, displaced and warped the massif, moved camera to 28 mm environmental framing. Rejected regular terrain and foliage patterns.
 3. Added hydraulic erosion, preserved primary summit with a low erosion blend, increased terrain sampling, added multiscale rock normals, hid an artificial-looking standalone glacier sheet. Added steep-slope forest belt and better boulder fracture planes.
 4. Added modeled needle silhouettes, dense interior spruce shoots, foreground meadow density and lupines. Corrected a display-link dependency problem without replacing any Cycles renderer functions.
-5. Replaced overlapping flank/shore sheets with one continuous valley terrain to eliminate open undersides and shadow artifacts.
+5. Replaced overlapping flank/shore sheets with one continuous valley terrain to eliminate open undersides and shadow artifacts. Lowered the back valley floor, completed the far-shore forest belt, and checked first/mid/last framing at preview resolution.
+6. Passed isolated 1080p segment-encode/concatenate/full-decode tests and missing-frame rejection tests. Synthetic codec fixtures are created only in temporary test directories and deleted; none are delivery footage.
 
 ## Implemented technical gates
 
@@ -22,7 +23,7 @@ Neither a running render nor a workflow definition is a completed movie. The 20-
 - No external image texture projections/backplates.
 - Actual camera translation and animated water normals.
 - Resumable frame rendering with scene SHA-256 and quality-settings sidecars.
-- Every encoded source PNG verified at full HD.
+- Every encoded source PNG verified at full HD; each ten-frame segment is decoded and SHA-256 checked. Segment assembly is stream copy, not a second lossy encode. All chunks must match the delivered scene SHA-256.
 - Entire encoded MP4 decoded, checking dimensions, 24 fps, 480 decoded frames and 20-second duration.
 
 ## Remaining artistic limitations to disclose
