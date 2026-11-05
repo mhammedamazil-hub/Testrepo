@@ -1,0 +1,177 @@
+name: Build Villa Garden APK
+
+# Builds the playable APK. Before it compiles anything it re-bakes the level, re-packs the
+# model and runs the desktop harness, which walks the entire level with the real movement
+# code and renders eye-level frames. So a green run means the level is traversable and the
+# renderer shows the geometry the collision was baked from - not merely that Gradle exited 0.
+
+on:
+  push:
+    tags: ['villa-garden-v*']
+    paths:
+      - 'android/game/**'
+      - 'android/viewer/app/src/main/cpp/**'
+      - 'tools/game_level.py'
+      - 'tools/game_sim.cpp'
+      - 'tools/game_audio.py'
+      - 'tools/villa_pack.py'
+      - 'villa_v2/*.glb'
+      - '.github/workflows/game-apk.yml'
+  pull_request:
+    paths:
+      - 'android/game/**'
+      - 'tools/game_sim.cpp'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Attach the APK to this release tag (empty = artifact only)'
+        required: false
+        default: ''
+  release:
+    types: [created, published]
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK, NDK and CMake
+        run: |
+          set -euo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          SDKM=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)
+          echo "sdkmanager: $SDKM"
+          yes | "$SDKM" --licenses > /dev/null 2>&1 || true
+          # the runner image carries an NDK, but the game pins one so builds are reproducible
+          "$SDKM" "platforms;android-34" "build-tools;34.0.0" "platform-tools" \
+                  "ndk;26.1.10909125" "cmake;3.22.1"
+          ls "$ANDROID_HOME/ndk"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.3'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install asset tooling
+        run: pip install --quiet numpy pillow
+
+      - name: Bake the level and pack the model
+        run: |
+          set -euo pipefail
+          python tools/game_level.py villa_v2/villa_v2_lite.glb \
+            -o android/game/app/src/main/assets/level.bin \
+            --map /tmp/game_level_map.png --json-out /tmp/level.json | tee /tmp/level.log
+          grep -q "PLAYABLE: all" /tmp/level.log
+          python tools/villa_pack.py villa_v2/villa_v2_web.glb \
+            -o android/game/app/src/main/assets/model.vpk --json-out /tmp/pack.json
+          python tools/verify_pack.py /tmp/pack.json --tris 500000 --max-mb 60
+          python tools/game_audio.py android/game/app/src/main/res/raw
+
+      # The important gate: the same movement code, the same level and the same renderer
+      # maths as the APK, executed on the host. It fails if the walk stalls, if an objective
+      # is inside geometry, or if the body leaves walkable ground.
+      - name: Walk the whole level on the host (real game_core + real VPK loader)
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -o /tmp/gamesim tools/game_sim.cpp \
+              android/viewer/app/src/main/cpp/vpk.cpp \
+              -Iandroid/viewer/app/src/main/cpp \
+              -Iandroid/game/app/src/main/cpp
+          /tmp/gamesim play android/game/app/src/main/assets /tmp/shot 6 | tee /tmp/play.log
+          grep -q "^PASS" /tmp/play.log
+          python - <<'PY'
+          from PIL import Image
+          import glob, os
+          for p in sorted(glob.glob('/tmp/shot_*.ppm')):
+              Image.open(p).save(p.replace('.ppm', '.png'))
+          # one contact sheet is easier to look at than nine loose frames
+          fs = sorted(glob.glob('/tmp/shot_*.png'))
+          if fs:
+              ims = [Image.open(f) for f in fs]
+              w, h = ims[0].size
+              sheet = Image.new('RGB', (w * 2, h * ((len(ims) + 1) // 2)))
+              for i, im in enumerate(ims):
+                  sheet.paste(im, ((i % 2) * w, (i // 2) * h))
+              sheet.save('/tmp/game_playthrough.png')
+          PY
+
+      # Compile check of the NDK sources against stub headers: catches the class of mistake
+      # that would otherwise only show up in the Gradle log.
+      - name: Type-check the native sources
+        run: |
+          set -euo pipefail
+          g++ -fsyntax-only -std=c++17 -Itools/android_stub \
+              -Iandroid/game/app/src/main/cpp -Iandroid/viewer/app/src/main/cpp \
+              android/game/app/src/main/cpp/game.cpp
+
+      - name: Build debug APK
+        run: |
+          set -o pipefail
+          gradle -p android/game --no-daemon --console=plain --stacktrace assembleDebug \
+            2>&1 | tee /tmp/gradle.log
+
+      - name: Surface build errors
+        if: failure()
+        run: |
+          set +e
+          grep -E "error:|error \[|Unresolved|FAILURE:|Caused by|What went wrong|Could not|CMake Error" \
+            /tmp/gradle.log 2>/dev/null | head -40 | while IFS= read -r line; do
+            echo "::error::$line"
+          done
+          exit 1
+
+      - name: Report APK
+        run: |
+          set -euo pipefail
+          f=android/game/app/build/outputs/apk/debug/app-debug.apk
+          ls -l "$f"
+          cp "$f" villa-garden.apk
+          {
+            echo "### villa-garden.apk"
+            echo
+            echo "size: $(du -h villa-garden.apk | cut -f1)"
+            echo
+            echo '```'
+            sed -n '1,40p' /tmp/play.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: villa-garden-apk
+          path: villa-garden.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-evidence
+          path: |
+            /tmp/game_level_map.png
+            /tmp/game_playthrough.png
+            /tmp/level.json
+            /tmp/play.log
+
+      - name: Attach APK to a release
+        if: github.event_name == 'release' || inputs.release_tag != '' || startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: villa-garden.apk
+          tag_name: ${{ inputs.release_tag || github.event.release.tag_name || github.ref_name }}

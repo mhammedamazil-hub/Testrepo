@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ai.arena.villagame'
+    compileSdk 34
+    ndkVersion '26.1.10909125'
+
+    defaultConfig {
+        applicationId 'ai.arena.villagame'
+        minSdk 21                 // GLES2 + Java 8 level: runs on anything from 2014 on
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        ndk {
+            // 64-bit for anything current, 32-bit for older cheap tablets
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_static'
+                cppFlags '-std=c++17 -O3 -fno-exceptions -fno-rtti'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            // debug-signed on purpose: see README ("honest limits"). Signing a release
+            // keystore in a public repo would be theatre.
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // the model and the level are already packed assets; do not compress them twice
+    androidResources {
+        noCompress 'vpk', 'bin'
+    }
+}
+
+dependencies {
+    // deliberately empty
+}

@@ -1,0 +1,5 @@
+// One module, one plugin. No third-party dependencies: the game is Java + GLES2 + a small
+// C++ core built by CMake, and nothing is downloaded beyond AGP itself.
+plugins {
+    id 'com.android.application' version '8.1.4' apply false
+}
