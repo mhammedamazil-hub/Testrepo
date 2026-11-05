@@ -23,16 +23,16 @@ struct GameSun {
 // stills were lit with (sun azimuth 205 deg in Blender terms).
 static inline GameSun game_sun() {
     GameSun s{};
-    const float el = 22.0f * 3.14159265f / 180.0f;
+    const float el = 30.0f * 3.14159265f / 180.0f;   // mid-afternoon: a garden you can walk in, not a dusk photo
     const float az = 236.0f * 3.14159265f / 180.0f;
     s.dir[0] = sinf(az) * cosf(el);
     s.dir[1] = sinf(el);
     s.dir[2] = -cosf(az) * cosf(el);
-    s.sun_col[0] = 2.55f;  s.sun_col[1] = 2.10f;  s.sun_col[2] = 1.52f;
-    s.sky_col[0] = 0.34f;  s.sky_col[1] = 0.45f;  s.sky_col[2] = 0.62f;
-    s.ground_col[0] = 0.13f; s.ground_col[1] = 0.12f; s.ground_col[2] = 0.10f;
-    s.fog_col[0] = 0.105f; s.fog_col[1] = 0.115f; s.fog_col[2] = 0.125f;  // == the sky horizon, so distance melts into sky
-    s.exposure = 3.2f;
+    s.sun_col[0] = 3.00f;  s.sun_col[1] = 2.55f;  s.sun_col[2] = 1.88f;
+    s.sky_col[0] = 0.50f;  s.sky_col[1] = 0.62f;  s.sky_col[2] = 0.80f;
+    s.ground_col[0] = 0.24f; s.ground_col[1] = 0.22f; s.ground_col[2] = 0.18f;
+    s.fog_col[0] = 0.115f; s.fog_col[1] = 0.128f; s.fog_col[2] = 0.145f;  // == the sky horizon, so distance melts into sky
+    s.exposure = 2.30f;
     s.fog_start = 20.0f;
     s.fog_density = 0.011f;
     return s;
@@ -73,6 +73,34 @@ static inline void game_shade(const float albedo[3], const float base[3], const 
         out[i] = game_tonemap(c * s.exposure);
     }
 }
+
+/// HDR variant: same maths, but stops before the tone curve so the post pass can bloom the
+/// scene in linear light. `sun_vis` is the baked sun visibility and `ao` the baked ambient
+/// visibility, both 0..1 from tools/villa_pack.py. Without them GLES2 has no shadows at all,
+/// which is why v1 looked flat: the trees cast nothing and every wall was lit the same.
+static inline void game_shade_hdr(const float albedo[3], const float base[3], const float n[3],
+                                  const GameSun& s, float ao, float sun_vis, float out[3],
+                                  float fres = 0.0f) {
+    float nl = n[0] * n[0] + n[1] * n[1] + n[2] * n[2];
+    float inv = nl > 1e-8f ? 1.0f / sqrtf(nl) : 0.0f;
+    const float nx = n[0] * inv, ny = n[1] * inv, nz = n[2] * inv;
+    float d = nx * s.dir[0] + ny * s.dir[1] + nz * s.dir[2];
+    d = d > 0.0f ? d : 0.0f;
+    d = d * d * (3.0f - 2.0f * d) * 0.35f + d * 0.65f;
+    const float hemi = 0.5f + 0.5f * ny;
+    for (int i = 0; i < 3; ++i) {
+        float alb = albedo[i] * base[i];
+        float lin = alb * alb;
+        float amb = (s.ground_col[i] + (s.sky_col[i] - s.ground_col[i]) * hemi) * ao;
+        float c = lin * (amb + s.sun_col[i] * d * sun_vis);
+        // the sheen is what a sky actually adds at grazing angles
+        c += s.sky_col[i] * fres * 0.055f * ao;
+        out[i] = c * s.exposure;
+    }
+}
+
+/// Exposure + ACES + sRGB, the display end of the pipeline.
+static inline float game_display(float x) { return game_tonemap(x); }
 
 /// Distance haze, matched to fog_col/fog_start/fog_density.
 static inline float game_fog(const GameSun& s, float dist) {

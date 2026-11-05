@@ -113,6 +113,27 @@ jobs:
               sheet.save('/tmp/game_playthrough.png')
           PY
 
+      # The v1 APK shipped a black screen because a varying was declared mediump in the vertex
+      # shader and highp in the fragment shader: link failed on the device and CI never knew.
+      # This is the same check, run before Gradle, plus one real 1080p frame.
+      - name: Check the GLSL ES shaders and render a 1080p frame
+        run: |
+          set -euo pipefail
+          python tools/gles_shader_check.py | tee /tmp/shaders.log
+          grep -q "^PASS" /tmp/shaders.log
+          /tmp/gamesim shot android/game/app/src/main/assets /tmp/hero.ppm 11.75 -13.85 0
+          python - <<'PY'
+          from PIL import Image
+          im = Image.open('/tmp/hero.ppm')
+          assert im.size == (1920, 1080), im.size
+          im.save('/tmp/game_1080p.png')
+          q = im.resize((64, 36)).convert('L')
+          px = list(q.getdata())
+          mean = sum(px) / len(px)
+          assert mean > 40, f"frame is basically black (mean {mean:.1f})"
+          print(f"1080p frame OK, mean luma {mean:.1f}")
+          PY
+
       # Compile check of the NDK sources against stub headers: catches the class of mistake
       # that would otherwise only show up in the Gradle log.
       - name: Type-check the native sources
@@ -187,6 +208,8 @@ jobs:
           path: |
             /tmp/game_level_map.png
             /tmp/game_playthrough.png
+            /tmp/game_1080p.png
+            /tmp/shaders.log
             /tmp/level.json
             /tmp/play.log
 

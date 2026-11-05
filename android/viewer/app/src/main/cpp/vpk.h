@@ -20,12 +20,18 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <vector>
 
 static const uint16_t VPK_NO_TEXTURE = 0xFFFF;
 static const uint32_t VPK_VERTEX_STRIDE = 20;
 static const uint32_t VPK_ALPHA_CUTOUT = 1u;
+// VDraw.flags bits, shared by the viewer and the game
+static const uint16_t VPK_FLAG_CUTOUT = 1u;   // alpha test the texture
+static const uint16_t VPK_FLAG_2SIDED = 2u;   // do not cull (and in the game: foliage + sway)
+static const uint16_t VPK_FLAG_GLASS = 4u;    // blended glazing
+static const uint16_t VPK_FLAG_WATER = 8u;    // animated pool surface
 
 #pragma pack(push, 1)
 struct VHeader {
@@ -58,6 +64,26 @@ struct VDraw {
     float alpha_cutoff;      // <= 0 means "no cutout"
     float emissive[3];
     float pad[2];
+};
+
+// AOB1 - the baked lighting sidecar written by tools/villa_pack.py --ao-out.
+// GLES2 has no shadow maps and no SSAO, and the villa and the sun are static, so the sun's
+// visibility and the ambient occlusion are computed once, per vertex, by raymarching a voxel
+// grid of the scene. This header is the whole runtime format.
+static const char AO_MAGIC[4] = {'A', 'O', 'B', '1'};
+
+struct AoMap {
+    uint32_t n_verts = 0;
+    std::vector<uint8_t> ao;    // ambient visibility, per vertex
+    std::vector<uint8_t> sun;   // sun visibility, per vertex
+    bool load(const std::vector<uint8_t>& b, uint32_t expect_verts) {
+        if (b.size() < 12 || std::memcmp(b.data(), AO_MAGIC, 4) != 0) return false;
+        std::memcpy(&n_verts, b.data() + 4, 4);
+        if (n_verts != expect_verts || b.size() < (size_t)12 + 2 * (size_t)n_verts) return false;
+        ao.assign(b.begin() + 12, b.begin() + 12 + n_verts);
+        sun.assign(b.begin() + 12 + n_verts, b.begin() + 12 + 2 * n_verts);
+        return true;
+    }
 };
 
 struct VTexture {

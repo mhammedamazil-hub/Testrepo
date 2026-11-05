@@ -1,13 +1,18 @@
 # Villa Garden — a playable APK of the villa model
 
-A small first-person game built out of the villa itself. You start on the south lawn at
-golden hour, eight collection orbs are scattered across the 87 × 84 m garden, and the clock
-runs until you have walked all of them. No enemies, no tutorials, no ads, no permissions, no
-network: it is a walk in a garden you (well, `villa_src/`) built.
+A small first-person game built out of the villa itself. You start on the south lawn in
+mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m garden, and the
+clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
+permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v2>
-→ `villa-garden.apk` (≈ 28 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v3>
+→ `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
+
+> **v1 was a black screen.** It is fixed here, and the fix is now a CI gate — see
+> *What went wrong*, item 6. If v3 ever shows black again, the shader preflight in
+> `.github/workflows/game-apk.yml` failed to catch a new linker error; the log is uploaded
+> with every run as `shaders.log`.
 
 ## Install
 
@@ -35,19 +40,27 @@ The stick is floating, so a phone held one-handed and a tablet lying flat both w
 
 ![gameplay frames](../docs/game_frames.png)
 
-Six frames from the desktop harness — the same renderer maths, the same level, the same
-movement code the APK runs, rasterised in software at 512 × 288.
+Four frames from the desktop harness at 1920 × 1080 — the same renderer maths, the same
+level, the same movement code the APK runs, rasterised in software. What you see is the
+intent: midday sky with cloud rows, mown lawn, baked tree shade, reflected glazing, an
+interior lit only by the sky through the openings.
 
 | | |
 |---|---|
-| Renderer | OpenGL ES **2.0**, one forward pass, no extensions, no float textures |
-| Geometry | 88 draw calls, 609,862 triangles, 40 textures at 256 px (decoded on demand) |
-| Lighting | one raking sun + hemisphere ambient + ACES tone curve + distance fog + grazing sheen |
-| Sky | full-screen quad: gradient, sun disc and glow, procedural altocumulus — no sky texture |
+| Renderer | OpenGL ES **2.0**, one forward pass + a 4-pass post chain, no extensions, no float textures |
+| Internal resolution | renders at the surface size up to **1920 × 1080**, draws through RGBA8 HDR-ish targets |
+| Post | soft-knee bright pass → 2 × separable blur → 40-step god rays → ACES + gamma + dither |
+| Geometry | 88 draw calls, 1.24 M vertices, 609 862 triangles, 40 textures at 256 px |
+| Lighting | one raking sun, hemisphere ambient, **baked per-vertex AO and sun visibility** |
+| Wind | the whole tree canopy sways from a per-vertex phase; foliage cards get a stronger gust |
+| Water | the pool gets animated normals, a sky mirror, Fresnel, a tight sun glint and a body colour |
+| Glass | Fresnel sky reflection over a dim room — a mirror, not transmission |
+| Sky | full-screen quad: gradient, sun disc + glow, procedural altocumulus, no sky texture |
+| Ground | procedural patches, grain, fine noise and mown stripes in world space, fading with distance |
 | Gameplay | 8 objectives, wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob, timer |
 | Audio | wind loop, footsteps, pickup chime — synthesised by `tools/game_audio.py` |
-| Assets | `assets/model.vpk` 26 MB (from the 41.7 MB web GLB), `assets/level.bin` 397 kB |
-| APK | ≈ 28 MB, `minSdk 21`, two ABIs, debug-signed |
+| Assets | `assets/model.vpk` 30.2 MB, `assets/level.bin` 406 kB |
+| APK | ≈ 29 MB, `minSdk 21`, two ABIs, debug-signed |
 
 ## Why this, and not Unreal
 
@@ -58,15 +71,19 @@ headless here and did — every asset in the game comes from the existing `villa
 
 So the split is:
 
-- **Blender** — the villa: 823 objects, 299,910 polys, procedural PBR textures (milestones 6–9).
+- **Blender** — the villa: 823 objects, 299 910 polys, procedural PBR textures (milestones 6–9).
 - **`tools/villa_pack.py`** — flattens the GLB into `VPK1`: scene graph baked to world space,
   primitives merged per material, ≤ 65 535-vertex chunks so every index is 16-bit, positions
-  quantised to `uint16`, textures kept as their original JPEG bytes.
+  quantised to `uint16`, textures kept as their original JPEG bytes. It also **bakes the
+  lighting**: per vertex, a cone-march towards the sun (three jittered rays for a soft
+  penumbra) and eight hemisphere rays for occlusion, over a sparse voxel grid of the whole
+  villa and garden. The two bytes ride in what used to be vertex padding, so the stride stays
+  20 B and the loader did not change.
 - **`tools/game_level.py`** — bakes `LVL1`: rasterises the *triangles* to get thin walls and
-  real doorways, floods reachability with the same body test the game uses, and places the
-  objectives by farthest-point sampling.
-- **`android/game/app/src/main/cpp/`** — ~1 400 lines of C++: the game, the GLES2 renderer,
-  the JNI bridge. No third-party libraries.
+  real doorways, floods reachability with the same body test the game uses, marks the pool as
+  blocked (you cannot walk on water), and places the objectives by farthest-point sampling.
+- **`android/game/app/src/main/cpp/`** — ~1 900 lines of C++: the game, the GLES2 renderer,
+  the post chain, the JNI bridge. No third-party libraries.
 - **`android/game/.../java/`** — ~600 lines: activity, touch, HUD drawn with Canvas, audio.
 
 ## How it is verified without a device
@@ -76,21 +93,25 @@ Android. What *was* run is real:
 
 ```bash
 # the level, exactly as the game reads it
-python tools/game_level.py villa_v2/villa_v2_lite.glb -o android/game/app/src/main/assets/level.bin
+python tools/game_level.py villa_v2/villa_v2_lite.glb \
+    -o android/game/app/src/main/assets/level.bin --map docs/game_level_map.png
+# → PLAYABLE: all 8 objectives reachable, farthest 84.9 m of walking
 
 # the game, walked end to end by the real movement code with a BFS autopilot
 g++ -O2 -std=c++17 tools/game_sim.cpp android/viewer/app/src/main/cpp/vpk.cpp \
     -Iandroid/viewer/app/src/main/cpp -Iandroid/game/app/src/main/cpp -o /tmp/gamesim
 /tmp/gamesim play android/game/app/src/main/assets /tmp/shot 6
+# → PASS: collected 8/8 objectives in 117.8 s of game time (7069 frames, 371 m walked)
+
+# the shaders, before any phone sees them
+python tools/gles_shader_check.py
+# → PASS: 13 shader stages, 8 programs, precisions consistent across every stage
 ```
 
-`PASS: collected 8/8 objectives in 117.8 s of game time (7069 frames, 371 m walked)`.
-
 That harness compiles `game_core.h` and `level.h` unchanged, loads the real `model.vpk` with
-the real loader, and rasterises the same shading maths — so it catches the failures that
-matter: a route the body cannot fit through, an objective inside a wall, a body leaving
-walkable ground, a broken pack. It found three real bugs during development (see *What went
-wrong*, below).
+the real loader, and rasterises the same shading maths at 1080p — so it catches the failures
+that matter: a route the body cannot fit through, an objective inside a wall, a body leaving
+walkable ground, a broken pack, and (since v3) a frame that comes out black.
 
 The type check of the NDK sources against stub headers (`tools/android_stub/`) also runs in CI,
 and the workflow then verifies the built APK actually contains `classes.dex`,
@@ -98,7 +119,10 @@ and the workflow then verifies the built APK actually contains `classes.dex`,
 `assets/level.bin` and the three `res/raw` sounds.
 
 `.github/workflows/game-apk.yml` runs all of that before Gradle, so a green run means the
-level is traversable and the pack is intact — not merely that the compiler exited 0.
+level is traversable, the pack is intact, the shaders link and a 1080p frame is not black —
+not merely that the compiler exited 0. Every run uploads `game_1080p.png`,
+`game_playthrough.png`, `game_level_map.png`, `level.json`, `play.log` and `shaders.log` as
+the `game-evidence` artifact.
 
 ## What went wrong on the way (kept, because the fixes are the design)
 
@@ -117,6 +141,22 @@ level is traversable and the pack is intact — not merely that the compiler exi
    drawn it. Worth keeping in mind: the harness and the device share maths, not a driver.
 5. **Authoring the sky in display space** made it read as black; it is authored in linear
    light now, like the rest of the shading.
+6. **v1 shipped black.** One uniform, `u_eye`, was `mediump` in the vertex shader and
+   `highp` in the fragment shader. GLSL ES requires a shared precision for every name that
+   crosses the stage boundary; the driver refused to link, `glLinkProgram` failed, and the
+   app happily drew nothing. The harness never caught it because it never links GLSL. The
+   fix was to write `XPREC` on every shared declaration and add
+   `tools/gles_shader_check.py`, a static linker that parses the shader sources, resolves the
+   default precisions and fails on any mismatch — now a CI gate, along with a rendered
+   1080p frame and a "is the mean luma above zero" assertion.
+7. **The bake had five separate bugs** before it was believable: rays starting inside their
+   own voxel; out-of-grid samples clamping to the boundary layer and shadowing the whole
+   garden (98 % of it, silently); alpha-cutout foliage treated as solid walls; lawn-edge
+   normals firing rays straight into the ground; and a 70 m lawn slab with four vertices, so
+   per-vertex lighting had nowhere to live. Each is commented in `tools/villa_pack.py`.
+8. **A white facade is not white.** With a 3.3-unit sun, a white wall clips to a blank 255
+   sheet. Albedo is now capped at 0.75 — real paint is not a perfect reflector — and vertical
+   surfaces get world-space plaster grain so a sunlit wall has tonality instead of glare.
 
 ## Honest limits
 
@@ -124,21 +164,25 @@ level is traversable and the pack is intact — not merely that the compiler exi
   in CI and its contents are verified, the game logic and the look are verified on the
   desktop, but the GLES2/JNI/EGL glue has only been compiled, not executed. If something is
   wrong it will be in that glue.
-- **No shadows and no ambient occlusion**, because GLES2 forward rendering without a shadow
-  map cannot do them. Outdoors it reads fine (hemisphere ambient plus fog); **interiors look
-  flat and too white** — the sun is not occluded by the roof. This is the most visible
-  difference from the Cycles stills.
-- **Glass is not transparent.** glTF transmission is unavailable, so panes are a 35 % cool
-  tint: you can see the dark of a room behind them, not the room.
+- **The HDR chain is fake HDR.** GLES2 without extensions has no float or half-float colour
+  attachment, so bloom and god rays work on 8-bit targets over a scene that is already
+  clamped to 0..1 per channel. It looks right; it is not physically linear all the way
+  through. A device with `OES_texture_half_float` + `EXT_color_buffer_half_float` could get
+  a real float chain, and this renderer is one `Target` change away from it.
+- **The sun bake is baked.** The villa and the sun are static, so this is exact — but if the
+  sun ever moves it must be re-baked; nothing updates it at runtime.
+- **Glass is not transparent.** glTF transmission is unavailable, so panes are a Fresnel sky
+  reflection over a flat dark room colour: you see a mirror, not the room.
 - **Foliage is alpha-tested cards.** At 256 px they read as leaves at a distance and as flat
-  sprites up close, and they are the brightest thing in the scene.
+  sprites up close.
 - **The camera cannot go upstairs or onto the roof**; the roof is excluded from the level.
 - **The sound was measured, not auditioned.** I have no ears in this sandbox: the clips are
   checked for level, spectral content and a seamless wind loop, nothing more.
+- **1080p fill cost is unmeasured on a real GPU.** The post chain is four extra full-screen
+  passes at quarter resolution plus the scene at up to 1080p. On an old tablet, the lever is
+  `render_scale` in `game.cpp` (it already caps the tall axis at 1080); nothing else needs to
+  change.
 - **Debug-signed.** Signing a release keystore into a public repo would be theatre.
-- 610 k triangles at 60 fps is comfortable on a 2018+ phone and should be fine on a 2015
-  tablet; if an old device stutters, the lever is foliage cards (they are ~60 % of the
-  triangles) — dropping them in `tools/villa_pack.py` needs no app change.
 
 ## Regenerate everything
 
@@ -146,9 +190,10 @@ level is traversable and the pack is intact — not merely that the compiler exi
 python tools/game_level.py villa_v2/villa_v2_lite.glb \
     -o android/game/app/src/main/assets/level.bin --map docs/game_level_map.png
 python tools/villa_pack.py villa_v2/villa_v2_web.glb \
-    -o android/game/app/src/main/assets/model.vpk
+    -o android/game/app/src/main/assets/model.vpk          # ~2 min: this is the AO/sun bake
 python tools/game_audio.py android/game/app/src/main/res/raw
-gradle -p android/game assembleDebug        # needs the Android SDK + NDK 26.1
+python tools/gles_shader_check.py                          # must PASS before Gradle
+gradle -p android/game assembleDebug                       # needs the Android SDK + NDK 26.1
 ```
 
 `docs/game_level_map.png` is the baked level from above: blue is walkable, dark red is

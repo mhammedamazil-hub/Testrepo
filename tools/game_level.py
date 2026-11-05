@@ -250,6 +250,22 @@ def main():
                         blk |= inside
                         body_block[sl] = blk
                         tris_wall += 1
+        if "pool_water" in name or "pool_basin" in name:
+            # water is not a floor. Without this the player walks across the pool surface and
+            # the reflections are hidden under their feet.
+            for prim in js["meshes"][nd["mesh"]]["primitives"]:
+                acc = js["accessors"][prim["attributes"]["POSITION"]]
+                if "min" not in acc:
+                    continue
+                a = np.asarray(acc["min"]); b = np.asarray(acc["max"])
+                corners = np.array([[a[0] if i & 1 else b[0], a[1] if i & 2 else b[1],
+                                     a[2] if i & 4 else b[2]] for i in range(8)])
+                w = corners @ wm[:3, :3].T + wm[:3, 3]
+                lo, hi = w.min(0), w.max(0)
+                rr0, cc0 = cell_of(lo[0], lo[2]); rr1, cc1 = cell_of(hi[0], hi[2])
+                body_block[max(0, rr0):min(rows, rr1 + 1),
+                           max(0, cc0):min(cols, cc1 + 1)] = True
+            continue
         if is_tree:
             lo, hi = None, None
             for prim in js["meshes"][nd["mesh"]]["primitives"]:

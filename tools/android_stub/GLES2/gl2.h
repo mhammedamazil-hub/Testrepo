@@ -63,3 +63,33 @@ void glDrawElements(GLenum, GLsizei, GLenum, const void*); void glDrawArrays(GLe
 void glEnable(GLenum); void glDisable(GLenum); void glDepthFunc(GLenum); void glDepthMask(GLboolean);
 void glClear(GLuint); void glClearColor(GLfloat, GLfloat, GLfloat, GLfloat); void glViewport(GLint, GLint, GLsizei, GLsizei);
 void glBlendFunc(GLenum, GLenum);
+// ---- framebuffer objects (core in GLES2; used for the HDR/post targets)
+#define GL_FRAMEBUFFER 0x8D40
+#define GL_RENDERBUFFER 0x8D41
+#define GL_COLOR_ATTACHMENT0 0x8CE0
+#define GL_DEPTH_ATTACHMENT 0x8D00
+#define GL_DEPTH_COMPONENT16 0x81A5
+#define GL_FRAMEBUFFER_COMPLETE 0x8CD5
+#define GL_CLAMP_TO_EDGE 0x812F
+#define GL_TEXTURE1 0x84C1
+#define GL_TEXTURE2 0x84C2
+#define GL_TEXTURE3 0x84C3
+void glGenFramebuffers(GLsizei, GLuint*); void glBindFramebuffer(GLenum, GLuint);
+void glFramebufferTexture2D(GLenum, GLenum, GLenum, GLuint, GLint);
+void glGenRenderbuffers(GLsizei, GLuint*); void glBindRenderbuffer(GLenum, GLuint);
+void glRenderbufferStorage(GLenum, GLenum, GLsizei, GLsizei);
+void glFramebufferRenderbuffer(GLenum, GLenum, GLenum, GLuint);
+GLenum glCheckFramebufferStatus(GLenum);
+void glDeleteFramebuffers(GLsizei, const GLuint*); void glDeleteRenderbuffers(GLsizei, const GLuint*);
+void glDeleteTextures(GLsizei, const GLuint*);
+void glDisable(GLenum); void glEnable(GLenum);
+#define GL_SCISSOR_TEST 0x0C11
+void glScissor(GLint, GLint, GLsizei, GLsizei);
+void glUniform2f(GLint, GLfloat, GLfloat);
+void glBindTexture(GLenum, GLuint);
+#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
+#define GL_VENDOR 0x1F00
+#define GL_RENDERER 0x1F01
+#define GL_HIGH_FLOAT 0x8DF2
+const GLubyte* glGetString(GLenum);
+void glGetShaderPrecisionFormat(GLenum, GLenum, GLint*, GLint*);
