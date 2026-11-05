@@ -1,0 +1,167 @@
+name: Alpine Mirror CPU render
+
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths:
+      - scripts/**
+      - requirements.txt
+      - .github/workflows/alpine-render.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: alpine-mirror-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '4'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install real display-linked runtime libraries (CPU rendering only)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libice6 libgl1
+          pip install -r requirements.txt
+      - name: Build deterministic 3D scene
+        run: |
+          python -u scripts/build_scene.py
+          python scripts/validate_scene.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpine-scene
+          path: |
+            output/Alpine_Mirror.blend
+            output/scene_manifest.json
+          retention-days: 7
+
+  render:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install CPU renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libice6 libgl1
+          pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-scene
+          path: output
+      - name: Render ten native full-HD frames
+        shell: bash
+        run: |
+          START=$(( ${{ matrix.chunk }} * 10 + 1 ))
+          END=$(( START + 9 ))
+          python -u scripts/render_frames.py --start "$START" --end "$END" --samples 64 --threads 4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpine-frames-${{ matrix.chunk }}
+          path: output/frames/*.png
+          compression-level: 0
+          retention-days: 3
+
+  still:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install CPU renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libice6 libgl1
+          pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-scene
+          path: output
+      - name: Render full-HD 192-sample hero still
+        run: python -u scripts/render_frames.py --only 240 --still --samples 192 --threads 4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpine-still
+          path: output/Alpine_Mirror_1080p.png
+          retention-days: 7
+
+  assemble:
+    needs: [render, still]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow imageio-ffmpeg==0.8.1
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: alpine-frames-*
+          path: output/frames
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-scene
+          path: output
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-still
+          path: output
+      - name: Encode and verify all 480 decoded frames
+        run: python scripts/encode_verify.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alpine-Mirror-1080p-delivery
+          path: |
+            output/Alpine_Mirror_1080p_20s.mp4
+            output/Alpine_Mirror_1080p.png
+            output/Alpine_Mirror.blend
+            output/scene_manifest.json
+            output/delivery_validation.json
+          compression-level: 0
+          retention-days: 30
+      - name: Publish only compact requested deliverables on the session branch
+        run: |
+          git config user.name 'Alpine Render Bot'
+          git config user.email 'alpine-render@users.noreply.github.com'
+          git pull --ff-only origin arena/f0bb5c2d-testrepo
+          git add -f output/Alpine_Mirror_1080p_20s.mp4 output/Alpine_Mirror_1080p.png output/Alpine_Mirror.blend output/scene_manifest.json output/delivery_validation.json
+          git commit -m 'Deliver verified full-HD 20-second Alpine Mirror render and Blender scene'
+          git push origin arena/f0bb5c2d-testrepo

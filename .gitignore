@@ -1,0 +1,9 @@
+# Heavy, reproducible render products stay outside Git.
+output/*
+!output/.gitkeep
+__pycache__/
+*.pyc
+.venv/
+# Blender backups
+*.blend1
+*.blend2
