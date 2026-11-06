@@ -144,12 +144,29 @@ public class HudView extends View {
             paint.setTextAlign(Paint.Align.LEFT);
         }
 
-        if (shownTotal == 0) {
-            String s = renderer.status();
-            if (s != null) {
-                paint.setColor(0xCCFFFFFF);
-                paint.setTextSize(13f * dp);
-                c.drawText(s, pad, h * 0.5f, paint);
+        // The self-diagnosis the native renderer collects (gpu, precision, program links,
+        // frame-buffer selftest, pixel probes). It used to be drawn only when `total` was
+        // zero, which meant every real error was invisible: two shipped builds were debugged
+        // from a screenshot that showed nothing but black and a timer. Always show it.
+        String s = renderer.status();
+        if (s != null && !s.isEmpty()) {
+            String[] lines = s.split("\n");
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(0x99080A0C);
+            float lh = 13f * dp;
+            float boxH = lh * lines.length + 10f * dp;
+            float boxW = 0f;
+            paint.setTextSize(10f * dp);
+            paint.setTextAlign(Paint.Align.LEFT);
+            for (String l : lines) boxW = Math.max(boxW, paint.measureText(l));
+            rect.set(pad * 0.5f, h - boxH - pad * 0.5f,
+                     Math.min(w - pad * 0.5f, pad * 0.5f + boxW + 14f * dp), h - pad * 0.5f);
+            c.drawRoundRect(rect, 8f * dp, 8f * dp, paint);
+            paint.setColor(0xE6E8F0F4);
+            float y = rect.top + 5f * dp + lh * 0.8f;
+            for (String l : lines) {
+                c.drawText(l, rect.left + 7f * dp, y, paint);
+                y += lh;
             }
         }
         invalidate();

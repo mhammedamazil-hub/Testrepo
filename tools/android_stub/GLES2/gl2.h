@@ -96,3 +96,5 @@ const GLubyte* glGetString(GLenum);
 void glGetShaderPrecisionFormat(GLenum, GLenum, GLint*, GLint*);
 #define GL_NO_ERROR 0
 GLenum glGetError(void);
+void glReadPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void*);
+#define GL_VERSION 0x1F02

@@ -5,10 +5,16 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v4>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v5>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
+> **v5 renders the scene in display space, so post-processing can never black it out again,
+> and it puts its own diagnosis on screen.** If the picture is wrong, the panel at the bottom
+> left now lists the GPU, the shader precision, which programs linked, an off-screen-target
+> self-test, and pixel probes of the scene and the final frame. Please screenshot that panel
+> rather than the sky.
+>
 > **v1 was a black screen, and v3 ran, but badly.** See *What went wrong*, items 6–10.
 > Everything found on a real phone is now covered by two static gates that run before Gradle:
 > `tools/gles_shader_check.py` (GLSL) and `tools/game_device_check.py` (the device-only
@@ -106,7 +112,7 @@ g++ -O2 -std=c++17 tools/game_sim.cpp android/viewer/app/src/main/cpp/vpk.cpp \
 
 # the shaders and the device-only contracts, before any phone sees them
 python tools/gles_shader_check.py     # → PASS: 13 shader stages, 8 programs
-python tools/game_device_check.py     # → PASS: 21 device contracts hold
+python tools/game_device_check.py     # → PASS: 34 device contracts hold
 ```
 
 That harness compiles `game_core.h` and `level.h` unchanged, loads the real `model.vpk` with
@@ -179,6 +185,18 @@ the `game-evidence` artifact.
    `sky_at()` in the model shader — so the glass and the pool reflected a bright midday sky
    while the sky itself was dusk. One set of constants now, asserted equal.
 
+12. **v4.0 was a black screen with a live HUD**, which is a different fault from v3.0 and is
+   the reason this build exists: the tone curve lived in the *composite* pass, so anything
+   that went wrong in the last full-screen pass (an off-screen target the driver would not
+   render into, a dropped uniform, a link failure in one of the four post programs) blacked
+   the whole frame while the Java HUD happily kept drawing. Fixed structurally rather than
+   guessed at: **exposure + ACES + sRGB now happen in the pass that knows the light**
+   (`kCommonGlsl`, prepended to every fragment shader), so post is purely additive. If it
+   fails, the frame is simply unbloomed. On top of that the renderer now *tests itself*:
+   frame 1 clears the off-screen target to magenta and reads the pixel back, frame 3 probes
+   the scene and the final frame, post switches itself off if it turns a non-black scene
+   black, and every measurement is printed in the HUD panel.
+
 ## Honest limits
 
 - **Never run on Android.** No device, no emulator, no SDK in this sandbox. The APK builds
@@ -203,6 +221,9 @@ the `game-evidence` artifact.
   The frame-rate governor in `game.cpp` drops to 0.7× and then 0.5× of the (1080p-capped)
   surface if the average frame takes longer than 45 ms, and climbs back when there is
   headroom. A mid-range phone will settle around 0.7×; a recent one stays at 1.0×.
+- **I still cannot see your screen.** v5's HUD panel is the substitute: it reports what the
+  renderer can measure about itself. It cannot report a driver bug that silently draws wrong
+  pixels with no GL error, and it cannot tell you why a *specific* pixel is the wrong colour.
 - **The device bugs found in v3.0 were found from a screenshot, not a debugger.** The host
   harness and the device share the game, the level, the pack and the shading maths — but not
   the GLES driver, the texture units, or the post-process rectangles. Items 8–10 below were

@@ -103,6 +103,32 @@ def main():
           "nativeFrame passes the stick through without a second negation",
           "negating here again inverts the stick")
 
+    print("post-processing must never be able to black the game out")
+    check("static const char* kCommonGlsl" in src and "vec3 to_display(vec3 c)" in src,
+          "one shared tone curve (kCommonGlsl) exists")
+    check('parts[3] = {prefix.c_str(), kCommonGlsl, src}' in src,
+          "compile() prepends the shared GLSL to every shader")
+    # every scene shader must finish in display space; the composite must not tonemap
+    for name, body in [("kModelFS", shader_body(src, "kModelFS")),
+                       ("kSkyFS", shader_body(src, "kSkyFS")),
+                       ("kGroundFS", shader_body(src, "kGroundFS"))]:
+        check("to_display(" in body, f"{name} writes display colour")
+        check("gl_FragColor = vec4(c, 1.0)" not in body,
+              f"{name} does not write raw linear colour")
+    comp = shader_body(src, "kCompositeFS")
+    check("aces(" not in comp and "pow(" not in comp,
+          "kCompositeFS adds glow only - no tone curve, no gamma",
+          "a failing composite would black out the whole frame (that is v3.0/v4.0)")
+    check("if (!G.probed_clear) self_test_target();" in src,
+          "the off-screen target is verified on frame 1")
+    check("G.post_ok = false;" in src and "post_auto_disabled" in src,
+          "post can switch itself off at runtime")
+    check("glReadPixels(G.probe_x, G.probe_y" in src, "pixel probes exist")
+    hud = (ROOT / "android/game/app/src/main/java/ai/arena/villagame/HudView.java").read_text()
+    check("shownTotal == 0" not in hud,
+          "the HUD always shows the diagnosis",
+          "gating it on total==0 hid every real error from two shipped builds")
+
     print("look constants")
 
     def vec3_after(pattern):

@@ -20,6 +20,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <cstdarg>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,25 @@
 // stages can never disagree about precision - that error shipped a black screen once), and
 // every attribute is bound explicitly.
 
-// ---- the model: VPK vertices in, linear HDR light out
+// ---- shared GLSL, prepended to every fragment shader by compile()
+//
+// The scene shaders now write *display* colour: exposure, the ACES fit and the sRGB curve all
+// happen here, in the pass that knows the light. That is what game_sim.cpp does, and it means
+// the final image never depends on the post chain: if the off-screen targets or the composite
+// ever fail on a device, skipping post costs bloom and god rays and nothing else. v4.0 put the
+// tone curve in the composite, so any failure in that last full-screen pass turned the whole
+// game black while the Java HUD kept drawing - exactly the screenshot that came back.
+static const char* kCommonGlsl =
+    "float aces_fit(float x){\n"
+    "  float t = (x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14);\n"
+    "  return clamp(t, 0.0, 1.0);\n"
+    "}\n"
+    "vec3 to_display(vec3 c){\n"
+    "  c = max(c, vec3(0.0));\n"
+    "  return pow(vec3(aces_fit(c.r), aces_fit(c.g), aces_fit(c.b)), vec3(1.0 / 2.2));\n"
+    "}\n";
+
+// ---- the model: VPK vertices in, display colour out
 static const char* kModelVS =
     "#define XPREC_SYM\n"
     "attribute vec3 a_pos;\n"        // uint16 inside the draw's bbox
@@ -191,7 +210,7 @@ static const char* kModelFS =
     "    vec3 c = (vec3(0.020, 0.024, 0.028) + sky_at(rd, u_sun, u_sun_col, zen, hor) * fren * 0.55\n"
     "              + u_sky_col * 0.10) * u_exposure;\n"
     "    c = mix(c, fog_c, fog);\n"
-    "    gl_FragColor = vec4(c, 1.0);\n"       // opaque: blending on GLES2 made it milky
+    "    gl_FragColor = vec4(to_display(c), 1.0);\n"   // opaque: blending made it milky
     "    return;\n"
     "  }\n"
     "  if (u_water > 0.5) {\n"
@@ -214,7 +233,7 @@ static const char* kModelFS =
     "    vec3 c = body + sky_r * (0.16 + 0.58 * fren) + u_sun_col * spec * sv;\n"
     "    c *= u_exposure;\n"
     "    c = mix(c, fog_c, fog);\n"
-    "    gl_FragColor = vec4(c, 1.0);\n"
+    "    gl_FragColor = vec4(to_display(c), 1.0);\n"
     "    return;\n"
     "  }\n"
     "  float d = max(dot(n, u_sun), 0.0);\n"
@@ -226,7 +245,7 @@ static const char* kModelFS =
     "         + u_emissive * 6.0;\n"
     "  c *= u_exposure;\n"
     "  c = mix(c, fog_c, fog);\n"
-    "  gl_FragColor = vec4(c, 1.0);\n"
+    "  gl_FragColor = vec4(to_display(c), 1.0);\n"
     "}\n";
 
 // ---- sky: one full-screen quad, the ray rebuilt from the camera basis
@@ -272,7 +291,7 @@ static const char* kSkyFS =
     "    c = mix(c, vec3(0.105, 0.115, 0.132) * lit, cov * 0.85);\n"
     "  }\n"
     "  if (y < 0.0) c = mix(c, vec3(0.10), clamp(-y * 6.0, 0.0, 1.0));\n"
-    "  gl_FragColor = vec4(c * u_exposure, 1.0);\n"
+    "  gl_FragColor = vec4(to_display(c * u_exposure), 1.0);\n"
     "}\n";
 
 // ---- ground skirt: a huge quad under the level, so the 87 m lawn never ends in mid-air
@@ -302,7 +321,7 @@ static const char* kGroundFS =
     "  c *= u_exposure;\n"
     "  float fog = 1.0 - exp(-max(dist - u_fog_start, 0.0) * u_fog_density);\n"
     "  c = mix(c, u_fog_col * u_exposure, fog);\n"
-    "  gl_FragColor = vec4(c, 1.0);\n"
+    "  gl_FragColor = vec4(to_display(c), 1.0);\n"
     "}\n";
 
 // ---- objectives: additive billboards (clip-space corners, pre-projected by the CPU)
@@ -321,7 +340,7 @@ static const char* kOrbFS =
     "  float r2 = dot(v_c, v_c);\n"
     "  if (r2 > 1.0) discard;\n"
     "  float a = 1.0 - r2; a = a * a * u_alpha * u_pulse;\n"
-    "  gl_FragColor = vec4(vec3(2.4, 1.9, 0.75) * a, a);\n"
+    "  gl_FragColor = vec4(to_display(vec3(2.4, 1.9, 0.75) * a * 2.0), a);\n"
     "}\n";
 
 // ---- post processing: bright pass -> separable blur -> god rays -> composite
@@ -348,7 +367,9 @@ static const char* kBrightFS =
     "void main(){\n"
     "  vec3 c = texture2D(u_tex, v_uv).rgb;\n"
     "  float lum = max(max(c.r, c.g), c.b);\n"
-    "  float k = clamp((lum - 1.05) / max(lum, 1e-4), 0.0, 1.0);\n"   // soft knee
+    // the scene arrives in display space now, so the knee sits just under white: this is a
+    // bloom on highlights and the sun, not an HDR extraction
+    "  float k = clamp((lum - 0.68) / max(lum, 1e-4), 0.0, 1.0);\n"   // soft knee
     "  gl_FragColor = vec4(c * k, 1.0);\n"
     "}\n";
 
@@ -396,16 +417,13 @@ static const char* kCompositeFS =
     "uniform sampler2D u_rays;\n"
     "uniform float u_bloom_amt;\n"
     "uniform float u_rays_amt;\n"
-    "vec3 aces(float x){\n"        // Narkowicz; identical to game_tonemap() in game_shade.h
-    "  float t = (x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14);\n"
-    "  return vec3(clamp(t, 0.0, 1.0));\n"
-    "}\n"
     "void main(){\n"
+    // Display space in, display space out. The scene pass already applied exposure, ACES and
+    // the sRGB curve (see kCommonGlsl), so all this pass does is add glow.
     "  vec3 c = texture2D(u_scene, v_uv).rgb;\n"
     "  c += texture2D(u_bloom, v_uv).rgb * u_bloom_amt;\n"
     "  c += texture2D(u_rays, v_uv).rgb * u_rays_amt;\n"
-    "  vec3 o = vec3(aces(c.r), aces(c.g), aces(c.b));\n"
-    "  o = pow(o, vec3(1.0 / 2.2));\n"
+    "  vec3 o = clamp(c, 0.0, 1.0);\n"
     // 8-bit output over a 3-stop sky gradient bands badly without a dither
     "  float d = fract(sin(dot(v_uv, vec2(12.9898, 78.233))) * 43758.5453) / 255.0;\n"
     "  gl_FragColor = vec4(o + d - 0.5 / 255.0, 1.0);\n"
@@ -473,6 +491,22 @@ static struct {
     float ao_mean = 0.0f, sun_mean = 0.0f;            // logged once, for diagnostics
     bool attr_checked = false;
     GLenum last_gl_error = 0;
+
+    // ---- on-device self-diagnosis. This sandbox has no phone, and two shipped builds were
+    // diagnosed only from JPEG screenshots. Everything the renderer can measure about itself
+    // is collected into `diag` and printed on screen by HudView, so the next screenshot IS
+    // the bug report.
+    std::string diag;                 // one fact per line, shown in-game
+    int frames_drawn = 0;
+    bool probed_clear = false, probed_frame = false;
+    unsigned char px_clear[4] = {0, 0, 0, 0};
+    unsigned char px_scene[4] = {0, 0, 0, 0};
+    unsigned char px_final[4] = {0, 0, 0, 0};
+    bool post_auto_disabled = false;
+    // if the scene pass ever draws nothing, clear to saturated blue instead of black: the
+    // next screenshot then says "a frame was presented but empty" instead of a mute black
+    bool alert_clear = false;
+    int probe_x = 4, probe_y = 4;
     GLuint vbo = 0, ibo = 0, sky_vbo = 0, orb_vbo = 0, ground_vbo = 0, white_tex = 0;
     GLint g_mvp = -1, g_y = -1, g_eye = -1, g_sun = -1, g_sun_col = -1, g_sky_col = -1,
           g_ground_col = -1, g_fog_col = -1, g_exposure = -1, g_fog_start = -1,
@@ -502,8 +536,9 @@ static std::string g_prec_token = "highp";
 static GLuint compile(GLenum type, const char* src, std::string* err) {
     GLuint s = glCreateShader(type);
     const std::string prefix = std::string("#define XPREC ") + g_prec_token + "\n";
-    const char* parts[2] = {prefix.c_str(), src};
-    glShaderSource(s, 2, parts, nullptr);
+    // the tone curve and the noise helpers live in exactly one place
+    const char* parts[3] = {prefix.c_str(), kCommonGlsl, src};
+    glShaderSource(s, 3, parts, nullptr);
     glCompileShader(s);
     GLint ok = 0;
     glGetShaderiv(s, GL_COMPILE_STATUS, &ok);
@@ -607,6 +642,17 @@ static void make_white_texture() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, px);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
+static void diag_add(const char* fmt, ...) {
+    char buf[256];
+    va_list ap;
+    va_start(ap, fmt);
+    std::vsnprintf(buf, sizeof buf, fmt, ap);
+    va_end(ap);
+    if (!G.diag.empty()) G.diag += "\n";
+    G.diag += buf;
+    LOGI("diag: %s", buf);
 }
 
 static void attribs_only(int count) {
@@ -789,6 +835,25 @@ static void init_gl() {
     G.ready = true;
     G.status = "ready";
     make_white_texture();
+
+    // what we are actually running on
+    {
+        const char* vendor = (const char*)glGetString(GL_VENDOR);
+        const char* rend = (const char*)glGetString(GL_RENDERER);
+        const char* ver = (const char*)glGetString(GL_VERSION);
+        diag_add("gpu: %s | %s | %s", vendor ? vendor : "?", rend ? rend : "?",
+                 ver ? ver : "?");
+        diag_add("precision: %s", g_prec_token.c_str());
+        const char* names[8] = {"model", "sky", "orb", "ground", "bright", "blur", "rays", "comp"};
+        const GLuint ids[8] = {G.model_p.id, G.sky_p.id, G.orb_p.id, G.ground_p.id,
+                               G.bright_p.id, G.blur_p.id, G.rays_p.id, G.comp_p.id};
+        std::string failed;
+        for (int i = 0; i < 8; ++i)
+            if (!ids[i]) failed += std::string(failed.empty() ? "" : " ") + names[i];
+        diag_add("programs: %s", failed.empty() ? "all 8 linked"
+                                                : ("FAILED: " + failed).c_str());
+        diag_add("post: %s", G.post_ok ? "on" : "off (direct to screen)");
+    }
     LOGI("GL ready: %u draws, %u textures", G.model.h.n_draws, G.model.h.n_textures);
 }
 
@@ -1188,6 +1253,40 @@ static void post_chain(const float eye[3], float yaw, float pitch) {
     (void)gs;
 }
 
+// Read one pixel from whatever framebuffer is currently bound.
+static void probe_px(unsigned char out[4]) {
+    out[0] = out[1] = out[2] = out[3] = 0;
+    glReadPixels(G.probe_x, G.probe_y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, out);
+}
+
+static int px_sum(const unsigned char p[4]) { return p[0] + p[1] + p[2]; }
+
+// Frame 1: can we render into the off-screen target and read it back at all? If not, post
+// processing is switched off before anything else is drawn, and the game renders straight to
+// the screen - correct, just without bloom and god rays.
+static void self_test_target() {
+    const bool offscreen = G.post_ok && G.scene.fbo != 0;
+    if (!offscreen) {
+        diag_add("self-test: no off-screen target, drawing direct");
+        return;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, G.scene.fbo);
+    glViewport(0, 0, G.scene.w, G.scene.h);
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);          // magenta: unmistakable
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    probe_px(G.px_clear);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    const bool ok = G.px_clear[0] > 200 && G.px_clear[1] < 60 && G.px_clear[2] > 200;
+    diag_add("self-test fbo %dx%d: clear reads %d,%d,%d -> %s", G.scene.w, G.scene.h,
+             G.px_clear[0], G.px_clear[1], G.px_clear[2], ok ? "ok" : "BROKEN");
+    if (!ok) {
+        G.post_ok = false;
+        G.post_auto_disabled = true;
+        diag_add("post disabled: cannot read the off-screen target");
+    }
+    G.probed_clear = true;
+}
+
 JNIEXPORT void JNICALL
 Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jfloat jx,
                                                  jfloat jy, jfloat dyaw, jfloat dpitch) {
@@ -1244,12 +1343,16 @@ Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jf
     Mat4 mvp;
     build_mvp(eye, yaw, pitch, roll, &mvp);
 
+    // first frame: prove the off-screen target works before trusting it with the whole image
+    if (!G.probed_clear) self_test_target();
+
     const bool offscreen = G.post_ok && G.scene.fbo != 0;
     glBindFramebuffer(GL_FRAMEBUFFER, offscreen ? G.scene.fbo : 0);
     glViewport(0, 0, offscreen ? G.scene.w : G.w, offscreen ? G.scene.h : G.h);
     glDisable(GL_SCISSOR_TEST);
     glDepthMask(GL_TRUE);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    if (G.alert_clear) glClearColor(0.0f, 0.22f, 0.65f, 1.0f);
+    else glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw_sky(eye, yaw, pitch);
@@ -1257,9 +1360,40 @@ Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jf
     draw_model(mvp, eye);
     draw_orbs(eye, yaw, pitch);
 
+    // Frame 3: is anything actually being drawn, and does the composite survive the trip?
+    const bool probe_now = G.frames_drawn == 2 && !G.probed_frame;
+    if (probe_now && offscreen) probe_px(G.px_scene);
+
     if (offscreen) {
         post_chain(eye, yaw, pitch);
+        if (probe_now) probe_px(G.px_final);
     }
+
+    if (probe_now) {
+        G.probed_frame = true;
+        const int scene = px_sum(G.px_scene), fin = offscreen ? px_sum(G.px_final) : scene;
+        if (offscreen) {
+            diag_add("frame probe: scene %d,%d,%d -> post %d,%d,%d", G.px_scene[0],
+                     G.px_scene[1], G.px_scene[2], G.px_final[0], G.px_final[1], G.px_final[2]);
+        } else {
+            diag_add("frame probe (direct): %d,%d,%d", G.px_scene[0], G.px_scene[1],
+                     G.px_scene[2]);
+        }
+        // If the scene has colour and the composite is black, the post chain is the fault:
+        // turn it off and carry on drawing a correct, unbloomed image.
+        if (offscreen && scene > 12 && fin < 8) {
+            G.post_ok = false;
+            G.post_auto_disabled = true;
+            diag_add("post disabled: it turned a non-black scene black");
+        }
+        if (scene < 8 && fin < 8) {
+            G.alert_clear = true;
+            diag_add("scene probe is black: drew %u draws at eye %.1f %.1f %.1f yaw %.2f",
+                     G.model.h.n_draws, eye[0], eye[1], eye[2], yaw);
+            diag_add("clearing blue from now on: a blue screen means the frame is presented");
+        }
+    }
+    ++G.frames_drawn;
 
     // One glGetError per frame for the first second: a silently ignored GL error here is
     // exactly how a broken device build gets mistaken for "the mesh is wrong".
@@ -1301,7 +1435,8 @@ JNIEXPORT void JNICALL Java_ai_arena_villagame_GameRenderer_nativeReset(JNIEnv*,
 
 JNIEXPORT jstring JNICALL Java_ai_arena_villagame_GameRenderer_nativeStatus(JNIEnv* env,
                                                                            jobject) {
-    return env->NewStringUTF(G.status.c_str());
+    const std::string& text = G.diag.empty() ? G.status : G.diag;
+    return env->NewStringUTF(text.c_str());
 }
 
 }  // extern "C"
