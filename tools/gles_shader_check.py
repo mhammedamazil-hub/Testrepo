@@ -68,6 +68,7 @@ def scan(src, stage):
 
 def main(argv):
     text = open(CPP, encoding="utf-8").read()
+    cpp = text
     shaders = extract(text)
     if not shaders:
         print("FAIL: no shader sources found in", CPP)
@@ -90,6 +91,20 @@ def main(argv):
         groups.setdefault(base, {})[stage_of(name)] = shaders[name]
     if len(groups) < 3:
         problems.append("expected at least 3 shader programs, parsed %d" % len(groups))
+
+    # rule 0 (added after v5 shipped a black screen): GLSL ES requires the default float
+    # precision to be declared before any function that takes or returns a float. The renderer
+    # prepends one shared GLSL chunk (kCommonGlsl) that *does* define functions, so the prefix
+    # compile() emits must declare the precision ahead of it. The device said, verbatim:
+    #   "model shader 1:1: S0033: no default precision defined for function 'aces_fit'"
+    if cpp is not None:
+        m = re.search(r"const std::string prefix\s*=(.*?);", cpp, re.S)
+        if m and "precision" not in m.group(1):
+            problems.append(
+                "compile(): the injected prefix must declare the default float precision "
+                "before kCommonGlsl's functions, or every stage fails with S0033")
+        if "precision " not in cpp:
+            problems.append("compile(): no 'precision ... float;' is injected at all")
 
     for base, pair in sorted(groups.items()):
         if "VS" not in pair or "FS" not in pair:

@@ -535,8 +535,18 @@ static std::string g_prec_token = "highp";
 
 static GLuint compile(GLenum type, const char* src, std::string* err) {
     GLuint s = glCreateShader(type);
-    const std::string prefix = std::string("#define XPREC ") + g_prec_token + "\n";
-    // the tone curve and the noise helpers live in exactly one place
+    // ORDER IS SEMANTICS in GLSL ES: the default float precision has to be declared before
+    // any function that takes or returns a float. The first cut injected kCommonGlsl straight
+    // after "#define XPREC", i.e. ahead of the shader's own `precision` line, and every scene
+    // program died with "no default precision defined for function 'aces_fit'" - a black
+    // screen on the device that no host test could see. Declaring the precision here, in the
+    // prefix, makes the order correct for every shader by construction (a second
+    // `precision` statement later in the source is a harmless redeclaration).
+    // A vertex shader is guaranteed highp, and should keep it: downgrading the vertex stage
+    // to mediump would quantise world positions at ~1 m in a 90 m garden.
+    const std::string prec = type == GL_VERTEX_SHADER ? std::string("highp") : g_prec_token;
+    const std::string prefix = std::string("#define XPREC ") + prec + "\nprecision " + prec +
+                               " float;\n";
     const char* parts[3] = {prefix.c_str(), kCommonGlsl, src};
     glShaderSource(s, 3, parts, nullptr);
     glCompileShader(s);
