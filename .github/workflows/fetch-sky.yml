@@ -1,0 +1,51 @@
+name: Prepare CC0 photographic morning sky
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/fetch-sky.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sky:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests opencv-python-headless numpy
+      - name: Download official CC0 HDRI and prepare compact display environment
+        run: |
+          mkdir -p assets
+          python - <<'PY'
+          import requests,cv2,numpy as np,json,hashlib
+          from pathlib import Path
+          name='kloofendal_48d_partly_cloudy'
+          url=f'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/{name}_4k.hdr'
+          response=requests.get(url,timeout=180);response.raise_for_status()
+          data=response.content
+          if not data.startswith(b'#?RADIANCE') and not data.startswith(b'#?RGBE'): raise RuntimeError('Not an HDR image')
+          im=cv2.imdecode(np.frombuffer(data,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
+          if im is None or im.shape[1]<4000: raise RuntimeError('HDRI resolution too low')
+          # Display-only ACES-style tone map. Physical solar/sky lighting is kept
+          # independently controllable in Blender; this photo supplies sky detail
+          # and the same detailed environment in water reflections.
+          x=np.maximum(im,0)*.55
+          mapped=np.clip((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0,1)
+          display=np.where(mapped<=.0031308,mapped*12.92,1.055*mapped**(1/2.4)-.055)
+          cv2.imwrite('assets/partly_cloudy_morning_4k.jpg',(display*255+.5).astype('uint8'),[cv2.IMWRITE_JPEG_QUALITY,95])
+          info=requests.get(f'https://api.polyhaven.com/info/{name}',timeout=60);info.raise_for_status()
+          Path('assets/sky_provenance.json').write_text(json.dumps({'asset':name,'source':url,'asset_page':f'https://polyhaven.com/a/{name}','license':'CC0-1.0','license_url':'https://polyhaven.com/license','original_sha256':hashlib.sha256(data).hexdigest(),'original_dimensions':[im.shape[1],im.shape[0]],'usage':'display sky and reflection environment; not a landscape backplate','transform':'ACES-style LDR display mapping; JPEG quality 95','metadata':info.json()},indent=2))
+          PY
+      - name: Publish only compact licensed sky assets to the session branch
+        run: |
+          git config user.name 'Alpine Asset Bot'
+          git config user.email 'alpine-render@users.noreply.github.com'
+          git pull --ff-only origin arena/f0bb5c2d-testrepo
+          git add assets/partly_cloudy_morning_4k.jpg assets/sky_provenance.json
+          git commit -m 'Add attributed CC0 photographic sky environment for revision 2'
+          git push origin arena/f0bb5c2d-testrepo
