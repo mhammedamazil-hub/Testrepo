@@ -1,0 +1,25 @@
+name: Render capacity check (no rendering)
+
+# A tiny, independent workflow to test whether another workflow gets an extra
+# hosted runner while the 20 production render jobs are running. No render
+# work is duplicated, and the existing production run is not cancelled.
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/render-capacity-check.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capacity-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Record when the independent workflow actually gets a runner
+        shell: bash
+        run: |
+          echo 'Independent workflow acquired a runner; compare job started_at with run created_at.'
+          date -u '+Runner start: %Y-%m-%dT%H:%M:%SZ'
+          echo 'No Blender frames were rendered or replaced by this diagnostic.'
