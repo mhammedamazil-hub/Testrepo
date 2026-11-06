@@ -1,4 +1,9 @@
-// The game itself: player movement, collision response, objective pickups, timer.
+// The game itself: player movement, collision response, and the walk-through world.
+//
+// v10 is exploration: there is no score, no timer and nothing to collect. The level still
+// carries a handful of "objective" positions, but they are only used by the desktop harness
+// as waypoints to prove the whole garden can be walked. `explore` is what decides whether the
+// orbs exist as gameplay at all.
 //
 // Deliberately free of GL, JNI and Android: `tools/game_sim.cpp` compiles this header for
 // the host, so the walking, the collisions and the win condition are actually executed and
@@ -29,6 +34,11 @@ struct Game {
     float bob_amp = 0.0f;
     int last_pickup = -1;
     float pickup_flash = 0.0f;
+    // Exploration mode: no pickups, no timer running towards anything, no win screen. The
+    // player is here to look at the garden.
+    bool explore = true;
+    bool sprint = false;          // held double-tap / two-finger? unused, kept for the stick
+    const std::vector<LevelObj>& waypoints() const { return lv.objs; }
 
     static constexpr float kBodyRadius = 0.26f;   // 52 cm wide: a shoulder, not a barrel
     static constexpr float kStepUp = 0.45f;   // terrace steps and the plinth lip
@@ -127,7 +137,7 @@ struct Game {
             pickup_flash *= 0.94f;
             return;
         }
-        time += dt;
+        if (!explore) time += dt;
 
         float mag = std::sqrt(fwd * fwd + side * side);
         if (mag > 1.0f) {
@@ -147,6 +157,7 @@ struct Game {
         bob += dt * 8.6f * (0.4f + 0.6f * mag);
 
         // pickups: horizontal distance, so walking under one still counts
+        if (explore) return;      // nothing to collect: the garden is the point
         for (size_t i = 0; i < lv.objs.size(); ++i) {
             if (taken[i]) continue;
             const LevelObj& o = lv.objs[i];

@@ -158,6 +158,34 @@ def main():
           HUD_CPP.read_text(),
           "the HUD always shows the diagnosis")
 
+    print("exploration build (v10)")
+    core = (ROOT / "android/game/app/src/main/cpp/game_core.h").read_text()
+    check("bool explore = true;" in core, "exploration mode is the default")
+    check("if (explore) return;" in core,
+          "no pickups are evaluated in exploration mode",
+          "the world should not be a collection game any more")
+    check("if (!G.game.explore) draw_orbs(eye, yaw, pitch);" in src,
+          "nothing is drawn to collect")
+    shell_src = (ROOT / "android/game/app/src/main/cpp/main_android.cpp").read_text()
+    check("game_orbs()" not in shell_src and "game_time()" not in shell_src,
+          "the HUD shows no counter and no clock")
+    # the black wedge: the skirt under the world was 0.105 albedo at y = -0.55
+    check("glUniform1f(G.g_y, -0.12f)" in src,
+          "the outside-world plane sits just under the lawn",
+          "a 0.55 m step made a visible black shelf at the edge of the garden")
+    check("{0.34f, 0.40f, 0.19f}" in src,
+          "the outside-world plane is lit like meadow, not shadow",
+          "0.105 albedo squared is 0.011 linear: it rendered as a black wedge")
+    check("if (dist < 0.95) discard;" in shader_body(src, "kModelFS"),
+          "no leaf card is ever drawn inside arm's reach")
+    sim = (ROOT / "tools/game_sim.cpp").read_text()
+    check("if ((d.flags & 1u) && dist < 0.95f) continue;" in sim,
+          "the harness applies the same leaf clearance")
+    lvl = (ROOT / "tools/game_level.py").read_text()
+    check("canopy_r = 0.5 * max(hi[0] - lo[0], hi[2] - lo[2])" in lvl,
+          "trees block their canopy footprint, not a 0.55 m post",
+          "blocking the trunk only let the player stand inside the leaves")
+
     print("look constants")
 
     def vec3_after(pattern):

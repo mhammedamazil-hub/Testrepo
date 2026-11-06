@@ -336,51 +336,30 @@ void draw_frame() {
     game_frame(dt, g.stick.active ? g.stick.x : 0.0f, g.stick.active ? g.stick.y : 0.0f,
                yaw_delta, pitch_delta);
 
-    // ---- HUD, drawn into the same framebuffer, over the finished frame
+    // ---- HUD. Exploration build: no counter, no clock, no compass - nothing to chase.
+    // Just the name card, a crosshair, the stick while a thumb is down, the frame rate, and
+    // the renderer's self-diagnosis (which stays visible: it is how device bugs get reported).
     hud_begin(g.width, g.height);
     const float dp = (float)g.height / 800.0f;          // 1 dp at 800 px tall
     const float pad = 18.0f * dp;
-    hud_panel(pad * 0.5f, pad * 0.5f, 168.0f * dp, 66.0f * dp);
     char buf[96];
-    std::snprintf(buf, sizeof buf, "VILLA GARDEN");
-    hud_text(buf, pad, pad + 14.0f * dp, 1.6f * dp, 0.93f, 0.95f, 0.97f, 1.0f);
-    std::snprintf(buf, sizeof buf, "%d / %d", game_orbs(), game_total());
-    hud_text(buf, pad, pad + 44.0f * dp, 2.4f * dp, 1.0f, 1.0f, 1.0f, 1.0f);
 
-    const int secs = (int)game_time();
-    std::snprintf(buf, sizeof buf, "%d:%02d", secs / 60, secs % 60);
-    hud_text_right(buf, (float)g.width - pad, pad + 34.0f * dp, 2.2f * dp, 0.96f, 0.97f, 0.98f, 1.0f);
-
-    std::snprintf(buf, sizeof buf, "%d fps", (int)(g.clock.fps + 0.5f));
-    hud_text_right(buf, (float)g.width - pad, (float)g.height - pad * 0.6f, 1.3f * dp, 0.55f,
-                   0.58f, 0.62f, 1.0f);
+    hud_panel(pad * 0.5f, pad * 0.5f, 190.0f * dp, 50.0f * dp);
+    hud_text("VILLA GARDEN", pad, pad + 12.0f * dp, 1.9f * dp, 0.95f, 0.96f, 0.98f, 1.0f);
+    hud_text("explore", pad, pad + 36.0f * dp, 1.2f * dp, 0.55f, 0.78f, 0.62f, 1.0f);
 
     hud_crosshair((float)g.width * 0.5f, (float)g.height * 0.5f, 2.0f, dp);
 
-    // compass chevron: rotates to point at the nearest orb
-    const float bearing = game_bearing();
-    hud_chevron((float)g.width * 0.5f, pad + 40.0f * dp, 22.0f * dp, bearing, dp);
-
-    // thumb stick, when a finger is down
     if (g.stick.active) {
         hud_ring(g.stick.base_x, g.stick.base_y, g.stick.radius, 2.0f * dp, 1.0f, 1.0f, 1.0f,
                  0.28f);
         hud_disc(g.stick.knob_x, g.stick.knob_y, g.stick.radius * 0.34f, 1.0f, 1.0f, 1.0f, 0.55f);
     }
 
-    if (game_state() == 1) {
-        hud_dim(0.55f);
-        hud_text_centered("GARDEN WALKED", (float)g.width * 0.5f, (float)g.height * 0.42f,
-                          3.2f * dp, 1.0f, 0.85f, 0.38f, 1.0f);
-        std::snprintf(buf, sizeof buf, "all %d collected in %d:%02d", game_total(), secs / 60,
-                      secs % 60);
-        hud_text_centered(buf, (float)g.width * 0.5f, (float)g.height * 0.50f, 1.8f * dp, 1.0f,
-                          1.0f, 1.0f, 1.0f);
-        hud_text_centered("tap anywhere to walk it again", (float)g.width * 0.5f,
-                          (float)g.height * 0.56f, 1.5f * dp, 0.72f, 0.75f, 0.78f, 1.0f);
-    }
+    std::snprintf(buf, sizeof buf, "%d fps", (int)(g.clock.fps + 0.5f));
+    hud_text_right(buf, (float)g.width - pad, (float)g.height - pad * 0.6f, 1.3f * dp, 0.55f,
+                   0.58f, 0.62f, 1.0f);
 
-    // the renderer's self-diagnosis, always on screen (see game.cpp)
     hud_diag(game_status());
     hud_end();
 

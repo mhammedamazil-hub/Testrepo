@@ -189,6 +189,10 @@ static const char* kModelFS =
     "    }\n"
     "  }\n"
     "  if (u_foliage > 0.5) {\n"
+    // Nothing inside arm's reach: a leaf card that intersects the eye fills the screen with a
+    // giant green sheet, which is what a v9 screenshot showed. The collision radius now keeps
+    // the body out of the canopy; this is the belt-and-braces for the edges of one.
+    "    if (dist < 0.95) discard;\n"
     "    float lum = dot(alb, vec3(0.30, 0.59, 0.11));\n"
     "    alb = (lum * 0.55 + alb * 0.45) * 0.82;\n"
     "    sv *= 0.55;\n"                    // a leaf is a thin sheet, not a diffuse block
@@ -1025,7 +1029,7 @@ static void draw_skirt(const Mat4& mvp, const float eye[3]) {
     const GameSun& s = game_sun();
     glUseProgram(G.ground_p.id);
     glUniformMatrix4fv(G.g_mvp, 1, GL_FALSE, mvp.m);
-    glUniform1f(G.g_y, -0.55f);
+    glUniform1f(G.g_y, -0.12f);   // just under the lawn, not a step down
     glUniform3fv(G.g_eye, 1, eye);
     glUniform3fv(G.g_sun, 1, s.dir);
     glUniform3fv(G.g_sun_col, 1, s.sun_col);
@@ -1035,7 +1039,7 @@ static void draw_skirt(const Mat4& mvp, const float eye[3]) {
     glUniform1f(G.g_exposure, s.exposure);
     glUniform1f(G.g_fog_start, s.fog_start);
     glUniform1f(G.g_fog_density, s.fog_density);
-    const float albedo[3] = {0.105f, 0.165f, 0.062f};   // must match game_sim.cpp
+    const float albedo[3] = {0.34f, 0.40f, 0.19f};   // meadow: lit like the lawn, must match game_sim.cpp
     glUniform3fv(G.g_albedo, 1, albedo);
     glBindBuffer(GL_ARRAY_BUFFER, G.ground_vbo);
     attribs_only(1);
@@ -1127,6 +1131,7 @@ bool game_init(AAssetManager* mgr, std::string* err) {
         if (err) *err = G.status;
         return false;
     }
+    G.game.explore = true;      // no orbs, no timer: walk the garden
     init_gl();
     if (err) *err = G.status;
     return G.ready;
@@ -1339,11 +1344,14 @@ void game_frame(float dt, float jx, float jy, float dyaw, float dpitch) {
     if (G.post_ok) {
         G.ft_avg = G.ft_avg <= 0.0f ? dt : G.ft_avg * 0.9f + dt * 0.1f;
         if (G.time_s - G.last_scale_change > 2.0 && G.ft_avg > 0.0f) {
-            if (G.ft_avg > 0.045f && G.render_scale > 0.51f) {
+            // 60 fps target: drop a step below 20 ms per frame (50 fps), climb back when the
+            // frame is comfortably under 14.5 ms. The old thresholds only reacted to being
+            // *awful* (<22 fps), which is why a phone would happily sit at 30.
+            if (G.ft_avg > 0.020f && G.render_scale > 0.51f) {
                 G.render_scale = G.render_scale > 0.7f ? 0.7f : 0.5f;
                 G.last_scale_change = G.time_s;
                 rebuild_targets();
-            } else if (G.ft_avg < 0.019f && G.render_scale < 0.99f) {
+            } else if (G.ft_avg < 0.0145f && G.render_scale < 0.99f) {
                 G.render_scale = G.render_scale < 0.6f ? 0.7f : 1.0f;
                 G.last_scale_change = G.time_s;
                 rebuild_targets();
@@ -1372,7 +1380,7 @@ void game_frame(float dt, float jx, float jy, float dyaw, float dpitch) {
     draw_sky(eye, yaw, pitch);
     draw_skirt(mvp, eye);
     draw_model(mvp, eye);
-    draw_orbs(eye, yaw, pitch);
+    if (!G.game.explore) draw_orbs(eye, yaw, pitch);   // nothing to collect: nothing to draw
 
     // Frame 3: is anything actually being drawn, and does the composite survive the trip?
     const bool probe_now = G.frames_drawn == 2 && !G.probed_frame;

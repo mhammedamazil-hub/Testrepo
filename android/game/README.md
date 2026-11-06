@@ -5,10 +5,15 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v9>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v10>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
+> **v10 is the exploration build.** No score, no timer, no orbs: the garden is the point.
+> It also fixes the two things v9's screenshot exposed - trees only blocked a 0.55 m post while
+> their canopies are 2-3 m wide (you could stand inside the leaves), and the ground beyond the
+> 87 m lawn was a near-black wedge that read as broken geometry.
+>
 > **v8 failed to build too** (two NDK-only errors the host stubs could not see:
 > `AWINDOW_FLAG_*` and `android_input_buffer` are not declared the same way across NDK
 > versions). v9 uses the classic `app->onInputEvent` hook and numeric window flags. Use v9.
@@ -82,7 +87,7 @@ interior lit only by the sky through the openings.
 | Glass | Fresnel sky reflection over a dim room — a mirror, not transmission |
 | Sky | full-screen quad: gradient, sun disc + glow, procedural altocumulus, no sky texture |
 | Ground | procedural patches, grain, fine noise and mown stripes in world space, fading with distance |
-| Gameplay | 8 objectives, wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob, timer |
+| Gameplay | **exploration**: no score, no timer, no objectives. Wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob |
 | HUD | drawn in GL from `assets/hud_font.png` (95 glyphs, 16×6 cells): counter, timer, fps, crosshair, compass chevron, thumb stick, boot screen, diagnostics |
 | Audio | **none since v7** — the Java AudioTrack player was removed with the rest of the Java. The wav files are still in `res/raw` for whoever writes the AAudio/OpenSL player |
 | Assets | `assets/model.vpk` 30.2 MB, `assets/level.bin` 406 kB |

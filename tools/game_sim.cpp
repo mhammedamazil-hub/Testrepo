@@ -333,7 +333,7 @@ static void draw_skirt(Frame* f, const View& v, const GameSun& gs, float y) {
                            {ex - e, y, ez + e}, {ex + e, y, ez + e}};
     const int order[6] = {0, 1, 2, 2, 1, 3};
     // the lawn's own albedo, a little darker so it reads as meadow beyond the garden
-    const float albedo[3] = {0.105f, 0.165f, 0.062f};
+    const float albedo[3] = {0.34f, 0.40f, 0.19f};   // meadow beyond the lawn
     for (int t = 0; t < 6; t += 3) {
         float tri[3][3];
         for (int k = 0; k < 3; ++k)
@@ -564,6 +564,7 @@ static void render(const VModel& model, const Game& g, Frame* f) {
                             }
                         }
                         for (int i = 0; i < 3; ++i) alb[i] = fminf(alb[i], 0.75f);
+                        if ((d.flags & 1u) && dist < 0.95f) continue;   // no leaves in the eye
                         if (d.flags & 1u) {   // foliage cards
                             float lum = 0.30f * alb[0] + 0.59f * alb[1] + 0.11f * alb[2];
                             for (int i = 0; i < 3; ++i) alb[i] = (lum * 0.55f + alb[i] * 0.45f) * 0.82f;
@@ -598,8 +599,9 @@ static void render(const VModel& model, const Game& g, Frame* f) {
             }
         }
     }
-    // objectives: additive billboards, so the autopilot's frames show what it walks to
-    for (size_t i = 0; i < g.lv.objs.size(); ++i) {
+    // objectives: additive billboards, so the autopilot's frames show what it walks to.
+    // Exploration mode has no collectables, so they are not drawn at all.
+    for (size_t i = 0; i < (g.explore ? 0u : g.lv.objs.size()); ++i) {
         if (g.taken[i]) continue;
         const LevelObj& o = g.lv.objs[i];
         float cw[4];
@@ -982,6 +984,11 @@ int main(int argc, char** argv) {
     }
     load_textures(model);
     Game g;
+    // The harness drives the same collision and movement the tablet runs, but it needs the
+    // timer (for its own progress and the stall watchdog) and it wants the waypoints to count,
+    // so it works in the pre-v10 "collect" mode. `explore` only changes gameplay, never the
+    // walking, the level or the renderer.
+    g.explore = false;
     if (!g.init((assets + "/level.bin").c_str(), &err)) {
         std::fprintf(stderr, "level: %s\n", err.c_str());
         return 1;
@@ -1067,6 +1074,8 @@ int main(int argc, char** argv) {
         std::printf(" (%.0f,%.0f)", g.lv.objs[order[i]].x, g.lv.objs[order[i]].z);
     std::printf("\n");
 
+    int reached = 0;
+    float farthest = 0.0f;
     for (int k = 0; k < g.total; ++k) {
         const LevelObj& target = g.lv.objs[order[k]];
         int r0, c0, r1, c1;
@@ -1197,17 +1206,31 @@ int main(int argc, char** argv) {
                 ++shots;
             }
         }
-        if (g.taken[order[k]] == 0) {
-            std::printf("FAIL: ran out of time reaching objective %d\n", k);
-            return 1;
+        // The game collects nothing any more (exploration build), so the harness checks that
+        // the walk actually arrived at the waypoint instead of that an orb was picked up.
+        {
+            const LevelObj& o = g.lv.objs[order[k]];
+            const float dx = o.x - g.p.feet[0], dz = o.z - g.p.feet[2];
+            const float arrived = std::sqrt(dx * dx + dz * dz);
+            if (arrived > 1.8f) {
+                std::printf("FAIL: ran out of time reaching waypoint %d (%.1f m short)\n", k,
+                            arrived);
+                return 1;
+            }
+            ++reached;
         }
-        std::printf("  reached objective %d at t=%.1fs  pos %.2f %.2f %.2f\n", k, g.time,
+        {
+            const LevelObj& o = g.lv.objs[order[k]];
+            const float dx = o.x - g.lv.spawn[0], dz = o.z - g.lv.spawn[2];
+            const float d = std::sqrt(dx * dx + dz * dz);
+            if (d > farthest) farthest = d;
+        }
+        std::printf("  reached waypoint %d at t=%.1fs  pos %.2f %.2f %.2f\n", k, g.time,
                     g.p.feet[0], g.p.feet[1], g.p.feet[2]);
     }
 
-    std::printf("PASS: collected %d/%d objectives in %.1f s of game time (%d frames, %.0f m "
-                "walked)\n",
-                g.orbs, g.total, g.time, frames, walked);
-    std::printf("state=%d orbs=%d time=%.2f\n", g.state, g.orbs, g.time);
-    return (g.state == 1 && g.orbs == g.total) ? 0 : 1;
+    std::printf("PASS: walked to %d/%d waypoints in %.1f s (%d frames, %.0f m walked, "
+                "farthest %.0f m)\n",
+                reached, (int)g.lv.objs.size(), g.time, frames, walked, farthest);
+    return reached == (int)g.lv.objs.size() ? 0 : 1;
 }

@@ -167,6 +167,7 @@ def main():
         return (int((z - z0) / ns.cell), int((x - x0) / ns.cell))
 
     trees = 0
+    tree_radii = []
     tris_ground = tris_wall = 0
     names_block = {}
 
@@ -281,10 +282,18 @@ def main():
             if lo is not None:
                 cx, cz = 0.5 * (lo[0] + hi[0]), 0.5 * (lo[2] + hi[2])
                 rr, cc = cell_of(cx, cz)
-                k = max(1, int(round(0.55 / ns.cell)))
+                # A tree is not a 0.55 m post. The trunk is, but the canopy around it is 2-3 m
+                # of leaf cards, and blocking only the trunk let the player walk in until the
+                # leaves were across the whole screen - the v9 screenshot. Block the canopy's
+                # own footprint, kept a little tighter than the cards so you can still walk
+                # under the edge of a tree, and clamped so one palm cannot wall off the lawn.
+                canopy_r = 0.5 * max(hi[0] - lo[0], hi[2] - lo[2])
+                block_r = max(0.62, min(canopy_r * 0.62, 2.2))
+                k = max(1, int(round(block_r / ns.cell)))
                 body_block[max(0, rr - k):min(rows, rr + k + 1),
                            max(0, cc - k):min(cols, cc + k + 1)] = True
                 trees += 1
+                tree_radii.append(round(block_r, 2))
         if is_shrub:
             for prim in js["meshes"][nd["mesh"]]["primitives"]:
                 acc = js["accessors"][prim["attributes"]["POSITION"]]
@@ -461,6 +470,12 @@ def main():
             raise SystemExit(f"objective at {x:.1f},{z:.1f} is NOT reachable")
         worst = max(worst, int(dist[rr, cc]))
     info["worst_objective_m"] = round(worst * ns.cell, 1)
+    if tree_radii:
+        import statistics
+        print(f"tree colliders: {len(tree_radii)} trees, canopy radius "
+              f"{min(tree_radii):.2f}-{max(tree_radii):.2f} m (median "
+              f"{statistics.median(tree_radii):.2f} m) - v9 blocked 0.55 m and let the player "
+              f"stand inside the leaves")
     print(f"PLAYABLE: all {len(obj)} objectives reachable, farthest {info['worst_objective_m']} m "
           f"of walking", flush=True)
 

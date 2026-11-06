@@ -107,6 +107,28 @@ jobs:
               -Iandroid/game/app/src/main/cpp
           /tmp/gamesim play android/game/app/src/main/assets /tmp/shot 6 | tee /tmp/play.log
           grep -q "^PASS" /tmp/play.log
+          # the world must be continuous: no black shelf where the lawn ends. The harness
+          # renders the spawn view, so sample the far-ground band and assert it is lit.
+          /tmp/gamesim shot android/game/app/src/main/assets /tmp/horizon.ppm 11.75 -13.85 0
+          python - <<'PY'
+          from PIL import Image
+          im = Image.open('/tmp/horizon.ppm').convert('RGB')
+          w, h = im.size
+          # just below the horizon line, in the middle of the frame: this is the outside-world
+          # plane. It used to be a black wedge; it must be at least as bright as shadow.
+          # Sample the meadow on both sides of the house, below the terrace: this is the
+          # outside-world plane, and it is the thing that used to be a black wedge.
+          totals, n = 0, 0
+          for x0, x1 in ((0.05, 0.30), (0.70, 0.95)):
+              band = im.crop((int(w * x0), int(h * 0.66), int(w * x1), int(h * 0.78)))
+              for p in band.get_flattened_data() if hasattr(band, 'get_flattened_data') \
+                      else band.getdata():
+                  totals += sum(p) / 3
+                  n += 1
+          mean = totals / max(n, 1)
+          assert mean > 18, f"the ground beyond the lawn is nearly black (mean {mean:.0f})"
+          print(f"meadow band mean luma {mean:.0f} -> ground is continuous")
+          PY
           python - <<'PY'
           from PIL import Image
           import glob, os
