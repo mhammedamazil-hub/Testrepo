@@ -5,14 +5,15 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v3>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v4>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
-> **v1 was a black screen.** It is fixed here, and the fix is now a CI gate — see
-> *What went wrong*, item 6. If v3 ever shows black again, the shader preflight in
-> `.github/workflows/game-apk.yml` failed to catch a new linker error; the log is uploaded
-> with every run as `shaders.log`.
+> **v1 was a black screen, and v3 ran, but badly.** See *What went wrong*, items 6–10.
+> Everything found on a real phone is now covered by two static gates that run before Gradle:
+> `tools/gles_shader_check.py` (GLSL) and `tools/game_device_check.py` (the device-only
+> contracts: post-process UVs, camera basis, attribute slots, texture units, input signs).
+> Their logs ship with every run as `shaders.log` and `device.log`.
 
 ## Install
 
@@ -29,8 +30,8 @@ repository and there never will be — see *Honest limits*.
 
 | | |
 |---|---|
-| **Walk** | thumb down anywhere on the left half of the screen — a stick appears there |
-| **Look** | drag anywhere on the right half |
+| **Walk** | thumb down anywhere on the left half of the screen — a stick appears there; push it the way you want to go |
+| **Look** | drag anywhere on the right half; drag up to look up |
 | **Collect** | walk into an orb (they glow gold; the arrow at the top points at the nearest) |
 | **Restart** | tap the win screen |
 
@@ -103,9 +104,9 @@ g++ -O2 -std=c++17 tools/game_sim.cpp android/viewer/app/src/main/cpp/vpk.cpp \
 /tmp/gamesim play android/game/app/src/main/assets /tmp/shot 6
 # → PASS: collected 8/8 objectives in 117.8 s of game time (7069 frames, 371 m walked)
 
-# the shaders, before any phone sees them
-python tools/gles_shader_check.py
-# → PASS: 13 shader stages, 8 programs, precisions consistent across every stage
+# the shaders and the device-only contracts, before any phone sees them
+python tools/gles_shader_check.py     # → PASS: 13 shader stages, 8 programs
+python tools/game_device_check.py     # → PASS: 21 device contracts hold
 ```
 
 That harness compiles `game_core.h` and `level.h` unchanged, loads the real `model.vpk` with
@@ -158,6 +159,26 @@ the `game-evidence` artifact.
    sheet. Albedo is now capped at 0.75 — real paint is not a perfect reflector — and vertical
    surfaces get world-space plaster grain so a sunlit wall has tonality instead of glare.
 
+9. **v3.0 rendered, and looked like the mesh was corrupted.** Three defects stacked:
+   the post-process quad passed *clip* space (-1..1) straight into `texture2D`, so every
+   sample with a negative coordinate clamped to the edge texel and half of each frame was a
+   smear of one column; `draw_sky`/`draw_orbs` built their camera basis as
+   `(cos yaw, 0, -sin yaw)`, which is the *negative* of the view matrix's right axis, so
+   `up = right × fwd` came out as `(0,-1,0)` and the skybox rendered upside down (the grey
+   "below the horizon" haze ended up above the horizon); and `draw_model` uploaded its
+   textures on whatever texture unit the post chain had left active — unit 2 — while the
+   shader sampled unit 0, which still held the *previous frame's scene target*. Every
+   surface was therefore textured with the last frame's screenshot at model UVs. That is what
+   "the mesh is broken" looked like.
+10. **The controls were doubly inverted.** `GameSurface` reported the stick as
+   `y = -dy/r` (correct: drag up = forward) and `GameRenderer` then passed `-jy` into the
+   movement code, so forward and back swapped; the look drag added `dy` straight into pitch
+   (screen y is down, pitch is up), so looking ran backwards too. Both are fixed at their
+   source, and `game_device_check.py` asserts the two signs.
+11. **The skybox had its own copy of the sky gradient** and it was three stops darker than
+   `sky_at()` in the model shader — so the glass and the pool reflected a bright midday sky
+   while the sky itself was dusk. One set of constants now, asserted equal.
+
 ## Honest limits
 
 - **Never run on Android.** No device, no emulator, no SDK in this sandbox. The APK builds
@@ -178,10 +199,15 @@ the `game-evidence` artifact.
 - **The camera cannot go upstairs or onto the roof**; the roof is excluded from the level.
 - **The sound was measured, not auditioned.** I have no ears in this sandbox: the clips are
   checked for level, spectral content and a seamless wind loop, nothing more.
-- **1080p fill cost is unmeasured on a real GPU.** The post chain is four extra full-screen
-  passes at quarter resolution plus the scene at up to 1080p. On an old tablet, the lever is
-  `render_scale` in `game.cpp` (it already caps the tall axis at 1080); nothing else needs to
-  change.
+- **The render resolution adapts, and that is why it is sharp for some and soft for others.**
+  The frame-rate governor in `game.cpp` drops to 0.7× and then 0.5× of the (1080p-capped)
+  surface if the average frame takes longer than 45 ms, and climbs back when there is
+  headroom. A mid-range phone will settle around 0.7×; a recent one stays at 1.0×.
+- **The device bugs found in v3.0 were found from a screenshot, not a debugger.** The host
+  harness and the device share the game, the level, the pack and the shading maths — but not
+  the GLES driver, the texture units, or the post-process rectangles. Items 8–10 below were
+  all in that gap; the static gate in `tools/game_device_check.py` now pins them, but it can
+  only pin bugs that are already understood.
 - **Debug-signed.** Signing a release keystore into a public repo would be theatre.
 
 ## Regenerate everything

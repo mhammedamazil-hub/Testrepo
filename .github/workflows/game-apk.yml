@@ -121,6 +121,10 @@ jobs:
           set -euo pipefail
           python tools/gles_shader_check.py | tee /tmp/shaders.log
           grep -q "^PASS" /tmp/shaders.log
+          # the device-only contracts (post uv, camera basis, attribute slots, texture units,
+          # input signs) that a shipped screenshot proved were broken in v3.0
+          python tools/game_device_check.py | tee /tmp/device.log
+          grep -q "^PASS" /tmp/device.log
           /tmp/gamesim shot android/game/app/src/main/assets /tmp/hero.ppm 11.75 -13.85 0
           python - <<'PY'
           from PIL import Image
@@ -210,6 +214,7 @@ jobs:
             /tmp/game_playthrough.png
             /tmp/game_1080p.png
             /tmp/shaders.log
+            /tmp/device.log
             /tmp/level.json
             /tmp/play.log
 

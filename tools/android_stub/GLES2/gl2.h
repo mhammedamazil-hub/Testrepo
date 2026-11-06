@@ -18,6 +18,7 @@ typedef uint8_t GLubyte; typedef char GLchar; typedef float GLfloat;
 #define GL_UNSIGNED_SHORT 0x1403
 #define GL_FLOAT 0x1406
 #define GL_BYTE 0x1400
+#define GL_NEAREST 0x2600
 #define GL_LINEAR 0x2601
 #define GL_LINEAR_MIPMAP_LINEAR 0x2703
 #define GL_REPEAT 0x2901
@@ -93,3 +94,5 @@ void glBindTexture(GLenum, GLuint);
 #define GL_HIGH_FLOAT 0x8DF2
 const GLubyte* glGetString(GLenum);
 void glGetShaderPrecisionFormat(GLenum, GLenum, GLint*, GLint*);
+#define GL_NO_ERROR 0
+GLenum glGetError(void);

@@ -140,6 +140,10 @@ public class GameSurface extends GLSurfaceView {
                         }
                         stick.knobX = stick.baseX + dx;
                         stick.knobY = stick.baseY + dy;
+                        // Screen y grows downwards, so a drag towards the top of the screen is a
+                        // negative dy - and that is "forward". Hence y = -dy/r, which is what
+                        // the stick has always meant; the bug was that nativeFrame() negated it
+                        // again before handing it to the movement code.
                         stick.x = dx / r;
                         stick.y = -dy / r;
                     } else if (id == lookId) {
@@ -147,8 +151,11 @@ public class GameSurface extends GLSurfaceView {
                         float dy = y - lookY;
                         lookX = x;
                         lookY = y;
-                        pendingYaw += dx * LOOK_SENS;
-                        pendingPitch += dy * LOOK_SENS;
+                        pendingYaw += dx * LOOK_SENS;      // drag right, turn right
+                        // Drag up (dy < 0) must look up. game_core adds dpitch straight into
+                        // pitch, and positive pitch is up, so this has to be negated. v3.0
+                        // did not, so the whole look axis ran backwards too.
+                        pendingPitch -= dy * LOOK_SENS;
                     }
                 }
                 break;

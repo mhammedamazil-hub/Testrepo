@@ -326,11 +326,20 @@ static const char* kOrbFS =
 
 // ---- post processing: bright pass -> separable blur -> god rays -> composite
 static const char* kPostQuadVS =
-    "attribute vec2 a_p;\n"
+    "attribute vec2 a_p;\n"          // -1..1 clip space
     "varying XPREC vec2 v_uv;\n"
-    "uniform vec2 u_scale;\n"      // 1 for the full target, less for a smaller render target
+    "uniform vec2 u_scale;\n"        // cover scale about the centre (1 = full target)
     "uniform vec2 u_shift;\n"
-    "void main(){ v_uv = a_p * u_scale + u_shift; gl_Position = vec4(a_p, 0.0, 1.0); }\n";
+    // a_p is clip space, so it has to be mapped into 0..1 before it can be a texture
+    // coordinate. Writing v_uv = a_p directly (as v3.0 did) makes every sample with a
+    // negative coordinate clamp to the edge texel: the left half of the screen became a
+    // smear of the left column and the whole post chain - bloom, rays, composite - was
+    // reading the wrong pixels.
+    "void main(){\n"
+    "  vec2 q = a_p * 0.5 + 0.5;\n"
+    "  v_uv = (q - 0.5) * u_scale + 0.5 + u_shift;\n"
+    "  gl_Position = vec4(a_p, 0.0, 1.0);\n"
+    "}\n";
 
 static const char* kBrightFS =
     "precision XPREC float;\n"
@@ -459,8 +468,12 @@ static struct {
     GLint b_tex = -1, bl_tex = -1, bl_dir = -1, r_tex = -1, r_sun = -1, r_strength = -1;
     GLint c_scene = -1, c_bloom = -1, c_rays = -1, c_bloom_amt = -1, c_rays_amt = -1;
     bool post_ok = false;
-    float render_scale = 1.0f;                        // 1080p cap, see resize()
-    GLuint vbo = 0, ibo = 0, sky_vbo = 0, orb_vbo = 0, ground_vbo = 0;
+    float render_scale = 1.0f;                        // 1080p cap, see rebuild_targets()
+    float ft_avg = 0.0f, last_scale_change = 0.0f;    // frame-rate governor state
+    float ao_mean = 0.0f, sun_mean = 0.0f;            // logged once, for diagnostics
+    bool attr_checked = false;
+    GLenum last_gl_error = 0;
+    GLuint vbo = 0, ibo = 0, sky_vbo = 0, orb_vbo = 0, ground_vbo = 0, white_tex = 0;
     GLint g_mvp = -1, g_y = -1, g_eye = -1, g_sun = -1, g_sun_col = -1, g_sky_col = -1,
           g_ground_col = -1, g_fog_col = -1, g_exposure = -1, g_fog_start = -1,
           g_fog_density = -1, g_albedo = -1;
@@ -558,6 +571,9 @@ static std::vector<uint8_t> read_asset(AAssetManager* mgr, const char* name, boo
 static void upload_texture(size_t i) {
     if (i >= G.tex.size() || G.tex_ready[i]) return;
     G.tex_ready[i] = 1;
+    // The post chain leaves unit 2 active. Uploading here without saying which unit is
+    // meant put the model textures somewhere the model shader never samples.
+    glActiveTexture(GL_TEXTURE0);
     int w = 0, h = 0, n = 0;
     const uint8_t* bytes = G.model.texture_bytes((uint16_t)i);
     unsigned char* px = stbi_load_from_memory(bytes, (int)G.model.texture_length((uint16_t)i), &w,
@@ -581,6 +597,16 @@ static void upload_texture(size_t i) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     stbi_image_free(px);
+}
+
+static void make_white_texture() {
+    const unsigned char px[4] = {255, 255, 255, 255};
+    glGenTextures(1, &G.white_tex);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, G.white_tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, px);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 static void attribs_only(int count) {
@@ -762,6 +788,7 @@ static void init_gl() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     G.ready = true;
     G.status = "ready";
+    make_white_texture();
     LOGI("GL ready: %u draws, %u textures", G.model.h.n_draws, G.model.h.n_textures);
 }
 
@@ -788,13 +815,42 @@ static void build_mvp(const float eye[3], const float yaw, const float pitch, fl
     *out = mat4_mul(p, v);
 }
 
+// The orthonormal camera basis the *view matrix* uses. mat4_lookat builds its right axis as
+// fwd x world-up, so screen right is (-fwd.z, 0, fwd.x) - the opposite of (cos yaw, -sin yaw).
+// v3.0 used that opposite vector here, and up = right x fwd then came out as (0,-1,0): the
+// skybox was rendered rotated 180 degrees, showing the "below the horizon" haze over the top
+// half of the screen and putting the sun's disc on the wrong side of the sky.
+static void camera_basis(const float yaw, const float pitch, float fwd[3], float right[3],
+                         float up[3]) {
+    const float cp = cosf(pitch), sp = sinf(pitch);
+    fwd[0] = sinf(yaw) * cp;
+    fwd[1] = sp;
+    fwd[2] = cosf(yaw) * cp;
+    const float rl = sqrtf(fwd[0] * fwd[0] + fwd[2] * fwd[2]);
+    if (rl > 1e-5f) {
+        right[0] = -fwd[2] / rl;
+        right[1] = 0.0f;
+        right[2] = fwd[0] / rl;
+    } else {   // looking straight up or down: any right vector will do
+        right[0] = 1.0f;
+        right[1] = 0.0f;
+        right[2] = 0.0f;
+    }
+    up[0] = right[1] * fwd[2] - right[2] * fwd[1];
+    up[1] = right[2] * fwd[0] - right[0] * fwd[2];
+    up[2] = right[0] * fwd[1] - right[1] * fwd[0];
+    const float ul = sqrtf(up[0] * up[0] + up[1] * up[1] + up[2] * up[2]);
+    if (ul > 1e-5f) {
+        up[0] /= ul;
+        up[1] /= ul;
+        up[2] /= ul;
+    }
+}
+
 static void draw_sky(const float eye[3], const float yaw, const float pitch) {
     const GameSun& s = game_sun();
-    const float cp = cosf(pitch), sp = sinf(pitch);
-    float fwd[3] = {sinf(yaw) * cp, sp, cosf(yaw) * cp};
-    float right[3] = {cosf(yaw), 0.0f, -sinf(yaw)};
-    float up[3] = {right[1] * fwd[2] - right[2] * fwd[1], right[2] * fwd[0] - right[0] * fwd[2],
-                   right[0] * fwd[1] - right[1] * fwd[0]};
+    float fwd[3], right[3], up[3];
+    camera_basis(yaw, pitch, fwd, right, up);
     (void)eye;
     glUseProgram(G.sky_p.id);
     glUniform3fv(G.s_fwd, 1, fwd);
@@ -805,8 +861,10 @@ static void draw_sky(const float eye[3], const float yaw, const float pitch) {
     glUniform1f(G.s_exposure, s.exposure);
     glUniform3fv(G.s_sun, 1, s.dir);
     glUniform3fv(G.s_sun_col, 1, s.sun_col);
-    const float zen[3] = {0.030f, 0.058f, 0.125f};
-    const float hor[3] = {0.090f, 0.105f, 0.120f};
+    // Must equal zen/hor in sky_at() in kModelFS: the glass and the pool reflect sky_at(),
+    // so a different gradient up here made the reflected sky brighter than the real one.
+    const float zen[3] = {0.105f, 0.175f, 0.335f};
+    const float hor[3] = {0.330f, 0.360f, 0.390f};
     glUniform3fv(G.s_zen, 1, zen);
     glUniform3fv(G.s_hor, 1, hor);
     glBindBuffer(GL_ARRAY_BUFFER, G.sky_vbo);
@@ -820,12 +878,8 @@ static void draw_sky(const float eye[3], const float yaw, const float pitch) {
 }
 
 static void draw_orbs(const float eye[3], const float yaw, const float pitch) {
-    const float cp = cosf(pitch), sp = sinf(pitch);
-    const float fwd[3] = {sinf(yaw) * cp, sp, cosf(yaw) * cp};
-    const float right[3] = {cosf(yaw), 0.0f, -sinf(yaw)};
-    const float up[3] = {right[1] * fwd[2] - right[2] * fwd[1],
-                         right[2] * fwd[0] - right[0] * fwd[2],
-                         right[0] * fwd[1] - right[1] * fwd[0]};
+    float fwd[3], right[3], up[3];
+    camera_basis(yaw, pitch, fwd, right, up);
     const float ctr[3] = {eye[0] + fwd[0], eye[1] + fwd[1], eye[2] + fwd[2]};
     const float wup[3] = {0, 1, 0};
     const Mat4 v = mat4_lookat(eye, ctr, wup);
@@ -908,7 +962,7 @@ static void draw_skirt(const Mat4& mvp, const float eye[3]) {
     glUniform1f(G.g_exposure, s.exposure);
     glUniform1f(G.g_fog_start, s.fog_start);
     glUniform1f(G.g_fog_density, s.fog_density);
-    const float albedo[3] = {0.085f, 0.135f, 0.055f};   // meadow beyond the garden
+    const float albedo[3] = {0.105f, 0.165f, 0.062f};   // must match game_sim.cpp
     glUniform3fv(G.g_albedo, 1, albedo);
     glBindBuffer(GL_ARRAY_BUFFER, G.ground_vbo);
     attribs_only(1);
@@ -941,9 +995,12 @@ static void draw_model(const Mat4& mvp, const float eye[3]) {
             const bool glass = (d.flags & 4u) != 0;
             if ((pass == 0 && glass) || (pass == 1 && !glass)) continue;
             set_model_uniforms(d, mvp, eye);
+            glActiveTexture(GL_TEXTURE0);
             if (d.tex != VPK_NO_TEXTURE) {
                 upload_texture(d.tex);
                 glBindTexture(GL_TEXTURE_2D, G.tex[d.tex]);
+            } else {
+                glBindTexture(GL_TEXTURE_2D, G.white_tex);
             }
             glDrawElements(GL_TRIANGLES, (GLsizei)d.index_count, GL_UNSIGNED_SHORT,
                            (void*)((size_t)d.index_offset * 2));
@@ -993,36 +1050,43 @@ Java_ai_arena_villagame_GameRenderer_nativeInit(JNIEnv* env, jobject, jobject as
     return G.ready ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL
-Java_ai_arena_villagame_GameRenderer_nativeResize(JNIEnv*, jobject, jint w, jint h) {
-    G.w = w > 0 ? w : 1;
-    G.h = h > 0 ? h : 1;
-    G.aspect = (float)G.w / (float)G.h;
-
-    // Render at the screen resolution but never above 1080p: a 1440p panel asking for
-    // 4.2 M pixels of this to run at 30 fps is a worse experience than 1080p at 60.
+// Rebuild the off-screen targets at the current render_scale. Called on resize and by the
+// frame-rate governor below.
+static void rebuild_targets() {
     int rw = G.w, rh = G.h;
     if (rh > 1080) {
         rw = (int)((float)G.w * 1080.0f / (float)G.h + 0.5f);
         rh = 1080;
     }
-    G.render_scale = (float)rw / (float)G.w;
+    rw = (int)((float)rw * G.render_scale + 0.5f);
+    rh = (int)((float)rh * G.render_scale + 0.5f);
+    if (rw < 2) rw = 2;
+    if (rh < 2) rh = 2;
+    const int qw = rw / 4 > 0 ? rw / 4 : 1, qh = rh / 4 > 0 ? rh / 4 : 1;
     G.scene.destroy();
     G.bright.destroy();
     G.blur_a.destroy();
     G.blur_b.destroy();
     G.rays.destroy();
     bool ok = G.scene.create(rw, rh, true);
-    if (ok) ok = G.bright.create(rw / 4 > 0 ? rw / 4 : 1, rh / 4 > 0 ? rh / 4 : 1, false);
-    if (ok) ok = G.blur_a.create(rw / 4 > 0 ? rw / 4 : 1, rh / 4 > 0 ? rh / 4 : 1, false);
-    if (ok) ok = G.blur_b.create(rw / 4 > 0 ? rw / 4 : 1, rh / 4 > 0 ? rh / 4 : 1, false);
-    if (ok) ok = G.rays.create(rw / 4 > 0 ? rw / 4 : 1, rh / 4 > 0 ? rh / 4 : 1, false);
+    if (ok) ok = G.bright.create(qw, qh, false);
+    if (ok) ok = G.blur_a.create(qw, qh, false);
+    if (ok) ok = G.blur_b.create(qw, qh, false);
+    if (ok) ok = G.rays.create(qw, qh, false);
+    G.post_ok = ok;
     if (!ok) {
         G.status = "render target incomplete at " + std::to_string(rw) + "x" + std::to_string(rh);
         LOGE("%s", G.status.c_str());
-        G.post_ok = false;
     }
-    LOGI("surface %dx%d, rendering %dx%d", G.w, G.h, rw, rh);
+    LOGI("surface %dx%d, rendering %dx%d (scale %.2f)", G.w, G.h, rw, rh, G.render_scale);
+}
+
+JNIEXPORT void JNICALL
+Java_ai_arena_villagame_GameRenderer_nativeResize(JNIEnv*, jobject, jint w, jint h) {
+    G.w = w > 0 ? w : 1;
+    G.h = h > 0 ? h : 1;
+    G.aspect = (float)G.w / (float)G.h;
+    rebuild_targets();
 }
 
 // Sun position in uv space, or (-10,-10) when it is behind the camera.
@@ -1129,8 +1193,50 @@ Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jf
                                                  jfloat jy, jfloat dyaw, jfloat dpitch) {
     if (!G.ready) return;
     G.time_s += dt;
-    // stick: +y is forward in the touch view, the player wants -z locally
-    G.game.update(dt, -jy, jx, dyaw, dpitch);
+    // Stick convention, in one place: the Java side reports x = right, y = *up* (a drag
+    // towards the top of the screen is +y). game_core wants +fwd = the way the camera faces,
+    // which is what +y already means, so the value passes through unchanged. v3.0 negated it
+    // here while the Java side also negated the pitch, which made both the stick and the look
+    // run backwards.
+    G.game.update(dt, jy, jx, dyaw, dpitch);
+
+    // One-time self-check of the baked lighting attribute: if the pack's AO/sun bytes ever
+    // stop arriving (a wrong attribute slot, a bad stride), every surface goes flat and dark.
+    // Reading them back once at runtime is the only way to see that from a device log.
+    if (!G.attr_checked && G.model.h.n_verts > 0) {
+        G.attr_checked = true;
+        const uint8_t* vb = G.model.vertex_base();
+        double ao = 0, sun = 0;
+        const uint32_t n = G.model.h.n_verts < 4096 ? G.model.h.n_verts : 4096;
+        for (uint32_t i = 0; i < n; ++i) {
+            ao += vb[(size_t)i * VPK_VERTEX_STRIDE + 6];
+            sun += vb[(size_t)i * VPK_VERTEX_STRIDE + 7];
+        }
+        ao /= 255.0 * n;
+        sun /= 255.0 * n;
+        LOGI("baked lighting: ao %.2f sun %.2f over %u verts", ao, sun, n);
+        if (sun < 0.01) LOGE("the pack carries no sun visibility - rebuild model.vpk");
+        G.ao_mean = (float)ao;
+        G.sun_mean = (float)sun;
+    }
+
+    // Frame-rate governor. The post chain is four extra full-screen passes; on a phone that
+    // could not hold 30 fps at the panel resolution, render fewer pixels rather than stutter.
+    // It never goes below half resolution, and it climbs back up if the device had headroom.
+    if (G.post_ok) {
+        G.ft_avg = G.ft_avg <= 0.0f ? dt : G.ft_avg * 0.9f + dt * 0.1f;
+        if (G.time_s - G.last_scale_change > 2.0 && G.ft_avg > 0.0f) {
+            if (G.ft_avg > 0.045f && G.render_scale > 0.51f) {
+                G.render_scale = G.render_scale > 0.7f ? 0.7f : 0.5f;
+                G.last_scale_change = G.time_s;
+                rebuild_targets();
+            } else if (G.ft_avg < 0.019f && G.render_scale < 0.99f) {
+                G.render_scale = G.render_scale < 0.6f ? 0.7f : 1.0f;
+                G.last_scale_change = G.time_s;
+                rebuild_targets();
+            }
+        }
+    }
     float eye[3];
     G.game.eye_pos(eye);
     const float yaw = G.game.p.yaw, pitch = G.game.p.pitch;
@@ -1153,6 +1259,16 @@ Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jf
 
     if (offscreen) {
         post_chain(eye, yaw, pitch);
+    }
+
+    // One glGetError per frame for the first second: a silently ignored GL error here is
+    // exactly how a broken device build gets mistaken for "the mesh is wrong".
+    if (G.time_s < 1.0f) {
+        const GLenum e = glGetError();
+        if (e != GL_NO_ERROR && G.last_gl_error != e) {
+            G.last_gl_error = e;
+            LOGE("GL error 0x%04x at t=%.2fs", (unsigned)e, G.time_s);
+        }
     }
 }
 
