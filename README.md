@@ -25,7 +25,7 @@ python scripts/prepare_revision_base.py
 python scripts/revise_scene.py --preview
 python scripts/validate_scene.py
 python scripts/render_frames.py --start 1 --end 1200 --samples 128 --threads 4
-python scripts/render_frames.py --only 600 --still --samples 384 --noise .02 --min-samples 32 --threads 4
+python scripts/render_frames.py --only 1200 --still --samples 384 --noise .02 --min-samples 32 --threads 4
 python scripts/encode_verify.py
 python scripts/verify_delivery.py
 ```
@@ -46,7 +46,7 @@ Those shims are **not** for UI, Eevee, OpenGL or GPU use. GitHub runners use rea
 
 Run the isolated codec smoke tests with `python -m unittest discover -s tests -v`. Synthetic test colors are temporary test fixtures, never delivery footage.
 
-The workflow `.github/workflows/alpine-render.yml` first checks the explicit full-render approval flag and upgrades the original delivered scene in place once, distributes 1,200 frames over 48 twenty-five-frame CPU jobs (at most 20 in parallel), renders the hero still separately, encodes each native 60-fps segment once, then stream-copies the segments into the final MP4 and fully decodes it for verification. It publishes compact requested deliverables only on `arena/f0bb5c2d-testrepo`; raw PNG sequences stay on the temporary workers; compact encoded segments are short-retention Actions artifacts, not Git files. The workflow is intentionally restricted to this session branch.
+The workflow `.github/workflows/alpine-render.yml` first checks the explicit full-render approval flag and upgrades the original delivered scene in place once, distributes 1,200 frames over 100 twelve-frame CPU jobs (at most 20 in parallel), renders the hero still separately, encodes each native 60-fps segment once, then stream-copies the segments into the final MP4 and fully decodes it for verification. It publishes compact requested deliverables only on `arena/f0bb5c2d-testrepo`; raw PNG sequences stay on the temporary workers; compact encoded segments are short-retention Actions artifacts, not Git files. The workflow is intentionally restricted to this session branch.
 
 Final output binaries are normally ignored. The publishing job explicitly adds only the requested compact `.blend`, PNG, MP4 and small validation manifests for durable delivery; raw sequences, caches and logs never enter Git.
 

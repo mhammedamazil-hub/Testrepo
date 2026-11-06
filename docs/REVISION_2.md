@@ -28,7 +28,7 @@ The 94-skill pack remains installed. Applied lighting, vegetation-artist, camera
 ## Technical checks so far
 
 - Revised scene gate: native full HD, revision 2, 60 fps, 1–1200, CPU Cycles, geometric water waves, absorption, packed photographic sky, finite mist, wind sway, seven bird roots, >100 m camera motion, fixed-sun reveal and unobstructed end water-light path.
-- Native 60-fps codec smoke test: 48 × 25-frame segments, stream-copy assembly, full 1,200-frame decode and exact 20-second duration: PASS. Synthetic fixture frames exist only in temporary codec-test directories, never in the deliverable.
+- Native 60-fps codec smoke test: 100 × 12-frame segments, stream-copy assembly, full 1,200-frame decode and exact 20-second duration: PASS. Synthetic fixture frames exist only in temporary codec-test directories, never in the deliverable.
 - Missing-frame rejection: PASS.
 - Opening, midpoint and ending preview framing inspected. Low-resolution previews are **not** final delivery.
 
@@ -37,3 +37,5 @@ The 94-skill pack remains installed. Applied lighting, vegetation-artist, camera
 `project_config.FULL_RENDER_APPROVED` is initially false. The workflow builds and validates the revision but does not launch all 1,200 frames until the revised look is approved. The original delivered movie still describes revision 1 until the new full render, assembly and independent verification complete.
 
 Photorealism is a visual/artistic goal, not something that the fps, sample count or successful technical gates can certify. Remaining issues must be disclosed rather than hidden by a passed render check.
+
+Full animation is divided into 100 twelve-frame CPU chunks, at most 20 concurrent, to keep individual jobs safely inside runner time limits without lowering resolution, frame rate or sample quality. H.264 uses two-pass analysis of original PNGs at 16 Mbps, High profile / level 4.2 for 1080p60 playback; segments are stream-copied, never lossy-reencoded at assembly.
