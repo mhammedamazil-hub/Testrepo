@@ -8,7 +8,7 @@
 //      Java (before)                     C++ (now)
 //      MainActivity          ->  android_main() + lifecycle events
 //      GameSurface / EGL     ->  egl_init() and the frame loop
-//      MotionEvent stick/look ->  handle_input()
+//      MotionEvent stick/look ->  on_input_event() (the glue calls it per event)
 //      HudView (Canvas)      ->  hud.cpp, drawn with GL
 //      Audio (AudioTrack)    ->  dropped, see README "honest limits"
 //
@@ -182,11 +182,12 @@ void stick_release() {
     g.stick.y = 0;
 }
 
-void handle_input() {
-    android_input_buffer* buf = android_app_swap_input_buffers(g.app);
-    if (!buf) return;
-    for (uint64_t i = 0; i < buf->motionEventsCount; ++i) {
-        const AInputEvent* e = buf->motionEvents[i];
+// The glue calls this once per input event. It is the old, universally available hook -
+// `android_app_swap_input_buffers()` only exists in newer NDK headers, and using it made v8's
+// NDK build fail with "unknown type name 'android_input_buffer'".
+int32_t on_input_event(android_app* app, AInputEvent* e) {
+    (void)app;
+    if (AInputEvent_getType(e) == AINPUT_EVENT_TYPE_MOTION) {
         const int32_t action = AMotionEvent_getAction(e) & AMOTION_EVENT_ACTION_MASK;
         switch (action) {
             case AMOTION_EVENT_ACTION_DOWN:
@@ -212,19 +213,19 @@ void handle_input() {
                 }
                 // tapping the win screen starts a new run
                 if (game_state() == 1) game_reset();
-                break;
+                return 1;
             }
             case AMOTION_EVENT_ACTION_MOVE: {
                 const size_t count = AMotionEvent_getPointerCount(e);
-                for (size_t i2 = 0; i2 < count; ++i2) {
-                    const int id = AMotionEvent_getPointerId(e, i2);
-                    const float x = AMotionEvent_getX(e, i2);
-                    const float y = AMotionEvent_getY(e, i2);
+                for (size_t i = 0; i < count; ++i) {
+                    const int id = AMotionEvent_getPointerId(e, i);
+                    const float x = AMotionEvent_getX(e, i);
+                    const float y = AMotionEvent_getY(e, i);
                     if (id == g.stick.id) {
                         float dx = x - g.stick.base_x;
                         float dy = y - g.stick.base_y;
                         const float r = g.stick.radius;
-                        float len = sqrtf(dx * dx + dy * dy);
+                        const float len = sqrtf(dx * dx + dy * dy);
                         if (len > r) {                  // let the base follow a long drag
                             g.stick.base_x += dx * (1.0f - r / len);
                             g.stick.base_y += dy * (1.0f - r / len);
@@ -244,7 +245,7 @@ void handle_input() {
                         g.pending_pitch -= dy * kLookSensitivity;  // drag up, look up
                     }
                 }
-                break;
+                return 1;
             }
             case AMOTION_EVENT_ACTION_UP:
             case AMOTION_EVENT_ACTION_POINTER_UP:
@@ -254,23 +255,20 @@ void handle_input() {
                 const int id = AMotionEvent_getPointerId(e, (size_t)idx);
                 if (id == g.stick.id) stick_release();
                 else if (id == g.look_id) g.look_id = -1;
-                break;
+                return 1;
             }
             default:
-                break;
+                return 1;
         }
     }
-    android_app_clear_motion_events(buf);
-
-    for (uint64_t i = 0; i < buf->keyEventsCount; ++i) {
-        const AInputEvent* e = buf->keyEvents[i];
-        const int32_t action = AKeyEvent_getAction(e);
-        const int32_t code = AKeyEvent_getKeyCode(e);
-        if (action == AKEY_EVENT_ACTION_DOWN && code == AKEYCODE_BACK) {
+    if (AInputEvent_getType(e) == AINPUT_EVENT_TYPE_KEY) {
+        if (AKeyEvent_getAction(e) == AKEY_EVENT_ACTION_DOWN &&
+            AKeyEvent_getKeyCode(e) == AKEYCODE_BACK) {
             ANativeActivity_finish(g.app->activity);
+            return 1;
         }
     }
-    android_app_clear_key_events(buf);
+    return 0;
 }
 
 // ------------------------------------------------------------------ boot screen
@@ -455,13 +453,15 @@ void on_app_cmd(android_app* app, int32_t cmd) {
 
 void android_main(android_app* app) {
     app->onAppCmd = on_app_cmd;
+    app->onInputEvent = on_input_event;
     app->userData = &g;
     g.app = app;
     g.anim_start = FrameTime::now();
 
-    // keep the screen on and hide the status bar, without Java
-    ANativeActivity_setWindowFlags(app->activity,
-                                   AWINDOW_FLAG_KEEP_SCREEN_ON | AWINDOW_FLAG_FULLSCREEN, 0);
+    // Keep the screen on while walking, and go full screen - without Java. The AWINDOW_FLAG_*
+    // constants are not declared in the same header across NDK versions (v8's build could not
+    // see them), so the two values are spelled out: KEEP_SCREEN_ON = 0x80, FULLSCREEN = 0x400.
+    ANativeActivity_setWindowFlags(app->activity, 0x00000080u | 0x00000400u, 0);
 
     for (;;) {
         int events = 0;
@@ -484,9 +484,6 @@ void android_main(android_app* app) {
             egl_shutdown();
             return;
         }
-        if (g.gl_ready) {
-            handle_input();
-            draw_frame();
-        }
+        if (g.gl_ready) draw_frame();
     }
 }

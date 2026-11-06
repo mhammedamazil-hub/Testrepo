@@ -14,6 +14,8 @@ void android_app_clear_motion_events(android_input_buffer*);
 void android_app_clear_key_events(android_input_buffer*);
 // motion
 enum {
+    AINPUT_EVENT_TYPE_KEY = 1,
+    AINPUT_EVENT_TYPE_MOTION = 2,
     AMOTION_EVENT_ACTION_MASK = 0xff,
     AMOTION_EVENT_ACTION_DOWN = 0,
     AMOTION_EVENT_ACTION_UP = 1,
@@ -26,6 +28,7 @@ enum {
     AKEY_EVENT_ACTION_DOWN = 0,
     AKEYCODE_BACK = 4,
 };
+int32_t AInputEvent_getType(const AInputEvent*);
 int32_t AMotionEvent_getAction(const AInputEvent*);
 size_t AMotionEvent_getPointerCount(const AInputEvent*);
 int32_t AMotionEvent_getPointerId(const AInputEvent*, size_t);
