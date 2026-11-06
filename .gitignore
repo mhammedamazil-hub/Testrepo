@@ -1,0 +1,9 @@
+node_modules/
+.rea/
+.tools/
+__pycache__/
+/target/
+/data/
+.env
+.env.*
+!.env.example

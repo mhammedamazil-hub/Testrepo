@@ -1,0 +1,16 @@
+{
+  "name": "testrepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Workspace-local REA reverse-engineering tools",
+  "scripts": {
+    "rea": "sh scripts/rea.sh",
+    "rea:doctor": "npm run rea -- doctor --json",
+    "rea:mcp": "npm run rea -- mcp",
+    "rea:install-android": "python3 scripts/install-android-tools.py"
+  },
+  "devDependencies": {
+    "node": "22.23.4",
+    "rea-agents": "6.8.0"
+  }
+}
