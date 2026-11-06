@@ -7,9 +7,11 @@
     "rea": "sh scripts/rea.sh",
     "rea:doctor": "npm run rea -- doctor --json",
     "rea:mcp": "npm run rea -- mcp",
-    "rea:install-android": "python3 scripts/install-android-tools.py"
+    "rea:install-android": "python3 scripts/install-android-tools.py",
+    "test:web": "node --test tests/web.cjs"
   },
   "devDependencies": {
+    "jsdom": "^26.1.0",
     "node": "22.23.4",
     "rea-agents": "6.8.0"
   }

@@ -106,3 +106,12 @@ Tests cover Unicode chunking, source ranking/filtering, private network rejectio
 ## Existing REA tools
 
 The original REA workspace setup remains alongside Sourcebook. See [REA setup](docs/rea-setup.md). REA is useful for authorized analysis but is **not a runtime dependency** of this application. `npm run rea -- --help` uses that separate setup. Optional decompiler installation is still blocked by release-asset network restrictions here.
+
+The HTTP endpoint reference is in [docs/API.md](docs/API.md). Browser behavior tests use `jsdom` with a mock API (they do not verify a running Rust server):
+
+```sh
+npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+npm run test:web
+```
+
+The three browser tests cover authentication headers/library navigation, source upload and selected-source chat, safe rendering of hostile model/citation text, and disconnect cleanup. `.github/workflows/web.yml` runs these independently of the Rust build.
