@@ -5,10 +5,14 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v7>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v8>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
+> **v7 failed to build** with `CMake can not determine linker language for target:
+> native_app_glue` — the NDK glue is a C file and the CMake project only enabled C++. v8
+> enables both and compiles the glue straight into the .so. Use v8, not v7.
+>
 > **v7 is native-only: there is no Java in the APK at all.** The window, EGL, touch and the
 > HUD are `cpp/main_android.cpp` + `cpp/hud.cpp`; the launcher activity is
 > `android.app.NativeActivity` and the entry point is `android_main()`. The HUD is drawn in

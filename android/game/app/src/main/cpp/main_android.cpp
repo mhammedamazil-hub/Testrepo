@@ -19,6 +19,7 @@
 // =====================================================================================
 
 #include <android/log.h>
+#include <android/native_activity.h>
 #include <android/native_window.h>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -373,7 +374,6 @@ void draw_frame() {
         hud_dim(0.55f);
         hud_text_centered("GARDEN WALKED", (float)g.width * 0.5f, (float)g.height * 0.42f,
                           3.2f * dp, 1.0f, 0.85f, 0.38f, 1.0f);
-        std::snprintf(buf, sizeof buf, "all %d collected in %s", game_total(), buf);
         std::snprintf(buf, sizeof buf, "all %d collected in %d:%02d", game_total(), secs / 60,
                       secs % 60);
         hud_text_centered(buf, (float)g.width * 0.5f, (float)g.height * 0.50f, 1.8f * dp, 1.0f,
@@ -406,10 +406,19 @@ void on_app_cmd(android_app* app, int32_t cmd) {
             }
             break;
         case APP_CMD_TERM_WINDOW:
-            // The context goes with it; assets and the packed model stay in memory, so a
-            // returning user gets the garden back instead of a reload.
-            egl_shutdown();
+            // Losing the window destroys the EGL context, and with it every texture, buffer,
+            // framebuffer and program the renderer owns. The engine has to be told, or its
+            // "ready" flag would have it drawing with dead GL names on the next window - a
+            // black screen after switching apps. Re-initialising re-reads the assets, which
+            // costs a fraction of a second and is the only correct thing to do while the
+            // loader still mixes CPU and GPU state.
+            game_shutdown();
             hud_on_gl_lost();
+            g.engine_ready = false;
+            g.engine_tried = false;
+            g.stick.active = false;
+            g.stick.id = -1;
+            g.look_id = -1;
             break;
         case APP_CMD_WINDOW_RESIZED:
         case APP_CMD_CONFIG_CHANGED: {

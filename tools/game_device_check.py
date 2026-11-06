@@ -117,7 +117,18 @@ def main():
     cmake = (ROOT / "android/game/app/src/main/cpp/CMakeLists.txt").read_text()
     for unit in ("main_android.cpp", "hud.cpp", "game.cpp"):
         check(unit in cmake, f"CMake builds {unit}")
-    check("native_app_glue" in cmake, "CMake links the NDK's native_app_glue")
+    # v7 failed to build with "CMake can not determine linker language for target:
+    # native_app_glue": the glue is a .c file and the project only enabled CXX.
+    check(re.search(r"project\(villagame\s+C\s+CXX\)", cmake) is not None,
+          "CMake enables both C and CXX",
+          "the NDK glue is a C file; a CXX-only project cannot pick a linker language")
+    check("android_native_app_glue.c" in cmake and "native_app_glue STATIC" not in cmake,
+          "the glue is compiled straight into the shared library",
+          "built as a static library it also needs -u ANativeActivity_onCreate")
+    shell_src = SHELL.read_text()
+    check("game_shutdown();" in shell_src and "g.engine_tried = false;" in shell_src,
+          "losing the window resets the engine",
+          "otherwise the renderer keeps drawing with GL names the driver just deleted")
     check(not __import__("re").search(r"JNIEXPORT|Java_ai_arena",
                                       "".join(p.read_text() for p in GAME_CPP.parent.glob("*.cpp"))),
           "no JNI symbols are left in the native sources")

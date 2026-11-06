@@ -163,6 +163,10 @@ jobs:
           if grep -rn "JNIEXPORT\|Java_ai_arena" android/game/app/src/main/cpp/; then
             echo "::error::JNI symbols left behind in a native-only app"; exit 1
           fi
+          # every cross-module symbol the app uses must actually exist: compile to objects and
+          # compare undefined against defined, so a missing definition fails here in seconds
+          # instead of after a Gradle round trip.
+          python tools/native_link_check.py
 
       - name: Build debug APK
         run: |
