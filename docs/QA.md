@@ -37,3 +37,13 @@ Neither a running render nor a workflow definition is a completed movie. The 20-
 ## Provenance and delivery
 
 94 MIT-licensed skills installed and used for pipeline guidance. All scene generation/render/verification source is supplied. The image reference is retained for art direction only. Large raw PNG sequences stay out of Git; only compact requested deliverables may be published by the render workflow.
+
+## Final delivery review
+
+- Render workflow: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42077709412 — completed successfully.
+- Retrieved the final MP4, scene, still and manifests from the session branch.
+- Independently decoded the complete MP4 in the sandbox: 480 frames, **480 unique full-frame SHA-256 hashes**, 1920×1080, 24 fps, 20.0 seconds.
+- Delivered `.blend` SHA-256 matches the scene hash certified by all encoded segments.
+- Inspected final decoded frames 1, 240 and 480. The summit and reflection remain in frame, the camera translates, and the foreground shows parallax.
+- Reran both isolated codec tests: PASS.
+- **Technical verdict: PASS / delivery complete. Artistic verdict for the original ultra-realistic production-ready target: NOT APPROVED.** The output remains visibly procedural CG, notably in conifer branching, terrain/rock detail, the snow mask and foreground vegetation. It is not a pixel-exact reconstruction. This limitation must accompany the delivery rather than being hidden by the successful render report.

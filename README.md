@@ -2,14 +2,16 @@
 
 A CPU-rendered, procedural Blender reconstruction of the supplied alpine-lake reference. The photograph is used for art direction only: mountains, forest, shore, water, boulders, grass and lupines are 3D geometry with procedural materials.
 
-## Requested delivery
+## Completed delivery
 
 - `output/Alpine_Mirror_1080p_20s.mp4` — **1920×1080, 24 fps, 480 natively rendered frames, 20 seconds**, H.264, silent.
 - `output/Alpine_Mirror_1080p.png` — higher-sample full-HD hero still.
 - `output/Alpine_Mirror.blend` — editable Blender 4.2 LTS scene, including camera and ripple animation.
 - `output/delivery_validation.json` — full-movie decode validation, created **only after the render and encode succeed**.
 
-**The source and workflow existing do not mean the full animation has finished.** Check the Actions run and the actual deliverable files. Technical validation does not certify photorealism or exact reference matching; artistic review is a separate gate.
+**Render completed:** [successful CPU render run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42077709412). All delivery files above are present. An independent sandbox decode verified 480 unique decoded frame hashes, 1920×1080, 24 fps, exactly 20.0 seconds, and a scene SHA-256 matching the delivered Blender file. See `output/independent_verification.json`.
+
+**Quality disclosure:** the result is a procedural CG reconstruction, not an ultra-photoreal/AAA-approved match to the supplied photograph. Foliage, geology, snow and composition still differ; technical completion is not artistic approval.
 
 ## Rebuild locally
 

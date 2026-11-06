@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "decoded_frames": 480,
+  "unique_decoded_frame_hashes": 480,
+  "dimensions": [
+    1920,
+    1080
+  ],
+  "fps": 24.0,
+  "duration_seconds": 20.0,
+  "scene_hash_matches": true,
+  "mean_sampled_frame_difference_8bit": 0.6757470705684484,
+  "max_sampled_frame_difference_8bit": 2.0748841762542725,
+  "min_sampled_frame_difference_8bit": 0.013564814813435078,
+  "notes": "Independent sandbox full decode and frame uniqueness check; no repeated full-frame images. Visual realism assessed separately."
+}
