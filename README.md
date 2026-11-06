@@ -1,6 +1,6 @@
 # Alpine Mirror
 
-**Revision 2 is in visual review:** 20 seconds, 1920×1080, **60 fps / 1,200 native frames**, rising lake-drone flight, backlit morning, deeper foliage, breezy water and distant birds. The full animation is gated on look approval; see [revision brief](docs/REVISION_2.md). Until the new render completes, the existing MP4 and delivery report are the previously delivered **24-fps revision 1**, not a completed 60-fps revision.
+**Revision 2 production render is enabled:** 20 seconds, 1920×1080, **60 fps / 1,200 native frames**, rising lake-drone flight, backlit morning, deeper foliage, breezy water and distant birds. The final strong-cinematic-rays choice is settled; see [revision brief](docs/REVISION_2.md). Until the new render completes, the existing MP4 and delivery report are the previously delivered **24-fps revision 1**, not a completed 60-fps revision.
 
 A CPU-rendered, procedural Blender reconstruction of the supplied alpine-lake reference. The photograph is used for art direction only: mountains, forest, shore, water, boulders, grass and lupines are 3D geometry with procedural materials.
 
@@ -11,7 +11,7 @@ A CPU-rendered, procedural Blender reconstruction of the supplied alpine-lake re
 - `output/Alpine_Mirror.blend` — editable Blender 4.2 LTS scene, including camera and ripple animation.
 - `output/delivery_validation.json` — full-movie decode validation, created **only after the render and encode succeed**.
 
-**Render completed:** [successful CPU render run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42077709412). All delivery files above are present. An independent sandbox decode verified 480 unique decoded frame hashes, 1920×1080, 24 fps, exactly 20.0 seconds, and a scene SHA-256 matching the delivered Blender file. See `output/independent_verification.json`.
+**Render completed:** [successful CPU render run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42077709412). The prior movie, still and delivery reports are present. The local Blender working file may already contain revision 2 while its movie is still pending. An independent sandbox decode verified 480 unique decoded frame hashes, 1920×1080, 24 fps, exactly 20.0 seconds, and a scene SHA-256 matching the delivered Blender file. See `output/independent_verification.json`.
 
 **Quality disclosure:** the result is a procedural CG reconstruction, not an ultra-photoreal/AAA-approved match to the supplied photograph. Foliage, geology, snow and composition still differ; technical completion is not artistic approval.
 

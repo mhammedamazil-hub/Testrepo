@@ -8,5 +8,6 @@ CHUNK_SIZE = 12
 CHUNK_COUNT = (FRAME_COUNT + CHUNK_SIZE - 1) // CHUNK_SIZE
 REVISION = 2
 
-# Expensive full animation stays gated until the revised lighting/flight is approved.
-FULL_RENDER_APPROVED = False
+# Final creative choices confirmed; opening/mid/ending look tests passed.
+# Post-render native movie/temporal verification is still required.
+FULL_RENDER_APPROVED = True

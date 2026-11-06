@@ -17,6 +17,7 @@ checks={
  'volumetric_tree_canopies':any(m.name.startswith('LIB_R2_VolumetricSpruce') for m in bpy.data.meshes),
  'wind_sway':sum(o.name.startswith('TREE_') and o.animation_data is not None for o in s.objects)>30,
  'packed_photographic_sky':any(n.type=='TEX_ENVIRONMENT' and n.image is not None and n.image.packed_file is not None for n in s.world.node_tree.nodes),
+ 'dramatic_mist_banks':sum(o.name.startswith('FX_R2_DramaticMistBank') for o in s.objects)==3,
  'finite_valley_mist':bpy.data.objects.get('FX_R2_HeightDecayingValleyMist') is not None,
  'seven_animated_birds':sum(o.name.startswith('BIRD_R2_Flock') and o.animation_data is not None for o in s.objects)==7,
  'no_photo_backplates':all(n.type!='TEX_IMAGE' for m in bpy.data.materials if m.use_nodes for n in m.node_tree.nodes),

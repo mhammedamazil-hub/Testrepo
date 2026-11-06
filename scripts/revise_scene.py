@@ -1,6 +1,6 @@
 """Revision 2: backlit 60-fps lake flight. Upgrade the existing scene in place.
-Physical water geometry, volumetric clouds/mist, modeled birds and volumetric
-spruce shoots. No image backplates or interpolated animation frames.
+Physical water geometry, captured clouds and volumetric mist, modeled birds and volumetric
+spruce shoots. No landscape image backplates or interpolated animation frames.
 """
 import bpy, math, random, json, sys
 from pathlib import Path
@@ -146,7 +146,7 @@ if grass:
     if old.users==0:bpy.data.meshes.remove(old)
     del vs,fs,ids
 
-# Camera: a ~108 m drone flight, not a 3 m nearly static push-in.
+# Camera: a ~117 m drone flight, not a 3 m nearly static push-in.
 cam=s.camera;cam.animation_data_clear();cam.data.lens=28;cam.data.clip_end=30000
 camera_positions=[]
 for i in range(21):
@@ -171,10 +171,10 @@ else:az=math.radians(-2.5);elev=math.radians(18.5);sun_dir=Vector((math.sin(az)*
 print('Solar reveal',reveal_verified,'azimuth',math.degrees(az),'elevation',math.degrees(elev),flush=True)
 for o in list(s.objects):
     if o.type=='LIGHT':bpy.data.objects.remove(o,do_unlink=True)
-ld=bpy.data.lights.new('LGT_R2_BacklitMorningSun','SUN');ld.energy=3.0;ld.angle=math.radians(.65);ld.color=(1,.89,.72)
+ld=bpy.data.lights.new('LGT_R2_BacklitMorningSun','SUN');ld.energy=8.0;ld.angle=math.radians(.65);ld.color=(1,.89,.72)
 lo=bpy.data.objects.new(ld.name,ld);lights.objects.link(lo);lo.rotation_euler=(-sun_dir).to_track_quat('-Z','Y').to_euler()
 # Finite solar disc: real glossy reflection, with the directional lamp supplying illumination.
-sunmat,ns,ls,p=mat('MAT_R2_SolarDisc',(1,.86,.64),.1);ns.clear();e=node(ns,'ShaderNodeEmission');e.inputs[0].default_value=(1,.88,.66,1);e.inputs[1].default_value=15;out=node(ns,'ShaderNodeOutputMaterial');ls.new(e.outputs[0],out.inputs[0])
+sunmat,ns,ls,p=mat('MAT_R2_SolarDisc',(1,.86,.64),.1);ns.clear();e=node(ns,'ShaderNodeEmission');e.inputs[0].default_value=(1,.88,.66,1);e.inputs[1].default_value=250;out=node(ns,'ShaderNodeOutputMaterial');ls.new(e.outputs[0],out.inputs[0])
 bpy.ops.mesh.primitive_uv_sphere_add(segments=32,ring_count=16,radius=69,location=sun_dir*15000);disc=bpy.context.object;disc.name='GEO_R2_SolarDisc';disc.data.materials.append(sunmat);disc.visible_shadow=False;disc.visible_diffuse=False;disc.visible_volume_scatter=False
 world=bpy.data.worlds.new('WORLD_R2_PhysicalMorningSky');world.use_nodes=True;s.world=world;ns=world.node_tree.nodes;ls=world.node_tree.links;ns.clear()
 sky=node(ns,'ShaderNodeTexSky');sky.sky_type='NISHITA';sky.sun_elevation=elev;sky.sun_rotation=math.atan2(sun_dir.y,sun_dir.x);sky.sun_disc=False;sky.altitude=1.6;sky.air_density=.7;sky.dust_density=.15;sky.ozone_density=1.25
@@ -236,21 +236,41 @@ terrain.data.update()
 # Rounded procedural cloud test volumes were rejected during visual QA.
 cloud_count=0
 # Height-decaying patchy valley mist for depth and physically shadowed god rays.
-mist=bpy.data.materials.new('MAT_R2_ValleyMist');mist.use_nodes=True;ns=mist.node_tree.nodes;ls=mist.node_tree.links;ns.clear();g=node(ns,'ShaderNodeNewGeometry');xyz=node(ns,'ShaderNodeSeparateXYZ');ls.new(g.outputs['Position'],xyz.inputs[0]);height=calc(ns,ls,'EXPONENT',calc(ns,ls,'MULTIPLY',xyz.outputs['Z'],-.040));patch=noise(ns,ls,g.outputs['Position'],.018,3)
+mist=bpy.data.materials.new('MAT_R2_ValleyMist');mist.use_nodes=True;ns=mist.node_tree.nodes;ls=mist.node_tree.links;ns.clear();g=node(ns,'ShaderNodeNewGeometry');xyz=node(ns,'ShaderNodeSeparateXYZ');ls.new(g.outputs['Position'],xyz.inputs[0]);height=calc(ns,ls,'EXPONENT',calc(ns,ls,'MULTIPLY',xyz.outputs['Z'],-.024));patch=noise(ns,ls,g.outputs['Position'],.018,3)
 patch=calc(ns,ls,'MAXIMUM',calc(ns,ls,'SUBTRACT',patch,.3),0.)
-density=calc(ns,ls,'MULTIPLY',calc(ns,ls,'MULTIPLY',height,patch),.00050)
-vol=node(ns,'ShaderNodeVolumeScatter');vol.inputs['Color'].default_value=(.78,.86,.96,1);vol.inputs['Anisotropy'].default_value=.72;ls.new(density,vol.inputs['Density']);out=node(ns,'ShaderNodeOutputMaterial');ls.new(vol.outputs[0],out.inputs['Volume'])
+density=calc(ns,ls,'MULTIPLY',calc(ns,ls,'MULTIPLY',height,patch),.00080)
+vol=node(ns,'ShaderNodeVolumeScatter');vol.inputs['Color'].default_value=(.78,.86,.96,1);vol.inputs['Anisotropy'].default_value=.76;ls.new(density,vol.inputs['Density']);out=node(ns,'ShaderNodeOutputMaterial');ls.new(vol.outputs[0],out.inputs['Volume'])
 bpy.ops.mesh.primitive_cube_add(size=1,location=(0,480,90));o=bpy.context.object;o.name='FX_R2_HeightDecayingValleyMist';o.scale=(1400,1240,180);o.data.materials.append(mist)
 for c in list(o.users_collection):c.objects.unlink(o)
 fx.objects.link(o)
+
+
+# User-selected dramatic god rays: finite, softly bounded mist banks in the
+# forest, lit and occluded by the real sun/trees. No beam cards or ray overlay.
+bankmat=bpy.data.materials.new('MAT_R2_DramaticMistBanks');bankmat.use_nodes=True;ns=bankmat.node_tree.nodes;ls=bankmat.node_tree.links;ns.clear()
+tc=node(ns,'ShaderNodeTexCoord');g=node(ns,'ShaderNodeNewGeometry');sub=node(ns,'ShaderNodeVectorMath');sub.operation='SUBTRACT';ls.new(tc.outputs['Generated'],sub.inputs[0]);sub.inputs[1].default_value=(.5,.5,.5)
+length=node(ns,'ShaderNodeVectorMath');length.operation='LENGTH';ls.new(sub.outputs[0],length.inputs[0]);shell=calc(ns,ls,'MAXIMUM',calc(ns,ls,'SUBTRACT',1.,calc(ns,ls,'MULTIPLY',length.outputs['Value'],2.)),0.)
+xyz=node(ns,'ShaderNodeSeparateXYZ');ls.new(g.outputs['Position'],xyz.inputs[0]);height=calc(ns,ls,'EXPONENT',calc(ns,ls,'MULTIPLY',xyz.outputs['Z'],-.055));height=calc(ns,ls,'MULTIPLY',height,calc(ns,ls,'GREATER_THAN',xyz.outputs['Z'],.03))
+pan=node(ns,'ShaderNodeMapping');ls.new(g.outputs['Position'],pan.inputs[0])
+for frame,location in [(1,(0,0,0)),(END,(-8,-2,0))]:pan.inputs['Location'].default_value=location;pan.inputs['Location'].keyframe_insert('default_value',frame=frame)
+linear(bankmat.node_tree)
+f=noise(ns,ls,pan.outputs[0],.035,4);f=calc(ns,ls,'MAXIMUM',calc(ns,ls,'SUBTRACT',f,.25),0.)
+density=calc(ns,ls,'MULTIPLY',calc(ns,ls,'MULTIPLY',shell,calc(ns,ls,'MULTIPLY',height,f)),.0028)
+v=node(ns,'ShaderNodeVolumeScatter');v.inputs['Color'].default_value=(.88,.93,1,1);v.inputs['Anisotropy'].default_value=.76;ls.new(density,v.inputs['Density']);out=node(ns,'ShaderNodeOutputMaterial');ls.new(v.outputs[0],out.inputs['Volume'])
+for index,(location,scale) in enumerate([((-65,220,24),(55,180,38)),((48,310,28),(55,200,44)),((-30,470,42),(105,160,68))]):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=20,ring_count=12,radius=1,location=location);o=bpy.context.object;o.name=f'FX_R2_DramaticMistBank_{index}';o.scale=scale;o.data.materials.append(bankmat)
+    for c in list(o.users_collection):c.objects.unlink(o)
+    fx.objects.link(o)
 
 # Seven distant corvid-like birds. Modeled wing silhouettes, gliding/flapping
 # articulation and independent phase, not static V decals translated across sky.
 birdmat,_,_,_=mat('MAT_R2_DistantBirdFeathers',(.025,.03,.036),.8)
 for index in range(7):
     root=bpy.data.objects.new('BIRD_R2_Flock_%02d'%index,None);birds.objects.link(root)
+    offsets=[(-8,0,1),(0,-4,0),(4,6,2),(-14,9,-1),(12,14,3),(-20,16,1),(18,25,-2)]
+    ox,oy,oz=offsets[index]
     for sec in range(5):
-        t=sec/4;root.location=(-112+195*t-index*5,330+60*t+index*4,145+8*math.sin(t*PI)+index*1.1);root.rotation_euler=(0,0,-math.atan2(195,60));root.keyframe_insert('location',frame=1+round(t*(END-1)));root.keyframe_insert('rotation_euler',frame=1+round(t*(END-1)))
+        t=sec/4;root.location=(-112+195*t+ox,330+60*t+oy,145+8*math.sin(t*PI)+oz+.8*math.sin(t*PI*2+index));root.rotation_euler=(0,0,-math.atan2(195,60));root.keyframe_insert('location',frame=1+round(t*(END-1)));root.keyframe_insert('rotation_euler',frame=1+round(t*(END-1)))
     linear(root)
     bpy.ops.mesh.primitive_uv_sphere_add(segments=12,ring_count=8,radius=1);body=bpy.context.object;body.name='BIRD_R2_Body_%02d'%index
     for c in list(body.users_collection):c.objects.unlink(body)
@@ -261,20 +281,20 @@ for index in range(7):
         driver=wing.driver_add('rotation_euler',1);driver.driver.expression=f'{side}*.48*sin(frame/60*13.5+{index*1.7})*(.18+.82*max(0,sin(frame/60*.7+{index})))'
     tail=mesh('BIRD_R2_Tail_%02d'%index,[(-.12,-.18,0),(.12,-.18,0),(.18,-.63,0),(-.18,-.63,0)],[(0,1,2,3)],[birdmat],birds);tail.parent=root
 
-# Moderate glare from the real solar disc; no painted-on god-ray overlay.
-s.use_nodes=True;ns=s.node_tree.nodes;ls=s.node_tree.links;ns.clear();rl=node(ns,'CompositorNodeRLayers');glare=node(ns,'CompositorNodeGlare');glare.glare_type='FOG_GLOW';glare.quality='HIGH';glare.threshold=2.;glare.size=7;glare.mix=-.92;ls.new(rl.outputs['Image'],glare.inputs['Image']);out=node(ns,'CompositorNodeComposite');ls.new(glare.outputs[0],out.inputs[0])
+# Brighter optical halo from the real solar disc; no painted-on ray overlay.
+s.use_nodes=True;ns=s.node_tree.nodes;ls=s.node_tree.links;ns.clear();rl=node(ns,'CompositorNodeRLayers');glare=node(ns,'CompositorNodeGlare');glare.glare_type='FOG_GLOW';glare.quality='HIGH';glare.threshold=3.;glare.size=9;glare.mix=-.20;ls.new(rl.outputs['Image'],glare.inputs['Image']);out=node(ns,'CompositorNodeComposite');ls.new(glare.outputs[0],out.inputs[0])
 s.render.fps=FPS;s.render.fps_base=1.;s.frame_start=1;s.frame_end=END
 s.cycles.samples=128;s.cycles.use_denoising=True;s.cycles.use_adaptive_sampling=True;s.cycles.adaptive_threshold=.03;s.cycles.adaptive_min_samples=24;s.cycles.volume_bounces=2;s.cycles.max_bounces=8;s.cycles.transmission_bounces=5;s.cycles.glossy_bounces=4
 s.view_settings.view_transform='AgX';s.view_settings.look='AgX - Base Contrast';s.view_settings.exposure=.5
 s.render.use_motion_blur=True;s.render.motion_blur_shutter=.4
-s['revision']=2;s['delivery']='1920x1080, 60fps, 1200 native frames, 20 seconds';s['revision_brief']='Natural sun reveal, lake flight, readable backlit forest, CC0 photographic clouds and volumetric mist, breeze waves, distant flock.'
+s['godray_style']='dramatic: localized 3D scattering, real shadow occlusion and optical halo';s['revision']=2;s['delivery']='1920x1080, 60fps, 1200 native frames, 20 seconds';s['revision_brief']='Natural sun reveal, lake flight, readable backlit forest, CC0 photographic clouds and volumetric mist, breeze waves, distant flock.'
 s['solar_water_glint_verified']=reveal_verified;s['solar_reveal_verified']=reveal_verified;s['sun_elevation_degrees']=math.degrees(elev);s['sun_azimuth_from_forward_degrees']=math.degrees(az)
 s.frame_set(1);s.render.resolution_percentage=100
 # Clean orphaned mesh/material data so the editable file is compact.
 for block in list(bpy.data.meshes):
     if block.users==0:bpy.data.meshes.remove(block)
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Alpine_Mirror.blend'),compress=True)
-stats={'revision':2,'objects':len(s.objects),'unique_polygons':sum(len(m.polygons) for m in bpy.data.meshes),'trees':sum(o.name.startswith('TREE_') for o in s.objects),'wind_animated_trees':wind_count,'cloud_volume_puffs':cloud_count,'photographic_cloud_environment':'Poly Haven CC0 Kloofendal partly cloudy, 4k; packed sky only','birds':7,'resolution':[1920,1080],'fps':FPS,'frames':END,'seconds':20,'solar_reveal_verified':reveal_verified,'sun_elevation_degrees':math.degrees(elev),'sun_azimuth_degrees':math.degrees(az),'camera_positions':camera_positions,'blender':bpy.app.version_string}
+stats={'revision':2,'objects':len(s.objects),'unique_polygons':sum(len(m.polygons) for m in bpy.data.meshes),'trees':sum(o.name.startswith('TREE_') for o in s.objects),'wind_animated_trees':wind_count,'cloud_volume_puffs':cloud_count,'photographic_cloud_environment':'Poly Haven CC0 Kloofendal partly cloudy, 4k; packed sky only','birds':7,'dramatic_mist_banks':3,'godray_style':'user-selected dramatic','resolution':[1920,1080],'fps':FPS,'frames':END,'seconds':20,'solar_reveal_verified':reveal_verified,'sun_elevation_degrees':math.degrees(elev),'sun_azimuth_degrees':math.degrees(az),'camera_positions':camera_positions,'blender':bpy.app.version_string}
 (OUT/'scene_manifest.json').write_text(json.dumps(stats,indent=2));print(json.dumps(stats),flush=True)
 if '--preview' in sys.argv:
     s.render.resolution_percentage=35;s.cycles.samples=24;s.cycles.adaptive_min_samples=8;s.render.filepath=str(OUT/'revision_preview.png');bpy.ops.render.render(write_still=True)
