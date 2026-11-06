@@ -29,12 +29,15 @@ static inline GameSun game_sun() {
     s.dir[1] = sinf(el);
     s.dir[2] = -cosf(az) * cosf(el);
     s.sun_col[0] = 3.00f;  s.sun_col[1] = 2.55f;  s.sun_col[2] = 1.88f;
-    s.sky_col[0] = 0.50f;  s.sky_col[1] = 0.62f;  s.sky_col[2] = 0.80f;
-    s.ground_col[0] = 0.24f; s.ground_col[1] = 0.22f; s.ground_col[2] = 0.18f;
-    s.fog_col[0] = 0.115f; s.fog_col[1] = 0.128f; s.fog_col[2] = 0.145f;  // == the sky horizon, so distance melts into sky
-    s.exposure = 2.30f;
-    s.fog_start = 20.0f;
-    s.fog_density = 0.011f;
+    // Ambient sky dome. Calibrated against the Cycles reference with tools/villa_match.py:
+    // a facade that only sees sky was rendering at luma 85 where the path trace gives 185.
+    s.sky_col[0] = 0.88f;  s.sky_col[1] = 1.00f;  s.sky_col[2] = 1.16f;
+    s.ground_col[0] = 0.52f; s.ground_col[1] = 0.46f; s.ground_col[2] = 0.34f;
+    // == the sky horizon, so distance melts into sky instead of into a dark band
+    s.fog_col[0] = 0.62f; s.fog_col[1] = 0.66f; s.fog_col[2] = 0.70f;
+    s.exposure = 1.85f;
+    s.fog_start = 12.0f;
+    s.fog_density = 0.026f;
     return s;
 }
 

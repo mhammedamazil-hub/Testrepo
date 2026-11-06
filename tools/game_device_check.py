@@ -88,7 +88,8 @@ def main():
     check('"a_pos", "a_nrm", "a_uv", "a_ao"' in src, "attribute slots bound in order 0..3")
     check("glVertexAttribPointer(3, 2, GL_UNSIGNED_BYTE, GL_TRUE, VPK_VERTEX_STRIDE, (void*)6)"
           in src, "a_ao reads bytes 6..7 of the 20-byte vertex")
-    check("float ao = 0.26 + 0.74 * (v_ao.x * v_ao.x);" in fs, "fragment stage uses v_ao.x for ao")
+    check("float ao = 0.46 + 0.54 * (v_ao.x * v_ao.x);" in fs,
+          "fragment stage uses v_ao.x for ao, with the v11 contrast floor")
     check("float sv = 0.10 + 0.90 * v_ao.y;" in fs, "fragment stage uses v_ao.y for sun visibility")
 
     print("texture units")
@@ -185,6 +186,37 @@ def main():
     check("canopy_r = 0.5 * max(hi[0] - lo[0], hi[2] - lo[2])" in lvl,
           "trees block their canopy footprint, not a 0.55 m post",
           "blocking the trunk only let the player stand inside the leaves")
+
+    print("v11: reference-calibrated look (Cycles vs phone, tools/villa_match.py)")
+    sim_src = (ROOT / "tools/game_sim.cpp").read_text()
+    for name, val in (("zen", "{0.30f, 0.38f, 0.50f}"), ("hor", "{0.66f, 0.70f, 0.74f}")):
+        check(("const float %s[3] = %s" % (name, val)) in src and
+              ("const float %s[3] = %s" % (name, val)) in sim_src,
+              "sky %s is the same in the game and the harness" % name)
+    check('"  vec3 zen = vec3(0.30, 0.38, 0.50);\\n"' in src,
+          "sky_at() in the model shader matches draw_sky()")
+    # these five numbers were each worth 10-30/255 against the path-traced reference
+    check("mix(alb, vec3(y0), 0.68)" in src,
+          "the lawn is desaturated towards the reference, not left neon green")
+    check("vec3(0.150, 0.125, 0.095)" in src,
+          "glazing is a lit window, not a flat grey slab")
+    check('float ao = 0.46 + 0.54 * (v_ao.x * v_ao.x);' in src,
+          "ambient occlusion has a floor of 0.46 (it was 0.26: shadows crushed to black)")
+    check("float cov = clamp((f - 0.50) * 3.2, 0.0, 1.0);" in src,
+          "clouds are brighter than the sky, not a grey smudge")
+    check("u_spec" in src and "u_rough" in src and "glUniform1f(p.rough, d.pad[0]);" in src,
+          "per-material specular roughness is uploaded from the pack")
+    sh = (ROOT / "tools/villa_pack.py").read_text()
+    check("def surface_response(name):" in sh and '"rough": float(rough)' in sh,
+          "the packer writes roughness/specular per material family")
+    wf = (ROOT / ".github/workflows/game-apk.yml").read_text()
+    check("python tools/villa_pack.py villa_v2/villa_v2.glb" in wf,
+          "CI packs the 1024 px model, not the 512 px web variant")
+    check("--min-tex 1000" in wf, "CI fails if the shipped textures drop below 1000 px")
+    check((ROOT / "tools/villa_cycles.py").exists() and (ROOT / "tools/villa_match.py").exists(),
+          "the Cycles reference render and the region matcher are both in the repo")
+    check("GL_EXT_texture_filter_anisotropic" in src, "anisotropic filtering is requested")
+    check("1.25f" in src and "kRungs" in src, "the quality ladder can supersample at 1.25x")
 
     print("look constants")
 

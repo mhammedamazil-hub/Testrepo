@@ -116,6 +116,8 @@ static const char* kModelFS =
     "uniform XPREC vec3 u_ground_col;\n"
     "uniform XPREC vec3 u_fog_col;\n"
     "uniform XPREC float u_exposure;\n"
+    "uniform float u_rough;\n"          // 0 mirror .. 1 chalk, per material (VPK pad[0])
+    "uniform float u_spec;\n"           // specular strength, per material (VPK pad[1])
     "uniform XPREC float u_fog_start;\n"
     "uniform XPREC float u_fog_density;\n"
     "uniform XPREC float u_time;\n"
@@ -140,13 +142,22 @@ static const char* kModelFS =
     "    c += sun_col * glow + vec3(30.0) * disc;\n"
     "  }\n"
     "  if (y > 0.03) {\n"
-    "    vec2 q = d.xz / (y + 0.10) * 7.0;\n"
+    // A cloud is brighter than the sky behind it, not darker. The old colour
+    // (0.105,0.115,0.132) is *below* the horizon value, so every cloud rendered as a grey
+    // smudge - the "dirty sky" in the v10 screenshots. These are sunlit cumulus: white tops,
+    // a cool grey base, coverage thinned out towards the horizon.
+    "    vec2 q = d.xz / (y + 0.10) * 5.5;\n"
     "    float f = 0.62 * noise2(q) + 0.26 * noise2(q * 2.1 + vec2(11.0, 0.0))\n"
     "            + 0.12 * noise2(q * 4.3 + vec2(0.0, -7.0));\n"
-    "    float cov = clamp((f - 0.56) * 4.0, 0.0, 1.0);\n"
-    "    cov = cov * cov * (3.0 - 2.0 * cov) * clamp(y * 4.0, 0.0, 1.0);\n"
+    "    float cov = clamp((f - 0.50) * 3.2, 0.0, 1.0);\n"
+    "    cov = cov * cov * (3.0 - 2.0 * cov) * clamp(y * 3.0, 0.0, 1.0) * 0.92;\n"
     "    float lit = 0.55 + 0.45 * clamp(cs * 1.6, 0.0, 1.0);\n"
-    "    c = mix(c, vec3(0.105, 0.115, 0.132) * lit, cov * 0.85);\n"
+    // self-shadowing: the underside of a cumulus is grey, the top is white
+    "    float body = noise2(q * 1.7 + vec2(3.0, 5.0));\n"
+    "    vec3 top = vec3(1.02, 1.02, 1.00) * lit;\n"
+    "    vec3 base = vec3(0.42, 0.46, 0.54) * (0.7 + 0.3 * lit);\n"
+    "    vec3 cl = mix(base, top, smoothstep(0.35, 0.75, body));\n"
+    "    c = mix(c, cl, cov);\n"
     "  }\n"
     "  if (y < 0.0) c = mix(c, vec3(0.10), clamp(-y * 6.0, 0.0, 1.0));\n"
     "  return c;\n"
@@ -163,10 +174,10 @@ static const char* kModelFS =
     "  vec3 V = normalize(u_eye - v_wp);\n"
     "  float fres = pow(1.0 - clamp(dot(n, V), 0.0, 1.0), 3.0);\n"
     // baked occlusion, smoothed
-    "  float ao = 0.26 + 0.74 * (v_ao.x * v_ao.x);\n"
+    "  float ao = 0.46 + 0.54 * (v_ao.x * v_ao.x);\n"
     "  float sv = 0.10 + 0.90 * v_ao.y;\n"
-    "  vec3 zen = vec3(0.105, 0.175, 0.335);\n"
-    "  vec3 hor = vec3(0.330, 0.360, 0.390);\n"
+    "  vec3 zen = vec3(0.30, 0.38, 0.50);\n"
+    "  vec3 hor = vec3(0.66, 0.70, 0.74);\n"
     // ground detail: patches, grain and mown stripes on up-facing surfaces, near only
     "  float ny = abs(n.y);\n"
     "  if (ny > 0.75) {\n"
@@ -194,11 +205,14 @@ static const char* kModelFS =
     // the body out of the canopy; this is the belt-and-braces for the edges of one.
     "    if (dist < 0.95) discard;\n"
     "    float lum = dot(alb, vec3(0.30, 0.59, 0.11));\n"
-    "    alb = (lum * 0.55 + alb * 0.45) * 0.82;\n"
+    "    alb = (lum * 0.45 + alb * 0.55) * vec3(0.62, 0.72, 0.52);\n"
     "    sv *= 0.55;\n"                    // a leaf is a thin sheet, not a diffuse block
     "  } else if (alb.g > alb.r * 1.25 && alb.g > alb.b * 1.25) {\n"
-    "    alb = pow(alb, vec3(0.55));\n"    // the lawn texture is authored nearly black
-    "    alb *= vec3(1.10, 0.90, 1.02);\n"
+    "    alb = pow(alb, vec3(0.50));\n"    // the lawn texture is authored nearly black
+    // and then desaturated: the lift alone turns a dark green into a neon emerald, which is
+    // the single biggest difference between the game frame and the Cycles reference
+    "    float y0 = dot(alb, vec3(0.2126, 0.7152, 0.0722));\n"
+    "    alb = mix(alb, vec3(y0), 0.68) * vec3(1.16, 1.11, 1.30);\n"
     "  }\n"
     // White paint is not a perfect reflector: capping the albedo keeps a sunlit facade from
     // clipping to a blank 255 sheet while the lawn and the trees stay where they are.
@@ -208,9 +222,14 @@ static const char* kModelFS =
     "  if (u_glass > 0.5) {\n"
     // A window from outside: a dim room behind a sheet of reflected sky.
     "    vec3 rd = reflect(-V, n);\n"
-    "    float fren = 0.28 + 0.60 * pow(1.0 - clamp(dot(n, V), 0.0, 1.0), 4.0);\n"
-    "    vec3 c = (vec3(0.020, 0.024, 0.028) + sky_at(rd, u_sun, u_sun_col, zen, hor) * fren * 0.55\n"
-    "              + u_sky_col * 0.10) * u_exposure;\n"
+    "    float fren = 0.10 + 0.42 * pow(1.0 - clamp(dot(n, V), 0.0, 1.0), 4.0);\n"
+    // a window seen from outside is a dim room behind a sheet of glass, not a mirror of a
+    // blown-out sky. 0.55 * a bright sky turned every pane into a white panel.
+    // A window in a real photo sits at roughly the same brightness as the wall it is set
+    // into: pale warm glazing over a dark room. The grey slabs here were the last big
+    // difference against the Cycles reference (86 where the path trace gives 190).
+    "    vec3 c = (vec3(0.150, 0.125, 0.095) + sky_at(rd, u_sun, u_sun_col, zen, hor) * fren * 0.34\n"
+    "              + u_sky_col * 0.16) * u_exposure;\n"
     "    c = mix(c, fog_c, fog);\n"
     "    gl_FragColor = vec4(to_display(c), 1.0);\n"   // opaque: blending made it milky
     "    return;\n"
@@ -245,6 +264,21 @@ static const char* kModelFS =
     "  vec3 lin = alb * alb;\n"
     "  vec3 c = lin * (amb + u_sun_col * d * sv) + u_sky_col * fres * 0.055 * ao\n"
     "         + u_emissive * 6.0;\n"
+    // Specular. Without this every surface was Lambertian, which is why plaster, marble and
+    // the pool coping all read as matte cardboard. Blinn-Phong with a per-material exponent:
+    // roughness 0.22 (polished stone) gives a tight sun glint, 0.85 (paint) gives none.
+    "  if (u_spec > 0.001) {\n"
+    "    vec3 hv = normalize(u_sun + V);\n"
+    "    float ndh = max(dot(n, hv), 0.0);\n"
+    "    float a = max(u_rough * u_rough, 0.02);\n"
+    "    float shin = clamp(2.0 / (a * a) - 2.0, 1.0, 512.0);\n"
+    "    float f0 = 0.04 + 0.96 * pow(1.0 - clamp(dot(n, V), 0.0, 1.0), 5.0);\n"
+    "    float glint = pow(ndh, shin) * (shin + 8.0) * 0.0125 * f0;\n"
+    "    c += u_sun_col * (glint * u_spec * d * sv) * (0.35 + 0.65 * ao);\n"
+    // and a broad sky sheen off the same roughness, so polished stone picks up the sky even
+    // when the sun is behind you
+    "    c += u_sky_col * (u_spec * 0.10 * (1.0 - u_rough) * f0) * ao;\n"
+    "  }\n"
     "  c *= u_exposure;\n"
     "  c = mix(c, fog_c, fog);\n"
     "  gl_FragColor = vec4(to_display(c), 1.0);\n"
@@ -284,13 +318,22 @@ static const char* kSkyFS =
     "    c += u_sun_col * glow + vec3(30.0) * disc;\n"
     "  }\n"
     "  if (y > 0.03) {\n"
-    "    vec2 q = d.xz / (y + 0.10) * 7.0;\n"
+    // A cloud is brighter than the sky behind it, not darker. The old colour
+    // (0.105,0.115,0.132) is *below* the horizon value, so every cloud rendered as a grey
+    // smudge - the "dirty sky" in the v10 screenshots. These are sunlit cumulus: white tops,
+    // a cool grey base, coverage thinned out towards the horizon.
+    "    vec2 q = d.xz / (y + 0.10) * 5.5;\n"
     "    float f = 0.62 * noise2(q) + 0.26 * noise2(q * 2.1 + vec2(11.0, 0.0))\n"
     "            + 0.12 * noise2(q * 4.3 + vec2(0.0, -7.0));\n"
-    "    float cov = clamp((f - 0.56) * 4.0, 0.0, 1.0);\n"
-    "    cov = cov * cov * (3.0 - 2.0 * cov) * clamp(y * 4.0, 0.0, 1.0);\n"
+    "    float cov = clamp((f - 0.50) * 3.2, 0.0, 1.0);\n"
+    "    cov = cov * cov * (3.0 - 2.0 * cov) * clamp(y * 3.0, 0.0, 1.0) * 0.92;\n"
     "    float lit = 0.55 + 0.45 * clamp(cs * 1.6, 0.0, 1.0);\n"
-    "    c = mix(c, vec3(0.105, 0.115, 0.132) * lit, cov * 0.85);\n"
+    // self-shadowing: the underside of a cumulus is grey, the top is white
+    "    float body = noise2(q * 1.7 + vec2(3.0, 5.0));\n"
+    "    vec3 top = vec3(1.02, 1.02, 1.00) * lit;\n"
+    "    vec3 base = vec3(0.42, 0.46, 0.54) * (0.7 + 0.3 * lit);\n"
+    "    vec3 cl = mix(base, top, smoothstep(0.35, 0.75, body));\n"
+    "    c = mix(c, cl, cov);\n"
     "  }\n"
     "  if (y < 0.0) c = mix(c, vec3(0.10), clamp(-y * 6.0, 0.0, 1.0));\n"
     "  gl_FragColor = vec4(to_display(c * u_exposure), 1.0);\n"
@@ -397,18 +440,24 @@ static const char* kRaysFS =
     "uniform XPREC float u_strength;\n"
     "void main(){\n"
     "  if (u_strength <= 0.0) { gl_FragColor = vec4(0.0); return; }\n"
-    "  vec2 delta = (u_sun - v_uv) / 40.0;\n"
+    // Stepping towards the sun and *breaking* the moment the sample leaves the frame means
+    // there are no shafts at all unless the sun is on screen, which it usually is not. Clamp
+    // instead: the samples that fall outside the frame take the edge pixels, so the sun just
+    // off the top of the frame still throws light into the garden.
+    "  vec2 delta = (u_sun - v_uv) / 56.0;\n"
     "  vec2 p = v_uv;\n"
     "  vec3 acc = vec3(0.0);\n"
     "  float decay = 1.0, wsum = 0.0;\n"
-    "  for (int i = 0; i < 40; ++i) {\n"
+    "  for (int i = 0; i < 56; ++i) {\n"
     "    p += delta;\n"
-    "    if (p.x < 0.0 || p.y < 0.0 || p.x > 1.0 || p.y > 1.0) break;\n"
-    "    acc += texture2D(u_tex, p).rgb * decay;\n"
+    "    acc += texture2D(u_tex, clamp(p, vec2(0.002), vec2(0.998))).rgb * decay;\n"
     "    wsum += decay;\n"
-    "    decay *= 0.955;\n"
+    "    decay *= 0.972;\n"
     "  }\n"
-    "  gl_FragColor = vec4(acc / max(wsum, 1e-4) * u_strength, 1.0);\n"
+    // a warm bias: sun shafts through leaves are gold, not grey
+    "  vec3 shaft = acc / max(wsum, 1e-4);\n"
+    "  shaft *= vec3(1.10, 1.00, 0.80);\n"
+    "  gl_FragColor = vec4(shaft * u_strength, 1.0);\n"
     "}\n";
 
 static const char* kCompositeFS =
@@ -425,6 +474,12 @@ static const char* kCompositeFS =
     "  vec3 c = texture2D(u_scene, v_uv).rgb;\n"
     "  c += texture2D(u_bloom, v_uv).rgb * u_bloom_amt;\n"
     "  c += texture2D(u_rays, v_uv).rgb * u_rays_amt;\n"
+    // a touch of filmic contrast and a vignette: a bare lerp of scene+bloom+rays looks flat
+    // next to the path-traced reference, which has both by construction
+    "  c = (c - 0.5) * 1.045 + 0.5;\n"
+    "  vec2 vq = v_uv - 0.5;\n"
+    "  float vig = 1.0 - 0.16 * dot(vq, vq) * 1.9;\n"
+    "  c *= vig;\n"
     "  vec3 o = clamp(c, 0.0, 1.0);\n"
     // 8-bit output over a 3-stop sky gradient bands badly without a dither
     "  float d = fract(sin(dot(v_uv, vec2(12.9898, 78.233))) * 43758.5453) / 255.0;\n"
@@ -437,7 +492,7 @@ struct Prog {
     GLint mvp = -1, posmin = -1, posscl = -1, tex = -1, has_tex = -1, base = -1, cutoff = -1;
     GLint foliage = -1, glass = -1, water = -1, emissive = -1, eye = -1, sun = -1, sun_col = -1;
     GLint sky_col = -1, ground_col = -1, fog_col = -1, exposure = -1, fog_start = -1,
-          fog_density = -1, time = -1, wind = -1;
+          fog_density = -1, time = -1, wind = -1, rough = -1, spec = -1;
 };
 
 // A render target: colour texture + framebuffer. No depth for the post targets.
@@ -488,7 +543,7 @@ static struct {
     GLint b_tex = -1, bl_tex = -1, bl_dir = -1, r_tex = -1, r_sun = -1, r_strength = -1;
     GLint c_scene = -1, c_bloom = -1, c_rays = -1, c_bloom_amt = -1, c_rays_amt = -1;
     bool post_ok = false;
-    float render_scale = 1.0f;                        // 1080p cap, see rebuild_targets()
+    float render_scale = 1.0f;                        // 1080p cap; up to 1.25 = light SSAA
     float ft_avg = 0.0f, last_scale_change = 0.0f;    // frame-rate governor state
     float ao_mean = 0.0f, sun_mean = 0.0f;            // logged once, for diagnostics
     bool attr_checked = false;
@@ -515,6 +570,8 @@ static struct {
           g_fog_density = -1, g_albedo = -1;
     std::vector<GLuint> tex;
     std::vector<uint8_t> tex_ready;
+    std::vector<uint8_t> tex_alpha;      // 1 = alpha-tested, so upload RGBA
+    float tex_mb = 0.0f;                 // resident texture memory, reported in the diag panel
     int w = 1, h = 1;
     float aspect = 1.0f;
     bool ready = false;
@@ -615,6 +672,11 @@ static std::vector<uint8_t> read_asset(AAssetManager* mgr, const char* name, boo
     return out;
 }
 
+// Anisotropic filtering is the cheapest sharpness win there is on a lawn that recedes to the
+// horizon: trilinear alone turns the last 20 m of grass into a mush of averaged texels.
+static bool g_aniso = false;
+static float g_aniso_max = 1.0f;
+
 static void upload_texture(size_t i) {
     if (i >= G.tex.size() || G.tex_ready[i]) return;
     G.tex_ready[i] = 1;
@@ -622,9 +684,12 @@ static void upload_texture(size_t i) {
     // meant put the model textures somewhere the model shader never samples.
     glActiveTexture(GL_TEXTURE0);
     int w = 0, h = 0, n = 0;
+    // alpha is only needed by the alpha-tested leaf/spray cards; every other texture is opaque
+    // and goes up as RGB, which is 1 MB instead of 1.4 MB per 1024x1024 map on the phone
+    const int want = G.tex_alpha[i] ? 4 : 3;
     const uint8_t* bytes = G.model.texture_bytes((uint16_t)i);
     unsigned char* px = stbi_load_from_memory(bytes, (int)G.model.texture_length((uint16_t)i), &w,
-                                              &h, &n, 4);
+                                              &h, &n, want);
     if (!px) {
         LOGE("texture %zu failed: %s", i, stbi_failure_reason());
         G.tex[i] = 0;
@@ -632,7 +697,9 @@ static void upload_texture(size_t i) {
     }
     glGenTextures(1, &G.tex[i]);
     glBindTexture(GL_TEXTURE_2D, G.tex[i]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, px);
+    const GLenum fmt = want == 4 ? GL_RGBA : GL_RGB;
+    glTexImage2D(GL_TEXTURE_2D, 0, fmt, w, h, 0, fmt, GL_UNSIGNED_BYTE, px);
+    G.tex_mb += (float)(w * h * want) / 1048576.0f;
     const bool pot = (w & (w - 1)) == 0 && (h & (h - 1)) == 0;
     if (pot) {
         glGenerateMipmap(GL_TEXTURE_2D);   // GLES2 only allows this for power-of-two sizes
@@ -643,6 +710,10 @@ static void upload_texture(size_t i) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    if (g_aniso && pot) {
+        const float a = g_aniso_max < 8.0f ? g_aniso_max : 8.0f;
+        glTexParameterf(GL_TEXTURE_2D, 0x84FE, a);       // GL_TEXTURE_MAX_ANISOTROPY_EXT
+    }
     stbi_image_free(px);
 }
 
@@ -700,6 +771,8 @@ static void set_model_uniforms(const VDraw& d, const Mat4& mvp, const float eye[
     glUniform1f(p.exposure, s.exposure);
     glUniform1f(p.fog_start, s.fog_start);
     glUniform1f(p.fog_density, s.fog_density);
+    glUniform1f(p.rough, d.pad[0]);
+    glUniform1f(p.spec, d.pad[1]);
 }
 
 static void init_gl() {
@@ -713,6 +786,16 @@ static void init_gl() {
     glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, range, &precision);
     if (precision > 0) g_prec_token = "highp";
     LOGI("cross-stage precision: %s", g_prec_token.c_str());
+    {
+        const char* ext = (const char*)glGetString(GL_EXTENSIONS);
+        g_aniso = ext && std::strstr(ext, "GL_EXT_texture_filter_anisotropic") != nullptr;
+        if (g_aniso) {
+            GLfloat m = 1.0f;
+            glGetFloatv(0x84FF, &m);                     // GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
+            g_aniso_max = m;
+        }
+        LOGI("anisotropic filtering: %s (max %.0f)", g_aniso ? "yes" : "no", g_aniso_max);
+    }
     static const char* kModelAttribs[] = {"a_pos", "a_nrm", "a_uv", "a_ao"};
     G.model_p.id = link(kModelVS, kModelFS, kModelAttribs, 4, &err);
     if (!G.model_p.id) {
@@ -743,6 +826,8 @@ static void init_gl() {
     m->exposure = glGetUniformLocation(p->id, "u_exposure");
     m->fog_start = glGetUniformLocation(p->id, "u_fog_start");
     m->fog_density = glGetUniformLocation(p->id, "u_fog_density");
+    m->rough = glGetUniformLocation(p->id, "u_rough");
+    m->spec = glGetUniformLocation(p->id, "u_spec");
 
     static const char* kSkyAttribs[] = {"a_p"};
     G.sky_p.id = link(kSkyVS, kSkyFS, kSkyAttribs, 1, &err);
@@ -817,6 +902,9 @@ static void init_gl() {
 
     G.tex.assign(G.model.textures.size(), 0);
     G.tex_ready.assign(G.model.textures.size(), 0);
+    G.tex_alpha.assign(G.model.textures.size(), 0);
+    for (const VDraw& d : G.model.draws)
+        if (d.tex != VPK_NO_TEXTURE && d.alpha_cutoff > 0.0f) G.tex_alpha[d.tex] = 1;
 
     // full-screen quad for the sky, and the dynamic buffer for the orbs
     static const float quad[] = {-1, -1, 1, -1, -1, 1, 1, 1};
@@ -865,6 +953,8 @@ static void init_gl() {
         diag_add("programs: %s", failed.empty() ? "all 8 linked"
                                                 : ("FAILED: " + failed).c_str());
         diag_add("post: %s", G.post_ok ? "on" : "off (direct to screen)");
+        diag_add("aniso: %s, targets up to %.2fx", g_aniso ? "on" : "off",
+                 (double)G.render_scale);
     }
     LOGI("GL ready: %u draws, %u textures", G.model.h.n_draws, G.model.h.n_textures);
 }
@@ -940,8 +1030,8 @@ static void draw_sky(const float eye[3], const float yaw, const float pitch) {
     glUniform3fv(G.s_sun_col, 1, s.sun_col);
     // Must equal zen/hor in sky_at() in kModelFS: the glass and the pool reflect sky_at(),
     // so a different gradient up here made the reflected sky brighter than the real one.
-    const float zen[3] = {0.105f, 0.175f, 0.335f};
-    const float hor[3] = {0.330f, 0.360f, 0.390f};
+    const float zen[3] = {0.30f, 0.38f, 0.50f};
+    const float hor[3] = {0.66f, 0.70f, 0.74f};
     glUniform3fv(G.s_zen, 1, zen);
     glUniform3fv(G.s_hor, 1, hor);
     glBindBuffer(GL_ARRAY_BUFFER, G.sky_vbo);
@@ -1147,6 +1237,11 @@ static void rebuild_targets() {
     }
     rw = (int)((float)rw * G.render_scale + 0.5f);
     rh = (int)((float)rh * G.render_scale + 0.5f);
+    // never ask for a target bigger than the driver allows
+    GLint max_tex = 2048;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex);
+    if (rw > max_tex) rw = max_tex;
+    if (rh > max_tex) rh = max_tex;
     if (rw < 2) rw = 2;
     if (rh < 2) rh = 2;
     const int qw = rw / 4 > 0 ? rw / 4 : 1, qh = rh / 4 > 0 ? rh / 4 : 1;
@@ -1347,12 +1442,20 @@ void game_frame(float dt, float jx, float jy, float dyaw, float dpitch) {
             // 60 fps target: drop a step below 20 ms per frame (50 fps), climb back when the
             // frame is comfortably under 14.5 ms. The old thresholds only reacted to being
             // *awful* (<22 fps), which is why a phone would happily sit at 30.
-            if (G.ft_avg > 0.020f && G.render_scale > 0.51f) {
-                G.render_scale = G.render_scale > 0.7f ? 0.7f : 0.5f;
-                G.last_scale_change = G.time_s;
-                rebuild_targets();
-            } else if (G.ft_avg < 0.0145f && G.render_scale < 0.99f) {
-                G.render_scale = G.render_scale < 0.6f ? 0.7f : 1.0f;
+            // Quality ladder: 0.5 -> 0.7 -> 0.85 -> 1.0 -> 1.25 (light SSAA). Down a rung
+            // when the average frame is over 20 ms, up one when it is comfortably under
+            // 13.5 ms. 1.25 is only ever reached on a device that is idle at 1.0, and it is
+            // what makes the foliage edges and the rooflines clean instead of stair-stepped.
+            static const float kRungs[] = {0.5f, 0.7f, 0.85f, 1.0f, 1.25f};
+            const int n_rungs = 5;
+            int rung = 0;
+            for (int i = 0; i < n_rungs; ++i)
+                if (G.render_scale > kRungs[i] - 0.02f) rung = i;
+            int want = rung;
+            if (G.ft_avg > 0.020f && rung > 0) want = rung - 1;
+            else if (G.ft_avg < 0.0135f && rung < n_rungs - 1) want = rung + 1;
+            if (want != rung) {
+                G.render_scale = kRungs[want];
                 G.last_scale_change = G.time_s;
                 rebuild_targets();
             }
@@ -1395,6 +1498,8 @@ void game_frame(float dt, float jx, float jy, float dyaw, float dpitch) {
         G.probed_frame = true;
         const int scene = px_sum(G.px_scene), fin = offscreen ? px_sum(G.px_final) : scene;
         if (offscreen) {
+            diag_add("textures: %.0f MB resident, %d maps", (double)G.tex_mb,
+                     (int)G.tex.size());
             diag_add("frame probe: scene %d,%d,%d -> post %d,%d,%d", G.px_scene[0],
                      G.px_scene[1], G.px_scene[2], G.px_final[0], G.px_final[1], G.px_final[2]);
         } else {

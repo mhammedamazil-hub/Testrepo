@@ -437,10 +437,34 @@ def main():
             stats["tris"] += len(idx) // 3
 
     # ---- materials -> textures
+    def surface_response(name):
+        """Roughness and specular strength from the material name.
+
+        The GLB carries no metallic-roughness texture that survives this pipeline, and a
+        single Blinn-Phong exponent for the whole villa is what made every surface read as
+        matte cardboard: painted plaster and polished marble caught exactly the same
+        highlight. These are hand-set per material family, not measured - they are a look,
+        not PBR data - and they are the reason the terrace and the pool coping now glint.
+        """
+        n = name.lower()
+        for keys, rough, spec in (
+            (("marble", "tile", "polish", "granite", "quartz", "porcelain", "terrazzo"), 0.22, 0.55),
+            (("steel", "metal", "chrome", "brass", "aluminium", "aluminum"), 0.30, 0.70),
+            (("glass", "glazing", "mirror"), 0.10, 0.80),
+            (("wood", "timber", "oak", "teak", "deck"), 0.55, 0.22),
+            (("plaster", "paint", "stucco", "render", "wall", "ceiling"), 0.85, 0.10),
+            (("concrete", "stone", "paving", "gravel", "kerb", "kerbstone"), 0.75, 0.14),
+            (("leaf", "grass", "foliage", "spray", "palm", "shrub", "hedge"), 0.60, 0.12),
+            (("fabric", "linen", "cushion", "rug", "canvas", "rattan"), 0.90, 0.05),
+        ):
+            if any(k in n for k in keys):
+                return rough, spec
+        return 0.60, 0.15
+
     def material_info(mi):
         if mi < 0 or mi >= len(mats):
             return (np.array([0.75, 0.75, 0.75, 1.0]), 0xFFFF, False, 0.5,
-                    np.zeros(3))
+                    np.zeros(3), False, False, 0.60, 0.15)
         m = mats[mi]
         pbr = m.get("pbrMetallicRoughness", {})
         base = np.array(pbr.get("baseColorFactor", [1, 1, 1, 1]), dtype=np.float64)
@@ -474,13 +498,15 @@ def main():
         # glints. The villa already contains a plunge pool (materials pool_tile /
         # water_ripple), so nothing has to be modelled - it only has to be shaded properly.
         water = (not glass) and ("water" in name or "ripple" in name)
-        return (base, tid, bool(m.get("doubleSided", False)), cutoff, emis, glass, water)
+        rough, spec = surface_response(name)
+        return (base, tid, bool(m.get("doubleSided", False)), cutoff, emis, glass, water,
+                rough, spec)
 
     # ---- build chunks (<= CHUNK verts) and quantise
     draws = []
     chunks = []          # (draw_dict, vertex_bytes, index_bytes) - kept together on purpose
     for mi, grp in sorted(groups.items(), key=lambda kv: str(kv[0])):
-        base, tid, two_sided, cutoff, emis, glass, water = material_info(mi)
+        base, tid, two_sided, cutoff, emis, glass, water, rough, spec = material_info(mi)
         P = np.concatenate(grp["p"]); N = np.concatenate(grp["n"])
         UV = np.concatenate(grp["uv"]); I = np.concatenate(grp["i"])
         if vpk_fix_normals:
@@ -528,6 +554,7 @@ def main():
                 "water": water,
                 "base": base.astype(np.float32), "cutoff": float(cutoff), "wids": order,
                 "emissive": emis.astype(np.float32),
+                "rough": float(rough), "spec": float(spec),
             })
             draws.append(dr)
             chunks.append((dr, chunk, tri, vp.astype(np.float32), vn.astype(np.float32)))
@@ -544,6 +571,20 @@ def main():
     draws = [c[0] for c in chunks]
 
     # ---- bake sun visibility + AO into the vertex attribute (uv2.x, uv2.y), then write
+    # texture resolution range, for verify_pack --min-tex: packing the low-res GLB by mistake
+    # is invisible in a file listing but very visible on screen
+    tex_px = [None, None]
+    try:
+        import io as _io_
+        from PIL import Image as _Image_
+        for tid in range(len(tex_bytes)):
+            im = _Image_.open(_io_.BytesIO(bytes(tex_bytes[tid])))
+            lo_, hi_ = min(im.size), max(im.size)
+            tex_px[0] = lo_ if tex_px[0] is None else min(tex_px[0], lo_)
+            tex_px[1] = hi_ if tex_px[1] is None else max(tex_px[1], hi_)
+    except Exception:
+        pass
+
     ao_stat = {}
     ao_uv = {}
     if not ns.no_ao:
@@ -602,7 +643,7 @@ def main():
             | (4 if d["glass"] else 0) | (8 if d.get("water") else 0),
             *[float(x) for x in d["base"]], float(d["cutoff"]),
             *[float(x) for x in d["emissive"]],
-            0.0, 0.0)
+            float(d["rough"]), float(d["spec"]))    # pad[0..1]: roughness, spec strength
 
     if not np.isfinite(fit_lo).all() or (fit_lo > fit_hi).any():
         fit_lo, fit_hi = scene_lo, scene_hi
@@ -644,6 +685,7 @@ def main():
         "fit_max": [round(float(x), 3) for x in fit_hi],
         "geometry_mb": round((20 * n_verts + 2 * n_idx) / 1e6, 2),
         "textures_mb": round(len(blob) / 1e6, 2),
+        "tex_px_min": tex_px[0] or 0, "tex_px_max": tex_px[1] or 0,
         "water_draws": sum(1 for d in draws if d.get("water")),
     }
     info.update(ao_stat)

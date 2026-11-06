@@ -63,6 +63,9 @@ struct VDraw {
     float base_color[4];
     float alpha_cutoff;      // <= 0 means "no cutout"
     float emissive[3];
+    // v11: surface response. pad[0] = roughness (0 mirror .. 1 chalk), pad[1] = specular
+    // strength. Set by tools/villa_pack.py from the material name; 0/0 in older packs means
+    // "no specular", which is what the shader falls back to.
     float pad[2];
 };
 

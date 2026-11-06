@@ -33,7 +33,11 @@
 #include "shade.h"
 #include "vpk.h"
 
-static const int W = 1920, H = 1080;   // the target: 1080p, like the phone
+// The target is 1080p, like the phone. `SIM_SS=2` renders at 2x and box-filters down on
+// write, which is the offline "beauty" pass: same shading as the device, just more samples
+// per pixel than a phone can afford at 60 Hz.
+static int W = 1920, H = 1080;
+static int g_ss = 1;
 static const float kFovY = 62.0f * 3.14159265f / 180.0f;
 static float g_time = 0.0f;            // drives wind, water and the orb pulse
 static float g_wind = 1.0f;            // 0 = still air, 1 = a light garden breeze (m/s-ish)
@@ -138,8 +142,8 @@ static void sky_colour(const float d[3], float out[3]) {
     const float t = y > 0.0f ? 1.0f - expf(-3.1f * y) : 0.0f;   // zenith weight
     // authored in linear light so that, through exposure + the ACES fit, this lands on a
     // late-afternoon sky rather than on white paper
-    const float zen[3] = {0.105f, 0.175f, 0.335f};
-    const float hor[3] = {0.330f, 0.360f, 0.390f};
+    const float zen[3] = {0.30f, 0.38f, 0.50f};
+    const float hor[3] = {0.66f, 0.70f, 0.74f};
     float c[3];
     for (int i = 0; i < 3; ++i) c[i] = hor[i] + (zen[i] - hor[i]) * t;
     // sun disc + glow in the same direction the model is lit from
@@ -153,17 +157,27 @@ static void sky_colour(const float d[3], float out[3]) {
     // thin altocumulus: noise projected onto a plane 260 m up, so the pattern converges
     // towards the horizon like real cloud rows instead of sticking to the viewport
     if (y > 0.03f) {
-        float px = d[0] / (y + 0.10f) * 7.0f;
-        float pz = d[2] / (y + 0.10f) * 7.0f;
+        float px = d[0] / (y + 0.10f) * 5.5f;
+        float pz = d[2] / (y + 0.10f) * 5.5f;
         float f = 0.62f * g_noise(px, pz) + 0.26f * g_noise(px * 2.1f + 11.0f, pz * 2.1f) +
                   0.12f * g_noise(px * 4.3f, pz * 4.3f - 7.0f);
-        float cov = (f - 0.56f) * 4.0f;
+        float cov = (f - 0.50f) * 3.2f;
         cov = cov < 0.0f ? 0.0f : (cov > 1.0f ? 1.0f : cov);
         cov = cov * cov * (3.0f - 2.0f * cov);
-        cov *= fminf(1.0f, y * 4.0f);          // thin out at the horizon
+        cov *= fminf(1.0f, y * 3.0f) * 0.92f;   // thin out at the horizon
         float lit = 0.55f + 0.45f * fminf(1.0f, cs > 0.0f ? cs * 1.6f : 0.0f);
-        const float cloud[3] = {0.105f, 0.115f, 0.132f};
-        for (int i = 0; i < 3; ++i) c[i] = c[i] * (1.0f - cov * 0.85f) + cloud[i] * lit * cov * 0.85f;
+        // sunlit cumulus: white tops, cool grey bases (see kModelFS sky_at in game.cpp)
+        const float body = g_noise(px * 1.7f + 3.0f, pz * 1.7f + 5.0f);
+        float sm = (body - 0.35f) / 0.40f;
+        sm = sm < 0.0f ? 0.0f : (sm > 1.0f ? 1.0f : sm);
+        sm = sm * sm * (3.0f - 2.0f * sm);
+        float top[3] = {1.02f * lit, 1.02f * lit, 1.00f * lit};
+        float base[3] = {0.42f * (0.7f + 0.3f * lit), 0.46f * (0.7f + 0.3f * lit),
+                         0.54f * (0.7f + 0.3f * lit)};
+        for (int i = 0; i < 3; ++i) {
+            const float cl = base[i] + (top[i] - base[i]) * sm;
+            c[i] = c[i] * (1.0f - cov) + cl * cov;
+        }
     }
     // below the horizon: distant haze, never sky, because the garden ends at 87 m
     if (y < 0.0f) {
@@ -524,11 +538,11 @@ static void render(const VModel& model, const Game& g, Frame* f) {
                             for (int i = 0; i < 3; ++i) rd[i] = Vd[i] + 2.0f * ndv * n[i];
                             float sky_g[3];
                             sky_colour(rd, sky_g);
-                            const float fren = 0.28f + 0.60f * powf(1.0f - ndv, 4.0f);
-                            const float room[3] = {0.020f, 0.024f, 0.028f};
+                            const float fren = 0.10f + 0.42f * powf(1.0f - ndv, 4.0f);
+                            const float room[3] = {0.150f, 0.125f, 0.095f};
                             for (int i = 0; i < 3; ++i)
-                                c[i] = (room[i] + sky_g[i] * fren * 0.55f +
-                                        gs.sky_col[i] * 0.10f) * gs.exposure;
+                                c[i] = (room[i] + sky_g[i] * fren * 0.34f +
+                                        gs.sky_col[i] * 0.16f) * gs.exposure;
                             f->zbuf[idx] = z;
                             continue;
                         }
@@ -544,7 +558,7 @@ static void render(const VModel& model, const Game& g, Frame* f) {
                         const float fres = powf(1.0f - ndv, 3.0f);
                         // a shadowed surface keeps its sky dome - the baked sun term is a
                         // visibility, so floor it or shade goes pitch black
-                        const float ao_ = 0.26f + 0.74f * aow * aow;   // ^2: darker contact
+                        const float ao_ = 0.46f + 0.54f * aow * aow;   // ^2: darker contact
                         const float sun_ = 0.10f + 0.90f * sunw;
                         (void)0;
                         float det = g_detail(n, wp, dist) *
@@ -557,17 +571,21 @@ static void render(const VModel& model, const Game& g, Frame* f) {
                         {
                             float g0 = alb[1];
                             if (g0 > alb[0] * 1.25f && g0 > alb[2] * 1.25f) {
-                                for (int i = 0; i < 3; ++i) alb[i] = powf(alb[i], 0.55f);
-                                alb[0] *= 1.10f;
-                                alb[1] *= 0.90f;
-                                alb[2] *= 1.02f;
+                                for (int i = 0; i < 3; ++i) alb[i] = powf(alb[i], 0.50f);
+                                const float y0 = 0.2126f * alb[0] + 0.7152f * alb[1] +
+                                                 0.0722f * alb[2];
+                                alb[0] = (alb[0] + (y0 - alb[0]) * 0.68f) * 1.16f;
+                                alb[1] = (alb[1] + (y0 - alb[1]) * 0.68f) * 1.11f;
+                                alb[2] = (alb[2] + (y0 - alb[2]) * 0.68f) * 1.30f;
                             }
                         }
                         for (int i = 0; i < 3; ++i) alb[i] = fminf(alb[i], 0.75f);
                         if ((d.flags & 1u) && dist < 0.95f) continue;   // no leaves in the eye
                         if (d.flags & 1u) {   // foliage cards
                             float lum = 0.30f * alb[0] + 0.59f * alb[1] + 0.11f * alb[2];
-                            for (int i = 0; i < 3; ++i) alb[i] = (lum * 0.55f + alb[i] * 0.45f) * 0.82f;
+                            const float leaf[3] = {0.62f, 0.72f, 0.52f};
+                            for (int i = 0; i < 3; ++i)
+                                alb[i] = (lum * 0.45f + alb[i] * 0.55f) * leaf[i];
                         }
                         float rgb[3];
                         // smooth the baked values a little: a shadow edge that snaps from
@@ -579,6 +597,33 @@ static void render(const VModel& model, const Game& g, Frame* f) {
                                            sun_ * 0.55f, rgb, fres * 0.4f);
                         } else {
                             game_shade_hdr(alb, d.base_color, n, gs, ao_, sun_, rgb, fres);
+                            // the per-material specular lobe from game.cpp's kModelFS. Kept
+                            // identical so the 1080p beauty pass is the device's frame, not
+                            // an idealised one.
+                            const float rough = d.pad[0], spec = d.pad[1];
+                            if (spec > 0.001f) {
+                                const float hx = gs.dir[0] + Vx / vl, hy = gs.dir[1] + Vy / vl,
+                                            hz = gs.dir[2] + Vz / vl;
+                                const float hl = sqrtf(hx * hx + hy * hy + hz * hz);
+                                float ndh = hl > 1e-6f ? (n[0] * hx + n[1] * hy + n[2] * hz) / hl
+                                                       : 0.0f;
+                                if (ndh < 0.0f) ndh = 0.0f;
+                                const float a = fmaxf(rough * rough, 0.02f);
+                                float shin = 2.0f / (a * a) - 2.0f;
+                                if (shin < 1.0f) shin = 1.0f;
+                                if (shin > 512.0f) shin = 512.0f;
+                                const float f0 = 0.04f + 0.96f * powf(1.0f - ndv, 5.0f);
+                                const float glint = powf(ndh, shin) * (shin + 8.0f) * 0.0125f * f0;
+                                const float ndl = n[0] * gs.dir[0] + n[1] * gs.dir[1] +
+                                                  n[2] * gs.dir[2];
+                                if (ndl > 0.0f) {
+                                    const float w = glint * spec * (0.35f + 0.65f * ao_) *
+                                                    powf(ndl, 0.65f) * sun_;
+                                    for (int i = 0; i < 3; ++i) rgb[i] += gs.sun_col[i] * w;
+                                }
+                                const float sheen = spec * 0.10f * (1.0f - rough) * f0 * ao_;
+                                for (int i = 0; i < 3; ++i) rgb[i] += gs.sky_col[i] * sheen;
+                            }
                         }
                         if (matid) {
                             rgb[0] = ((di * 7) % 11) / 11.0f;
@@ -878,14 +923,28 @@ static void write_ppm(const Frame& f, const char* path) {
         std::perror(path);
         return;
     }
-    std::fprintf(fp, "P6\n%d %d\n255\n", W, H);
-    std::vector<unsigned char> row((size_t)W * 3);
-    for (int y = 0; y < H; ++y) {
-        for (int x = 0; x < W; ++x)
+    const int ow = W / g_ss, oh = H / g_ss;
+    std::fprintf(fp, "P6\n%d %d\n255\n", ow, oh);
+    std::vector<unsigned char> row((size_t)ow * 3);
+    for (int y = 0; y < oh; ++y) {
+        for (int x = 0; x < ow; ++x) {
             for (int i = 0; i < 3; ++i) {
-                float c = f.col[((size_t)y * W + x) * 3 + i];
-                row[x * 3 + i] = (unsigned char)(fminf(1.0f, fmaxf(0.0f, c)) * 255.0f + 0.5f);
+                if (g_ss == 1) {
+                    float c = f.col[((size_t)y * W + x) * 3 + i];
+                    row[x * 3 + i] = (unsigned char)(fminf(1.0f, fmaxf(0.0f, c)) * 255.0f + 0.5f);
+                } else {
+                    // box filter: the supersampled span of this output pixel
+                    float acc = 0.0f;
+                    for (int sy = 0; sy < g_ss; ++sy)
+                        for (int sx = 0; sx < g_ss; ++sx) {
+                            const size_t idx = ((size_t)(y * g_ss + sy) * W + (x * g_ss + sx)) * 3 + i;
+                            acc += f.col[idx];
+                        }
+                    acc /= (float)(g_ss * g_ss);
+                    row[x * 3 + i] = (unsigned char)(fminf(1.0f, fmaxf(0.0f, acc)) * 255.0f + 0.5f);
+                }
             }
+        }
         std::fwrite(row.data(), 1, row.size(), fp);
     }
     std::fclose(fp);
@@ -972,6 +1031,15 @@ int main(int argc, char** argv) {
         return 2;
     }
     const std::string mode = argv[1];
+    if (const char* ss = std::getenv("SIM_SS")) {
+        g_ss = std::atoi(ss);
+        if (g_ss < 1) g_ss = 1;
+        if (g_ss > 3) g_ss = 3;
+        W *= g_ss;
+        H *= g_ss;
+        std::printf("supersampling %dx: rendering %dx%d, writing %dx%d\n", g_ss, W, H, W / g_ss,
+                    H / g_ss);
+    }
     const std::string assets = argv[2];
     const std::string out = argv[3];
     const int want_shots = argc > 4 ? atoi(argv[4]) : 0;

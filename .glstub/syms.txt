@@ -26,6 +26,10 @@ XDeleteProperty
 XDestroyIC
 XDestroyWindow
 XDrawString
+XF86VidModeGetAllModeLines
+XF86VidModeQueryVersion
+XF86VidModeSetViewPort
+XF86VidModeSwitchToMode
 XFetchName
 XFillRectangle
 XFilterEvent
@@ -50,6 +54,7 @@ XGetSelectionOwner
 XGetVisualInfo
 XGetWindowAttributes
 XGetWindowProperty
+XGrabKeyboard
 XGrabPointer
 XInitThreads
 XInternAtom
@@ -96,9 +101,9 @@ XStoreName
 XStringListToTextProperty
 XSync
 XTranslateCoordinates
+XUngrabKeyboard
 XUngrabPointer
 XUnsetICFocus
-XVisualIDFromVisual
 XWarpPointer
 XkbFreeKeyboard
 XkbGetControls
@@ -122,6 +127,7 @@ Xutf8LookupString
 _XiGetDevicePresenceNotifyEvent
 glFinish
 glXChooseFBConfig
+glXChooseVisual
 glXCreateContext
 glXCreateNewContext
 glXCreateWindow

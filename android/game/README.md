@@ -5,10 +5,17 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v10>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v11>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
+> **v11 is the reference-calibrated build.** The model now ships its full 1024 px textures
+> (the build had been packing the 512 px "web" variant), the sky/ambient/fog/glass/lawn were
+> matched to a Blender **Cycles** path trace with `tools/villa_match.py` (worst region
+> luminance error 100 -> 47 of 255), materials carry per-family specular roughness, textures
+> get anisotropic filtering, and the quality ladder can supersample to 1.25x.
+> `tools/villa_cycles.py` renders the 1080p reference; `docs/reference/` holds it.
+>
 > **v10 is the exploration build.** No score, no timer, no orbs: the garden is the point.
 > It also fixes the two things v9's screenshot exposed - trees only blocked a 0.55 m post while
 > their canopies are 2-3 m wide (you could stand inside the leaves), and the ground beyond the
@@ -87,6 +94,7 @@ interior lit only by the sky through the openings.
 | Glass | Fresnel sky reflection over a dim room — a mirror, not transmission |
 | Sky | full-screen quad: gradient, sun disc + glow, procedural altocumulus, no sky texture |
 | Ground | procedural patches, grain, fine noise and mown stripes in world space, fading with distance |
+| Reference | `tools/villa_cycles.py` renders the same camera in Blender Cycles at 1080p (96 spp, denoised); `tools/villa_match.py` prints the region-by-region delta |
 | Gameplay | **exploration**: no score, no timer, no objectives. Wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob |
 | HUD | drawn in GL from `assets/hud_font.png` (95 glyphs, 16×6 cells): counter, timer, fps, crosshair, compass chevron, thumb stick, boot screen, diagnostics |
 | Audio | **none since v7** — the Java AudioTrack player was removed with the rest of the Java. The wav files are still in `res/raw` for whoever writes the AAudio/OpenSL player |

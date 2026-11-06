@@ -28,6 +28,10 @@ void XDeleteProperty(void) { }
 void XDestroyIC(void) { }
 void XDestroyWindow(void) { }
 void XDrawString(void) { }
+void XF86VidModeGetAllModeLines(void) { }
+void XF86VidModeQueryVersion(void) { }
+void XF86VidModeSetViewPort(void) { }
+void XF86VidModeSwitchToMode(void) { }
 void XFetchName(void) { }
 void XFillRectangle(void) { }
 void XFilterEvent(void) { }
@@ -52,6 +56,7 @@ void XGetSelectionOwner(void) { }
 void XGetVisualInfo(void) { }
 void XGetWindowAttributes(void) { }
 void XGetWindowProperty(void) { }
+void XGrabKeyboard(void) { }
 void XGrabPointer(void) { }
 void XInitThreads(void) { }
 void XInternAtom(void) { }
@@ -98,9 +103,9 @@ void XStoreName(void) { }
 void XStringListToTextProperty(void) { }
 void XSync(void) { }
 void XTranslateCoordinates(void) { }
+void XUngrabKeyboard(void) { }
 void XUngrabPointer(void) { }
 void XUnsetICFocus(void) { }
-void XVisualIDFromVisual(void) { }
 void XWarpPointer(void) { }
 void XkbFreeKeyboard(void) { }
 void XkbGetControls(void) { }
@@ -124,6 +129,7 @@ void Xutf8LookupString(void) { }
 void _XiGetDevicePresenceNotifyEvent(void) { }
 void glFinish(void) { }
 void glXChooseFBConfig(void) { }
+void glXChooseVisual(void) { }
 void glXCreateContext(void) { }
 void glXCreateNewContext(void) { }
 void glXCreateWindow(void) { }

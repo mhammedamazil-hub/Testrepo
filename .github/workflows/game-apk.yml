@@ -90,9 +90,11 @@ jobs:
             -o android/game/app/src/main/assets/level.bin \
             --map /tmp/game_level_map.png --json-out /tmp/level.json | tee /tmp/level.log
           grep -q "PLAYABLE: all" /tmp/level.log
-          python tools/villa_pack.py villa_v2/villa_v2_web.glb \
+          # v11 ships the full-resolution textures (1024 px): the web variant is 512 px and
+          # throwing that detail away at build time was most of why the surfaces looked soft.
+          python tools/villa_pack.py villa_v2/villa_v2.glb \
             -o android/game/app/src/main/assets/model.vpk --json-out /tmp/pack.json
-          python tools/verify_pack.py /tmp/pack.json --tris 500000 --max-mb 60
+          python tools/verify_pack.py /tmp/pack.json --tris 500000 --max-mb 60 --min-tex 1000
           python tools/game_audio.py android/game/app/src/main/res/raw
 
       # The important gate: the same movement code, the same level and the same renderer

@@ -14,6 +14,9 @@ typedef uint8_t GLubyte; typedef char GLchar; typedef float GLfloat;
 #define GL_LINK_STATUS 0x8B82
 #define GL_TEXTURE_2D 0x0DE1
 #define GL_RGBA 0x1908
+#define GL_RGB 0x1907
+#define GL_EXTENSIONS 0x1F03
+#define GL_MAX_TEXTURE_SIZE 0x0D33
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_UNSIGNED_SHORT 0x1403
 #define GL_FLOAT 0x1406
@@ -60,6 +63,8 @@ void glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void
 void glActiveTexture(GLenum); void glBindTexture(GLenum, GLuint);
 void glGenTextures(GLsizei, GLuint*); void glTexImage2D(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void*);
 void glGenerateMipmap(GLenum); void glTexParameteri(GLenum, GLenum, GLint);
+void glTexParameterf(GLenum, GLenum, GLfloat);
+void glGetIntegerv(GLenum, GLint*); void glGetFloatv(GLenum, GLfloat*);
 void glDrawElements(GLenum, GLsizei, GLenum, const void*); void glDrawArrays(GLenum, GLint, GLsizei);
 void glEnable(GLenum); void glDisable(GLenum); void glDepthFunc(GLenum); void glDepthMask(GLboolean);
 void glClear(GLuint); void glClearColor(GLfloat, GLfloat, GLfloat, GLfloat); void glViewport(GLint, GLint, GLsizei, GLsizei);
