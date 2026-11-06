@@ -5,6 +5,8 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
 
+    <!-- No Java. android_native_app_glue gives us the window, the input queue and the asset
+         manager from a plain C android_main(); it lives in the NDK's sources/android. -->
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -13,11 +15,14 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
         <activity
-            android:name=".MainActivity"
+            android:name="android.app.NativeActivity"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
             android:launchMode="singleTask">
+
+            <meta-data android:name="android.app.lib_name" android:value="villagame" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

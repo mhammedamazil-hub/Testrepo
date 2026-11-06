@@ -12,8 +12,16 @@ if(NOT EXISTS ${VIEWER_CPP}/vpk.cpp)
                         "part of this repository and must be checked out alongside the game.")
 endif()
 
+# android_native_app_glue ships with the NDK as source, not as a library.
+add_library(native_app_glue STATIC
+        ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+target_include_directories(native_app_glue PUBLIC
+        ${ANDROID_NDK}/sources/android/native_app_glue)
+
 add_library(villagame SHARED
-        game.cpp
+        main_android.cpp          # the whole Android front end: EGL, input, frame loop
+        hud.cpp                   # the HUD, drawn in GL from a baked font atlas
+        game.cpp                  # the renderer and the game entry points
         ${VIEWER_CPP}/vpk.cpp)
 
 target_include_directories(villagame PRIVATE
@@ -22,7 +30,9 @@ target_include_directories(villagame PRIVATE
 
 target_compile_options(villagame PRIVATE -O3 -ffast-math -Wall)
 
-find_library(GLES_LIB GLESv2)
-find_library(LOG_LIB log)
-find_library(ANDROID_LIB android)
-target_link_libraries(villagame ${GLES_LIB} ${LOG_LIB} ${ANDROID_LIB})
+target_link_libraries(villagame
+        native_app_glue
+        android
+        log
+        EGL
+        GLESv2)

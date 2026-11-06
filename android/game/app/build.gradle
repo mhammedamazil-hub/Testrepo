@@ -11,8 +11,8 @@ android {
         applicationId 'ai.arena.villagame'
         minSdk 21                 // GLES2 + Java 8 level: runs on anything from 2014 on
         targetSdk 34
-        versionCode 6
-        versionName '1.5'
+        versionCode 7
+        versionName '2.0'
         ndk {
             // 64-bit for anything current, 32-bit for older cheap tablets
             abiFilters 'arm64-v8a', 'armeabi-v7a'
@@ -43,10 +43,7 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+    // no Java in this app: the whole front end is cpp/main_android.cpp
 
     // the model and the level are already packed assets; do not compress them twice
     androidResources {
@@ -55,5 +52,5 @@ android {
 }
 
 dependencies {
-    // deliberately empty
+    // deliberately empty: no Java, no libraries
 }

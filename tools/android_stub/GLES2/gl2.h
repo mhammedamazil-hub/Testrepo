@@ -98,3 +98,5 @@ void glGetShaderPrecisionFormat(GLenum, GLenum, GLint*, GLint*);
 GLenum glGetError(void);
 void glReadPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void*);
 #define GL_VERSION 0x1F02
+#define GL_STREAM_DRAW 0x88E0
+void glDeleteBuffers(GLsizei, const GLuint*);

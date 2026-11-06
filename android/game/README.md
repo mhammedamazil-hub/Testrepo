@@ -5,10 +5,19 @@ mid-afternoon sun, eight collection orbs are scattered across the 87 × 84 m gar
 clock runs until you have walked all of them. No enemies, no tutorials, no ads, no
 permissions, no network: it is a walk in a garden you (well, `villa_src/`) built.
 
-**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v5>
+**Download:** <https://github.com/mhammedamazil-hub/Testrepo/releases/tag/villa-garden-v7>
 → `villa-garden.apk` (≈ 29 MB, Android 5.0+ / `minSdk 21`, arm64-v8a + armeabi-v7a).
 Or from any Actions run: *Artifacts* → `villa-garden-apk`.
 
+> **v7 is native-only: there is no Java in the APK at all.** The window, EGL, touch and the
+> HUD are `cpp/main_android.cpp` + `cpp/hud.cpp`; the launcher activity is
+> `android.app.NativeActivity` and the entry point is `android_main()`. The HUD is drawn in
+> GL from a baked font atlas (`tools/hud_font.py`), so text is crisp without a Canvas.
+>
+> **v6 fixed a shader compile error the on-screen diagnosis caught** (`S0033: no default
+> precision defined for function 'aces_fit'` — the shared tone-curve chunk was injected ahead
+> of the `precision` statement). That is the reason v5 was still black.
+>
 > **v5 renders the scene in display space, so post-processing can never black it out again,
 > and it puts its own diagnosis on screen.** If the picture is wrong, the panel at the bottom
 > left now lists the GPU, the shader precision, which programs linked, an off-screen-target
@@ -54,6 +63,7 @@ interior lit only by the sky through the openings.
 
 | | |
 |---|---|
+| Language | **C++ only.** No Java: NativeActivity + android_native_app_glue (v7) |
 | Renderer | OpenGL ES **2.0**, one forward pass + a 4-pass post chain, no extensions, no float textures |
 | Internal resolution | renders at the surface size up to **1920 × 1080**, draws through RGBA8 HDR-ish targets |
 | Post | soft-knee bright pass → 2 × separable blur → 40-step god rays → ACES + gamma + dither |
@@ -65,7 +75,8 @@ interior lit only by the sky through the openings.
 | Sky | full-screen quad: gradient, sun disc + glow, procedural altocumulus, no sky texture |
 | Ground | procedural patches, grain, fine noise and mown stripes in world space, fading with distance |
 | Gameplay | 8 objectives, wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob, timer |
-| Audio | wind loop, footsteps, pickup chime — synthesised by `tools/game_audio.py` |
+| HUD | drawn in GL from `assets/hud_font.png` (95 glyphs, 16×6 cells): counter, timer, fps, crosshair, compass chevron, thumb stick, boot screen, diagnostics |
+| Audio | **none since v7** — the Java AudioTrack player was removed with the rest of the Java. The wav files are still in `res/raw` for whoever writes the AAudio/OpenSL player |
 | Assets | `assets/model.vpk` 30.2 MB, `assets/level.bin` 406 kB |
 | APK | ≈ 29 MB, `minSdk 21`, two ABIs, debug-signed |
 
@@ -89,9 +100,11 @@ So the split is:
 - **`tools/game_level.py`** — bakes `LVL1`: rasterises the *triangles* to get thin walls and
   real doorways, floods reachability with the same body test the game uses, marks the pool as
   blocked (you cannot walk on water), and places the objectives by farthest-point sampling.
-- **`android/game/app/src/main/cpp/`** — ~1 900 lines of C++: the game, the GLES2 renderer,
-  the post chain, the JNI bridge. No third-party libraries.
-- **`android/game/.../java/`** — ~600 lines: activity, touch, HUD drawn with Canvas, audio.
+- **`android/game/app/src/main/cpp/`** — ~2 700 lines of C++, and that is the whole app:
+  `game.cpp` (renderer, post chain, engine entry points), `main_android.cpp` (EGL, input,
+  frame loop, boot screen), `hud.cpp` (GL HUD), plus the shared `vpk.cpp`. No Java, no JNI,
+  no third-party libraries.
+- **`tools/hud_font.py`** — bakes the HUD atlas the renderer draws text with.
 
 ## How it is verified without a device
 

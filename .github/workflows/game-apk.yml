@@ -73,6 +73,16 @@ jobs:
       - name: Install asset tooling
         run: pip install --quiet numpy pillow
 
+      # The HUD is drawn in GL from this atlas (no Java Canvas any more). It is committed, so
+      # this step exists to catch it drifting from the tool, not to generate it.
+      - name: Verify the HUD font atlas
+        run: |
+          set -euo pipefail
+          python tools/hud_font.py
+          git diff --exit-code --stat -- android/game/app/src/main/assets/hud_font.png \
+              android/game/app/src/main/assets/hud_font.txt \
+            || { echo "::error::the committed HUD atlas is out of date, commit the regenerated one"; exit 1; }
+
       - name: Bake the level and pack the model
         run: |
           set -euo pipefail
@@ -143,9 +153,16 @@ jobs:
       - name: Type-check the native sources
         run: |
           set -euo pipefail
-          g++ -fsyntax-only -std=c++17 -Itools/android_stub \
-              -Iandroid/game/app/src/main/cpp -Iandroid/viewer/app/src/main/cpp \
-              android/game/app/src/main/cpp/game.cpp
+          for src in game.cpp main_android.cpp hud.cpp; do
+            g++ -fsyntax-only -std=c++17 -Itools/android_stub \
+                -Iandroid/game/app/src/main/cpp -Iandroid/viewer/app/src/main/cpp \
+                android/game/app/src/main/cpp/$src
+            echo "ok  $src"
+          done
+          # nothing may reference Java any more
+          if grep -rn "JNIEXPORT\|Java_ai_arena" android/game/app/src/main/cpp/; then
+            echo "::error::JNI symbols left behind in a native-only app"; exit 1
+          fi
 
       - name: Build debug APK
         run: |
@@ -171,15 +188,32 @@ jobs:
           set -euo pipefail
           apk=android/game/app/build/outputs/apk/debug/app-debug.apk
           unzip -l "$apk" > /tmp/apk.txt
-          for want in classes.dex lib/arm64-v8a/libvillagame.so lib/armeabi-v7a/libvillagame.so \
-                      assets/model.vpk assets/level.bin res/raw/wind.wav res/raw/step.wav \
-                      res/raw/chime.wav; do
+          # native-only since v7: the entry point is android_main() in libvillagame.so, the
+          # activity is android.app.NativeActivity, and there is no Java of ours at all.
+          for want in lib/arm64-v8a/libvillagame.so lib/armeabi-v7a/libvillagame.so \
+                      assets/model.vpk assets/level.bin assets/hud_font.png \
+                      assets/hud_font.txt; do
             if ! grep -q " $want$" /tmp/apk.txt; then
               echo "::error::APK is missing $want"
               exit 1
             fi
             echo "ok  $(grep " $want$" /tmp/apk.txt | awk '{print $1, $4}')"
           done
+          # and it must NOT contain our deleted Java classes
+          if unzip -l "$apk" | grep -q "ai/arena/villagame"; then
+            echo "::error::the APK still contains ai.arena.villagame Java classes"
+            exit 1
+          fi
+          # the manifest must point at the native activity
+          ait=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 2>/dev/null | tail -1)
+          if [ -n "$ait" ]; then
+            "$ait" dump xmltree --file AndroidManifest.xml "$apk" > /tmp/manifest.txt || true
+            grep -q "NativeActivity" /tmp/manifest.txt || {
+              echo "::error::the manifest does not declare android.app.NativeActivity"; exit 1; }
+            grep -q "villagame" /tmp/manifest.txt || {
+              echo "::error::android.app.lib_name is not villagame"; exit 1; }
+            echo "ok  manifest declares NativeActivity with lib_name=villagame"
+          fi
           # the packed model must be the whole villa, not a truncated copy
           size=$(unzip -l "$apk" | awk '/assets\/model.vpk/ {print $1}')
           test "$size" -gt 20000000 || { echo "::error::model.vpk is only $size bytes"; exit 1; }

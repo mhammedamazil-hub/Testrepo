@@ -30,7 +30,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 GAME_CPP = ROOT / "android/game/app/src/main/cpp/game.cpp"
-SURFACE = ROOT / "android/game/app/src/main/java/ai/arena/villagame/GameSurface.java"
+# v7 dropped Java entirely: touch handling now lives in the native app shell, and the HUD is
+# drawn in GL. The input-sign contracts follow the code.
+SHELL = ROOT / "android/game/app/src/main/cpp/main_android.cpp"
+HUD_CPP = ROOT / "android/game/app/src/main/cpp/hud.cpp"
+HUD_H = ROOT / "android/game/app/src/main/cpp/hud.h"
 
 failures = []
 checks = 0
@@ -54,7 +58,7 @@ def shader_body(src, name):
 
 def main():
     src = GAME_CPP.read_text()
-    java = SURFACE.read_text()
+    java = SHELL.read_text()          # was GameSurface.java before the native migration
 
     print("post-process quad")
     qvs = shader_body(src, "kPostQuadVS")
@@ -96,12 +100,27 @@ def main():
     check("glBindTexture(GL_TEXTURE_2D, G.white_tex)" in src,
           "a missing texture binds a white texel instead of texture 0 (black in ES2)")
 
-    print("input signs")
-    check("stick.y = -dy / r;" in java, "stick y = -dy (drag up is forward)")
-    check("pendingPitch -= dy * LOOK_SENS;" in java, "drag up looks up")
+    print("input signs (native shell since v7)")
+    check("g.stick.y = -dy / r;" in java, "stick y = -dy (drag up is forward)")
+    check("g.pending_pitch -= dy * kLookSensitivity;" in java, "drag up looks up")
     check("G.game.update(dt, jy, jx, dyaw, dpitch);" in src,
-          "nativeFrame passes the stick through without a second negation",
+          "game_frame passes the stick through without a second negation",
           "negating here again inverts the stick")
+
+    print("native-only packaging")
+    manifest = (ROOT / "android/game/app/src/main/AndroidManifest.xml").read_text()
+    check("android.app.NativeActivity" in manifest, "the manifest launches NativeActivity")
+    check('android.app.lib_name' in manifest and 'villagame' in manifest,
+          "lib_name points at libvillagame.so")
+    check(not (ROOT / "android/game/app/src/main/java").exists(),
+          "there is no Java source tree left")
+    cmake = (ROOT / "android/game/app/src/main/cpp/CMakeLists.txt").read_text()
+    for unit in ("main_android.cpp", "hud.cpp", "game.cpp"):
+        check(unit in cmake, f"CMake builds {unit}")
+    check("native_app_glue" in cmake, "CMake links the NDK's native_app_glue")
+    check(not __import__("re").search(r"JNIEXPORT|Java_ai_arena",
+                                      "".join(p.read_text() for p in GAME_CPP.parent.glob("*.cpp"))),
+          "no JNI symbols are left in the native sources")
 
     print("post-processing must never be able to black the game out")
     check("static const char* kCommonGlsl" in src and "vec3 to_display(vec3 c)" in src,
@@ -124,10 +143,9 @@ def main():
     check("G.post_ok = false;" in src and "post_auto_disabled" in src,
           "post can switch itself off at runtime")
     check("glReadPixels(G.probe_x, G.probe_y" in src, "pixel probes exist")
-    hud = (ROOT / "android/game/app/src/main/java/ai/arena/villagame/HudView.java").read_text()
-    check("shownTotal == 0" not in hud,
-          "the HUD always shows the diagnosis",
-          "gating it on total==0 hid every real error from two shipped builds")
+    check("hud_diag(game_status());" in java and "void hud_diag(const char* text)" in
+          HUD_CPP.read_text(),
+          "the HUD always shows the diagnosis")
 
     print("look constants")
 

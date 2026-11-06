@@ -1,4 +1,4 @@
-// Villa Garden — the renderer and the JNI glue.
+// Villa Garden — the renderer.
 //
 // Everything that decides how the picture looks is in three places and they are kept in
 // sync on purpose:
@@ -11,9 +11,7 @@
 // GLES2 only: no MRT, no texture arrays, no derivatives, no float textures, no instancing.
 // That is what lets this run on a 2015 tablet at 60 fps.
 #include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
 #include <android/log.h>
-#include <jni.h>
 
 #include <GLES2/gl2.h>
 
@@ -1087,42 +1085,51 @@ static void draw_model(const Mat4& mvp, const float eye[3]) {
     }
 }
 
-// ------------------------------------------------------------------ JNI
-extern "C" {
+// ------------------------------------------------------------------ engine entry points
+// These used to be JNI methods (`nativeInit`, `nativeFrame`, ...). The app is native-only now
+// (see main_android.cpp and the NativeActivity manifest), so they are plain C++ with the same
+// bodies; the JNI-only bits were the env/asset-manager unwrapping, which the caller has
+// already done.
+#include "game_native.h"
 
-JNIEXPORT jboolean JNICALL
-Java_ai_arena_villagame_GameRenderer_nativeInit(JNIEnv* env, jobject, jobject asset_mgr) {
-    AAssetManager* mgr = AAssetManager_fromJava(env, asset_mgr);
+bool game_init(AAssetManager* mgr, std::string* err) {
     if (!mgr) {
         G.status = "no asset manager";
-        return JNI_FALSE;
+        if (err) *err = G.status;
+        return false;
     }
     bool ok = false;
     std::vector<uint8_t> vpk = read_asset(mgr, "model.vpk", &ok);
     if (!ok) {
         G.status = "model.vpk missing from assets";
-        return JNI_FALSE;
+        if (err) *err = G.status;
+        return false;
     }
-    std::string err;
-    if (!G.model.load(std::move(vpk), &err)) {
-        G.status = "model.vpk: " + err;
-        return JNI_FALSE;
+    std::string lerr;
+    if (!G.model.load(std::move(vpk), &lerr)) {
+        G.status = "model.vpk: " + lerr;
+        if (err) *err = G.status;
+        return false;
     }
     std::vector<uint8_t> lvl = read_asset(mgr, "level.bin", &ok);
     if (!ok) {
         G.status = "level.bin missing from assets";
-        return JNI_FALSE;
+        if (err) *err = G.status;
+        return false;
     }
-    if (!G.level.load(lvl, &err)) {
-        G.status = "level.bin: " + err;
-        return JNI_FALSE;
+    if (!G.level.load(lvl, &lerr)) {
+        G.status = "level.bin: " + lerr;
+        if (err) *err = G.status;
+        return false;
     }
-    if (!G.game.bind(G.level, &err)) {
-        G.status = "level: " + err;
-        return JNI_FALSE;
+    if (!G.game.bind(G.level, &lerr)) {
+        G.status = "level: " + lerr;
+        if (err) *err = G.status;
+        return false;
     }
     init_gl();
-    return G.ready ? JNI_TRUE : JNI_FALSE;
+    if (err) *err = G.status;
+    return G.ready;
 }
 
 // Rebuild the off-screen targets at the current render_scale. Called on resize and by the
@@ -1156,8 +1163,7 @@ static void rebuild_targets() {
     LOGI("surface %dx%d, rendering %dx%d (scale %.2f)", G.w, G.h, rw, rh, G.render_scale);
 }
 
-JNIEXPORT void JNICALL
-Java_ai_arena_villagame_GameRenderer_nativeResize(JNIEnv*, jobject, jint w, jint h) {
+void game_resize(int w, int h) {
     G.w = w > 0 ? w : 1;
     G.h = h > 0 ? h : 1;
     G.aspect = (float)G.w / (float)G.h;
@@ -1297,9 +1303,7 @@ static void self_test_target() {
     G.probed_clear = true;
 }
 
-JNIEXPORT void JNICALL
-Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jfloat jx,
-                                                 jfloat jy, jfloat dyaw, jfloat dpitch) {
+void game_frame(float dt, float jx, float jy, float dyaw, float dpitch) {
     if (!G.ready) return;
     G.time_s += dt;
     // Stick convention, in one place: the Java side reports x = right, y = *up* (a drag
@@ -1416,37 +1420,37 @@ Java_ai_arena_villagame_GameRenderer_nativeFrame(JNIEnv*, jobject, jfloat dt, jf
     }
 }
 
-JNIEXPORT jint JNICALL Java_ai_arena_villagame_GameRenderer_nativeOrbs(JNIEnv*, jobject) {
-    return G.game.orbs;
-}
+int game_orbs() { return G.game.orbs; }
 
-JNIEXPORT jint JNICALL Java_ai_arena_villagame_GameRenderer_nativeTotal(JNIEnv*, jobject) {
-    return G.game.total;
-}
+int game_total() { return G.game.total; }
 
-JNIEXPORT jfloat JNICALL Java_ai_arena_villagame_GameRenderer_nativeTime(JNIEnv*, jobject) {
-    return G.game.time;
-}
+float game_time() { return G.game.time; }
 
-JNIEXPORT jint JNICALL Java_ai_arena_villagame_GameRenderer_nativeState(JNIEnv*, jobject) {
-    return G.game.state;
-}
+int game_state() { return G.game.state; }
 
-JNIEXPORT jfloat JNICALL Java_ai_arena_villagame_GameRenderer_nativeBearing(JNIEnv*, jobject) {
+float game_bearing() {
     int idx = -1;
     float bearing = 0.0f;
-    if (!G.game.nearest_orb(&idx, &bearing)) return 99.0f;   // 99 = nothing left
+    if (!G.game.nearest_orb(&idx, &bearing)) return 0.0f;   // nothing left: point ahead
     return bearing;
 }
 
-JNIEXPORT void JNICALL Java_ai_arena_villagame_GameRenderer_nativeReset(JNIEnv*, jobject) {
-    G.game.reset();
+void game_reset() { G.game.reset(); }
+
+const char* game_status() {
+    return G.diag.empty() ? G.status.c_str() : G.diag.c_str();
 }
 
-JNIEXPORT jstring JNICALL Java_ai_arena_villagame_GameRenderer_nativeStatus(JNIEnv* env,
-                                                                           jobject) {
-    const std::string& text = G.diag.empty() ? G.status : G.diag;
-    return env->NewStringUTF(text.c_str());
+void game_shutdown() {
+    // GL objects die with the context; drop the references so a returning window rebuilds them
+    G.post_ok = false;
+    G.scene.destroy();
+    G.bright.destroy();
+    G.blur_a.destroy();
+    G.blur_b.destroy();
+    G.rays.destroy();
+    G.attr_checked = false;
+    G.probed_clear = false;
+    G.probed_frame = false;
+    G.ready = false;
 }
-
-}  // extern "C"
