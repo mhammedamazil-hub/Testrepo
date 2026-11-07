@@ -993,8 +993,10 @@ async fn generate(
     if p.kind == "audio-overview" {
         studio::synthesize(&a, &nid, &mut item).await?;
     }
-    Ok(Json(
-        a.mutate(|d| {
+    let media_id = item.id.clone();
+    let has_media = item.media;
+    let result = a
+        .mutate(|d| {
             let current = notebook_mut(d, &nid)?;
             if current
                 .sources
@@ -1015,8 +1017,11 @@ async fn generate(
             current.updated = now();
             Ok(item)
         })
-        .await?,
-    ))
+        .await;
+    if result.is_err() && has_media {
+        studio::cleanup_media(&a, &nid, &media_id).await;
+    }
+    result.map(Json)
 }
 async fn remove_artifact(
     State(a): State<App>,

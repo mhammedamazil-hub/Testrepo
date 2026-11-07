@@ -58,3 +58,41 @@ cancellation. Use `summary`, `study-guide`, `faq`, `briefing`, `timeline`,
 `flashcards`, `quiz`, `mind-map`, `data-table`, `podcast-script`, or `slide-outline`.
 No generation has fake/demo output; an unconfigured/unavailable provider returns
 an error and does not save a fabricated result.
+
+## Rust v0.2 additions
+
+All endpoints below require the owner bearer token **except `/api/share/*`**:
+
+| Method | Route | Behavior |
+| --- | --- | --- |
+| POST | `/api/notebooks/import` | Notebook JSON export; creates new IDs, clears share links/review state/media references |
+| PATCH | `/api/notebooks/:id/sources/:source` | `{title, content}` replaces extracted source text/title |
+| POST | `/api/notebooks/:id/sources/:source/guide` | Generate source summary, topics and suggested questions |
+| PATCH | `/api/notebooks/:id/notes/:note` | `{title, content}` edits note |
+| POST | `/api/notebooks/:id/transcribe` | `{title, filename, content}` where content is base64 audio/video |
+| POST | `/api/notebooks/:id/artifacts/:artifact/review` | Quiz: `{answers:[0,1,...]}`; flashcard: `{card:0, known:true}` |
+| GET | `/api/notebooks/:id/artifacts/:artifact/media` | Authenticated MP3 bytes |
+| GET | `/api/notebooks/:id/artifacts/:artifact/download` | CSV for data tables, JSON for typed study data, Markdown otherwise |
+| POST | `/api/notebooks/:id/share` | Enable/get revocable read-only link; exposes all notebook data to token holders |
+| DELETE | `/api/notebooks/:id/share` | Revoke link immediately for future requests |
+| GET | `/api/share/:share_token` | Read-only full notebook; owner token not needed, share token required |
+| GET | `/api/share/:share_token/media/:artifact` | Shared audio bytes with valid share token |
+
+Source kind `docx` accepts base64 bytes, max 10 MB, bounded main-document XML extraction.
+`transcribe` allows mp3/wav/m4a/mp4/webm/ogg filenames and requires `AI_TRANSCRIPTION_MODEL`.
+`generate` additionally accepts `slides` and `audio-overview`. `audio-overview` requires
+`AI_TTS_MODEL` and writes actual provider-returned MP3 bytes. Existing `slide-outline`
+and `podcast-script` remain text-only formats.
+
+Artifacts now have optional `data`, `progress` and `media` fields. `data.type` is one
+of `flashcards`, `quiz`, `mind-map`, `slides`, `data-table`, and its schema is validated
+in Rust. Study review validates indices and calculates quiz scores server-side. Owner
+notebook reads include quiz answers, so this is a study tool, not a secure exam platform.
+Shared-view practice does not write owner progress.
+
+Notebook exports contain share tokens, so treat exports as private; restore deliberately
+clears them and creates fresh IDs. Binary MP3s are not bundled into JSON. A restored audio
+artifact retains its script but no longer claims an associated audio file. Historical
+citations whose source was removed retain their excerpt but have no current source ID.
+All responses use no-store/no-referrer/nosniff headers. Share URLs should still be treated
+as bearer secrets and must not be placed in public logs or forwarded accidentally.

@@ -397,7 +397,9 @@ pub(super) async fn restore(
         s.title = text(&s.title, "Source title", 300)?;
         s.content = text(&s.content, "Source content", MAX_TEXT)?;
         let new = id();
-        mapping.insert(s.id.clone(), new.clone());
+        if mapping.insert(s.id.clone(), new.clone()).is_some() {
+            return Err(bad("Duplicate source IDs in imported notebook"));
+        }
         s.id = new;
     }
     fn remap(e: &mut [Evidence], map: &HashMap<String, String>) {
