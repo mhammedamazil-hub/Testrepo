@@ -1,0 +1,43 @@
+name: Assemble completed Alpine clips (no rendering)
+
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/alpine-partial-preview.yml]
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Existing production run to read; never cancelled or restarted
+        default: '42202373037'
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN: ${{ inputs.source_run || '42202373037' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install imageio-ffmpeg==0.8.1
+      - name: Join and fully decode only the continuous finished opening
+        run: python tools/assemble_partial_preview.py --run "$SOURCE_RUN"
+      - name: Publish a separately named preview, preserving all final deliverables
+        run: |
+          git config user.name 'Alpine Preview Bot'
+          git config user.email 'alpine-preview@users.noreply.github.com'
+          git pull --ff-only origin arena/f0bb5c2d-testrepo
+          git add -f output/Alpine_Mirror_PARTIAL_1080p60.mp4 output/partial_preview_validation.json
+          git commit -m 'Publish verified partial 1080p60 preview; full render continues untouched'
+          git push origin arena/f0bb5c2d-testrepo
