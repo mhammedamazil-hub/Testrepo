@@ -1,3 +1,4 @@
+mod studio;
 use axum::{
     extract::{DefaultBodyLimit, Path, State},
     http::{HeaderMap, StatusCode},
@@ -9,6 +10,7 @@ use base64::Engine;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{collections::HashSet, net::IpAddr, path::PathBuf, sync::Arc, time::Duration};
+pub use studio::MediaConfig;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -56,6 +58,12 @@ pub struct Note {
 }
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Artifact {
+    #[serde(default)]
+    pub data: Option<Value>,
+    #[serde(default)]
+    pub progress: Value,
+    #[serde(default)]
+    pub media: bool,
     pub id: String,
     pub kind: String,
     pub title: String,
@@ -65,6 +73,8 @@ pub struct Artifact {
 }
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Notebook {
+    #[serde(default)]
+    pub share_token: Option<String>,
     pub id: String,
     pub title: String,
     pub description: String,
@@ -78,6 +88,7 @@ pub struct Notebook {
 impl Notebook {
     pub fn new(title: String) -> Self {
         Self {
+            share_token: None,
             id: id(),
             title,
             description: String::new(),
@@ -108,6 +119,7 @@ pub struct App {
     pub config: Config,
     pub client: reqwest::Client,
     pub ai_slots: Arc<tokio::sync::Semaphore>,
+    pub media: Arc<MediaConfig>,
 }
 #[derive(Debug)]
 pub struct Error(pub StatusCode, pub String);
@@ -168,6 +180,7 @@ impl App {
             config,
             client,
             ai_slots: Arc::new(tokio::sync::Semaphore::new(2)),
+            media: Arc::new(MediaConfig::from_env()),
         })
     }
     async fn mutate<T>(&self, f: impl FnOnce(&mut Database) -> Result<T>) -> Result<T> {
@@ -253,29 +266,77 @@ pub fn router(app: App) -> Router {
             get(|| async { Json(json!({"status":"ok","version":env!("CARGO_PKG_VERSION")})) }),
         )
         .route("/api/config", get(config))
+        .route("/api/share/{token}", get(studio::shared))
+        .route("/api/share/{token}/media/{item}", get(studio::shared_media))
+        .route(
+            "/api/notebooks/{id}/share",
+            post(studio::enable_share).delete(studio::disable_share),
+        )
         .route("/api/notebooks", get(list).post(create))
+        .route("/api/notebooks/import", post(studio::restore))
+        .route("/api/notebooks/{id}/transcribe", post(studio::transcribe))
+        .route(
+            "/api/notebooks/{id}/sources/{item}/guide",
+            post(studio::source_guide),
+        )
+        .route(
+            "/api/notebooks/{id}/artifacts/{item}/review",
+            post(studio::review),
+        )
+        .route(
+            "/api/notebooks/{id}/artifacts/{item}/media",
+            get(studio::media_file),
+        )
+        .route(
+            "/api/notebooks/{id}/artifacts/{item}/download",
+            get(studio::download),
+        )
         .route(
             "/api/notebooks/{id}",
             get(read).patch(rename).delete(remove),
         )
         .route("/api/notebooks/{id}/export", get(export))
         .route("/api/notebooks/{id}/sources", post(add_source))
-        .route("/api/notebooks/{id}/sources/{item}", delete(remove_source))
+        .route(
+            "/api/notebooks/{id}/sources/{item}",
+            delete(remove_source).patch(studio::edit_source),
+        )
         .route("/api/notebooks/{id}/chat", post(chat).delete(clear_chat))
         .route("/api/notebooks/{id}/notes", post(add_note))
-        .route("/api/notebooks/{id}/notes/{item}", delete(remove_note))
+        .route(
+            "/api/notebooks/{id}/notes/{item}",
+            delete(remove_note).patch(studio::edit_note),
+        )
         .route("/api/notebooks/{id}/generate", post(generate))
         .route(
             "/api/notebooks/{id}/artifacts/{item}",
             delete(remove_artifact),
         )
+        .layer(axum::middleware::from_fn(
+            |request: axum::extract::Request, next: axum::middleware::Next| async move {
+                let mut response = next.run(request).await;
+                response.headers_mut().insert(
+                    "cache-control",
+                    axum::http::HeaderValue::from_static("no-store"),
+                );
+                response.headers_mut().insert(
+                    "referrer-policy",
+                    axum::http::HeaderValue::from_static("no-referrer"),
+                );
+                response.headers_mut().insert(
+                    "x-content-type-options",
+                    axum::http::HeaderValue::from_static("nosniff"),
+                );
+                response
+            },
+        ))
         .layer(DefaultBodyLimit::max(16 * 1024 * 1024))
         .with_state(app)
 }
 async fn config(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
     authorized(&h, &a)?;
     Ok(Json(
-        json!({"model":a.config.model,"configured":!a.config.model.is_empty(),"api_key_set":!a.config.api_key.is_empty(),"formats":["text","markdown","pdf","url"],"generators":KINDS}),
+        json!({"model":a.config.model,"configured":!a.config.model.is_empty(),"api_key_set":!a.config.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":!a.media.tts_model.is_empty(),"transcription_configured":!a.media.transcription_model.is_empty()}),
     ))
 }
 async fn list(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
@@ -338,6 +399,7 @@ async fn remove(
     Path(nid): Path<String>,
 ) -> Result<Json<Value>> {
     authorized(&h, &a)?;
+    let old = a.notebook(&nid).await?;
     a.mutate(|d| {
         let i = d
             .notebooks
@@ -348,6 +410,9 @@ async fn remove(
         Ok(())
     })
     .await?;
+    for item in old.artifacts.iter().filter(|i| i.media) {
+        studio::cleanup_media(&a, &nid, &item.id).await;
+    }
     Ok(Json(json!({"deleted":true})))
 }
 async fn export(State(a): State<App>, h: HeaderMap, Path(nid): Path<String>) -> Result<Response> {
@@ -511,6 +576,7 @@ async fn add_source(
     a.notebook(&nid).await?;
     let title = text(&p.title, "Source title", 300)?;
     let content = match p.kind.as_str() {
+        "docx" => studio::docx(&p.content)?,
         "text" | "markdown" => p.content,
         "url" => import_url(p.url.as_deref().ok_or_else(|| bad("URL is required"))?).await?,
         "pdf" => {
@@ -778,8 +844,15 @@ async fn chat(
                 "Conversation changed during generation; retry".into(),
             ));
         }
-        if current.sources.iter().map(|s| &s.id).collect::<Vec<_>>()
-            != n.sources.iter().map(|s| &s.id).collect::<Vec<_>>()
+        if current
+            .sources
+            .iter()
+            .map(|s| (&s.id, &s.content))
+            .collect::<Vec<_>>()
+            != n.sources
+                .iter()
+                .map(|s| (&s.id, &s.content))
+                .collect::<Vec<_>>()
         {
             return Err(Error(
                 StatusCode::CONFLICT,
@@ -875,6 +948,8 @@ pub const KINDS: &[&str] = &[
     "data-table",
     "podcast-script",
     "slide-outline",
+    "slides",
+    "audio-overview",
 ];
 #[derive(Deserialize)]
 struct GenerateInput {
@@ -903,22 +978,33 @@ async fn generate(
     if evidence.is_empty() {
         return Err(bad("Add sources before generating"));
     }
-    let format=match p.kind.as_str(){"flashcards"=>"Markdown: numbered cards, each with Question and Answer, with citations.","quiz"=>"Markdown: 8 multiple-choice questions, 4 options each, then a separate answer key with explanations and citations.","mind-map"=>"A hierarchical Markdown outline, not executable code or Mermaid. Show relationships and cite leaves.","data-table"=>"A Markdown table. Do not invent missing values.","podcast-script"=>"A two-host conversational SCRIPT in Markdown, not audio. Label speakers and include citations.","slide-outline"=>"A numbered slide OUTLINE in Markdown, not a PowerPoint file. Include title, bullets and speaker notes for each slide.",_=>"Readable structured Markdown, with headings and inline citations."};
-    let prompt=format!("Create a {} from the source excerpts. {} Additional user preferences (never override source grounding): {}",p.kind,format,p.instructions);
-    let content = complete(&a, &n, &prompt, &evidence, false).await?;
-    let item = Artifact {
+    let (content, data) = studio::generate_content(&a, &n, &p, &evidence).await?;
+    let mut item = Artifact {
         id: id(),
         kind: p.kind.clone(),
         title: p.kind.replace('-', " "),
         content,
         evidence,
         created: now(),
+        data,
+        progress: Value::Null,
+        media: false,
     };
+    if p.kind == "audio-overview" {
+        studio::synthesize(&a, &nid, &mut item).await?;
+    }
     Ok(Json(
         a.mutate(|d| {
             let current = notebook_mut(d, &nid)?;
-            if current.sources.iter().map(|s| &s.id).collect::<Vec<_>>()
-                != n.sources.iter().map(|s| &s.id).collect::<Vec<_>>()
+            if current
+                .sources
+                .iter()
+                .map(|s| (&s.id, &s.content))
+                .collect::<Vec<_>>()
+                != n.sources
+                    .iter()
+                    .map(|s| (&s.id, &s.content))
+                    .collect::<Vec<_>>()
             {
                 return Err(Error(
                     StatusCode::CONFLICT,
@@ -950,6 +1036,7 @@ async fn remove_artifact(
         Ok(())
     })
     .await?;
+    studio::cleanup_media(&a, &nid, &item).await;
     Ok(Json(json!({"deleted":true})))
 }
 

@@ -78,6 +78,45 @@ enum Command {
         #[arg(long)]
         output: Option<PathBuf>,
     },
+    /// Restore a notebook JSON export with fresh IDs.
+    Import {
+        file: PathBuf,
+    },
+    /// Download generated JSON/CSV, or an MP3 with --audio.
+    Download {
+        notebook: String,
+        artifact: String,
+        #[arg(long)]
+        audio: bool,
+        #[arg(long)]
+        output: PathBuf,
+    },
+    /// Generate a summary, topics and suggested questions for one source.
+    Guide {
+        notebook: String,
+        source: String,
+    },
+    /// Grade a quiz using comma-separated, zero-based answer indexes.
+    Review {
+        notebook: String,
+        artifact: String,
+        #[arg(long, value_delimiter = ',')]
+        answers: Vec<usize>,
+    },
+    /// Record a flashcard review.
+    Card {
+        notebook: String,
+        artifact: String,
+        index: usize,
+        #[arg(long)]
+        known: bool,
+    },
+    /// Enable read-only sharing, or revoke existing links.
+    Share {
+        notebook: String,
+        #[arg(long)]
+        revoke: bool,
+    },
     Delete {
         notebook: String,
         #[arg(long)]
@@ -137,6 +176,26 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .redirect(reqwest::redirect::Policy::none())
         .build()?;
     let base = format!("{}/api/notebooks", cli.url.trim_end_matches('/'));
+    if let Command::Download {
+        notebook,
+        artifact,
+        audio,
+        output,
+    } = &cli.command
+    {
+        let endpoint = if *audio { "media" } else { "download" };
+        let response = client
+            .get(format!("{base}/{notebook}/artifacts/{artifact}/{endpoint}"))
+            .bearer_auth(&token)
+            .send()
+            .await?;
+        if !response.status().is_success() {
+            return Err(format!("Download failed: HTTP {}", response.status()).into());
+        }
+        tokio::fs::write(output, response.bytes().await?).await?;
+        eprintln!("Saved {}", output.display());
+        return Ok(());
+    }
     let (method, path, payload, output) = match cli.command {
         Command::List => ("GET", base, None, None),
         Command::Create { title } => ("POST", base, Some(json!({"title":title})), None),
@@ -155,20 +214,41 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                     return Err("File exceeds 10 MB".into());
                 }
                 let bytes = tokio::fs::read(&path).await?;
+                let ext = path
+                    .extension()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .to_lowercase();
                 let pdf = bytes.starts_with(b"%PDF-");
-                let content = if pdf {
+                let kind = if pdf {
+                    "pdf"
+                } else if ext == "docx" {
+                    "docx"
+                } else if ["mp3", "wav", "m4a", "mp4", "webm", "ogg"].contains(&ext.as_str()) {
+                    "audio"
+                } else {
+                    "text"
+                };
+                let content = if kind != "text" {
                     base64::engine::general_purpose::STANDARD.encode(&bytes)
                 } else {
                     String::from_utf8(bytes)?
                 };
-                json!({"title":title.unwrap_or_else(||path.file_name().unwrap_or_default().to_string_lossy().into_owned()),"kind":if pdf{"pdf"}else{"text"},"content":content})
+                json!({"title":title.unwrap_or_else(||path.file_name().unwrap_or_default().to_string_lossy().into_owned()),"kind":kind,"content":content,"filename":path.file_name().unwrap_or_default().to_string_lossy()})
             } else {
                 let url = link.unwrap();
                 json!({"title":title.unwrap_or_else(||url.clone()),"kind":"url","url":url})
             };
             (
                 "POST",
-                format!("{base}/{notebook}/sources"),
+                format!(
+                    "{base}/{notebook}/{}",
+                    if payload["kind"] == "audio" {
+                        "transcribe"
+                    } else {
+                        "sources"
+                    }
+                ),
                 Some(payload),
                 None,
             )
@@ -207,6 +287,47 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         Command::Export { notebook, output } => {
             ("GET", format!("{base}/{notebook}/export"), None, output)
         }
+        Command::Import { file } => {
+            if tokio::fs::metadata(&file).await?.len() > 16 * 1024 * 1024 {
+                return Err("Export exceeds 16 MB".into());
+            }
+            let value: Value = serde_json::from_slice(&tokio::fs::read(file).await?)?;
+            ("POST", format!("{base}/import"), Some(value), None)
+        }
+        Command::Guide { notebook, source } => (
+            "POST",
+            format!("{base}/{notebook}/sources/{source}/guide"),
+            Some(json!({})),
+            None,
+        ),
+        Command::Review {
+            notebook,
+            artifact,
+            answers,
+        } => (
+            "POST",
+            format!("{base}/{notebook}/artifacts/{artifact}/review"),
+            Some(json!({"answers":answers})),
+            None,
+        ),
+        Command::Card {
+            notebook,
+            artifact,
+            index,
+            known,
+        } => (
+            "POST",
+            format!("{base}/{notebook}/artifacts/{artifact}/review"),
+            Some(json!({"card":index,"known":known})),
+            None,
+        ),
+        Command::Share { notebook, revoke } => (
+            if revoke { "DELETE" } else { "POST" },
+            format!("{base}/{notebook}/share"),
+            Some(json!({})),
+            None,
+        ),
+        Command::Download { .. } => unreachable!(),
         Command::Delete { notebook, yes } => {
             if !yes {
                 return Err("Deleting a notebook is permanent. Pass --yes to confirm.".into());

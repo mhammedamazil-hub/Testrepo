@@ -223,3 +223,292 @@ async fn source_validation() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn interactive_study_restore_sharing_and_editing() {
+    let mock = Router::new().route("/v1/chat/completions", post(|Json(body):Json<Value>|async move {
+        let prompt=body["messages"].as_array().unwrap().last().unwrap()["content"].as_str().unwrap();
+        let content=if prompt.contains("Create a flashcards") {r#"{"type":"flashcards","cards":[{"front":"What do plants use?","back":"Sunlight [1]"}]}"#}
+        else if prompt.contains("Create a quiz") {r#"{"type":"quiz","questions":[{"question":"Plants use?","options":["Sunlight","Steel"],"answer":0,"explanation":"Sunlight [1]"}]}"#}
+        else if prompt.contains("Create a data-table") {r#"{"type":"data-table","columns":["A","B"],"rows":[["=danger()","Fact [1]"]]}"#}
+        else {"Source guide: plants use sunlight [1]."};
+        Json(json!({"choices":[{"message":{"content":content}}]}))
+    }));
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+    let server = tokio::spawn(async move {
+        axum::serve(listener, mock).await.unwrap();
+    });
+    let (_, router, path) = setup(format!("http://{addr}/v1")).await;
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"Study"})),
+        true,
+    )
+    .await;
+    let base = format!("/api/notebooks/{}", book["id"].as_str().unwrap());
+    let (_, source) = request(
+        &router,
+        "POST",
+        &format!("{base}/sources"),
+        Some(json!({"title":"Plant facts","content":"Plants use sunlight."})),
+        true,
+    )
+    .await;
+    let sid = source["id"].as_str().unwrap();
+    assert_eq!(
+        request(
+            &router,
+            "PATCH",
+            &format!("{base}/sources/{sid}"),
+            Some(json!({"title":"Plants","content":"Plants use sunlight for photosynthesis."})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    for kind in ["flashcards", "quiz", "data-table"] {
+        let (status, art) = request(
+            &router,
+            "POST",
+            &format!("{base}/generate"),
+            Some(json!({"kind":kind})),
+            true,
+        )
+        .await;
+        assert_eq!(status, StatusCode::OK, "{art}");
+        assert_eq!(art["data"]["type"], kind);
+        let artbase = format!("{base}/artifacts/{}", art["id"].as_str().unwrap());
+        if kind == "flashcards" {
+            let (s, review) = request(
+                &router,
+                "POST",
+                &format!("{artbase}/review"),
+                Some(json!({"card":0,"known":true})),
+                true,
+            )
+            .await;
+            assert_eq!(s, StatusCode::OK);
+            assert_eq!(review["known"][0], true);
+        }
+        if kind == "quiz" {
+            let (_, review) = request(
+                &router,
+                "POST",
+                &format!("{artbase}/review"),
+                Some(json!({"answers":[0]})),
+                true,
+            )
+            .await;
+            assert_eq!(review["score"], 1);
+            assert_eq!(
+                request(
+                    &router,
+                    "POST",
+                    &format!("{artbase}/review"),
+                    Some(json!({"answers":[4]})),
+                    true
+                )
+                .await
+                .0,
+                StatusCode::BAD_REQUEST
+            );
+        }
+        if kind == "data-table" {
+            let response = router
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(format!("{artbase}/download"))
+                        .header("authorization", format!("Bearer {TOKEN}"))
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(response.status(), StatusCode::OK);
+            let bytes = response.into_body().collect().await.unwrap().to_bytes();
+            assert!(String::from_utf8_lossy(&bytes).contains("'=danger()"));
+        }
+    }
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/sources/{sid}/guide"),
+            Some(json!({})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    let (_, note) = request(
+        &router,
+        "POST",
+        &format!("{base}/notes"),
+        Some(json!({"title":"Note","content":"Old"})),
+        true,
+    )
+    .await;
+    assert_eq!(
+        request(
+            &router,
+            "PATCH",
+            &format!("{base}/notes/{}", note["id"].as_str().unwrap()),
+            Some(json!({"title":"Updated","content":"New"})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    let (_, share) = request(
+        &router,
+        "POST",
+        &format!("{base}/share"),
+        Some(json!({})),
+        true,
+    )
+    .await;
+    let shared = format!("/api/share/{}", share["token"].as_str().unwrap());
+    let (status, view) = request(&router, "GET", &shared, None, false).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(view["share_token"].is_null());
+    assert_eq!(view["notes"][0]["content"], "New");
+    let (_, export) = request(&router, "GET", &format!("{base}/export"), None, true).await;
+    let (status, restored) =
+        request(&router, "POST", "/api/notebooks/import", Some(export), true).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_ne!(restored["id"], book["id"]);
+    assert_ne!(restored["sources"][0]["id"], source["id"]);
+    assert!(restored["share_token"].is_null());
+    request(&router, "DELETE", &format!("{base}/share"), None, true).await;
+    assert_eq!(
+        request(&router, "GET", &shared, None, false).await.0,
+        StatusCode::NOT_FOUND
+    );
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn real_media_protocol_with_mock_provider() {
+    let mock=Router::new()
+        .route("/v1/chat/completions",post(||async{Json(json!({"choices":[{"message":{"content":"Plants use sunlight. This is a short audio overview."}}]}))}))
+        .route("/v1/audio/speech",post(|Json(p):Json<Value>|async move{assert_eq!(p["model"],"mock-tts");assert_eq!(p["response_format"],"mp3");([( "content-type","audio/mpeg")],b"ID3mock-audio-bytes".to_vec())}))
+        .route("/v1/audio/transcriptions",post(|headers:axum::http::HeaderMap|async move{assert!(headers["content-type"].to_str().unwrap().contains("multipart/form-data"));Json(json!({"text":"A transcribed lecture about plants."}))}));
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+    let server = tokio::spawn(async move {
+        axum::serve(listener, mock).await.unwrap();
+    });
+    let (mut app, _, path) = setup(format!("http://{addr}/v1")).await;
+    app.media = std::sync::Arc::new(sourcebook::MediaConfig {
+        tts_model: "mock-tts".into(),
+        voice: "alloy".into(),
+        transcription_model: "mock-whisper".into(),
+    });
+    let router = sourcebook::router(app);
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"Audio"})),
+        true,
+    )
+    .await;
+    let base = format!("/api/notebooks/{}", book["id"].as_str().unwrap());
+    let (status, source) = request(
+        &router,
+        "POST",
+        &format!("{base}/transcribe"),
+        Some(json!({"title":"Lecture","filename":"lecture.mp3","content":"SUQzYXVkaW8="})),
+        true,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{source}");
+    assert_eq!(source["kind"], "transcript");
+    let (status, art) = request(
+        &router,
+        "POST",
+        &format!("{base}/generate"),
+        Some(json!({"kind":"audio-overview"})),
+        true,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{art}");
+    assert_eq!(art["media"], true);
+    let media = format!("{base}/artifacts/{}/media", art["id"].as_str().unwrap());
+    assert_eq!(
+        request(&router, "GET", &media, None, false).await.0,
+        StatusCode::UNAUTHORIZED
+    );
+    let response = router
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(&media)
+                .header("authorization", format!("Bearer {TOKEN}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.headers()["content-type"], "audio/mpeg");
+    request(&router, "DELETE", &base, None, true).await;
+    assert_eq!(
+        std::fs::read_dir(path.with_extension("media"))
+            .unwrap()
+            .count(),
+        0
+    );
+    std::fs::remove_dir(path.with_extension("media")).unwrap();
+    std::fs::remove_file(path).unwrap();
+    server.abort();
+}
+
+#[tokio::test]
+async fn docx_extracts_text_and_rejects_invalid_archives() {
+    use base64::Engine;
+    use std::io::Write;
+    let (_, router, path) = setup("http://127.0.0.1:1/v1".into()).await;
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"Documents"})),
+        true,
+    )
+    .await;
+    let base = format!("/api/notebooks/{}/sources", book["id"].as_str().unwrap());
+    let mut archive = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    archive
+        .start_file(
+            "word/document.xml",
+            zip::write::SimpleFileOptions::default(),
+        )
+        .unwrap();
+    archive.write_all(br#"<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Hello &amp; Rust</w:t></w:r></w:p></w:body></w:document>"#).unwrap();
+    let bytes = archive.finish().unwrap().into_inner();
+    let (status,source)=request(&router,"POST",&base,Some(json!({"title":"Document","kind":"docx","content":base64::engine::general_purpose::STANDARD.encode(bytes)})),true).await;
+    assert_eq!(status, StatusCode::OK, "{source}");
+    assert_eq!(source["content"], "Hello & Rust");
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &base,
+            Some(json!({"title":"Bad","kind":"docx","content":"bm90IGEgemlw"})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    std::fs::remove_file(path).unwrap();
+}

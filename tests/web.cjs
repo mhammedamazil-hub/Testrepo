@@ -39,7 +39,7 @@ test('loads authenticated notebook library and opens workspace', async () => {
   assert.equal(w.document.querySelector('#model-status').textContent, 'test-model · Connected');
   w.document.querySelector('.notebook-card').click(); await tick();
   assert.equal(w.document.querySelector('#workspace').hidden, false);
-  assert.equal(w.document.querySelectorAll('.studio-tool').length, 11);
+  assert.equal(w.document.querySelectorAll('.studio-tool').length, 12);
   assert.ok(requests.every(r => r.token === 'Bearer test-token-with-enough-characters'));
   dom.window.close();
 });
