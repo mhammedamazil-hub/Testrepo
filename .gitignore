@@ -7,3 +7,8 @@ __pycache__/
 # Blender backups
 *.blend1
 *.blend2
+# Game imports, downloaded toolchains, test browsers and reproducible exports
+.cache/
+.godot/
+.exports/
+node_modules/

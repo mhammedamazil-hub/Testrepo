@@ -1,0 +1,63 @@
+name: Prepare free Godot game toolchain
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/game-toolchain.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: game-toolchain-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+          fetch-depth: 0
+      - name: Download official pinned engine and templates, verify official checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/godot-download .cache/game-transport
+          cd /tmp/godot-download
+          BASE=https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable
+          for name in SHA512-SUMS.txt Godot_v4.4.1-stable_linux.x86_64.zip Godot_v4.4.1-stable_export_templates.tpz; do
+            curl --fail --location --retry 3 "$BASE/$name" --output "$name"
+          done
+          for name in Godot_v4.4.1-stable_linux.x86_64.zip Godot_v4.4.1-stable_export_templates.tpz; do
+            grep -F " $name" SHA512-SUMS.txt | sha512sum --check -
+          done
+          cd "$GITHUB_WORKSPACE"
+          cp /tmp/godot-download/Godot_v4.4.1-stable_linux.x86_64.zip .cache/game-transport/
+          cp /tmp/godot-download/SHA512-SUMS.txt .cache/game-transport/
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, zipfile
+          source=Path('/tmp/godot-download/Godot_v4.4.1-stable_export_templates.tpz')
+          target=Path('.cache/game-transport')
+          with zipfile.ZipFile(source) as archive:
+              for filename in ('web_nothreads_release.zip','web_nothreads_debug.zip'):
+                  matches=[n for n in archive.namelist() if n.endswith('/'+filename)]
+                  assert len(matches)==1, (filename,archive.namelist())
+                  (target/filename).write_bytes(archive.read(matches[0]))
+          (target/'manifest.json').write_text(json.dumps({
+              'version':'4.4.1-stable', 'source':'Official godotengine/godot-builds GitHub release',
+              'verification':'Original engine ZIP and full export-template TPZ verified against official SHA512-SUMS.txt before extraction',
+              'files':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in target.iterdir() if p.is_file()},
+              'transport':'Temporary Git transport only; remove tracked cache after local installation',
+          },indent=2)+'\n')
+          PY
+      - name: Publish temporary sandbox transport on this session branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f .cache/game-transport
+          git commit -m 'ci: temporary verified Godot toolchain transport for restricted sandbox'
+          git pull --rebase origin arena/f0bb5c2d-testrepo
+          git push origin HEAD:arena/f0bb5c2d-testrepo

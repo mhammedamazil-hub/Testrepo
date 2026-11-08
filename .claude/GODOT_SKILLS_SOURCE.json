@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/wshobson/agents",
+  "commit": "4bde3168b43c0655c4d00ea2726e631719908a6d",
+  "path": "plugins/game-development/skills/godot-gdscript-patterns/",
+  "files": [
+    "plugins/game-development/skills/godot-gdscript-patterns/SKILL.md",
+    "plugins/game-development/skills/godot-gdscript-patterns/references/advanced-patterns.md",
+    "plugins/game-development/skills/godot-gdscript-patterns/references/details.md"
+  ],
+  "license_file": "LICENSE"
+}
