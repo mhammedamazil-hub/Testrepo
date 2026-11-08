@@ -76,10 +76,17 @@ jobs:
           FPS="${{ github.event.inputs.fps || '30' }}"
           SS="${{ github.event.inputs.ss || '1' }}"
           echo "rendering $FRAMES frames at $FPS fps, supersampling ${SS}x"
-          SIM_SS="$SS" time /tmp/gamesim video /tmp/assets /tmp/frames/f "$FRAMES" "$FPS" \
-            | tee /tmp/video.log
+          # NB: `VAR=x time cmd` is not valid bash - `time` is a reserved word, so a leading
+          # assignment makes bash look for an external `time` binary and the step dies in a
+          # second. Export the variable, then time the command.
+          export SIM_SS="$SS"
+          start=$(date +%s)
+          /tmp/gamesim video /tmp/assets /tmp/frames/f "$FRAMES" "$FPS" | tee /tmp/video.log
+          end=$(date +%s)
+          echo "render took $((end - start)) s for $FRAMES frames"
+          echo "RENDER_SECONDS=$((end - start))" >> "$GITHUB_ENV"
           grep -q "^PASS: rendered" /tmp/video.log
-          ls /tmp/frames | wc -l
+          echo "frames on disk: $(ls /tmp/frames | wc -l)"
 
       - name: Encode the clip
         run: |
@@ -112,6 +119,7 @@ jobs:
             echo "| renderer | tools/game_sim.cpp (the APK's shading, on the CPU) |"
             echo "| mp4 | $(du -h /tmp/villa_garden_1080p.mp4 | cut -f1) |"
             echo "| gif | $(du -h /tmp/villa_garden_preview.gif | cut -f1) |"
+            echo "| render time | ${RENDER_SECONDS} s ($(( RENDER_SECONDS / (${{ github.event.inputs.frames || 150 }} > 0 ? (${{ github.event.inputs.frames || 150 }}) : 1) )) s per frame) |"
           } >> "$GITHUB_STEP_SUMMARY"
           tail -3 /tmp/video.log >> "$GITHUB_STEP_SUMMARY"
 
