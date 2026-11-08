@@ -16,7 +16,7 @@ java -cp "$BUILD/host-tests" app.sourcebook.mobile.OriginPolicyTest
 "$TOOLS/aapt2" compile --dir "$ROOT/app/src/main/res" -o "$BUILD/resources.zip"
 "$TOOLS/aapt2" link -o "$BUILD/app-unsigned.apk" -I "$ANDROID_JAR" --manifest "$ROOT/app/src/main/AndroidManifest.xml" --java "$BUILD/generated" --min-sdk-version 26 --target-sdk-version 35 --version-code 3 --version-name 0.3.0 "$BUILD/resources.zip"
 find "$ROOT/app/src/main/java" "$BUILD/generated" -name '*.java' > "$BUILD/sources.txt"
-javac -encoding UTF-8 -source 8 -target 8 -bootclasspath "$ANDROID_JAR" -d "$BUILD/classes" @"$BUILD/sources.txt"
+javac -encoding UTF-8 -source 8 -target 8 -classpath "$ANDROID_JAR" -d "$BUILD/classes" @"$BUILD/sources.txt"
 mapfile -t CLASSES < <(find "$BUILD/classes" -name '*.class')
 "$TOOLS/d8" --release --min-api 26 --lib "$ANDROID_JAR" --output "$BUILD/dex" "${CLASSES[@]}"
 (cd "$BUILD/dex" && zip -q -j "$BUILD/app-unsigned.apk" ./*.dex)

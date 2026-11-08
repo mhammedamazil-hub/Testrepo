@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$ANDROID_HOME"
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0' 
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
       - name: Preserve personal debug signing identity between builds
         uses: actions/cache@v4
         with:
