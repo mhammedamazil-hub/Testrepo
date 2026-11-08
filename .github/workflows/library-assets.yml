@@ -1,0 +1,27 @@
+name: Research and fetch free licensed vegetation inputs
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/library-assets.yml, tools/game/fetch_library_assets.py]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - name: Fetch bounded CC0 source inputs and provenance
+        run: python3 tools/game/fetch_library_assets.py
+      - name: Transport verified inputs on the active branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/research/library-catalog.json
+          git add -f .cache/library-transport
+          git commit -m 'Transport licensed Poly Haven inputs and research metadata'
+          git pull --rebase origin arena/f0bb5c2d-testrepo
+          git push origin HEAD:arena/f0bb5c2d-testrepo
