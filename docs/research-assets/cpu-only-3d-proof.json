@@ -1,0 +1,20 @@
+{
+  "status": "CPU_ONLY_3D_COMPATIBILITY_PROOF_PASS",
+  "engine": "Panda3D",
+  "version": "1.10.16",
+  "graphics_pipe": "TinyOffscreenGraphicsPipe",
+  "renderer": "TinyGraphicsStateGuardian",
+  "dimensions": [
+    640,
+    360
+  ],
+  "image_sha256": "43472314ffbcc3acc23a49d7771a986a232bac6858cff3f20d7fce7ae028d91b",
+  "scope": "Static primitive scene, software-rendered on this sandbox CPU.",
+  "not_demonstrated": [
+    "Playable game",
+    "GTA-scale world",
+    "laptop FPS",
+    "physics/AI systems",
+    "photorealism"
+  ]
+}
