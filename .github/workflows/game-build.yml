@@ -12,7 +12,8 @@ permissions:
   contents: read
 concurrency:
   group: alpine-game-${{ github.ref }}
-  cancel-in-progress: true
+  # Do not interrupt an in-flight Pages deployment with a newer push.
+  cancel-in-progress: false
 jobs:
   validate-and-export:
     runs-on: ubuntu-24.04
@@ -38,6 +39,26 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Export actual single-threaded Godot Web release
         run: python tools/game/export_game.py
+      - name: Prepare static GitHub Pages site
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          source = Path('.exports/web')
+          site = Path('.exports/pages')
+          assert 'variant/thread_support=false' in Path('game/export_presets.cfg').read_text(), 'Pages cannot set COOP/COEP headers for a threaded build'
+          # Pages sets its own compression headers. Do not ship sidecars that
+          # need the custom preview server's Content-Encoding handling.
+          shutil.copytree(source, site, ignore=shutil.ignore_patterns('*.gz'))
+          (site / '.nojekyll').touch()
+          assert (site / 'index.html').is_file()
+          assert (site / 'index.wasm').stat().st_size < 100 * 1024 * 1024
+          PY
+      - name: Upload GitHub Pages site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .exports/pages
+          retention-days: 3
       - uses: actions/upload-artifact@v4
         with:
           name: Alpine-Mirror-playable-Web
@@ -47,3 +68,22 @@ jobs:
             docs/game/headless-validation.json
           include-hidden-files: true
           retention-days: 3
+  deploy-pages:
+    name: Publish playable game to GitHub Pages
+    needs: validate-and-export
+    if: github.ref == 'refs/heads/arena/f0bb5c2d-testrepo'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check Pages configuration
+        uses: actions/configure-pages@v5
+      - name: Deploy playable Godot Web export
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -84,3 +84,31 @@ Headless tests exercise **actual Godot physics/state**, but are not rendering be
 For optional rendered browser verification, install the test-only browser packages under `.cache/browser` and provide the real NSS/NSPR libraries documented in `docs/game/browser-os-provenance.json`. Then run `node tools/game/browser_test.cjs` against the running game server. This uses CPU SwiftShader in the sandbox, not a hardware GPU. Actual native viewport/canvas dimensions, real keyboard state transitions, motion and wall-clock frame times are recorded; neither 60 Hz physics nor `Engine.max_fps=60` counts as a rendering result.
 
 See `docs/GAME_BUILD_BRIEF.md`, `docs/GAME_SKILL_USAGE.md`, and `docs/game/` for acceptance gates and measured evidence. See [CREDITS.md](CREDITS.md) for assets and licenses.
+
+## GitHub Pages hosting
+
+This single-threaded Web export is compatible with **free GitHub Pages**: it uses
+relative asset URLs, WebGL 2 and HTTPS, and does not require cross-origin isolation
+headers, a backend or a paid server. The published page opens the actual game.
+Hosting does not change the outstanding 60 FPS verification requirement.
+
+Expected URL after successful deployment:
+**https://mhammedamazil-hub.github.io/Testrepo/**
+
+The repository's `Alpine game validation and Web build` workflow validates and
+exports the game, uploads a `github-pages` artifact, then publishes it using the
+`github-pages` environment. Pushes affecting game/build files on
+`arena/f0bb5c2d-testrepo` automatically rebuild and redeploy. It does not use or
+create a separate publishing branch and leaves cinematic workflows unchanged.
+The site excludes precompressed `.gz` sidecars because Pages manages its own
+HTTP compression, and includes `.nojekyll` for direct static-file hosting.
+
+**One-time repository setting:** under **Settings → Pages → Build and deployment**,
+select **GitHub Actions** as the source. The current Arena GitHub connection cannot
+enable Pages itself (GitHub returns HTTP 403). No credentials should be pasted
+into chat or committed. Once enabled, rerun the failed deployment job from the
+workflow's Actions page. If GitHub restricts the `github-pages` environment's
+deployment branches, allow `arena/f0bb5c2d-testrepo` under Settings → Environments.
+
+A successful build/artifact upload alone does not mean the public site is live;
+the **Publish playable game to GitHub Pages** job must succeed too.
