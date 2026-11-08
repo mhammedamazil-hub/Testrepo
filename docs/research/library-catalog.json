@@ -1,0 +1,807 @@
+{
+  "leafy_grass": {
+    "info": {
+      "date_published": 1685145600,
+      "name": "Leafy Grass",
+      "categories": [
+        "outdoor",
+        "floor"
+      ],
+      "type": 1,
+      "staging": null,
+      "tags": [
+        "grass",
+        "green",
+        "nature",
+        "ground",
+        "foliage",
+        "leaves",
+        "plants",
+        "outdoors",
+        "twigs",
+        "sticks",
+        "trampled"
+      ],
+      "authors": {
+        "Charlotte Baglioni": "All"
+      },
+      "info": null,
+      "dimensions": [
+        2000,
+        2000
+      ],
+      "max_resolution": [
+        8192,
+        8192
+      ],
+      "files_hash": "90fd49a21ddface404d32d9956c3a9f3ca8e0679",
+      "description": "Free 8K leafy grass texture: trampled green blades with scattered brown leaves and twigs, low-relief rough soil surface with a natural matte finish.",
+      "attributes": {
+        "surface_use": "ground",
+        "origin": "natural",
+        "setting": "outdoor"
+      },
+      "category_id": "21e06d88-2ab6-5bdd-ad11-869b7ff0b573",
+      "category": "Ground & Terrain/Grass & Vegetation/Lush & Green Grass",
+      "img_version": "8866acdc",
+      "download_count": 97577,
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/leafy_grass.png?width=256&height=256&format=webp&v=8866acdc"
+    },
+    "source": "https://polyhaven.com/a/leafy_grass",
+    "license": "CC0-1.0",
+    "formats": [
+      "Diffuse",
+      "nor_dx",
+      "nor_gl",
+      "blend",
+      "gltf",
+      "Mask",
+      "arm",
+      "AO",
+      "Displacement",
+      "Rough",
+      "mtlx"
+    ],
+    "downloads": [
+      {
+        "file": "leafy_grass__Diffuse__leafy_grass_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_diff_1k.jpg",
+        "bytes": 1195394,
+        "md5": "0dbc071e91d6905edfcfbe8eb785a1ab",
+        "sha256": "cfa40bc9d9417d1852db8753a8d5917f110c40101179f63543c382e39bc05e4a"
+      },
+      {
+        "file": "leafy_grass__nor_gl__leafy_grass_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_nor_gl_1k.jpg",
+        "bytes": 1466049,
+        "md5": "8279e096e204ea326d57a318869f99df",
+        "sha256": "832328216adc0a7e1f70a31d5ee48c9ab7f2152d83816122736cf42ac4b2ebd6"
+      },
+      {
+        "file": "leafy_grass__Rough__leafy_grass_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_rough_1k.jpg",
+        "bytes": 511385,
+        "md5": "05f6bb1383e12b327727d313c5899cf2",
+        "sha256": "0c2a1d91aacb8e54a496051b59854e51e456fe858abeade778e308359ef16463"
+      },
+      {
+        "file": "leafy_grass__arm__leafy_grass_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_arm_1k.jpg",
+        "bytes": 1010081,
+        "md5": "44fb4e40ef0f3425a7d1a14bc328e4d8",
+        "sha256": "95432451cb2693794459fe7ea339ea9ffdb5959c40373740f80a4aa1703f089d"
+      }
+    ]
+  },
+  "pine_bark": {
+    "info": {
+      "name": "Pine Bark",
+      "type": 1,
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "info": null,
+      "dimensions": [
+        1999.9996423721313,
+        1999.9996423721313
+      ],
+      "date_published": 1693872000,
+      "staging": null,
+      "tags": [
+        "rough",
+        "weathered",
+        "bark",
+        "tree",
+        "tree bark",
+        "pine",
+        "organic"
+      ],
+      "categories": [
+        "natural",
+        "bark",
+        "collection: pine_forest",
+        "wood"
+      ],
+      "max_resolution": [
+        8192,
+        8192
+      ],
+      "files_hash": "7ba41402f7e7c628e8c9a619dde40d97ba0eb2d4",
+      "description": "Free 8K pine bark texture with rough, weathered, flaky reddish-brown plates and deep dark fissures, offering a coarse, organic, highly detailed surface.",
+      "category_id": "4ae79c17-c41a-51b8-9313-0766fd7f56a3",
+      "category": "Wood/Bark/Conifer Bark",
+      "collections": [
+        "pine_forest"
+      ],
+      "attributes": {
+        "surface_use": "object",
+        "condition": [
+          "weathered"
+        ],
+        "origin": "natural",
+        "setting": "outdoor"
+      },
+      "img_version": "56f8a673",
+      "download_count": 64441,
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/pine_bark.png?width=256&height=256&format=webp&v=56f8a673"
+    },
+    "source": "https://polyhaven.com/a/pine_bark",
+    "license": "CC0-1.0",
+    "formats": [
+      "Diffuse",
+      "nor_dx",
+      "nor_gl",
+      "blend",
+      "gltf",
+      "arm",
+      "AO",
+      "Displacement",
+      "Rough",
+      "mtlx"
+    ],
+    "downloads": [
+      {
+        "file": "pine_bark__Diffuse__pine_bark_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_diff_1k.jpg",
+        "bytes": 837641,
+        "md5": "7bb38cccfc647aeaf2f5b6488c815e75",
+        "sha256": "89ddfbff0388d30caff902ba600cdf75eb1e651ca71ece6594b5a9b27abb47ab"
+      },
+      {
+        "file": "pine_bark__nor_gl__pine_bark_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_nor_gl_1k.jpg",
+        "bytes": 1178440,
+        "md5": "7b971070fc986e517b5d2795cec0f4e0",
+        "sha256": "666e5f175a010f12577687dd8029125bff99110e6a97958afb295b34266437db"
+      },
+      {
+        "file": "pine_bark__Rough__pine_bark_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_rough_1k.jpg",
+        "bytes": 506697,
+        "md5": "f5ba950ee648056809153e0506f8a2e2",
+        "sha256": "04f466447098d0b6d3d4abdc69ce5766d5da67eedfa076e4a3f22fe6996a60a8"
+      },
+      {
+        "file": "pine_bark__arm__pine_bark_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_arm_1k.jpg",
+        "bytes": 810100,
+        "md5": "8f47278dc2643509cd1f9d9268214097",
+        "sha256": "1ba20ec25c9f43327d6aa0ea809917854cff553ad7f21fb548e853a5b5ec701a"
+      }
+    ]
+  },
+  "pine_tree_01": {
+    "info": {
+      "date_published": 1687478400,
+      "name": "Pine Tree 01",
+      "type": 2,
+      "staging": null,
+      "authors": {
+        "Rob Tuytel": "photography",
+        "Rico Cilliers": "modeling"
+      },
+      "info": null,
+      "sponsors": [
+        "11109006"
+      ],
+      "categories": [
+        "nature",
+        "plants",
+        "trees",
+        "collection: pine_forest"
+      ],
+      "geonodes": true,
+      "tags": [
+        "pine",
+        "tree",
+        "needles",
+        "branches",
+        "woodland",
+        "coniferous",
+        "plants",
+        "geometry nodes",
+        "foliage",
+        "natural",
+        "trunk",
+        "bark",
+        "environment",
+        "vegetation",
+        "evergreen",
+        "forest"
+      ],
+      "max_resolution": [
+        8192,
+        8192
+      ],
+      "polycount": 17427094,
+      "texel_density": 5861.203711242229,
+      "dimensions": [
+        26719.930171966553,
+        1300.55171251297,
+        17577.758572995663
+      ],
+      "files_hash": "98997b7406016d998742bd962473c5d63e14da21",
+      "lods": true,
+      "description": "Free 8K model of a tall, slender pine with layered branch clusters, dense needle foliage, and a realistic textured trunk and bark.",
+      "category_id": "889de586-d203-511a-b417-fac77b27a029",
+      "category": "Nature/Trees/Coniferous Trees",
+      "collections": [
+        "pine_forest"
+      ],
+      "attributes": {
+        "condition": [
+          "clean"
+        ],
+        "lods": true,
+        "geonodes": true,
+        "material": [
+          "wood"
+        ]
+      },
+      "img_version": "5a9763f6",
+      "download_count": 41520,
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/pine_tree_01.png?width=256&height=256&format=webp&v=5a9763f6"
+    },
+    "source": "https://polyhaven.com/a/pine_tree_01",
+    "license": "CC0-1.0",
+    "formats": [
+      "blend",
+      "bark_ao",
+      "bark_arm",
+      "bark_diff",
+      "bark_disp",
+      "bark_nor_dx",
+      "bark_nor_gl",
+      "bark_rough",
+      "trunk_a_ao",
+      "trunk_a_arm",
+      "trunk_a_diff",
+      "trunk_a_nor_dx",
+      "trunk_a_nor_gl",
+      "trunk_a_rough",
+      "trunk_b_ao",
+      "trunk_b_arm",
+      "trunk_b_diff",
+      "trunk_b_nor_dx",
+      "trunk_b_nor_gl",
+      "trunk_b_rough",
+      "trunk_c_ao",
+      "trunk_c_arm",
+      "trunk_c_diff",
+      "trunk_c_nor_dx",
+      "trunk_c_nor_gl",
+      "trunk_c_rough",
+      "twig_alpha",
+      "twig_ao",
+      "twig_arm",
+      "twig_diff",
+      "twig_disp",
+      "twig_mask",
+      "twig_nor_dx",
+      "twig_nor_gl",
+      "twig_rough",
+      "fbx",
+      "gltf",
+      "usd"
+    ],
+    "downloads": [
+      {
+        "file": "pine_tree_01__atlas__pine_tree_01_twig_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_nor_gl_1k.jpg",
+        "bytes": 797935,
+        "md5": "972d28f52f07ea271792b5bfbb8a3286",
+        "sha256": "2a02a482a18d20255c800845902d5e0061d2a2d14107d7c4ed0b789414153141"
+      },
+      {
+        "file": "pine_tree_01__atlas__pine_tree_01_twig_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_diff_1k.jpg",
+        "bytes": 510932,
+        "md5": "b6e5f4e8c228c275e5ff75cb165c2e1f",
+        "sha256": "e649f0f9bc74d1af5f1a45eaf2fe7a29adaaddfab251f746b983da301e4b80e1"
+      },
+      {
+        "file": "pine_tree_01__atlas__pine_tree_01_twig_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_arm_1k.jpg",
+        "bytes": 474787,
+        "md5": "4623cfe77824b66098cdff4f2213ef10",
+        "sha256": "47facef9985e8c073184a64d15ea14bd2dc3b3debfb93f3671b6d5ad0dbc163d"
+      }
+    ],
+    "gltf_1k": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/pine_tree_01/pine_tree_01_1k.gltf",
+      "md5": "9bc0153071011411957a74e473d24858",
+      "size": 30596,
+      "include": {
+        "textures/pine_tree_01_bark_nor_gl_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_bark_nor_gl_1k.jpg",
+          "md5": "bb6e3a6eea777d992cef48fabfdc538c",
+          "size": 1016849
+        },
+        "textures/pine_tree_01_bark_diff_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_bark_diff_1k.jpg",
+          "md5": "7d3a558ed614c7e75594c7be3bf80311",
+          "size": 725265
+        },
+        "textures/pine_tree_01_bark_arm_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_bark_arm_1k.jpg",
+          "md5": "21d1abd15e40951825a4f3da110b20ea",
+          "size": 801278
+        },
+        "textures/pine_tree_01_trunk_a_nor_gl_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_a_nor_gl_1k.jpg",
+          "md5": "41b92112b3b9a48eb2e1b4b3562dd937",
+          "size": 997355
+        },
+        "textures/pine_tree_01_trunk_a_diff_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_a_diff_1k.jpg",
+          "md5": "304f688bc8212f90a39a3b77f6065ee5",
+          "size": 789806
+        },
+        "textures/pine_tree_01_trunk_a_arm_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_a_arm_1k.jpg",
+          "md5": "03e83e31fb6ef8e4c759017bf059149b",
+          "size": 788967
+        },
+        "textures/pine_tree_01_twig_nor_gl_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_nor_gl_1k.jpg",
+          "md5": "972d28f52f07ea271792b5bfbb8a3286",
+          "size": 797935
+        },
+        "textures/pine_tree_01_twig_diff_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_diff_1k.jpg",
+          "md5": "b6e5f4e8c228c275e5ff75cb165c2e1f",
+          "size": 510932
+        },
+        "textures/pine_tree_01_twig_arm_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_arm_1k.jpg",
+          "md5": "4623cfe77824b66098cdff4f2213ef10",
+          "size": 474787
+        },
+        "textures/pine_tree_01_trunk_b_nor_gl_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_b_nor_gl_1k.jpg",
+          "md5": "310666823cba305dd25d1494fbe73877",
+          "size": 915273
+        },
+        "textures/pine_tree_01_trunk_b_diff_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_b_diff_1k.jpg",
+          "md5": "00ad0c0643a4e6b34914b8ac05cc28cb",
+          "size": 687662
+        },
+        "textures/pine_tree_01_trunk_b_arm_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_trunk_b_arm_1k.jpg",
+          "md5": "4275bc6e1f13b5195b64e9e3b63cf5a2",
+          "size": 732269
+        },
+        "pine_tree_01.bin": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/pine_tree_01/pine_tree_01.bin",
+          "md5": "3079e56cc48c57d8ba530d005e86bae6",
+          "size": 948849556
+        }
+      }
+    },
+    "model_meshes": [
+      {
+        "name": "NurbsPath.022",
+        "triangles": 6951524
+      },
+      {
+        "name": "NurbsPath.023",
+        "triangles": 4234432
+      },
+      {
+        "name": "NurbsPath.024",
+        "triangles": 5996296
+      }
+    ],
+    "model_nodes": [
+      {
+        "mesh": 0,
+        "name": "pine_tree_01_a_LOD0",
+        "translation": [
+          -6,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 1,
+        "name": "pine_tree_01_b_LOD0",
+        "translation": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 2,
+        "name": "pine_tree_01_c_LOD0",
+        "translation": [
+          8,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "grass_medium_01": {
+    "info": {
+      "date_published": 1659052800,
+      "name": "Grass Medium 01",
+      "type": 2,
+      "staging": null,
+      "authors": {
+        "Rob Tuytel": "Photography",
+        "Rico Cilliers": "Modeling"
+      },
+      "sponsors": [
+        "78546118"
+      ],
+      "lods": true,
+      "categories": [
+        "grass",
+        "nature",
+        "ground cover",
+        "collection: pine_forest"
+      ],
+      "tags": [
+        "plant",
+        "grass",
+        "nature",
+        "green",
+        "shrub",
+        "outdoor",
+        "field",
+        "meadow",
+        "natural",
+        "foliage",
+        "small",
+        "botany"
+      ],
+      "max_resolution": [
+        8192,
+        8192
+      ],
+      "polycount": 1606633,
+      "files_hash": "c37a6bea414dac24f578f288810652add69d09fc",
+      "texel_density": 16814.571847350904,
+      "dimensions": [
+        7266.327619552612,
+        1259.2098712921143,
+        1177.0583391189575
+      ],
+      "geonodes": true,
+      "description": "Free 8K grass model: dense medium tuft with varied green blades, natural meadow tones and wispy outer fronds for realistic ground cover. Geometry nodes scatter system.",
+      "category_id": "60ce9140-83ac-527c-af91-fea9996be033",
+      "category": "Nature/Ground Cover & Moss/Grass Tufts",
+      "collections": [
+        "pine_forest"
+      ],
+      "attributes": {
+        "condition": [
+          "clean"
+        ],
+        "lods": true,
+        "geonodes": true,
+        "material": [
+          "plant"
+        ]
+      },
+      "img_version": "dbbb23c5",
+      "download_count": 250026,
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/grass_medium_01.png?width=256&height=256&format=webp&v=dbbb23c5"
+    },
+    "source": "https://polyhaven.com/a/grass_medium_01",
+    "license": "CC0-1.0",
+    "formats": [
+      "blend",
+      "Alpha",
+      "AO",
+      "arm",
+      "Diffuse",
+      "dry_diff",
+      "nor_dx",
+      "nor_gl",
+      "Rough",
+      "fbx",
+      "gltf",
+      "usd"
+    ],
+    "downloads": [
+      {
+        "file": "grass_medium_01__atlas__grass_medium_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_nor_gl_1k.jpg",
+        "bytes": 956166,
+        "md5": "fcf43dd1253f56e4c361079f34155c37",
+        "sha256": "cae298d3d1d7ff7c7e210ad8ac772b96706e356f9315a6b04fde373ce01ccf1e"
+      },
+      {
+        "file": "grass_medium_01__atlas__grass_medium_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_diff_1k.jpg",
+        "bytes": 395673,
+        "md5": "6b18ed50d776fd20c1304d9994bd764e",
+        "sha256": "71495bd6a11fddcab0aaff38246fea1a7b802a705483f1c7cbca53955daa8050"
+      },
+      {
+        "file": "grass_medium_01__atlas__grass_medium_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_arm_1k.jpg",
+        "bytes": 679518,
+        "md5": "37ed2730a507b681af2e9f9f7ef3ae5e",
+        "sha256": "9a3a30f72bc02f4398967c5b08f2d20cce30bd423a2613b42a727034296fa3ae"
+      },
+      {
+        "file": "grass_medium_01__geometry__grass_medium_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/grass_medium_01/grass_medium_01.bin",
+        "bytes": 1006632,
+        "md5": "e0527a0561c2dae5b7b5c1b478d8c6bf",
+        "sha256": "f4587cabdb96a2e96d8be644923dc954a248edfaaa717a0ff224cacb898bee1f"
+      }
+    ],
+    "gltf_1k": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/grass_medium_01/grass_medium_01_1k.gltf",
+      "md5": "28dd8247f3faa749bf87a0b84be01e7e",
+      "size": 27110,
+      "include": {
+        "textures/grass_medium_01_nor_gl_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_nor_gl_1k.jpg",
+          "md5": "fcf43dd1253f56e4c361079f34155c37",
+          "size": 956166
+        },
+        "textures/grass_medium_01_diff_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_diff_1k.jpg",
+          "md5": "6b18ed50d776fd20c1304d9994bd764e",
+          "size": 395673
+        },
+        "textures/grass_medium_01_arm_1k.jpg": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_arm_1k.jpg",
+          "md5": "37ed2730a507b681af2e9f9f7ef3ae5e",
+          "size": 679518
+        },
+        "grass_medium_01.bin": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/grass_medium_01/grass_medium_01.bin",
+          "md5": "e0527a0561c2dae5b7b5c1b478d8c6bf",
+          "size": 1006632
+        }
+      }
+    },
+    "model_meshes": [
+      {
+        "name": "Plane.037",
+        "triangles": 833
+      },
+      {
+        "name": "Plane.038",
+        "triangles": 4626
+      },
+      {
+        "name": "Plane.039",
+        "triangles": 1257
+      },
+      {
+        "name": "Plane.042",
+        "triangles": 310
+      },
+      {
+        "name": "Plane.043",
+        "triangles": 290
+      },
+      {
+        "name": "Plane.045",
+        "triangles": 340
+      },
+      {
+        "name": "Plane.047",
+        "triangles": 653
+      },
+      {
+        "name": "Plane.048",
+        "triangles": 1466
+      },
+      {
+        "name": "Plane.050",
+        "triangles": 2287
+      },
+      {
+        "name": "Plane.051",
+        "triangles": 6422
+      },
+      {
+        "name": "Plane.053",
+        "triangles": 5945
+      },
+      {
+        "name": "Plane.054",
+        "triangles": 40
+      },
+      {
+        "name": "Plane.055",
+        "triangles": 79
+      },
+      {
+        "name": "Plane.056",
+        "triangles": 28
+      },
+      {
+        "name": "Plane.057",
+        "triangles": 32
+      },
+      {
+        "name": "Plane.058",
+        "triangles": 62
+      },
+      {
+        "name": "Plane.059",
+        "triangles": 60
+      }
+    ],
+    "model_nodes": [
+      {
+        "mesh": 0,
+        "name": "grass_medium_01_small_a_LOD0"
+      },
+      {
+        "mesh": 1,
+        "name": "grass_medium_01_large_b_LOD0",
+        "translation": [
+          -1.9999998807907104,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 2,
+        "name": "grass_medium_01_mid_b_LOD0",
+        "translation": [
+          -0.7999995946884155,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 3,
+        "name": "grass_medium_01_tall_b_LOD0",
+        "translation": [
+          1.1999999284744263,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 4,
+        "name": "grass_medium_01_tall_a_LOD0",
+        "translation": [
+          0.7999998331069946,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 5,
+        "name": "grass_medium_01_tall_c_LOD0",
+        "translation": [
+          1.6000001430511475,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 6,
+        "name": "grass_medium_01_small_b_LOD0",
+        "translation": [
+          0.4000002443790436,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 7,
+        "name": "grass_medium_01_mid_c_LOD0",
+        "translation": [
+          -0.3999999463558197,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 8,
+        "name": "grass_medium_01_mid_a_LOD0",
+        "translation": [
+          -1.1999996900558472,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 9,
+        "name": "grass_medium_01_large_a_LOD0",
+        "translation": [
+          -2.3999998569488525,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 10,
+        "name": "grass_medium_01_large_c_LOD0",
+        "translation": [
+          -1.5999997854232788,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 11,
+        "name": "grass_medium_01_tiny_c_LOD0",
+        "translation": [
+          2.40000057220459,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 12,
+        "name": "grass_medium_01_tiny_a_LOD0",
+        "translation": [
+          2.000000476837158,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 13,
+        "name": "grass_medium_01_tiny_b_LOD0",
+        "translation": [
+          2.200000762939453,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 14,
+        "name": "grass_medium_01_tiny_d_LOD0",
+        "translation": [
+          2.6000003814697266,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 15,
+        "name": "grass_medium_01_tiny_e_LOD0",
+        "translation": [
+          2.8000001907348633,
+          0,
+          0
+        ]
+      },
+      {
+        "mesh": 16,
+        "name": "grass_medium_01_tiny_f_LOD0",
+        "translation": [
+          3.000000476837158,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}
