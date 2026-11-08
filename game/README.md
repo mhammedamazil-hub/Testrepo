@@ -45,7 +45,9 @@ python3 tools/game/export_game.py --godot /absolute/path/to/godot
 python3 tools/game/serve.py --port 3000
 ```
 
-Run commands from repository root. The static server binds to `0.0.0.0`; game browser requests are relative to its own origin. Web release files and the downloadable `Alpine_Mirror_Web.zip` are produced under `.exports/`, outside Git. Opening the HTML with `file://` is not supported; serve the folder over HTTP(S).
+Run commands from repository root. The static server binds to `0.0.0.0`; game browser requests are relative to its own origin. Web release files and the downloadable `Alpine_Mirror_Web.zip` are produced under `.exports/`, outside Git. The ZIP includes `PLAY.txt` with standalone launch instructions. Opening the HTML with `file://` is not supported; serve the extracted folder over HTTP(S), for example with `python3 -m http.server 8080` from inside that folder, then open `http://localhost:8080` on the same machine.
+
+The exporter builds into a fresh staging directory, rejects failed/incomplete exports and validates the archive before replacing the previous playable preview.
 
 ### Restricted Linux sandbox bootstrap
 

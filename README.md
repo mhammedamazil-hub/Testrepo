@@ -1,6 +1,19 @@
-# Alpine Mirror — verified revision 2
+# Alpine Mirror — landscape and playable game prototype
 
-## Completed 20-second 1080p60 delivery
+## Playable Godot game
+
+The Alpine mountain-and-lake scene now has a separate, real **Godot 4.4.1 walking/driving prototype** under [`game/`](game/README.md): a roughly 965 m lakeside loop, an animated hiker, a drivable car, enter/exit controls, checkpoints, camera controls and pause/recovery.
+
+**Native 1920×1080 rendering is verified. The requested 60 FPS has not been achieved in the available CPU software-rendering test.** This is a playable prototype, not a production-ready 1080p60 or GTA-scale game. [Build status and actual rendered evidence](docs/game/BUILD_STATUS.md).
+
+- Play using the Arena live preview, or build the Web package with `python3 tools/game/setup_toolchain.py` followed by `python3 tools/game/export_game.py`.
+- Controls: **WASD/arrows**, **E** enter/exit, **Space** jump/brake, **Escape** pause, **R** recover. Full controls are in the game README.
+- [Specialist skill usage](docs/GAME_SKILL_USAGE.md), [actual engine physics checks](docs/game/headless-validation.json), [rendered browser gameplay checks](docs/game/browser-validation.json).
+- [Game validation/build workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) produces a downloadable Web artifact. A green build validates code/gameplay/export, **not 60 FPS**.
+
+The game assets are derived from a copy of the original scene; the completed cinematic below is preserved separately.
+
+## Completed 20-second 1080p60 cinematic delivery
 
 - `output/Alpine_Mirror_1080p_20s.mp4` — **1920×1080, 60 fps, 1,200 native rendered frames, exactly 20 seconds**, H.264, silent.
 - `output/Alpine_Mirror_1080p.png` — original revision-2 full-HD 384-sample hero still.

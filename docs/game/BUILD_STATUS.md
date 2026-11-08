@@ -28,7 +28,8 @@ This is not a production-ready 1080p60 game, not a finished GTA-scale world, and
 | Actual engine physics/state | **14/14 PASS** | `headless-validation.json`: grounding, animation import, walking, entering, driving, braking, blocked moving exit, stationary exit, pause, checkpoints and recovery |
 | Rendered browser gameplay | **PASS** | `browser-validation.json`: real Chromium WebGL 2 / SwiftShader, actual keyboard input, 4.23 m recorded drive displacement, braking and subsequent exit, no console errors |
 | Native 1080p | **VERIFIED** | Both Godot viewport and actual browser canvas are 1920 x 1080; render scale is 1.0; actual PNG captures below |
-| Source/evidence regression suite | **23/23 PASS locally** | Six new game integrity tests plus the existing 17 audit/production/recovery checks |
+| Source/evidence regression suite | **23/23 PASS locally and in CI** | Six new game integrity tests plus the existing 17 audit/production/recovery checks |
+| Clean public-runner import/test/export | **PASS** | [First independent CI run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42478054008): verified engine restore, clean asset import, 14 engine checks, 23 regression tests, actual Web export and downloadable artifact. Standard public-repository CPU runner; not a rendered FPS benchmark. |
 | 60 FPS rendering | **NOT MET** | Final software-rendering sample reported 1 FPS and 1,814.5 ms P95 wall-clock frame interval across 9 samples. This is a short diagnostic, not a broad hardware benchmark. Hardware-GPU performance remains untested. |
 | Photoreal / full open-world completion | NOT APPROVED | Simplified character/car, static tree impostors, no traffic/NPC/combat/mission systems |
 
