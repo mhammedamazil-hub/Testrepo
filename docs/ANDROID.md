@@ -13,7 +13,7 @@ Workflow: **Build Sourcebook Android APK** (`.github/workflows/android.yml`). Su
 - `sourcebook-debug.apk` — debug-signed, installable APK for personal sideloading.
 - `sourcebook-debug.apk.sha256` — integrity checksum.
 
-Open the workflow run on GitHub, download and extract that artifact, then transfer the APK to your phone. Android may ask you to allow installation from the browser/files app. This is not a Play Store release. Never install APKs from untrusted sources.
+A [verified successful build](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487957011) is available; [download its APK artifact](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487957011/artifacts/13619784791). For newer revisions, open the latest successful workflow run on GitHub. Download and extract that artifact, then transfer the APK to your phone. Android may ask you to allow installation from the browser/files app. This is not a Play Store release. Never install APKs from untrusted sources.
 
 Build locally with JDK 17+, Android SDK platform 35, build-tools 35.0.0, `zip` and the Android SDK environment:
 
@@ -62,3 +62,5 @@ Background media playback, push notifications, offline synchronization, direct m
 Only connect to your own/trusted server: the server supplies the app UI. Native bridge functions can request a user-confirmed file save or print. Top-level navigation/subresources are restricted to the chosen origin; external sites aren't loaded with the native bridge. File-system access and mixed content are disabled. Content-provider access is used for user-selected uploads; no general storage permission is requested. TLS errors are never bypassed, third-party cookies are disabled, backup is disabled, and production WebView debugging is off.
 
 A debug-signed APK is suitable for personal testing, not a hardened enterprise release. Test on a physical phone before relying on document import, audio playback or printing. Browser mocks verify interface behavior but are not substitutes for Android device/emulator tests.
+
+Build verification has passed, including signature verification. Ten browser behavior tests pass, including mobile tab switching, native save payloads and safe native print HTML. The APK has not been installed/tested on a physical Android device in this workspace. The sandbox blocks GitHub's artifact-storage host, so use the GitHub download link above rather than expecting a local APK attachment here.

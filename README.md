@@ -113,7 +113,7 @@ Do **not** mistake the current implementation for a complete clone:
 - Google Drive OAuth/sync, Google Docs/Sheets integration, YouTube transcript fetching, web search/deep research.
 - OCR/image understanding, embedding/vector retrieval, streamed responses and persistent background job queues.
 - Generated videos, rendered infographics, native PPTX export, two-host/interactive audio. PDF export currently uses the browser's print system, not a Rust PDF renderer.
-- Multi-user accounts, edit collaboration, enterprise administration, native mobile/desktop installers.
+- Multi-user accounts, edit collaboration, enterprise administration, offline embedded-server APKs and native desktop installers. A server-connected Android APK is now available below.
 
 Full private-service parity requires separate integrations, infrastructure and provider capabilities; simply installing REA cannot recover Google's backend. Feature research used the accessible [notebooklm-py feature reference](https://github.com/teng-lin/notebooklm-py). No proprietary APK/EXE/DEB was downloaded or decompiled.
 
@@ -129,7 +129,7 @@ npm ci --ignore-scripts --omit=optional --no-audit --no-fund
 npm run test:web
 ```
 
-The **previous baseline** passed Rust build/tests and browser CI. The v0.2 expansion has seven passing local browser tests and syntax/format checks. Its new Rust tests cover typed study validation, quiz/card grading, editing, restore with ID remapping, share revocation, DOCX extraction, real speech/transcription HTTP protocol handling with mock providers, media authorization and cleanup, plus the original CRUD/auth/retrieval tests. Check the latest GitHub Actions run for actual v0.2 compilation/test results; these are not claimed successful merely because the baseline passed. Real hosted AI/media generation has not been tested with your credentials.
+The v0.2 expansion passed GitHub Rust build/tests, and the mobile update has ten passing browser behavior tests. Rust tests cover typed study validation, quiz/card grading, editing, restore with ID remapping, share revocation, DOCX extraction, real speech/transcription HTTP protocol handling with mock providers, media authorization and cleanup, plus the original CRUD/auth/retrieval tests. Check the latest GitHub Actions run for the exact tested revision. Real hosted AI/media generation has not been tested with your credentials.
 
 This workspace has no Rust toolchain and blocks the Rust download hosts, so no live Rust server is running here. GitHub Actions builds on an unrestricted runner and uploads a Linux executable after a successful run. Workflows: `.github/workflows/rust.yml` and `web.yml`.
 
@@ -139,4 +139,4 @@ See [HTTP API reference](docs/API.md). Existing independent REA setup is documen
 
 The Android client now lives in [`android/`](android/) with a dedicated [APK build workflow](.github/workflows/android.yml). It connects to your running Rust server and exposes the existing app features through mobile **Sources / Chat / Studio** tabs, native document picking/saving, audio playback/download, and Android print/PDF. It is **not an offline embedded-server APK**. See [Android setup and download instructions](docs/ANDROID.md) for requirements, signing, LAN/HTTPS connection and limitations.
 
-The v0.2 Rust expansion subsequently passed GitHub build/tests. The mobile update has **10 passing local browser tests**, including tab switching and native save/print bridge contracts. APK compilation/signature verification runs in its own CI workflow; consult the latest result rather than assuming that browser tests verify an Android install.
+The v0.2 Rust expansion subsequently passed GitHub build/tests. The mobile update has **10 passing local browser tests**, including tab switching and native save/print bridge contracts. APK compilation, pure-Java URL-policy tests, signing and signature verification also passed [the Android build](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487957011). Physical-device testing is still required.

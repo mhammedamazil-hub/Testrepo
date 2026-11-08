@@ -31,5 +31,6 @@ fi
 "$TOOLS/apksigner" verify --verbose "$BUILD/sourcebook-debug.apk"
 "$TOOLS/aapt2" dump badging "$BUILD/sourcebook-debug.apk" > "$BUILD/apk-info.txt"
 sed -n '1,20p' "$BUILD/apk-info.txt"
-sha256sum "$BUILD/sourcebook-debug.apk" > "$BUILD/sourcebook-debug.apk.sha256"
+(cd "$BUILD" && sha256sum sourcebook-debug.apk > sourcebook-debug.apk.sha256)
+cp "$ROOT/../docs/ANDROID.md" "$BUILD/ANDROID-README.md"
 echo "APK ready: $BUILD/sourcebook-debug.apk"

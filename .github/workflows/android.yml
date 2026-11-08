@@ -47,4 +47,5 @@ jobs:
           path: |
             android/build/sourcebook-debug.apk
             android/build/sourcebook-debug.apk.sha256
+            android/build/ANDROID-README.md
           if-no-files-found: error
