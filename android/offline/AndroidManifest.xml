@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="app.sourcebook.offline">
+    <!-- Deliberately NO INTERNET permission: model inference and Rust requests stay on-device. -->
+    <application android:label="Sourcebook Offline" android:icon="@drawable/ic_sourcebook"
+        android:theme="@style/AppTheme" android:allowBackup="false" android:extractNativeLibs="true"
+        android:usesCleartextTraffic="false" android:supportsRtl="true">
+        <activity android:name="app.sourcebook.mobile.OfflineActivity" android:exported="true"
+            android:windowSoftInputMode="adjustResize" android:configChanges="orientation|keyboardHidden|screenSize">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>

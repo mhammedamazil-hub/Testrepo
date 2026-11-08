@@ -1,0 +1,58 @@
+name: Build offline Rust Android APK
+on:
+  push:
+    branches: [arena/26f76d74-testrepo]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: offline-android-arm64
+      - name: Get pinned llama.cpp source
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 7d7f0287530bc8981690f361d8c1627dbae1c99a
+          path: .tools/llama-cpp
+          persist-credentials: false
+      - name: Install SDK and NDK
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "ndk;28.2.13676358"'
+      - uses: actions/cache@v4
+        with:
+          path: android/.signing
+          key: sourcebook-personal-debug-signing-v1
+      - name: Compile embedded Rust, GGUF runtime and APK
+        run: |
+          if bash android/scripts/build-offline.sh > "$RUNNER_TEMP/offline-build.log" 2>&1; then
+            tail -80 "$RUNNER_TEMP/offline-build.log"
+          else
+            tail -100 "$RUNNER_TEMP/offline-build.log"
+            python3 - <<'PYLOG'
+          import os
+          from pathlib import Path
+          for line in Path(os.environ['RUNNER_TEMP'], 'offline-build.log').read_text().splitlines()[-45:]:
+              print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PYLOG
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sourcebook-offline-arm64-apk
+          path: |
+            android/build-offline/sourcebook-offline-arm64.apk
+            android/build-offline/sourcebook-offline-arm64.apk.sha256
+            android/build-offline/OFFLINE-README.md
+          if-no-files-found: error

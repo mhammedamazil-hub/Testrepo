@@ -267,6 +267,11 @@ pub(super) async fn generate_content(
         "Create a {} from the source excerpts. {} Additional preferences: {}",
         p.kind, format, p.instructions
     );
+    let prompt = if a.offline {
+        format!("{prompt} Keep the output under 800 tokens. For cards and quizzes use 4 items; for slides use 4 slides. /no_think")
+    } else {
+        prompt
+    };
     let content = complete(a, n, &prompt, evidence, false).await?;
     if schema.is_some() {
         let data = parse_material(&content, &p.kind)?;
@@ -852,6 +857,11 @@ pub(super) async fn enable_share(
     Path(nid): Path<String>,
 ) -> Result<Json<Value>> {
     authorized(&h, &a)?;
+    if a.offline {
+        return Err(bad(
+            "Offline notebooks cannot publish share links. Export the notebook JSON instead.",
+        ));
+    }
     let share = a
         .mutate(|d| {
             let n = notebook_mut(d, &nid)?;

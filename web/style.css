@@ -22,3 +22,5 @@
  .shared-view #workspace .panel{height:calc(100dvh - 220px)}
 }
 @media(max-width:400px){.studio-grid{gap:6px!important}.studio-tool{padding:10px 7px}.studio-tool strong{font-size:10px}.brand{font-size:21px}.avatar{display:none}.workspace-title h1{font-size:23px}#search{width:145px}.home-actions .primary{padding:12px 15px}}
+.offline-app #share-notebook,.offline-app .studio-tool:last-child{display:none}
+.offline-app .tabs button:last-child{display:none}

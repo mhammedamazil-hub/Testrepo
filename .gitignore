@@ -11,3 +11,4 @@ __pycache__/
 /android/.signing/
 *.keystore
 *.jks
+/android/build-offline/

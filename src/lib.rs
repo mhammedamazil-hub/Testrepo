@@ -1,3 +1,5 @@
+#[cfg(all(feature = "android-offline", target_os = "android"))]
+mod android_offline;
 mod studio;
 use axum::{
     extract::{DefaultBodyLimit, Path, State},
@@ -115,6 +117,7 @@ pub struct Config {
 }
 #[derive(Clone)]
 pub struct App {
+    pub offline: bool,
     pub db: Arc<RwLock<Database>>,
     pub config: Config,
     pub client: reqwest::Client,
@@ -176,6 +179,7 @@ impl App {
             .timeout(Duration::from_secs(120))
             .build()?;
         Ok(Self {
+            offline: cfg!(all(feature = "android-offline", target_os = "android")),
             db: Arc::new(RwLock::new(db)),
             config,
             client,
@@ -249,6 +253,15 @@ pub fn router(app: App) -> Router {
                 (
                     [("content-type", "text/javascript; charset=utf-8")],
                     include_str!("../web/app.js"),
+                )
+            }),
+        )
+        .route(
+            "/offline.js",
+            get(|| async {
+                (
+                    [("content-type", "text/javascript; charset=utf-8")],
+                    include_str!("../web/offline.js"),
                 )
             }),
         )
@@ -336,7 +349,7 @@ pub fn router(app: App) -> Router {
 async fn config(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
     authorized(&h, &a)?;
     Ok(Json(
-        json!({"model":a.config.model,"configured":!a.config.model.is_empty(),"api_key_set":!a.config.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":!a.media.tts_model.is_empty(),"transcription_configured":!a.media.transcription_model.is_empty()}),
+        json!({"model":a.config.model,"configured":!a.config.model.is_empty(),"offline":a.offline,"api_key_set":!a.config.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":!a.media.tts_model.is_empty(),"transcription_configured":!a.media.transcription_model.is_empty()}),
     ))
 }
 async fn list(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
@@ -573,6 +586,11 @@ async fn add_source(
     Json(p): Json<SourceInput>,
 ) -> Result<Json<Source>> {
     authorized(&h, &a)?;
+    if a.offline && p.kind == "url" {
+        return Err(bad(
+            "Webpage import needs a network. Paste or upload the article text in this offline app.",
+        ));
+    }
     a.notebook(&nid).await?;
     let title = text(&p.title, "Source title", 300)?;
     let content = match p.kind.as_str() {
@@ -729,7 +747,18 @@ async fn complete(
     })?;
     let context = evidence
         .iter()
-        .map(|e| format!("[{}] {}\n{}", e.number, e.title, e.excerpt))
+        .take(if a.offline { 4 } else { 12 })
+        .map(|e| {
+            format!(
+                "[{}] {}\n{}",
+                e.number,
+                e.title,
+                e.excerpt
+                    .chars()
+                    .take(if a.offline { 700 } else { 1200 })
+                    .collect::<String>()
+            )
+        })
         .collect::<Vec<_>>()
         .join("\n\n");
     let mut messages = vec![
@@ -740,17 +769,21 @@ async fn complete(
             .messages
             .iter()
             .rev()
-            .take(8)
+            .take(if a.offline { 2 } else { 8 })
             .collect::<Vec<_>>()
             .into_iter()
             .rev()
         {
             messages.push(
-                json!({"role":m.role,"content":m.content.chars().take(8000).collect::<String>()}),
+                json!({"role":m.role,"content":m.content.chars().take(if a.offline {700} else {8000}).collect::<String>()}),
             );
         }
     }
     messages.push(json!({"role":"user","content":instruction}));
+    #[cfg(all(feature = "android-offline", target_os = "android"))]
+    if a.offline {
+        return android_offline::complete(messages).await;
+    }
     let endpoint = format!(
         "{}/chat/completions",
         a.config.base_url.trim_end_matches('/')
