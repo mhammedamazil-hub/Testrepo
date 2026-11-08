@@ -1,0 +1,151 @@
+name: Villa Garden Video
+
+# Renders a 5 second, 1920x1080, 30 fps clip of the garden in CI and attaches it to a release.
+#
+# This is the game's own renderer (tools/game_sim.cpp), not an idealised re-render: the same
+# level, the same packer output, the same shading maths the APK runs, just executed on a
+# desktop CPU where a frame can take six seconds instead of sixteen milliseconds. Wind, water
+# and the walking bob are all driven by the frame time, so the motion is genuinely animated
+# rather than a camera sliding over a still.
+#
+# Trigger: manual (workflow_dispatch), or a push that touches the renderer, the packer or this
+# file. It is deliberately not on every push: 150 frames is ~15 minutes of CPU.
+
+on:
+  workflow_dispatch:
+    inputs:
+      frames:
+        description: 'frames to render (150 = 5 s at 30 fps)'
+        required: false
+        default: '150'
+      fps:
+        description: 'frame rate'
+        required: false
+        default: '30'
+      ss:
+        description: 'supersampling (1 = native 1080p, 2 = 1080p from 4x samples)'
+        required: false
+        default: '1'
+  push:
+    branches:
+      - 'arena/**'
+    paths:
+      - 'tools/game_sim.cpp'
+      - 'tools/villa_pack.py'
+      - 'tools/game_level.py'
+      - 'android/game/app/src/main/cpp/*.h'
+      - '.github/workflows/game-video.yml'
+
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and video tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq build-essential python3-numpy python3-pil ffmpeg
+          ffmpeg -version | head -1
+
+      - name: Build the host renderer
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -o /tmp/gamesim tools/game_sim.cpp \
+            android/viewer/app/src/main/cpp/vpk.cpp \
+            -Iandroid/viewer/app/src/main/cpp -Iandroid/game/app/src/main/cpp
+          echo "renderer built"
+
+      - name: Build the level and the model pack
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/assets
+          python3 tools/game_level.py villa_v2/villa_v2_lite.glb \
+            -o /tmp/assets/level.bin --json-out /tmp/level.json | tee /tmp/level.log
+          grep -q "PLAYABLE: all" /tmp/level.log
+          time python3 tools/villa_pack.py villa_v2/villa_v2.glb \
+            -o /tmp/assets/model.vpk --json-out /tmp/pack.json
+          python3 tools/verify_pack.py /tmp/pack.json --tris 500000 --max-mb 60 --min-tex 1000
+
+      - name: Render the frames
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frames
+          FRAMES="${{ github.event.inputs.frames || '150' }}"
+          FPS="${{ github.event.inputs.fps || '30' }}"
+          SS="${{ github.event.inputs.ss || '1' }}"
+          echo "rendering $FRAMES frames at $FPS fps, supersampling ${SS}x"
+          SIM_SS="$SS" time /tmp/gamesim video /tmp/assets /tmp/frames/f "$FRAMES" "$FPS" \
+            | tee /tmp/video.log
+          grep -q "^PASS: rendered" /tmp/video.log
+          ls /tmp/frames | wc -l
+
+      - name: Encode the clip
+        run: |
+          set -euo pipefail
+          FPS="${{ github.event.inputs.fps || '30' }}"
+          # yuv420p so it plays in every browser and on every phone; crf 18 is visually
+          # lossless for this content without bloating a 5 second clip
+          ffmpeg -y -loglevel error -framerate "$FPS" -i /tmp/frames/f_%04d.ppm \
+            -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -movflags +faststart \
+            /tmp/villa_garden_1080p.mp4
+          # a small silent loop for places that cannot play video
+          ffmpeg -y -loglevel error -framerate "$FPS" -i /tmp/frames/f_%04d.ppm \
+            -vf "scale=720:-1:flags=lanczos" -c:v gif -loop 0 /tmp/villa_garden_preview.gif
+          cp /tmp/frames/f_0000.ppm /tmp/poster.ppm
+          ffmpeg -y -loglevel error -i /tmp/poster.ppm /tmp/villa_garden_poster.png
+          ls -la /tmp/villa_garden_1080p.mp4 /tmp/villa_garden_preview.gif
+          ffprobe -v error -show_entries stream=width,height,r_frame_rate,nb_frames \
+            -of default=nw=1 /tmp/villa_garden_1080p.mp4
+
+      - name: Report
+        run: |
+          {
+            echo "### Villa Garden video"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| resolution | 1920x1080 |"
+            echo "| frame rate | ${{ github.event.inputs.fps || '30' }} fps |"
+            echo "| frames | ${{ github.event.inputs.frames || '150' }} |"
+            echo "| renderer | tools/game_sim.cpp (the APK's shading, on the CPU) |"
+            echo "| mp4 | $(du -h /tmp/villa_garden_1080p.mp4 | cut -f1) |"
+            echo "| gif | $(du -h /tmp/villa_garden_preview.gif | cut -f1) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          tail -3 /tmp/video.log >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: villa-garden-1080p-mp4
+          path: /tmp/villa_garden_1080p.mp4
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: villa-garden-preview
+          path: |
+            /tmp/villa_garden_preview.gif
+            /tmp/villa_garden_poster.png
+
+      - name: Attach to a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="villa-garden-video"
+          TITLE="Villa Garden - 1080p 30 fps clip"
+          NOTES="Rendered in CI by the game's own renderer at 1920x1080, 30 fps, 5 s.
+          Not a pre-rendered animation: tools/game_sim.cpp runs the same level, the same
+          packed model and the same shading maths as the APK, with wind, water and the
+          walking bob animated per frame."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TITLE" --notes "$NOTES"
+            gh release upload "$TAG" /tmp/villa_garden_1080p.mp4 \
+              /tmp/villa_garden_preview.gif /tmp/villa_garden_poster.png --clobber
+          else
+            gh release create "$TAG" /tmp/villa_garden_1080p.mp4 \
+              /tmp/villa_garden_preview.gif /tmp/villa_garden_poster.png \
+              --title "$TITLE" --notes "$NOTES"
+          fi
+          gh release view "$TAG" --json assets -q '.assets[]|"\(.name) \(.size) bytes"'

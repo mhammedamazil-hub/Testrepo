@@ -1026,7 +1026,7 @@ static bool bfs(const Level& lv, int r0, int c0, int r1, int c1, Route* out) {
 
 int main(int argc, char** argv) {
     if (argc < 3) {
-        std::fprintf(stderr, "usage: %s play|shot <assets_dir> <out_prefix|out.ppm> [shots]\n",
+        std::fprintf(stderr, "usage: %s play|shot|video <assets_dir> <out> [frames] [fps]\n",
                      argv[0]);
         return 2;
     }
@@ -1096,6 +1096,57 @@ int main(int argc, char** argv) {
         }
     }
     std::printf("objectives all stand on walkable ground\n");
+
+    // ---- video: a deterministic camera move, one PPM per frame.
+    // Used by .github/workflows/video.yml to render a 1080p clip in CI. Same renderer, same
+    // level, same shading as the APK: this is a recording of the game, not an idealised
+    // re-render. `g_time` advances in real seconds so the wind and the water actually move
+    // between frames, and the height follows the terrain, so the camera walks the garden.
+    if (mode == "video") {
+        const int n_frames = argc > 4 ? atoi(argv[4]) : 150;
+        const float fps = argc > 5 ? (float)atof(argv[5]) : 30.0f;
+        // camera path (x, z, yaw deg, pitch deg) at the first and last frame; the path bows
+        // out sideways so the trees sweep past instead of sliding straight at the lens
+        // Stay on the lawn: the villa's south face is at z ~ -10, so the whole move runs at
+        // z <= -13 and the camera never clips through a wall. Frame 1 is the spawn view; by
+        // frame 150 it has drifted west and turned to face the pool terrace.
+        const float a[5] = {17.0f, -19.5f, -14.0f, -1.0f, 0.0f};
+        const float b[5] = {-4.5f, -14.5f, 26.0f, 6.0f, 0.0f};
+        for (int i = 0; i < n_frames; ++i) {
+            const float u = n_frames > 1 ? (float)i / (float)(n_frames - 1) : 0.0f;
+            const float e = u * u * (3.0f - 2.0f * u);        // ease in/out, no lurch
+            g_time = (float)i / fps;
+            g.p.feet[0] = a[0] + (b[0] - a[0]) * e + sinf(u * 3.14159265f) * -1.4f;
+            g.p.feet[2] = a[1] + (b[1] - a[1]) * e;
+            g.p.feet[1] = g.lv.ground_at(g.p.feet[0], g.p.feet[2]);
+            g.p.yaw = (a[2] + (b[2] - a[2]) * e) * 3.14159265f / 180.0f;
+            g.p.pitch = (a[3] + (b[3] - a[3]) * e) * 3.14159265f / 180.0f;
+            // a walking bob, in phase with the distance covered, so the shot breathes
+            const float walked = (a[0] - g.p.feet[0]) * (a[0] - g.p.feet[0]) +
+                                 (a[1] - g.p.feet[2]) * (a[1] - g.p.feet[2]);
+            const float phase = sqrtf(walked) * 2.1f;
+            g.p.feet[1] += 0.022f * sinf(phase) * 0.5f;
+            g.p.pitch += 0.0045f * sinf(phase * 2.0f);
+            if (!g.lv.body_fits(g.p.feet[0], g.p.feet[2], 0.26f)) {
+                std::printf("FAIL: camera path leaves walkable ground at frame %d (%.1f %.1f)\n",
+                            i, g.p.feet[0], g.p.feet[2]);
+                return 1;
+            }
+            Frame f;
+            render(model, g, &f);
+            char path[512];
+            std::snprintf(path, sizeof path, "%s_%04d.ppm", out.c_str(), i);
+            write_ppm(f, path);
+            if (i % 10 == 0 || i == n_frames - 1)
+                std::printf("  frame %d/%d  eye %.1f %.1f %.1f  yaw %.1f\n", i + 1, n_frames,
+                            g.p.feet[0], g.p.feet[1], g.p.feet[2],
+                            g.p.yaw * 180.0f / 3.14159265f);
+            std::fflush(stdout);
+        }
+        std::printf("PASS: rendered %d frames at %.0f fps (%dx%d each)\n", n_frames, fps,
+                    W / g_ss, H / g_ss);
+        return 0;
+    }
 
     if (mode == "shot") {
         float angle = g.p.yaw;
