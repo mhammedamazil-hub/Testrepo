@@ -1,0 +1,176 @@
+{
+  "checks": [
+    {
+      "name": "Actual native 1920x1080 WebGL2 renderer",
+      "passed": true
+    },
+    {
+      "name": "Mobile controls auto-detected",
+      "passed": true
+    },
+    {
+      "name": "Live mirrored-camera water and occluded shafts enabled",
+      "passed": true
+    },
+    {
+      "name": "Actual scene terrain supports Rapier character",
+      "passed": true
+    },
+    {
+      "name": "Two real touch fingers walk and orbit",
+      "passed": true
+    },
+    {
+      "name": "Touch ENTER activates real vehicle",
+      "passed": true
+    },
+    {
+      "name": "Multi-touch pedals and steering move collision vehicle",
+      "passed": true
+    },
+    {
+      "name": "Touch BRAKE stops vehicle",
+      "passed": true
+    },
+    {
+      "name": "Safe touch EXIT restores character",
+      "passed": true
+    },
+    {
+      "name": "Touch cancellation releases joystick",
+      "passed": true
+    },
+    {
+      "name": "Pause and resume via touch",
+      "passed": true
+    },
+    {
+      "name": "Focus loss pauses and releases all input",
+      "passed": true
+    },
+    {
+      "name": "Portrait remains native 1080p",
+      "passed": true
+    },
+    {
+      "name": "Reflection target updates across rendered frames",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "final": {
+    "framework": "Alpine 0.1 / Three.js",
+    "physics": "Rapier WASM",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "playing",
+    "paused": false,
+    "in_vehicle": false,
+    "touch_enabled": true,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "position": {
+      "x": 70.20777130126953,
+      "y": 3.3508222103118896,
+      "z": 25.068086624145508
+    },
+    "car_position": {
+      "x": 67.70870208740234,
+      "y": 3.3610079288482666,
+      "z": 25
+    },
+    "player_position": {
+      "x": 70.20777130126953,
+      "y": 3.3508222103118896,
+      "z": 25.068086624145508
+    },
+    "speed": 0,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0,
+      "y": 0,
+      "throttle": 0,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 0.3,
+    "reflection_frames": 79,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": true,
+    "grass_instances": 1103,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": true,
+    "measured_fps": 0.3730044850248139,
+    "frame_p95_ms": 6716.399999999994,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  },
+  "driving": {
+    "framework": "Alpine 0.1 / Three.js",
+    "physics": "Rapier WASM",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "playing",
+    "paused": false,
+    "in_vehicle": true,
+    "touch_enabled": true,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "position": {
+      "x": 67.84663391113281,
+      "y": 3.365469455718994,
+      "z": 23.126014709472656
+    },
+    "car_position": {
+      "x": 67.84663391113281,
+      "y": 3.365469455718994,
+      "z": 23.126014709472656
+    },
+    "player_position": {
+      "x": 70.20777130126953,
+      "y": 3.3508222103118896,
+      "z": 25.068086624145508
+    },
+    "speed": 5.25,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0.37139067635410367,
+      "y": -0.9284766908852592,
+      "throttle": 1,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 1.1500000000000008,
+    "reflection_frames": 45,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": true,
+    "grass_instances": 1103,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": true,
+    "measured_fps": 0.47377547464406206,
+    "frame_p95_ms": 6199.799999999999,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  },
+  "physical_phone_tested": false,
+  "target_60fps_verified": false,
+  "scope": "Actual Chromium mobile emulation + WebGL2/SwiftShader + Rapier WASM; not physical-phone or hardware frame-rate certification."
+}

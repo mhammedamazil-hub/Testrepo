@@ -1,0 +1,250 @@
+[
+  {
+    "repository": "blender/blender",
+    "license": "NOASSERTION",
+    "license_name": "Other",
+    "license_file": "COPYING",
+    "license_blob_sha": "3be7c91320a650eb99fc4ebda1f5fab48c7dbea2",
+    "source": "https://github.com/blender/blender/blob/main/COPYING"
+  },
+  {
+    "repository": "UPBGE/upbge",
+    "license": "NOASSERTION",
+    "license_name": "Other",
+    "license_file": "COPYING",
+    "license_blob_sha": "3be7c91320a650eb99fc4ebda1f5fab48c7dbea2",
+    "source": "https://github.com/UPBGE/upbge/blob/master/COPYING"
+  },
+  {
+    "repository": "godotengine/godot",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE.txt",
+    "license_blob_sha": "0e3ba08d6b2e8cf435241829c96f10b74e4356fe",
+    "source": "https://github.com/godotengine/godot/blob/master/LICENSE.txt"
+  },
+  {
+    "repository": "mrdoob/three.js",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "8ada2a5f982916b0ba4b7a0aa7de347587e745d7",
+    "source": "https://github.com/mrdoob/three.js/blob/dev/LICENSE"
+  },
+  {
+    "repository": "BabylonJS/Babylon.js",
+    "license": "Apache-2.0",
+    "license_name": "Apache License 2.0",
+    "license_file": "license.md",
+    "license_blob_sha": "7853ac1b7b32819fb9b2182d65649e3f7d488566",
+    "source": "https://github.com/BabylonJS/Babylon.js/blob/master/license.md"
+  },
+  {
+    "repository": "playcanvas/engine",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "7f478db6d47a259cd70f74b1e69d8ce407fd0912",
+    "source": "https://github.com/playcanvas/engine/blob/main/LICENSE"
+  },
+  {
+    "repository": "o3de/o3de",
+    "license": "NOASSERTION",
+    "license_name": "Other",
+    "license_file": "LICENSE.txt",
+    "license_blob_sha": "d96e24130beb684113d77221d6048f0e0331df87",
+    "source": "https://github.com/o3de/o3de/blob/development/LICENSE.txt"
+  },
+  {
+    "repository": "panda3d/panda3d",
+    "license": "NOASSERTION",
+    "license_name": "Other",
+    "license_file": "LICENSE",
+    "license_blob_sha": "d23c5832664b476e90998de8e281330797201f64",
+    "source": "https://github.com/panda3d/panda3d/blob/master/LICENSE"
+  },
+  {
+    "repository": "urho3d/Urho3D",
+    "license_status": "not resolved by endpoint; do not assume a license"
+  },
+  {
+    "repository": "rbfx/rbfx",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "24a19fe7c2fe5366f8d75fc4980585c602d97200",
+    "source": "https://github.com/rbfx/rbfx/blob/master/LICENSE"
+  },
+  {
+    "repository": "FyroxEngine/Fyrox",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE.md",
+    "license_blob_sha": "f87244357eac78f40dee78e958874506dc75d7fc",
+    "source": "https://github.com/FyroxEngine/Fyrox/blob/master/LICENSE.md"
+  },
+  {
+    "repository": "bevyengine/bevy",
+    "license": "Apache-2.0",
+    "license_name": "Apache License 2.0",
+    "license_file": "LICENSE-APACHE",
+    "license_blob_sha": "d9a10c0d8e868ebf8da0b3dc95bb0be634c34bfe",
+    "source": "https://github.com/bevyengine/bevy/blob/main/LICENSE-APACHE"
+  },
+  {
+    "repository": "stride3d/stride",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE.md",
+    "license_blob_sha": "b97dd9ffdd9f52563770ebc3e216407a91486cb4",
+    "source": "https://github.com/stride3d/stride/blob/master/LICENSE.md"
+  },
+  {
+    "repository": "turanszkij/WickedEngine",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE.txt",
+    "license_blob_sha": "58e05c35ecd234a8d46336131a2bf2f3d1ec6b03",
+    "source": "https://github.com/turanszkij/WickedEngine/blob/master/LICENSE.txt"
+  },
+  {
+    "repository": "armory3d/armory",
+    "license": "Zlib",
+    "license_name": "zlib License",
+    "license_file": "LICENSE.md",
+    "license_blob_sha": "4b308e96777acb9afc5cd0f1f4854a5572740aca",
+    "source": "https://github.com/armory3d/armory/blob/main/LICENSE.md"
+  },
+  {
+    "repository": "pokepetter/ursina",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "5450721634f6d929d00ed92fe585c158195044e5",
+    "source": "https://github.com/pokepetter/ursina/blob/master/LICENSE"
+  },
+  {
+    "repository": "pygame/pygame",
+    "license_status": "not resolved by endpoint; do not assume a license"
+  },
+  {
+    "repository": "bkaradzic/bgfx",
+    "license": "BSD-2-Clause",
+    "license_name": "BSD 2-Clause \"Simplified\" License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "efd9f778e6e43205c4092a327286379e0de7bbac",
+    "source": "https://github.com/bkaradzic/bgfx/blob/master/LICENSE"
+  },
+  {
+    "repository": "gfx-rs/wgpu",
+    "license": "Apache-2.0",
+    "license_name": "Apache License 2.0",
+    "license_file": "LICENSE.APACHE",
+    "license_blob_sha": "d9a10c0d8e868ebf8da0b3dc95bb0be634c34bfe",
+    "source": "https://github.com/gfx-rs/wgpu/blob/trunk/LICENSE.APACHE"
+  },
+  {
+    "repository": "google/filament",
+    "license": "Apache-2.0",
+    "license_name": "Apache License 2.0",
+    "license_file": "LICENSE",
+    "license_blob_sha": "73774b41cafc7ca9171fa50ea9fd95da343be320",
+    "source": "https://github.com/google/filament/blob/main/LICENSE"
+  },
+  {
+    "repository": "dimforge/rapier",
+    "license": "Apache-2.0",
+    "license_name": "Apache License 2.0",
+    "license_file": "LICENSE",
+    "license_blob_sha": "97f4383a35a48ddd50566a879e836491d2fe9b75",
+    "source": "https://github.com/dimforge/rapier/blob/master/LICENSE"
+  },
+  {
+    "repository": "jrouwe/JoltPhysics",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "4f0976848529e8243687918193e0742032aef7dc",
+    "source": "https://github.com/jrouwe/JoltPhysics/blob/master/LICENSE"
+  },
+  {
+    "repository": "bulletphysics/bullet3",
+    "license": "NOASSERTION",
+    "license_name": "Other",
+    "license_file": "LICENSE.txt",
+    "license_blob_sha": "319c84e349f6df4b8b1aa83163fcc54aa9233efc",
+    "source": "https://github.com/bulletphysics/bullet3/blob/master/LICENSE.txt"
+  },
+  {
+    "repository": "pmndrs/cannon-es",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "f1a0ed0a402538a15a0f417efe4359c68b8e0014",
+    "source": "https://github.com/pmndrs/cannon-es/blob/master/LICENSE"
+  },
+  {
+    "repository": "gkjohnson/three-mesh-bvh",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "1ef1648d29324453fcd04a27bb8c6e385f6807c8",
+    "source": "https://github.com/gkjohnson/three-mesh-bvh/blob/master/LICENSE"
+  },
+  {
+    "repository": "pmndrs/postprocessing",
+    "license": "Zlib",
+    "license_name": "zlib License",
+    "license_file": "LICENSE.md",
+    "license_blob_sha": "0dbaabc8f47bb16b8fd827d2fb9cc953bd26c54d",
+    "source": "https://github.com/pmndrs/postprocessing/blob/main/LICENSE.md"
+  },
+  {
+    "repository": "gkjohnson/three-gpu-pathtracer",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "950920d1ed4a3e831659b71933311725b40e1787",
+    "source": "https://github.com/gkjohnson/three-gpu-pathtracer/blob/main/LICENSE"
+  },
+  {
+    "repository": "regl-project/regl",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "675e313e0c0d66ff3e83cb5af6ddb47408c0537e",
+    "source": "https://github.com/regl-project/regl/blob/main/LICENSE"
+  },
+  {
+    "repository": "pixijs/pixijs",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "13f706e9d211dabcd69c80951b0f834f9c70f6c6",
+    "source": "https://github.com/pixijs/pixijs/blob/dev/LICENSE"
+  },
+  {
+    "repository": "floooh/sokol",
+    "license": "Zlib",
+    "license_name": "zlib License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "efdc02e8faf47abd7c73b7b7373314fa682bf099",
+    "source": "https://github.com/floooh/sokol/blob/master/LICENSE"
+  },
+  {
+    "repository": "Poly-Haven/Public-API",
+    "license": "AGPL-3.0",
+    "license_name": "GNU Affero General Public License v3.0",
+    "license_file": "LICENSE",
+    "license_blob_sha": "be3f7b28e564e7dd05eaf59d64adba1a4065ac0e",
+    "source": "https://github.com/Poly-Haven/Public-API/blob/master/LICENSE"
+  },
+  {
+    "repository": "Gdquest/godot-demos",
+    "license": "MIT",
+    "license_name": "MIT License",
+    "license_file": "LICENSE",
+    "license_blob_sha": "c6b2955535364623df15957673c7c8ee1f315c8c",
+    "source": "https://github.com/gdquest-demos/godot-3-demos/blob/master/LICENSE"
+  }
+]

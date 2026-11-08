@@ -34,6 +34,8 @@ var wind: AudioStreamPlayer
 var sun: DirectionalLight3D
 var enhanced_shadows: bool = false
 var _last_telemetry_usec: int = 0
+var lake_effects: AlpineLakeEffects
+var lake_node: MeshInstance3D
 var _web_input
 
 func _ready() -> void:
@@ -109,13 +111,14 @@ func _build_world() -> void:
 	world.environment = environment
 	add_child(world)
 	sun = DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-37,-32,0)
+	sun.rotation_degrees = Vector3.ZERO
 	sun.light_color = Color(1.0,0.98,0.92)
 	sun.light_energy = 1.18
 	sun.shadow_enabled = enhanced_shadows
 	sun.directional_shadow_max_distance = 65
 	sun.shadow_bias = 0.04
 	add_child(sun)
+	sun.look_at(-AlpineLakeEffects.SUN_POSITION.normalized(),Vector3.UP)
 	for resource in [preload("res://assets/terrain.glb"),preload("res://assets/road.glb")]:
 		var instance: Node3D = resource.instantiate()
 		add_child(instance)
@@ -125,6 +128,7 @@ func _build_world() -> void:
 	_build_detail_scatter()
 	var lake := MeshInstance3D.new()
 	lake.name = "Lake"
+	lake_node = lake
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(320,460)
 	plane.subdivide_width = 32
@@ -197,7 +201,7 @@ func _build_forest() -> void:
 		instance.visibility_range_end = 900
 		instance.visibility_range_end_margin = 50
 		add_child(instance)
-	var source := preload("res://assets/spruce_near.glb").instantiate()
+	var source := preload("res://assets/library/pine.glb").instantiate()
 	var tree_mesh := _first_mesh(source)
 	if tree_mesh: _scatter_cells(_instancing_mesh(tree_mesh),nearby,60,110,"RoadsideSpruce")
 	_scatter_cells(quad,nearby,60,900,"SpruceFarLOD")
@@ -216,7 +220,7 @@ func _instancing_mesh(source: MeshInstance3D) -> ArrayMesh:
 	var mesh := source.mesh.duplicate() as ArrayMesh
 	for index in range(mesh.get_surface_count()):
 		var material := source.get_active_material(index)
-		if "Roadside_Spruce" in source.name and index > 0 and material is StandardMaterial3D:
+		if (("Roadside_Spruce" in source.name or "Library_Pine" in source.name) and index > 0 or "PolyHaven_Grass" in source.name) and material is StandardMaterial3D:
 			var foliage := material.duplicate() as StandardMaterial3D
 			foliage.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 			foliage.alpha_scissor_threshold = 0.18
@@ -235,8 +239,8 @@ func _apply_surface_detail(node: Node) -> void:
 				mat.shader = preload("res://shaders/terrain_detail.gdshader")
 				mat.set_shader_parameter("base_map",original.albedo_texture)
 				mat.set_shader_parameter("base_normal",original.normal_texture)
-				mat.set_shader_parameter("detail_map",preload("res://assets/grass_surface.jpg"))
-				mat.set_shader_parameter("detail_normal",preload("res://assets/ground_detail_normal.png"))
+				mat.set_shader_parameter("detail_map",preload("res://assets/library/ground_diff.jpg"))
+				mat.set_shader_parameter("detail_normal",preload("res://assets/library/ground_normal.jpg"))
 				mat.set_shader_parameter("mountain","Massif" in node.name)
 				node.set_surface_override_material(index,mat)
 			elif original and "Lakeside_Road" in node.name:
@@ -275,7 +279,7 @@ func _scatter_cells(mesh: Mesh, placements: Array, cell_size: float, distance: f
 
 func _build_detail_scatter() -> void:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/world_data_detail.json"))
-	for entry in [["grass","res://assets/meadow_tuft.glb",35.0,70.0],["rocks","res://assets/granite.glb",60.0,150.0]]:
+	for entry in [["grass","res://assets/library/grass.glb",35.0,70.0],["rocks","res://assets/granite.glb",60.0,150.0]]:
 		var source := (load(entry[1]) as PackedScene).instantiate()
 		var detail_mesh := _first_mesh(source)
 		if detail_mesh: _scatter_cells(_instancing_mesh(detail_mesh),data[entry[0]],float(entry[2]),float(entry[3]),str(entry[0]))
@@ -357,6 +361,9 @@ func _build_camera() -> void:
 	camera.far = 2200
 	camera.current = true
 	spring.add_child(camera)
+	lake_effects = AlpineLakeEffects.new()
+	add_child(lake_effects)
+	lake_effects.setup(self,lake_node)
 
 func _build_checkpoints() -> void:
 	for index in [24,64,104,148]:
@@ -559,6 +566,9 @@ func telemetry() -> Dictionary:
 		"touch_fingers":touch_controls.owners.size() if touch_controls else 0,
 		"touch_actions":touch_controls.held if touch_controls else {},
 		"camera_yaw":camera_yaw,"camera_pitch":camera_pitch,
+		"live_reflection_frames":lake_effects.mirror_frames if lake_effects else 0,
+		"water_reflection":"shared-world planar camera 512x288",
+		"sun_shafts":"depth-occluded 32-tap screen-space scattering",
 		"renderer":"gl_compatibility","enhanced_shadows":enhanced_shadows,"fps_target":60,"native_resolution_target":[1920,1080]}
 
 func _read_best() -> void:

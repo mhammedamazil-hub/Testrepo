@@ -18,3 +18,13 @@ node_modules/
 
 # Godot-generated embedded branch atlas; original spruce_shoot.png is authored.
 /game/assets/spruce_near_*.png*
+
+# Reproducible custom browser runtime and Godot-extracted embedded maps.
+/engine/dist/
+/game/assets/library/pine_*.png*
+/game/assets/library/grass_*.png*
+!/game/assets/library/pine_twig_rgba.png
+!/game/assets/library/grass_blades_rgba.png
+
+/game/assets/library/pine_bark_*.jpg*
+/game/assets/library/grass_grass_*

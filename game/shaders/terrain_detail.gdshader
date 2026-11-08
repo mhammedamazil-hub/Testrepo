@@ -13,6 +13,8 @@ void vertex() {
 }
 
 void fragment() {
+	// Mirror camera is below the water plane: clip underwater terrain.
+	if (CAMERA_POSITION_WORLD.y < 0.0 && world_position.y < 0.02) discard;
 	vec3 base = texture(base_map, UV).rgb;
 	vec2 metres = world_position.xz * 0.20;
 	vec3 detail = texture(detail_map, metres).rgb;

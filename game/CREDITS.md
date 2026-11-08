@@ -29,3 +29,15 @@ mesh, detail maps and lake reflection capture are authored for this project
 with Blender/bpy. The lake capture is a **static reflection approximation** of
 the actual terrain, not a real-time planar reflection. Nearby spruce foliage
 uses economical 3D-arranged branch cards with a CPU-rendered needle atlas; distant trees remain billboards.
+
+## Poly Haven vegetation library — new Alpine framework
+
+**Powered by Poly Haven.** The following actual downloaded assets are CC0-1.0:
+- Grass medium 01 — Rob Tuytel (photography), Rico Cilliers (processing): https://polyhaven.com/a/grass_medium_01 . Real `tiny_a_LOD0` geometry, 79 triangles, normalized to 0.42m; alpha mask combined with diffuse.
+- Pine tree 01 — Rob Tuytel and Rico Cilliers: https://polyhaven.com/a/pine_tree_01 . Photographic twig diffuse/opacity adapted onto our 412-triangle branch-card tree. The 17M-triangle source scan is **not** included.
+- Pine bark — Dimitrios Savva: https://polyhaven.com/a/pine_bark . Photographic bark color and GL normal maps.
+- Leafy grass — Charlotte Baglioni: https://polyhaven.com/a/leafy_grass . Ground diffuse, GL normal and ARM maps.
+
+Source URLs, original hashes and authors: `docs/research/library-catalog.json`; compiled asset hashes and exact adaptation: `assets/library/manifest.json`. Asset CC0 licensing is distinct from the Poly Haven API server's software license.
+
+The second playable variant is the original **Alpine 0.1 framework**, using Three.js (MIT), Rapier (Apache-2.0), and postprocessing (Zlib). Complete dependency notices accompany that distribution in `world/credits.txt`. Its shafts are screen-space depth-occluded scattering, not full volumetric path tracing; water uses a current-frame reflected camera, not ray tracing.

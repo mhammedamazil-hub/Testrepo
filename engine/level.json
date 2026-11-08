@@ -1,0 +1,42 @@
+{
+  "schema": "alpine.level.v1",
+  "compiler": "Blender bpy 4.2.23 LTS",
+  "source_blend_sha256": "ef72c7f780af86dd6b89a07ae13aab9970d485ed782e835c19061c57b343dfc3",
+  "name": "Alpine Mirror",
+  "viewport": [
+    1920,
+    1080
+  ],
+  "physics_hz": 60,
+  "lake": {
+    "position": [
+      0,
+      0,
+      -135
+    ],
+    "size": [
+      320,
+      460
+    ]
+  },
+  "sun": [
+    20,
+    285,
+    -800
+  ],
+  "checkpoints": [
+    24,
+    64,
+    104,
+    148
+  ],
+  "assets": {
+    "terrain": "terrain.glb",
+    "road": "road.glb",
+    "vehicle": "touring_car.glb",
+    "character": "hiker.glb",
+    "pine": "library/pine.glb",
+    "grass": "library/grass.glb",
+    "rocks": "granite.glb"
+  }
+}

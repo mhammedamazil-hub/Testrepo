@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#14251f"><title>Alpine Mirror · Alpine Runtime</title></head>
+<body><main id="game">
+ <canvas id="canvas" width="1920" height="1080" aria-label="Alpine Mirror playable 3D world"></canvas>
+ <header><a href="../">ALPINE MIRROR <small>ORIGINAL GODOT EDITION ↗</small></a><nav><button data-command="rays" title="Toggle sun shafts (G)">SUN SHAFTS</button><button data-command="mute" title="Toggle sound (M)">SOUND</button><button data-command="fullscreen" title="Fullscreen (F)">⛶</button><button data-command="pause" title="Pause (Escape)">Ⅱ</button></nav></header>
+ <section id="loading" class="panel">Preparing Blender-authored world and Rapier physics…</section>
+ <section id="menu" class="panel" hidden><p class="eyebrow">AN ORIGINAL SMALL GAME FRAMEWORK</p><h1>A quieter<br>kind of escape.</h1><p>Walk the alpine shore. Take the mountain road.<br>Real-time lake reflections, living light, and library-grown grass.</p><button id="start" class="primary" data-command="start">EXPLORE ALPINE <span>→</span></button><p class="instructions">WASD / arrows · Move &amp; steer<br>E · Enter / exit &nbsp; Space · Jump / brake<br>Shift · Run &nbsp; Drag · Look &nbsp; R · Recover</p><p class="fine">Native 1920 × 1080 · 60 Hz physics · 60 FPS target, not certified<br>Built with Three.js + Rapier, authored with Blender. Not Unreal.</p></section>
+ <section id="pause" class="panel" hidden><p class="eyebrow">TAKE A BREATH</p><h1>Paused.</h1><p>Your input was released. Resume when you’re ready.</p><button class="primary" data-command="start">BACK TO THE LAKE →</button></section>
+ <aside id="telemetry"><p id="mode">ON FOOT</p><strong id="speed">0</strong><span>KM/H</span><dl><div><dt>CHECKPOINT</dt><dd id="checkpoint">0 / 4</dd></div><div><dt>TIME</dt><dd id="time">0.0s</dd></div><div><dt>LAPS</dt><dd id="lap">0</dd></div></dl></aside>
+ <p id="message"></p>
+ <section id="touch-controls" aria-label="Touch game controls"><div id="joystick" aria-label="Movement and steering joystick"><i></i></div><div id="pedals"><button data-hold="back">REVERSE</button><button data-hold="forward">GAS</button></div><div id="actions"><button id="run" data-hold="run">RUN</button><button id="jump" data-hold="jump">JUMP</button><button id="interact" data-command="interact">ENTER</button><button data-command="reset">RECOVER</button></div><span class="look-hint">DRAG RIGHT SIDE TO LOOK</span></section>
+ <footer><span id="status">LOADING · ALPINE RUNTIME 0.1</span><a href="world/credits.txt" target="_blank" rel="noopener">Powered by Poly Haven · Credits &amp; licenses ↗</a></footer>
+ <aside id="rotate">Best played in landscape ↻</aside>
+ </main><script type="module" src="/src/main.js"></script></body></html>

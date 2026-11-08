@@ -1,0 +1,81 @@
+{
+  "library": "Poly Haven",
+  "credit": "Powered by Poly Haven",
+  "license": "CC0-1.0",
+  "grass_source": "grass_medium_01 / tiny_a_LOD0",
+  "grass_triangles": 79,
+  "pine_source": "pine_tree_01 photographic twig maps + pine_bark; adapted branch-card geometry, not the 17M-triangle source tree",
+  "pine_triangles": 412,
+  "pine_atlas_adaptation": "isolated upper-left photographic needle island, crop [25,35,236,456]; opaque cone/wood islands excluded",
+  "sources": {
+    "leafy_grass": {
+      "url": "https://polyhaven.com/a/leafy_grass",
+      "authors": {
+        "Charlotte Baglioni": "All"
+      }
+    },
+    "pine_bark": {
+      "url": "https://polyhaven.com/a/pine_bark",
+      "authors": {
+        "Dimitrios Savva": "All"
+      }
+    },
+    "pine_tree_01": {
+      "url": "https://polyhaven.com/a/pine_tree_01",
+      "authors": {
+        "Rob Tuytel": "photography",
+        "Rico Cilliers": "modeling"
+      }
+    },
+    "grass_medium_01": {
+      "url": "https://polyhaven.com/a/grass_medium_01",
+      "authors": {
+        "Rob Tuytel": "Photography",
+        "Rico Cilliers": "Modeling"
+      }
+    }
+  },
+  "files": {
+    "pine_twig_rgba.png": {
+      "bytes": 103825,
+      "sha256": "c0e5d8928f3c8fcdb20f6357b24fd03e3ce5934d7df3e11723d0b897dea6f4f6"
+    },
+    "ground_diff.jpg": {
+      "bytes": 1195394,
+      "sha256": "cfa40bc9d9417d1852db8753a8d5917f110c40101179f63543c382e39bc05e4a"
+    },
+    "grass_blades_rgba.png": {
+      "bytes": 869784,
+      "sha256": "80bf34cac003ed15e6d6233fcc7ae2daf182c98cdb283b865b78b63c295396ca"
+    },
+    "ground_normal.jpg": {
+      "bytes": 1466049,
+      "sha256": "832328216adc0a7e1f70a31d5ee48c9ab7f2152d83816122736cf42ac4b2ebd6"
+    },
+    "ground_arm.jpg": {
+      "bytes": 1010081,
+      "sha256": "95432451cb2693794459fe7ea339ea9ffdb5959c40373740f80a4aa1703f089d"
+    },
+    "bark_diff.jpg": {
+      "bytes": 837641,
+      "sha256": "89ddfbff0388d30caff902ba600cdf75eb1e651ca71ece6594b5a9b27abb47ab"
+    },
+    "bark_normal.jpg": {
+      "bytes": 1178440,
+      "sha256": "666e5f175a010f12577687dd8029125bff99110e6a97958afb295b34266437db"
+    },
+    "bark_arm.jpg": {
+      "bytes": 810100,
+      "sha256": "1ba20ec25c9f43327d6aa0ea809917854cff553ad7f21fb548e853a5b5ec701a"
+    },
+    "grass.glb": {
+      "bytes": 2512032,
+      "sha256": "e0c75de1a68831b46c7ad93c9393ced9442499e0526148019bccff36052a8416"
+    },
+    "pine.glb": {
+      "bytes": 2165132,
+      "sha256": "c636767210b6836df4f23ded272c4eb708846d876f0946b6aec3e1a99ad95f7e"
+    }
+  },
+  "license_scope": "Poly Haven source inputs; original Alpine scaffold and game code retain repository terms"
+}

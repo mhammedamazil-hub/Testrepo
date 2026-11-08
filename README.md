@@ -15,6 +15,15 @@ The Alpine mountain-and-lake scene now has a separate, real **Godot 4.4.1 walkin
 
 The game assets are derived from a copy of the original scene; the completed cinematic below is preserved separately.
 
+## New: original Alpine browser framework
+
+A second playable edition lives in [`engine/`](engine/README.md): real **Three.js + Rapier WASM** gameplay over the same Blender-authored landscape. It includes actual CC0 Poly Haven grass geometry, photographic pine/bark, current-frame planar lake reflections, occluded sun shafts, touch controls, collision, driving, checkpoints and pause/recovery. Godot also receives the library assets, a live reflection camera and screen-space shafts.
+
+- **[Play the Alpine framework edition](https://mhammedamazil-hub.github.io/Testrepo/alpine/)** — deployed alongside Godot by the combined Pages workflow.
+- [Bounded 32-repository library/license survey and exact asset decisions](docs/research/open-source-runtime-and-assets.md).
+- [Actual mobile WebGL2/Rapier checks](docs/game/alpine-browser-validation.json) · [Godot Web render check](docs/game/godot-library-browser-validation.json).
+- This is one original small framework around **bpy authoring**, not an Unreal-level renderer or a claim to have ported the game to every surveyed engine. Native 1080p and 60 Hz physics are not verified 60 FPS; physical phones remain untested. The scene is **not photorealistic/AAA**.
+
 ## Completed 20-second 1080p60 cinematic delivery
 
 - `output/Alpine_Mirror_1080p_20s.mp4` — **1920×1080, 60 fps, 1,200 native rendered frames, exactly 20 seconds**, H.264, silent.

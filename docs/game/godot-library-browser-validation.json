@@ -1,0 +1,54 @@
+{
+  "telemetry": {
+    "camera_pitch": -0.19,
+    "camera_yaw": -0.02723821811378,
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 171,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 22,
+    "frame_samples": 2,
+    "laps": 0,
+    "last_touch": [
+      300,
+      790
+    ],
+    "live_reflection_frames": 22,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 2958.3,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 166174,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0,
+    "sun_shafts": "depth-occluded 32-tap screen-space scattering",
+    "touch_actions": {},
+    "touch_enabled": true,
+    "touch_fingers": 0,
+    "water_reflection": "shared-world planar camera 512x288"
+  },
+  "errors": [],
+  "physical_phone_tested": false,
+  "target_60fps_verified": false,
+  "scope": "Actual Godot WebGL2 render/start touch; physics/input suite separately run in native Godot."
+}

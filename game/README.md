@@ -54,17 +54,24 @@ speed and memory use depend on the physical browser/device; no all-phone or
 
 ## Visual realism pass
 
-The current revision adds licensed photo-derived grass detail, close-range
-material normals, a smoothly lofted 12.6k-triangle unbranded touring car,
-spatial needle-bough card spruce LODs near the road, instanced meadow tufts and
-rocks, and a static reflection panorama captured from the actual terrain.
-Distant trees remain billboards. Nearby branch-card LODs deliberately disable
-automatic simplification: it otherwise removes thin/disconnected foliage.
-The character is still simplified; car physics are arcade/kinematic. Water
-uses a **baked reflection approximation**, not real-time planar reflection or
-SSR. This is a visible realism improvement, **not a photoreal/AAA sign-off**.
-Assets: `tools/game/build_detail.py`, `assets/detail_manifest.json` and
-`assets/grass_surface.provenance.json`; license attribution is in CREDITS.md.
+The current revision uses actual **CC0 Poly Haven grass geometry** and isolated
+photographic pine needle/bark maps, compiled in Blender. The grass tuft has
+79 triangles and the adapted branch-card tree has 412; the 17M-triangle full
+pine scan was deliberately not downloaded. Thin-card automatic mesh LOD is
+disabled; distant trees remain impostors.
+
+Water now uses a **shared-world mirrored SubViewport camera at 512×288**, with
+projective sampling, animated normals and Fresnel; the main view remains
+1920×1080. Water/post-process layers are excluded from the mirror to prevent
+recursion. The previous panorama is only an out-of-frustum fallback, not the
+main reflection. Original 32-tap depth-occluded **screen-space sun shafts** are
+also rendered. This is not ray tracing or full volumetric scattering.
+
+The simpler character/vehicle/terrain art and arcade/kinematic handling remain;
+this is **not a photoreal/AAA sign-off** or a verified 60 FPS phone release.
+Source/compiled credits and hashes: `assets/library/manifest.json`, CREDITS.md,
+`tools/game/prepare_library_assets.py`. The separate [Alpine framework edition](../engine/README.md)
+uses the same scene and library assets through Three.js and actual Rapier WASM.
 
 ## Run / edit the source
 
