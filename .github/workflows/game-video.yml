@@ -36,6 +36,9 @@ on:
       - 'android/game/app/src/main/cpp/*.h'
       - '.github/workflows/game-video.yml'
 
+permissions:
+  contents: write          # the release upload needs it; without this the last step 403s
+
 jobs:
   video:
     runs-on: ubuntu-latest
