@@ -134,3 +134,9 @@ The **previous baseline** passed Rust build/tests and browser CI. The v0.2 expan
 This workspace has no Rust toolchain and blocks the Rust download hosts, so no live Rust server is running here. GitHub Actions builds on an unrestricted runner and uploads a Linux executable after a successful run. Workflows: `.github/workflows/rust.yml` and `web.yml`.
 
 See [HTTP API reference](docs/API.md). Existing independent REA setup is documented in [docs/rea-setup.md](docs/rea-setup.md); REA is not a Sourcebook runtime dependency.
+
+## Android APK / mobile
+
+The Android client now lives in [`android/`](android/) with a dedicated [APK build workflow](.github/workflows/android.yml). It connects to your running Rust server and exposes the existing app features through mobile **Sources / Chat / Studio** tabs, native document picking/saving, audio playback/download, and Android print/PDF. It is **not an offline embedded-server APK**. See [Android setup and download instructions](docs/ANDROID.md) for requirements, signing, LAN/HTTPS connection and limitations.
+
+The v0.2 Rust expansion subsequently passed GitHub build/tests. The mobile update has **10 passing local browser tests**, including tab switching and native save/print bridge contracts. APK compilation/signature verification runs in its own CI workflow; consult the latest result rather than assuming that browser tests verify an Android install.

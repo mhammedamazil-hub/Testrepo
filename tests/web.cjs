@@ -13,6 +13,7 @@ function boot(options = {}) {
   w.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
   w.HTMLElement.prototype.scrollIntoView = function () {};
   w.confirm = () => true;
+  if(options.nativeBridge)w.SourcebookAndroid=options.nativeBridge;
   const requests = [];
   let notebook = { id: 'test-notebook', title: 'Research', description: '', sources: [], messages: [], notes: options.notes || [], artifacts: options.artifacts || [], created: 1, updated: 1 };
   w.fetch = async (url, options = {}) => {
@@ -34,7 +35,7 @@ function boot(options = {}) {
     return { ok: true, status: 200, headers: new w.Headers({ 'content-type': 'application/json' }), json: async () => JSON.parse(JSON.stringify(data)) };
   };
   w.sessionStorage.setItem('sourcebook-token', 'test-token-with-enough-characters');
-  w.eval(script);
+  w.eval(script + '\nwindow._nativeTest = {download, printWork};');
   return { dom, w, requests };
 }
 test('loads authenticated notebook library and opens workspace', async () => {
@@ -108,4 +109,31 @@ test('shared notebook opens without owner token and marks the UI read-only', asy
  const {dom,w,requests}=boot({share:true});await tick();
  assert.ok(w.document.body.classList.contains('shared-view'));assert.equal(w.document.querySelector('#workspace').hidden,false);
  assert.ok(requests.some(r=>r.url==='/api/share/shared-token'&&!r.token));assert.ok(!requests.some(r=>r.url==='/api/config'));dom.window.close();
+});
+
+test('mobile notebook tabs switch sources/chat/studio without losing workspace', async () => {
+ const {dom,w}=boot();await tick();w.document.querySelector('.notebook-card').click();await tick();
+ for(const panel of ['sources','studio','chat']){
+  const tab=w.document.querySelector(`[data-mobile-panel="${panel}"]`);tab.click();
+  assert.equal(w.document.querySelector('#workspace').dataset.mobilePanel,panel);
+  assert.equal(tab.getAttribute('aria-selected'),'true');
+  assert.equal(w.document.querySelectorAll('.mobile-tabs [data-mobile-panel][aria-selected="true"]').length,1);
+ }
+ dom.window.close();
+});
+
+test('Android export uses native save dialog bridge, not an unsupported blob download', async () => {
+ const calls=[];const {dom,w}=boot({nativeBridge:{saveFile:(...args)=>calls.push(args)}});await tick();
+ await w._nativeTest.download('notes.md','Hello from Sourcebook','text/markdown; charset=utf-8');
+ assert.equal(calls.length,1);assert.equal(calls[0][0],'notes.md');assert.equal(calls[0][1],'text/markdown');
+ assert.equal(Buffer.from(calls[0][2],'base64').toString(),'Hello from Sourcebook');
+ dom.window.close();
+});
+
+test('Android print bridge receives escaped, self-contained document without a popup', async () => {
+ const calls=[];const {dom,w}=boot({nativeBridge:{printDocument:(...args)=>calls.push(args)}});await tick();
+ w._nativeTest.printWork({title:'Research',content:'<img src=x onerror=alert(1)>',data:null});
+ assert.equal(calls.length,1);assert.equal(calls[0][0],'Research');assert.ok(calls[0][1].includes('&lt;img'));
+ assert.ok(!calls[0][1].includes('<img src=x'));assert.ok(calls[0][1].includes('<!doctype html>'));
+ dom.window.close();
 });

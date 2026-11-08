@@ -8,24 +8,39 @@ permissions:
   contents: read
 jobs:
   apk:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - name: Install pinned Android SDK tools
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_HOME"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0' 
       - name: Preserve personal debug signing identity between builds
         uses: actions/cache@v4
         with:
           path: android/.signing
           key: sourcebook-personal-debug-signing-v1
       - name: Compile, sign and verify APK
-        run: bash android/scripts/build-apk.sh
+        run: |
+          if bash android/scripts/build-apk.sh > "$RUNNER_TEMP/android-build.log" 2>&1; then
+            cat "$RUNNER_TEMP/android-build.log"
+          else
+            cat "$RUNNER_TEMP/android-build.log"
+            python3 - <<'PYLOG'
+          import os
+          from pathlib import Path
+          lines = Path(os.environ['RUNNER_TEMP'], 'android-build.log').read_text().splitlines()
+          for line in lines[-25:]:
+              print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PYLOG
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: sourcebook-android-debug
