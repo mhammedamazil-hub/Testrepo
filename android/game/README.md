@@ -94,6 +94,7 @@ interior lit only by the sky through the openings.
 | Glass | Fresnel sky reflection over a dim room — a mirror, not transmission |
 | Sky | full-screen quad: gradient, sun disc + glow, procedural altocumulus, no sky texture |
 | Ground | procedural patches, grain, fine noise and mown stripes in world space, fading with distance |
+| Video | `.github/workflows/game-video.yml` renders 5 s at 1920x1080 / 30 fps with the game's own renderer and attaches `villa_garden_1080p.mp4` to the `villa-garden-video` release. ~5 s per frame on 2 cores |
 | Reference | `tools/villa_cycles.py` renders the same camera in Blender Cycles at 1080p (96 spp, denoised); `tools/villa_match.py` prints the region-by-region delta |
 | Gameplay | **exploration**: no score, no timer, no objectives. Wall sliding, 0.45 m step-up, 3.15 m/s walk, camera bob |
 | HUD | drawn in GL from `assets/hud_font.png` (95 glyphs, 16×6 cells): counter, timer, fps, crosshair, compass chevron, thumb stick, boot screen, diagnostics |
