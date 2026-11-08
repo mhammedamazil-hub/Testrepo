@@ -21,6 +21,8 @@ This is not a production-ready 1080p60 game, not a finished GTA-scale world, and
 - Source project under `game/`, asset-generation/build/test tools under `tools/game/`, specialist usage trace in `docs/GAME_SKILL_USAGE.md`.
 - Downloadable Web package: `.exports/Alpine_Mirror_Web.zip` (generated outside Git). It includes actual WASM/PCK runtime files, licenses and credits. Serve it over HTTP(S), not `file://`.
 
+Published mobile/realism code revision: **`e91a6eb`**. The updated game is live on the same Pages URL.
+
 ## Verified evidence
 
 | Gate | Result | Evidence |
@@ -28,13 +30,13 @@ This is not a production-ready 1080p60 game, not a finished GTA-scale world, and
 | Real engine/toolchain | PASS | Official pinned Godot executable, matching Web templates, original upstream checksums and local transport hashes; `docs/GODOT_TOOLCHAIN_PROVENANCE.json` |
 | Original cinematic preserved | PASS | `.blend` SHA-256 still `ef72c7f780af86dd6b89a07ae13aab9970d485ed782e835c19061c57b343dfc3`; no production script/workflow modified |
 | Blender -> Godot asset import | PASS | Native heightfields resampled to 61,400 terrain triangles; CPU-baked original materials; GLB assets imported by actual Godot |
-| Actual engine physics/state | **26/26 PASS locally** | `headless-validation.json`: original 14 keyboard/physics checks plus real viewport-local touch events, multi-touch ownership, camera orbit, movement, drive/brake/exit, pause/release, focus cleanup, recovery and instantiated detail |
+| Actual engine physics/state | **26/26 PASS locally and in CI** | `headless-validation.json`: original 14 keyboard/physics checks plus real viewport-local touch events, multi-touch ownership, camera orbit, movement, drive/brake/exit, pause/release, focus cleanup, recovery and instantiated detail |
 | Desktop rendered browser gameplay — earlier baseline | **PASS (historical)** | `browser-validation.json`: real Chromium WebGL 2 / SwiftShader, actual keyboard input, 4.23 m recorded drive displacement, braking and subsequent exit, no console errors |
 | Native 1080p | **VERIFIED** | Both Godot viewport and actual browser canvas are 1920 x 1080; render scale is 1.0; actual PNG captures below |
-| GitHub Pages hosting | **LIVE** | [Play online](https://mhammedamazil-hub.github.io/Testrepo/). [Deployment run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42484554999) passed, including public HTTPS HTML/JS/audio-worklet checks, WASM/PCK binary headers and WASM MIME type. Pages source is Actions; the `github-pages` environment allows the active branch. Hosting checks do not certify rendered performance. |
-| Source/evidence regression suite | **26/26 PASS locally** | Nine game/asset/mobile integrity tests plus the existing 17 audit/production/recovery checks |
+| GitHub Pages hosting | **LIVE** | [Play online](https://mhammedamazil-hub.github.io/Testrepo/). [Mobile update deployment](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487951351) passed, including public HTTPS HTML/JS/audio-worklet checks, WASM/PCK binary headers and WASM MIME type. Pages source is Actions; the `github-pages` environment allows the active branch. Hosting checks do not certify rendered performance. |
+| Source/evidence regression suite | **26/26 PASS locally and in CI** | Nine game/asset/mobile integrity tests plus the existing 17 audit/production/recovery checks |
 | Rendered mobile touch gameplay | **15/15 PASS in emulation** | `mobile-browser-validation.json`: real Chromium CDP touch input, 932×430 phone viewport, native 1920×1080 canvas, simultaneous movement/look and throttle/steer, 4.32 m drive, brake/exit/pause/resume/cancel/focus handling, no console errors. Physical phones are not certified. |
-| Clean public-runner import/test/export | **PASS** | [First independent CI run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42478054008): verified engine restore, clean asset import, 14 engine checks, 23 regression tests, actual Web export and downloadable artifact. Standard public-repository CPU runner; not a rendered FPS benchmark. |
+| Clean public-runner import/test/export | **PASS** | [Mobile revision CI run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487951351): verified engine restore, clean asset import, 26 engine checks, 26 regression tests, actual Web export, downloadable artifact, Pages publication and public HTTPS runtime checks. Standard public-repository CPU runner; not a rendered FPS benchmark. |
 | 60 FPS rendering | **NOT MET** | Earlier desktop software sample: 1 FPS / 1,814.5 ms P95 across 9 samples. The mobile-emulation functional run also reported 1 FPS, with a mixed-run P95 of 4,491 ms across 121 samples. These CPU SwiftShader runs are not controlled physical-phone benchmarks. Hardware-GPU performance remains untested. |
 | Photoreal / full open-world completion | NOT APPROVED | Improved vehicle/environment, but character remains simplified; near trees use branch cards, distant trees are billboards; no traffic/NPC/combat/mission systems |
 
