@@ -87,3 +87,29 @@ jobs:
       - name: Deploy playable Godot Web export
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify public game files over HTTPS
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import os
+          import urllib.request
+          base = os.environ['PAGES_URL'].rstrip('/') + '/'
+          with urllib.request.urlopen(base, timeout=60) as response:
+              html = response.read().decode('utf-8')
+              assert response.status == 200
+              assert 'Alpine Mirror' in html and '$GODOT_' not in html
+              assert 'src="index.js"' in html
+          for name, magic in [('index.wasm', b'\x00asm'), ('index.pck', b'GDPC')]:
+              with urllib.request.urlopen(base + name, timeout=60) as response:
+                  assert response.status == 200 and response.read(4) == magic, name
+                  if name.endswith('.wasm'):
+                      assert response.headers.get_content_type() == 'application/wasm'
+          for name in ['index.js', 'index.audio.worklet.js', 'index.audio.position.worklet.js']:
+              with urllib.request.urlopen(base + name, timeout=60) as response:
+                  assert response.status == 200 and response.read(1), name
+          print('PAGES_HTTPS_FILES_PASS:', base)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Play Alpine Mirror\n\n' + base + '\n\n')
+              summary.write('Public HTTPS page, JS/worklets and real WASM/PCK headers verified. This is not a 60 FPS benchmark.\n')
+          PY
