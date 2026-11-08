@@ -306,6 +306,13 @@
     ],
     "downloads": [
       {
+        "file": "pine_tree_01__twig_alpha__pine_tree_01_twig_alpha_1k.png",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/pine_tree_01/pine_tree_01_twig_alpha_1k.png",
+        "bytes": 351928,
+        "md5": "641911a5a3f543911dad04ebb26e7bca",
+        "sha256": "6f91aa99f2c27108d6f817f874954aa7df8bfbb4dea2673e9322555a6ae79d99"
+      },
+      {
         "file": "pine_tree_01__atlas__pine_tree_01_twig_nor_gl_1k.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/pine_tree_01/pine_tree_01_twig_nor_gl_1k.jpg",
         "bytes": 797935,
@@ -527,6 +534,13 @@
       "usd"
     ],
     "downloads": [
+      {
+        "file": "grass_medium_01__Alpha__grass_medium_01_alpha_1k.png",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/grass_medium_01/grass_medium_01_alpha_1k.png",
+        "bytes": 648718,
+        "md5": "6b5b251ef1ca9a69ab9f49def66d758a",
+        "sha256": "711a8e49af758d6a6ce1f610db858899a27be19da6d1866bd35c13bc7b8ffeff"
+      },
       {
         "file": "grass_medium_01__atlas__grass_medium_01_nor_gl_1k.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/grass_medium_01/grass_medium_01_nor_gl_1k.jpg",
