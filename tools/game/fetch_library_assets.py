@@ -40,6 +40,11 @@ for asset in ['leafy_grass','pine_bark','pine_tree_01','grass_medium_01']:
                 if entry:record['downloads'].append(entry)
     else:
         model=files.get('gltf',{}).get('1k',{}).get('gltf',{})
+        for key in ['twig_alpha','Alpha']:
+            item=files.get(key,{}).get('1k',{}).get('png')
+            if item:
+                entry=save(asset,key,item)
+                if entry:record['downloads'].append(entry)
         record['gltf_1k']=model
         if model.get('url') and model.get('size',0)<4_000_000:
             data=get(model['url']);gltf=json.loads(data)
