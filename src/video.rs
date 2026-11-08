@@ -50,7 +50,9 @@ pub(super) async fn ingest(
     Json(p): Json<VideoInput>,
 ) -> Result<Json<Source>> {
     authorized(&h, &a)?;
-    if a.offline {return Err(bad("Video imports are disabled in offline mode"));}
+    if a.offline {
+        return Err(bad("Video imports are disabled in offline mode"));
+    }
     let url = platform_url(&p.url)?;
     let title = text(&p.title, "Video title", 300)?;
     a.notebook(&nid).await?;

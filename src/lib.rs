@@ -363,8 +363,11 @@ pub fn router(app: App) -> Router {
 async fn config(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
     authorized(&h, &a)?;
     let active = ai::resolve(&a, "chat").await;
+    let configured = !active.model.is_empty();
+    #[cfg(all(feature = "android-offline", target_os = "android"))]
+    let configured = configured && (active.kind != "native" || android_offline::model_loaded());
     Ok(Json(
-        json!({"model":active.model,"configured":!active.model.is_empty(),"offline":a.offline,"api_key_set":!active.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":ai::media_provider(&a,"speech").await.is_ok(),"transcription_configured":ai::media_provider(&a,"transcription").await.is_ok()}),
+        json!({"model":active.model,"configured":configured,"standalone":cfg!(all(feature="android-offline",target_os="android")),"offline":a.offline,"api_key_set":!active.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":ai::media_provider(&a,"speech").await.is_ok(),"transcription_configured":ai::media_provider(&a,"transcription").await.is_ok()}),
     ))
 }
 async fn list(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {

@@ -2,13 +2,19 @@
 
 An independent, local-first NotebookLM-style research app. **The server, provider calls, ingestion, persistence, CLI, study validation, grading and media handling are written in Rust.** The embedded browser client uses HTML/CSS/JavaScript. Not affiliated with Google; this is a substantial alternative, not a claim of complete proprietary-feature parity.
 
-## Offline Android APK — no server
+## Standalone Android APK — embedded Rust, your choice of AI
 
-A separate **Sourcebook Offline** APK now packages the **Rust core + llama.cpp** directly inside the Android app. It has **no Internet permission, no localhost listener, and no server URL/token to configure**. Import your own compatible text-instruct GGUF and run AI on the phone's CPU. Requires **ARM64 Android 9+** with a current System WebView. Models are not bundled.
+The standalone APK embeds **Rust + optional llama.cpp** in the same Android
+process: **no external workspace server, localhost listener or server token**.
+It now supports **direct API keys, multiple providers and per-task assignments**,
+plus a redesigned library/workspace with persistent System / Light / Dark themes.
+**API use does not require GGUF.** Optional bundled local inference currently
+supports compatible GGUF weights only; other offline model runtimes are not implemented.
 
-[Download the first verified offline APK artifact](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42499842998/artifacts/13625236121) · [Offline installation, model import and limits](docs/OFFLINE-ANDROID.md)
-
-This replaces the external-server requirement **for the offline variant**. The older server-connected APK and desktop CLI remain separate options. Network webpage imports, public links and speech/transcription are not offline features; see the offline guide before downloading.
+This hybrid revision **requests INTERNET permission** for selected APIs and website
+imports. It supersedes the previous strictly offline-only design. ARM64 Android 9+;
+model weights are not bundled. [Installation, privacy, current limits and build details](docs/OFFLINE-ANDROID.md).
+The separate older server-connected Android client remains available.
 
 ## Features
 
@@ -20,7 +26,9 @@ This replaces the external-server requirement **for the offline variant**. The o
 - **Audio:** actual MP3 audio overviews (single narrator) using your provider's speech endpoint; playback/download in the UI. Audio/video uploads can be transcribed into sources using a configured transcription endpoint.
 - **Sharing:** revocable, unguessable read-only links. Explicitly enabling sharing exposes **all** sources, notes, history, materials and audio in that notebook to anyone with the link. Shared users cannot mutate owner data; quiz practice in shared views is local and unsaved.
 - **CLI:** manage notebooks, add sources, ask, generate, save notes, restore/export, review quizzes/cards, generate source guides, download structured files/MP3, enable/revoke sharing.
-- **Bring your own AI:** any compatible `/chat/completions` API, including gateways or local model servers. No Gemini requirement or Google login.
+- **Bring your own AI:** multiple OpenAI-compatible, Gemini and Anthropic providers, with separate assignments per task. Optional local/native providers; no required GGUF or Google login for API use. Owner-only Settings saves redacted configuration and keys with restricted file permissions (not custom encryption).
+- **Video research (desktop):** public YouTube/Instagram links via separately installed yt-dlp + FFmpeg; up to 8 sampled frames sent to an assigned vision model and retained with labelled observations. No audio analysis; tools are not bundled in Android.
+- **Motion graphics:** validated timed scenes with an animated typography storyboard preview and JSON export, not rendered MP4.
 
 Studio JSON is parsed into typed Rust structures and validated before saving. The client builds study views using safe DOM text nodes, not provider-generated HTML. Older Markdown-only materials remain readable.
 
@@ -45,7 +53,7 @@ For Arena or a remote server:
 cargo run -- serve --bind 0.0.0.0:3000
 ```
 
-Browser API calls are same-origin relative URLs. Put remote deployments behind HTTPS and an access-controlled reverse proxy. Token authentication is mandatory even on localhost. The token is held in browser session storage and can be cleared with Disconnect. Provider keys never go to the browser. `.env.example` lists all settings.
+Browser API calls are same-origin relative URLs. Put remote deployments behind HTTPS and an access-controlled reverse proxy. Token authentication is mandatory even on localhost. The token is held in browser session storage and can be cleared with Disconnect. Saved provider keys are never returned to the browser. New keys entered in Settings are sent to the Rust core over the authenticated connection; use HTTPS remotely. `.env.example` lists all settings.
 
 ### Local AI
 
@@ -58,11 +66,11 @@ unset AI_API_KEY
 cargo run -- serve
 ```
 
-Models must support text chat completions; structured study generation requires reliable JSON output. Native Anthropic/Gemini wire protocols require a compatible gateway. Some models are much better than others at citations and schemas.
+Models must support text chat completions; structured study generation requires reliable JSON output. Settings also supports native Anthropic/Gemini wire protocols without a gateway. A localhost endpoint is on the host/device running Rust. Some models are much better than others at citations and schemas.
 
 ### Real speech and transcription
 
-Set only model names that your configured provider actually supports:
+In Settings assign dedicated OpenAI-compatible **speech** and **transcription** providers/models, or use these environment fallbacks. Set only models the chosen provider actually supports:
 
 ```sh
 export AI_TTS_MODEL='your-speech-model'
@@ -70,7 +78,7 @@ export AI_TTS_VOICE='alloy' # or a voice supported by your provider
 export AI_TRANSCRIPTION_MODEL='your-transcription-model'
 ```
 
-`AI_BASE_URL` must expose OpenAI-compatible `/audio/speech` (MP3 response) and `/audio/transcriptions` (multipart upload, JSON `{text:...}` response). A chat-only provider such as standard Ollama will not automatically provide these services. Audio generation uses a grounded single-narrator script of at most 4,000 characters, not a two-host or real-time interactive podcast. Supported uploads: MP3, WAV, M4A, MP4, WebM, OGG, max 10 MB. This transcribes audio; it does **not** analyze video frames. Only the transcript is kept, not the uploaded audio/video. No OCR or YouTube downloader is bundled.
+`AI_BASE_URL` must expose OpenAI-compatible `/audio/speech` (MP3 response) and `/audio/transcriptions` (multipart upload, JSON `{text:...}` response). A chat-only provider such as standard Ollama will not automatically provide these services. Audio generation uses a grounded single-narrator script of at most 4,000 characters, not a two-host or real-time interactive podcast. Supported uploads: MP3, WAV, M4A, MP4, WebM, OGG, max 10 MB. This transcribes audio; it does **not** analyze video frames. Only the transcript is kept, not the uploaded audio/video. No OCR or downloader is bundled; the separate desktop video-link pipeline requires installed yt-dlp and FFmpeg and analyzes sampled frames, not this audio upload.
 
 MP3 files live beside the database under `notebooks.media/`. Back up both the database and media directory. Database/media operations are not a cross-file transaction; an interrupted generation can leave an unused private MP3. JSON export/restore includes scripts/materials but **not MP3 bytes**; download audio separately. Deleting a notebook or audio artifact removes its media file during normal operation.
 

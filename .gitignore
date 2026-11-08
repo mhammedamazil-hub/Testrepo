@@ -12,3 +12,7 @@ __pycache__/
 *.keystore
 *.jks
 /android/build-offline/
+
+# Owner AI configuration contains API keys.
+*.ai.json
+*.ai.tmp

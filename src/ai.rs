@@ -188,7 +188,9 @@ pub(super) async fn request(a: &App, p: &Provider, messages: Vec<Value>) -> Resu
             return Err(bad("The native on-device engine is available only in the standalone Android build. Configure a localhost OpenAI-compatible endpoint on desktop."));
         }
     }
-    if a.offline {return Err(bad("Cloud AI is disabled in offline mode"));}
+    if a.offline {
+        return Err(bad("Cloud AI is disabled in offline mode"));
+    }
     let base = p.base_url.trim_end_matches('/');
     let system = messages
         .first()

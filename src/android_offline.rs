@@ -31,6 +31,9 @@ extern "C" {
     fn sb_error() -> *const c_char;
     fn sb_free(p: *mut c_char);
 }
+pub(super) fn model_loaded() -> bool {
+    unsafe { sb_loaded() }
+}
 fn native_error() -> String {
     unsafe { CStr::from_ptr(sb_error()).to_string_lossy().into_owned() }
 }
@@ -94,7 +97,7 @@ pub extern "system" fn Java_app_sourcebook_mobile_OfflineActivity_nativeInit(
                     data: PathBuf::from(&directory).join("notebooks.json"),
                     token: TOKEN.into(),
                     base_url: "http://127.0.0.1:1/disabled".into(),
-                    model: "On-device GGUF".into(),
+                    model: "Optional local AI".into(),
                     api_key: String::new(),
                 }))
                 .map_err(|e| e.to_string())?;

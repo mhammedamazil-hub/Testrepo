@@ -565,3 +565,103 @@ async fn offline_storage_and_network_boundaries_without_socket_server() {
     assert_eq!(config["offline"], true);
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn provider_keys_are_redacted_persisted_and_task_routing_is_applied() {
+    let called = std::sync::Arc::new(tokio::sync::Mutex::new(String::new()));
+    let capture = called.clone();
+    let mock = Router::new().route(
+        "/v1/chat/completions",
+        post(move |Json(p): Json<Value>| {
+            let capture = capture.clone();
+            async move {
+                *capture.lock().await = p["model"].as_str().unwrap_or("").into();
+                Json(json!({"choices":[{"message":{"content":"Grounded answer [1]"}}]}))
+            }
+        }),
+    );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let base = format!("http://{}/v1", listener.local_addr().unwrap());
+    let server = tokio::spawn(async move { axum::serve(listener, mock).await.unwrap() });
+    let (_, router, path) = setup(base.clone()).await;
+    let pid = uuid::Uuid::new_v4().to_string();
+    assert_eq!(
+        request(&router, "GET", "/api/ai", None, false).await.0,
+        StatusCode::UNAUTHORIZED
+    );
+    let payload = json!({"providers":[{"id":pid,"name":"Task AI","kind":"openai","base_url":base,"model":"specific-chat-model","api_key":"not-a-real-secret"}],"assignments":{"chat":pid}});
+    let (status, saved) = request(&router, "PUT", "/api/ai", Some(payload.clone()), true).await;
+    assert_eq!(status, StatusCode::OK, "{saved}");
+    assert_eq!(saved["providers"][0]["key_set"], true);
+    assert!(!saved.to_string().contains("not-a-real-secret"));
+    let (_, settings) = request(&router, "GET", "/api/ai", None, true).await;
+    assert!(!settings.to_string().contains("not-a-real-secret"));
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"Routing"})),
+        true,
+    )
+    .await;
+    let notebook = format!("/api/notebooks/{}", book["id"].as_str().unwrap());
+    let (_, source) = request(
+        &router,
+        "POST",
+        &format!("{notebook}/sources"),
+        Some(json!({"title":"Facts","content":"Rust is a programming language."})),
+        true,
+    )
+    .await;
+    let (status, answer) = request(
+        &router,
+        "POST",
+        &format!("{notebook}/chat"),
+        Some(json!({"question":"What is Rust?","source_ids":[source["id"]]})),
+        true,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{answer}");
+    assert_eq!(&*called.lock().await, "specific-chat-model");
+    let mut preserve = payload.clone();
+    preserve["providers"][0]
+        .as_object_mut()
+        .unwrap()
+        .remove("api_key");
+    assert_eq!(
+        request(&router, "PUT", "/api/ai", Some(preserve.clone()), true)
+            .await
+            .1["providers"][0]["key_set"],
+        true
+    );
+    preserve["providers"][0]["clear_key"] = json!(true);
+    assert_eq!(
+        request(&router, "PUT", "/api/ai", Some(preserve), true)
+            .await
+            .1["providers"][0]["key_set"],
+        false
+    );
+    let mut invalid = payload;
+    invalid["assignments"]["quiz"] = json!("unknown-provider");
+    assert_eq!(
+        request(&router, "PUT", "/api/ai", Some(invalid), true)
+            .await
+            .0,
+        StatusCode::BAD_REQUEST
+    );
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            std::fs::metadata(path.with_extension("ai.json"))
+                .unwrap()
+                .permissions()
+                .mode()
+                & 0o777,
+            0o600
+        );
+    }
+    std::fs::remove_file(path.with_extension("ai.json")).unwrap();
+    std::fs::remove_file(path).unwrap();
+    server.abort();
+}

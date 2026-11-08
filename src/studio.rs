@@ -892,7 +892,7 @@ pub(super) async fn enable_share(
     Path(nid): Path<String>,
 ) -> Result<Json<Value>> {
     authorized(&h, &a)?;
-    if a.offline {
+    if a.offline || cfg!(all(feature = "android-offline", target_os = "android")) {
         return Err(bad(
             "Offline notebooks cannot publish share links. Export the notebook JSON instead.",
         ));
