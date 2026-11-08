@@ -1,0 +1,59 @@
+{
+  "status": "ASSET_OUTPUT_AND_GLB_ROUNDTRIP_PASS_WITH_BPY_SHUTDOWN_WORKAROUND",
+  "blender_version": "4.2.23 LTS",
+  "baking_device": "CPU",
+  "asset": "One deliberately small wall/material pipeline test; not a photoreal city",
+  "triangles": 108,
+  "texture_resolution": [
+    512,
+    512
+  ],
+  "embedded_glb_textures": 2,
+  "portable_material": [
+    "base color texture",
+    "tangent-space normal texture",
+    "roughness factor"
+  ],
+  "glb_reimport": "Separate Blender process: mesh count, material, UVs and dimensions verified",
+  "fbx": "Exported successfully; Unity import not tested",
+  "godot_import_tested": false,
+  "unity_import_tested": false,
+  "performance_benchmarked": false,
+  "native_bpy_finalization": "Reproducible SIGSEGV after completed baking/exports; unresolved",
+  "worker_shutdown": "Explicit process exit after validated writes; bypasses native/interpreter cleanup",
+  "integration_stability_proven": false,
+  "files": {
+    "wall_basecolor.png": {
+      "bytes": 63336,
+      "sha256": "8fae631993823312081144f424b2eff50b32689cf52287df8cc27c8f98742430"
+    },
+    "wall_normal.png": {
+      "bytes": 88679,
+      "sha256": "9f38a0cd62d1f5127343b8000b10d175a4a71f0ec271fb95c707e60ad9004e91"
+    },
+    "wall.glb": {
+      "bytes": 164696,
+      "sha256": "0d26bab6dd471fb30a8e6c77b912a425405517db35a03ccd00ea461a108e0f58"
+    },
+    "wall.fbx": {
+      "bytes": 173580,
+      "sha256": "f013773b5e241887278de56c96dd0a0c27ac703c06082f153152646afc3a1ff1"
+    },
+    "wall.blend": {
+      "bytes": 242568,
+      "sha256": "dfd3bf1b01ec7e17332bcaaaf9251d759cb51fe0e6594d080e74d10dcdd04590"
+    }
+  },
+  "eevee_software_render": {
+    "status": "PASS",
+    "renderer": "llvmpipe (LLVM 15.0.6, 256 bits)",
+    "seconds_one_still": 27.009,
+    "resolution": [
+      480,
+      360
+    ],
+    "samples": 64,
+    "realtime_gameplay_tested": false,
+    "image_sha256": "8b30f77bd46a5c7b52d5129e1d1222b308a86ed15acf10582e4e2eabac55c6fa"
+  }
+}

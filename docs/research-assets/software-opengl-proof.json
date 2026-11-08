@@ -1,0 +1,22 @@
+{
+  "status": "SOFTWARE_OPENGL_AND_COMPUTE_PROOF_PASS",
+  "vendor": "Mesa/X.org",
+  "renderer": "llvmpipe (LLVM 15.0.6, 256 bits)",
+  "opengl_version": "4.5 (Core Profile) Mesa 22.3.6",
+  "version_code": 450,
+  "max_texture_size": 16384,
+  "shader_rasterization": true,
+  "compute_shader_values_verified": 256,
+  "image_sha256": "39240d20cf51d096430c37b0651bc68d71981eb887f4b62cf048ff3da74bfadd",
+  "gpu_hardware_added": false,
+  "execution_device": "CPU",
+  "does_not_establish": [
+    "CUDA/OptiX availability",
+    "Vulkan compatibility",
+    "Unreal operation",
+    "GTA-scale real-time performance"
+  ],
+  "dependency_source_repository": "mhammedamazil-hub/3D",
+  "dependency_source_commit": "99f7f1dd0e46ad15e7455a8cc5dfaad0271890bd",
+  "dependencies_are_real_libraries_not_stubs": true
+}
