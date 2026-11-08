@@ -1,0 +1,12 @@
+{
+  "version": "4.4.1-stable",
+  "source": "Official godotengine/godot-builds GitHub release",
+  "verification": "Original engine ZIP and full export-template TPZ verified against official SHA512-SUMS.txt before extraction",
+  "files": {
+    "SHA512-SUMS.txt": "90d0c511f1723975de7950f49cc11f13bdded2238a2ad4999855fe427617636e",
+    "web_nothreads_debug.zip": "e31259c6eb994bc22f49cfeb5fd649c3cec8d3b17cadff77a4e05d13569c4457",
+    "web_nothreads_release.zip": "3a49cc3b1843882eee6cda6cf2ce0440acc8aa8df03a2e3941a3028e1cae9ac9",
+    "Godot_v4.4.1-stable_linux.x86_64.zip": "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa"
+  },
+  "transport": "Temporary Git transport only; remove tracked cache after local installation"
+}
