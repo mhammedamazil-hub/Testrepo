@@ -1,0 +1,153 @@
+name: Recover missing Alpine frames and finish 1080p60
+
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/alpine-recover.yml]
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Original production run with completed clips and frozen scene
+        default: '42202373037'
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: alpine-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '4'
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  preserve-and-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow
+      - name: Preserve finished clips, original still and exact frozen scene
+        id: plan
+        env:
+          SOURCE_RUN: ${{ inputs.source_run || '42202373037' }}
+        run: python tools/recover_alpine.py plan --source-run "$SOURCE_RUN"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpine-recovery-source
+          path: output/recovery_source/
+          compression-level: 0
+          retention-days: 14
+
+  recover:
+    needs: preserve-and-plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.preserve-and-plan.outputs.matrix) }}
+    name: Recover frames ${{ matrix.start }}-${{ matrix.end }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install original CPU renderer and real runtime libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libice6 libgl1
+          pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-recovery-source
+          path: output/recovery_source
+      - name: Restore frozen scene and any validated earlier partial attempt
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: python tools/recover_alpine.py restore --shard "$SHARD"
+      - name: Render ONE native frame with unchanged quality
+        env:
+          FIRST: ${{ matrix.start }}
+          LAST: ${{ matrix.end }}
+        run: python -u scripts/render_frames.py --start "$FIRST" --end "$LAST" --samples 128 --min-samples 24 --noise .03 --threads 4
+      - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('output/frames/*.png') != ''
+        with:
+          name: alpine-recovery-frames-${{ matrix.shard }}
+          path: output/frames/
+          compression-level: 1
+          retention-days: 3
+          overwrite: true
+          if-no-files-found: error
+
+  finish:
+    needs: [preserve-and-plan, recover]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow numpy imageio-ffmpeg==0.8.1
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine-recovery-source
+          path: output/recovery_source
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: alpine-recovery-frames-*
+          path: output/frames
+          merge-multiple: true
+      - name: Keep original clips byte-for-byte and encode only recovered ranges
+        run: python tools/recover_alpine.py assemble
+      - name: Assemble and independently verify the full 20 seconds
+        run: |
+          python scripts/encode_verify.py --segments
+          python scripts/verify_delivery.py
+          python -m unittest discover -s tests -v
+          python tools/recover_alpine.py finish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alpine-Mirror-FINAL-1080p60-delivery
+          path: |
+            output/Alpine_Mirror_1080p_20s.mp4
+            output/Alpine_Mirror_1080p.png
+            output/Alpine_Mirror.blend
+            output/scene_manifest.json
+            output/scene_validation.json
+            output/delivery_validation.json
+            output/independent_verification.json
+            output/recovery_validation.json
+          compression-level: 0
+          retention-days: 30
+      - name: Publish verified final files on the session branch
+        run: |
+          git config user.name 'Alpine Recovery Bot'
+          git config user.email 'alpine-recovery@users.noreply.github.com'
+          git pull --ff-only origin arena/f0bb5c2d-testrepo
+          git add -f output/Alpine_Mirror_1080p_20s.mp4 output/Alpine_Mirror_1080p.png output/Alpine_Mirror.blend output/scene_manifest.json output/scene_validation.json output/delivery_validation.json output/independent_verification.json output/recovery_validation.json
+          git add README.md docs/RECOVERY_COMPLETE.md
+          git rm --ignore-unmatch output/Alpine_Mirror_PARTIAL_1080p60.mp4
+          git commit -m 'Complete verified 20-second 1080p60 delivery by recovering only missing native frames'
+          git push origin arena/f0bb5c2d-testrepo
+      - name: Remove only archived recovery raw-frame intermediates
+        continue-on-error: true
+        run: python tools/recover_alpine.py cleanup
