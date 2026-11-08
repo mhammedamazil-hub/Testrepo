@@ -8,5 +8,6 @@
     "web_nothreads_release.zip": "3a49cc3b1843882eee6cda6cf2ce0440acc8aa8df03a2e3941a3028e1cae9ac9",
     "Godot_v4.4.1-stable_linux.x86_64.zip": "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa"
   },
-  "transport": "Temporary Git transport only; remove tracked cache after local installation"
+  "transport": "Temporary Git transport only; remove tracked cache after local installation",
+  "transport_commit": "6354722"
 }

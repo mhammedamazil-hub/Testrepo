@@ -1,0 +1,39 @@
+name: Prepare free browser verification libraries
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/game-browser-libs.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    container: debian:bookworm
+    timeout-minutes: 8
+    steps:
+      - name: Install transport tooling
+        run: apt-get update -qq && apt-get install -y --no-install-recommends git ca-certificates
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - name: Download the two real Debian libraries missing from headless Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/browser-os-transport
+          cd .cache/browser-os-transport
+          apt-get download libnspr4 libnss3
+          sha256sum ./*.deb > SHA256SUMS
+          for file in ./*.deb; do dpkg-deb -f "$file" Package Version Architecture; done > PROVENANCE.txt
+      - name: Publish temporary cache to this session branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f .cache/browser-os-transport
+          git commit -m 'ci: temporary official Debian NSS/NSPR transport for browser tests'
+          git pull --rebase origin arena/f0bb5c2d-testrepo
+          git push origin HEAD:arena/f0bb5c2d-testrepo
