@@ -7,7 +7,7 @@ The Alpine mountain-and-lake scene now has a separate, real **Godot 4.4.1 walkin
 **Native 1920×1080 rendering is verified. The requested 60 FPS has not been achieved in the available CPU software-rendering test.** This is a playable prototype, not a production-ready 1080p60 or GTA-scale game. [Build status and actual rendered evidence](docs/game/BUILD_STATUS.md).
 
 - Play using the Arena live preview, or build the Web package with `python3 tools/game/setup_toolchain.py` followed by `python3 tools/game/export_game.py`.
-- [GitHub Pages publishing](game/README.md#github-pages-hosting) is wired into the game workflow; the repository owner must enable **GitHub Actions** under Settings → Pages before its first deployment.
+- **[Play online on GitHub Pages](https://mhammedamazil-hub.github.io/Testrepo/)** — deployment and public HTTPS runtime-file checks passed. [Publishing setup](game/README.md#github-pages-hosting). Game/build changes on the active branch automatically rebuild and republish.
 - Controls: **WASD/arrows**, **E** enter/exit, **Space** jump/brake, **Escape** pause, **R** recover. Full controls are in the game README.
 - [Specialist skill usage](docs/GAME_SKILL_USAGE.md), [actual engine physics checks](docs/game/headless-validation.json), [rendered browser gameplay checks](docs/game/browser-validation.json).
 - [Game validation/build workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) produces a downloadable Web artifact. A green build validates code/gameplay/export, **not 60 FPS**.
