@@ -8,7 +8,8 @@ The Alpine mountain-and-lake scene now has a separate, real **Godot 4.4.1 walkin
 
 - Play using the Arena live preview, or build the Web package with `python3 tools/game/setup_toolchain.py` followed by `python3 tools/game/export_game.py`.
 - **[Play online on GitHub Pages](https://mhammedamazil-hub.github.io/Testrepo/)** — deployment and public HTTPS runtime-file checks passed. [Publishing setup](game/README.md#github-pages-hosting). Game/build changes on the active branch automatically rebuild and republish.
-- Controls: **WASD/arrows**, **E** enter/exit, **Space** jump/brake, **Escape** pause, **R** recover. Full controls are in the game README.
+- **Phone controls (landscape):** left stick moves/steers; drag the right side to look; onscreen enter/exit, gas, reverse, jump/brake, run, pause and recover. Chromium multi-touch emulation is verified; physical-device coverage is not certified.
+- **Desktop controls:** WASD/arrows, E enter/exit, Space jump/brake, Escape pause, R recover; T toggles touch controls. [Full controls and visual-realism improvements](game/README.md).
 - [Specialist skill usage](docs/GAME_SKILL_USAGE.md), [actual engine physics checks](docs/game/headless-validation.json), [rendered browser gameplay checks](docs/game/browser-validation.json).
 - [Game validation/build workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) produces a downloadable Web artifact. A green build validates code/gameplay/export, **not 60 FPS**.
 

@@ -48,7 +48,12 @@ One free local option, if Python 3 is installed:
 Controls: WASD/arrows move or drive; E enters/exits the car; Space jumps/brakes;
 Shift runs; mouse orbits after clicking; Escape pauses/releases cursor;
 R recovers; F fullscreen; F2 enhanced shadows; F8 resets frame-time samples;
-Q rear view; M mute. Touch controls are not implemented.
+Q rear view; M mute; T toggles touch controls on desktop.
+
+MOBILE: rotate to landscape. Left stick moves/steers; drag the right side to
+look. ENTER/EXIT, GAS, REVERSE, JUMP/BRAKE, RUN, PAUSE and RECOVER are on screen.
+Touch controls are implemented; physical Android/iOS device coverage is not
+certified. A WebGL 2-capable modern browser is required.
 
 Native 1920x1080 is verified. 60 FPS is a target, NOT a certified result.
 The sandbox CPU software-rendering test did not achieve 60 FPS.

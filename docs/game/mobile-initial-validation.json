@@ -1,0 +1,21 @@
+{
+  "status": "MOBILE_BROWSER_GAMEPLAY_FAIL",
+  "passed_before_failure": [
+    "Mobile touch controls auto-detected",
+    "Native 1920x1080 canvas retained",
+    "Touch begins the actual game",
+    "Two-finger movement plus camera orbit",
+    "Joystick walks and releases without stuck input",
+    "Touch ENTER takes the wheel",
+    "Multi-touch GAS and steering drive physical car",
+    "Touch BRAKE stops car",
+    "Touch EXIT returns to walking",
+    "Browser touch cancellation releases controls",
+    "Touch PAUSE opens pause menu",
+    "Touch resumes from pause menu"
+  ],
+  "failed_stage": "Browser focus loss pauses and releases held touch",
+  "observed": "Timed out after dispatching window blur; native engine focus notification did not handle this browser event",
+  "fix": "Explicit blur/visibility lifecycle bridge in HTML, consumed by Godot; re-run required",
+  "physical_phone_tested": false
+}

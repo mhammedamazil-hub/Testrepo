@@ -55,6 +55,54 @@
     {
       "check": "Recovery resets route progress",
       "passed": true
+    },
+    {
+      "check": "Touch joystick and camera own independent fingers",
+      "passed": true
+    },
+    {
+      "check": "Touch drag orbits the real camera",
+      "passed": true
+    },
+    {
+      "check": "Touch joystick moves physical player",
+      "passed": true
+    },
+    {
+      "check": "Touch release clears held movement",
+      "passed": true
+    },
+    {
+      "check": "Touch ENTER takes the wheel",
+      "passed": true
+    },
+    {
+      "check": "Touch GAS drives physical car",
+      "passed": true
+    },
+    {
+      "check": "Touch BRAKE stops car",
+      "passed": true
+    },
+    {
+      "check": "Touch EXIT returns to walking",
+      "passed": true
+    },
+    {
+      "check": "Touch PAUSE clears all active controls",
+      "passed": true
+    },
+    {
+      "check": "Focus loss releases touch movement",
+      "passed": true
+    },
+    {
+      "check": "Touch RECOVER resets progress",
+      "passed": true
+    },
+    {
+      "check": "Roadside 3D detail is actually instantiated",
+      "passed": true
     }
   ],
   "engine": "4.4.1-stable (official)",

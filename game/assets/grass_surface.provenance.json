@@ -1,0 +1,16 @@
+{
+  "upstream": "https://github.com/mrdoob/three.js/blob/9c4515e66f479864e39b72f29e10260821576b4a/examples/textures/terrain/grasslight-big.jpg",
+  "git_blob": "ed6c7f85a33abbed6f41e6e08585a594f0bd5fae",
+  "source_sha256": "23bd506b94e40a9de435375c2be6280eb088dc637fb64c331e325c7472f47177",
+  "original": "https://opengameart.org/content/dark-grass",
+  "authors": [
+    "Blender Foundation (2009)",
+    "Lamoot (2009)",
+    "qubodup (2010)"
+  ],
+  "license": "CC BY 3.0",
+  "license_url": "https://creativecommons.org/licenses/by/3.0/",
+  "changes": "JPEG derived via three.js; resized to 1024px; saturation reduced to 72% for Alpine turf",
+  "file": "grass_surface.jpg",
+  "sha256": "08af700778e11a47dec3867c9faa99c9a282b384ada235834f1dd6e34295cc75"
+}

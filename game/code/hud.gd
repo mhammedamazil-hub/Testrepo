@@ -16,6 +16,9 @@ var stats: Label
 var timer: Label
 var minimap: Control
 var _clock: float = 0.0
+var touch_mode: bool = false
+var desktop_hints: Array[Label] = []
+var menu_hint: Label
 const INK := Color(0.055,0.075,0.072)
 const IVORY := Color(0.94,0.94,0.87)
 const MINT := Color(0.64,0.85,0.72)
@@ -62,8 +65,10 @@ func _ready() -> void:
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	notice = _label(overlay,"",Vector2(460,850),20,MINT,1000)
 	notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label(overlay,"WASD  MOVE / DRIVE     SHIFT  RUN     SPACE  JUMP / BRAKE     E  ENTER / EXIT     R  RECOVER     ESC  PAUSE",Vector2(380,1027),14,IVORY,1180).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label(overlay,"CLICK TO LOOK  ·  MOUSE TO ORBIT  ·  Q REAR VIEW  ·  M MUTE",Vector2(380,1001),12,Color(0.8,0.85,0.8),1180).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desktop_hints.append(_label(overlay,"WASD  MOVE / DRIVE     SHIFT  RUN     SPACE  JUMP / BRAKE     E  ENTER / EXIT     R  RECOVER     ESC  PAUSE",Vector2(380,1027),14,IVORY,1180))
+	desktop_hints[-1].horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desktop_hints.append(_label(overlay,"CLICK TO LOOK  ·  MOUSE TO ORBIT  ·  Q REAR VIEW  ·  M MUTE",Vector2(380,1001),12,Color(0.8,0.85,0.8),1180))
+	desktop_hints[-1].horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	minimap = preload("res://code/minimap.gd").new()
 	minimap.game = game
 	minimap.position = Vector2(46,804)
@@ -106,7 +111,7 @@ func _ready() -> void:
 		else: game.start_game())
 	menu.add_child(primary)
 	_label(menu,"NATIVE 1920 × 1080     /     60 FPS TARGET",Vector2(104,861),14,MINT)
-	_label(menu,"WASD move  ·  E enter car  ·  F fullscreen  ·  M mute",Vector2(104,899),17,IVORY)
+	menu_hint = _label(menu,"WASD move  ·  E enter car  ·  F fullscreen  ·  M mute",Vector2(104,899),17,IVORY)
 	_label(menu,"01   /   THE LAKESIDE LOOP",Vector2(104,1006),14,Color(0.64,0.73,0.71))
 	_label(menu,"BLENDER / GODOT\nPLAYABLE VERTICAL SLICE",Vector2(1490,975),14,IVORY,330).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	overlay.visible = false
@@ -131,6 +136,28 @@ func _style(color: Color) -> StyleBoxFlat:
 	style.corner_radius_bottom_right = 5
 	return style
 
+func configure_touch(value: bool) -> void:
+	touch_mode = value
+	for hint in desktop_hints: hint.visible = not value
+	minimap.visible = not value
+	mode.visible = not value
+	unit.visible = not value
+	speed.position = Vector2(830, 110) if value else Vector2(1620, 842)
+	speed.add_theme_font_size_override("font_size", 60 if value else 94)
+	prompt.position.y = 615 if value else 902
+	notice.position.y = 560 if value else 850
+	prompt.add_theme_font_size_override("font_size", 30 if value else 23)
+	objective.add_theme_font_size_override("font_size", 28 if value else 19)
+	primary.size = Vector2(540, 128) if value else Vector2(430, 76)
+	primary.add_theme_font_size_override("font_size", 38 if value else 25)
+	notice.add_theme_font_size_override("font_size", 30 if value else 20)
+	menu_hint.text = "LEFT THUMB MOVE  /  DRAG RIGHT TO LOOK" if value else "WASD move  ·  E enter car  ·  F fullscreen  ·  M mute"
+	menu_hint.position.y = 915 if value else 899
+	menu_hint.add_theme_font_size_override("font_size", 28 if value else 17)
+	for child in menu.get_children():
+		if child is Label and child.text.begins_with("NATIVE 1920"):
+			child.position.y = 963 if value else 861
+
 func show_menu(value: bool) -> void:
 	menu.visible = value
 	overlay.visible = not value
@@ -147,6 +174,7 @@ func _process(delta: float) -> void:
 	unit.text = "KM / H" if driving else "EXPLORE AT YOUR OWN PACE"
 	var distance: float = game.player.global_position.distance_to(game.car.global_position)
 	prompt.text = "[ E ]   Step out" if driving and absf(game.car.speed)<1.5 else ("[ E ]   Take the wheel" if not driving and distance<4.3 else "")
+	if touch_mode: prompt.text = prompt.text.replace("[ E ]", "[ TAP EXIT ]" if driving else "[ TAP ENTER ]")
 	notice.text = game.toast if game.toast_time>0 else ""
 	objective.text = "LAKESIDE LOOP    %d / 4" % game.next_checkpoint
 	var ring_position: Vector3 = game.checkpoint_nodes[game.next_checkpoint].global_position

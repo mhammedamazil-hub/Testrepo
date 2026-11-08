@@ -1,0 +1,50 @@
+{
+  "source_blend_sha256": "ef72c7f780af86dd6b89a07ae13aab9970d485ed782e835c19061c57b343dfc3",
+  "vehicle_triangles": 12588,
+  "near_spruce_triangles": 412,
+  "granite_triangles": 80,
+  "tuft_triangles": 45,
+  "placements": {
+    "grass": 1103,
+    "rocks": 79
+  },
+  "reflection": "Static Cycles CPU panorama of actual game terrain at lake centre; not real-time or viewpoint-correct everywhere",
+  "files": {
+    "touring_car.glb": {
+      "bytes": 1318712,
+      "sha256": "a164df696bd9087623b14a631093f585350131eb79985d71b5cfaacaaf9c6454"
+    },
+    "spruce_near.glb": {
+      "bytes": 238368,
+      "sha256": "42cf592d7557bede4a021bbb62361d5168345a55facb01b4c070bf407c6d8550"
+    },
+    "spruce_shoot.png": {
+      "bytes": 193428,
+      "sha256": "54b825a4ceed8abed7cd2612e7154a6a9dfdbd97242c88754b3ebd36182c0c1b"
+    },
+    "granite.glb": {
+      "bytes": 13460,
+      "sha256": "e34ec7120c46c961c65b1f4e258fb54ac4541d5e63befdba12e8a0e3d8a919f9"
+    },
+    "meadow_tuft.glb": {
+      "bytes": 3156,
+      "sha256": "ba79d275382c3dedf9017bfabaab5388f936ebf3d61886fb3e13f1b9de86c3cb"
+    },
+    "ground_detail.png": {
+      "bytes": 547199,
+      "sha256": "9aabf8970b15b6a552665e81616fd40dcdb9afce675a98c3ff0bccd82816e4e0"
+    },
+    "ground_detail_normal.png": {
+      "bytes": 644690,
+      "sha256": "e0bd8b69ac11ab532a668e02e982d5b25cff92afb6d327a07c190474abb7fe4b"
+    },
+    "world_data_detail.json": {
+      "bytes": 41649,
+      "sha256": "ee7dab016c3c8de6f8e6e335421eb9b711746d6c658e72a486c05f70207885a6"
+    },
+    "lake_reflection.jpg": {
+      "bytes": 60098,
+      "sha256": "4b46c696b0d586d482539b9c48f4f12bfaab582102f89ccacd5e6ac8c52da9c0"
+    }
+  }
+}

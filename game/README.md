@@ -31,7 +31,40 @@ This is a playable vertical slice, **not a complete GTA-style open-world game or
 | F8 | Reset the real wall-clock frame-time measurement window |
 | M | Mute/unmute |
 
-Desktop keyboard/mouse browser controls are implemented; touch controls are not. A modern WebGL 2-capable browser is needed. Open the preview in its own tab if the embedded frame will not allow fullscreen or pointer capture.
+Desktop keyboard/mouse **and mobile multi-touch controls** are implemented. Use landscape orientation on a phone; portrait mode displays rotation guidance. A modern WebGL 2-capable browser is needed. Chromium mobile emulation is tested; physical Android/iOS device coverage and 60 FPS are not certified. Open the preview in its own tab if the embedded frame will not allow fullscreen or pointer capture.
+
+## Mobile controls
+
+Open **https://mhammedamazil-hub.github.io/Testrepo/** in a modern phone browser
+and rotate to **landscape**. No installation or paid service is required.
+
+- **Left stick:** move on foot; steer while driving.
+- **Drag the empty right side:** orbit the camera, independently of movement.
+- **ENTER / EXIT:** get into the nearby car, or out after stopping.
+- **GAS / REVERSE / BRAKE:** drive; **JUMP / RUN:** on-foot actions.
+- **PAUSE / RECOVER:** pause/resume through the large menu button, or reset.
+- Releasing/canceling touches releases input. Changing tabs or losing focus
+  pauses and clears active controls; tap **Resume escape** when returning.
+- **T** toggles the touch overlay when testing with a desktop keyboard.
+
+Mobile rendering stays at the declared **1920 × 1080**, with no hidden resolution
+reduction. Both desktop and mobile GPU texture formats are exported. Rendering
+speed and memory use depend on the physical browser/device; no all-phone or
+60 FPS guarantee is implied. The first download can take a while.
+
+## Visual realism pass
+
+The current revision adds licensed photo-derived grass detail, close-range
+material normals, a smoothly lofted 12.6k-triangle unbranded touring car,
+spatial needle-bough card spruce LODs near the road, instanced meadow tufts and
+rocks, and a static reflection panorama captured from the actual terrain.
+Distant trees remain billboards. Nearby branch-card LODs deliberately disable
+automatic simplification: it otherwise removes thin/disconnected foliage.
+The character is still simplified; car physics are arcade/kinematic. Water
+uses a **baked reflection approximation**, not real-time planar reflection or
+SSR. This is a visible realism improvement, **not a photoreal/AAA sign-off**.
+Assets: `tools/game/build_detail.py`, `assets/detail_manifest.json` and
+`assets/grass_surface.provenance.json`; license attribution is in CREDITS.md.
 
 ## Run / edit the source
 
@@ -81,7 +114,7 @@ Headless tests exercise **actual Godot physics/state**, but are not rendering be
 .cache/godot/Godot_v4.4.1-stable_linux.x86_64 --headless --path game --fixed-fps 60 --script res://tests/physics_smoke.gd
 ```
 
-For optional rendered browser verification, install the test-only browser packages under `.cache/browser` and provide the real NSS/NSPR libraries documented in `docs/game/browser-os-provenance.json`. Then run `node tools/game/browser_test.cjs` against the running game server. This uses CPU SwiftShader in the sandbox, not a hardware GPU. Actual native viewport/canvas dimensions, real keyboard state transitions, motion and wall-clock frame times are recorded; neither 60 Hz physics nor `Engine.max_fps=60` counts as a rendering result.
+For optional rendered browser verification, install the test-only browser packages under `.cache/browser` and provide the real NSS/NSPR libraries documented in `docs/game/browser-os-provenance.json`. Then run `node tools/game/browser_test.cjs` for keyboard controls or `node tools/game/mobile_browser_test.cjs` for actual Chromium CDP multi-touch events against the running game server. This uses CPU SwiftShader in the sandbox, not a hardware GPU. Actual native viewport/canvas dimensions, real keyboard state transitions, motion and wall-clock frame times are recorded; neither 60 Hz physics nor `Engine.max_fps=60` counts as a rendering result.
 
 See `docs/GAME_BUILD_BRIEF.md`, `docs/GAME_SKILL_USAGE.md`, and `docs/game/` for acceptance gates and measured evidence. See [CREDITS.md](CREDITS.md) for assets and licenses.
 

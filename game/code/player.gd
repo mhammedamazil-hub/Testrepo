@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 	if not active:
 		return
 	var axis := Input.get_vector("left", "right", "forward", "back")
-	var direction := (Basis(Vector3.UP, camera_yaw) * Vector3(axis.x, 0, axis.y)).normalized()
+	var direction := (Basis(Vector3.UP, camera_yaw) * Vector3(axis.x, 0, axis.y))
 	var speed := 7.3 if Input.is_action_pressed("sprint") else 3.8
 	var acceleration := 22.0 if is_on_floor() else 6.0
 	velocity.x = move_toward(velocity.x, direction.x * speed, acceleration * delta)

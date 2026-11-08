@@ -36,3 +36,29 @@ The user's environment choice was **existing Alpine terrain**. The installed lib
 - `arjun988/blender-skills@8f778d2405a214b508d4c7d80742be8e43acdd52`, MIT, retained in `.claude/BLENDER_SKILLS_LICENSE`.
 - `wshobson/agents@4bde3168b43c0655c4d00ea2726e631719908a6d`, Godot patterns, MIT, retained in `.claude/GODOT_SKILLS_LICENSE`.
 - Local skill files are guidance only; actual installed Godot APIs, imports, source code, rendered pixels and runtime tests are the verification authority.
+
+
+## Mobile and realism revision
+
+- **Godot patterns / QA:** native screen-touch events with per-finger ownership,
+  an analog stick, simultaneous orbit/driving controls, touch cancellation,
+  focus/visibility release and pause. Actual engine touch-event tests are separate
+  from Chromium mobile-emulation/CDP touch tests; neither certifies physical phones.
+- **Vehicle artist / hard surface / asset optimization:** lofted body, physical
+  wheel arches, sloped glazing, manufactured trim and five mesh nodes (one batched
+  body plus four wheel pivots); 12,588 triangles rather than one draw per trim part.
+- **Vegetation / LOD / materials:** 412-triangle near-road spatial branch-card spruce,
+  native placements, clustered instancing and distance culling. The 110 near-road trees use 3D cards close up and billboards beyond 85 m. Automatic mesh LOD is
+  disabled for this already-budgeted canopy and tiny tufts because simplification
+  erased the foliage; mesh origins are applied before instancing. Fine needle shoots are CPU-rendered
+  into a transparent atlas rather than using the rejected opaque diamond clumps.
+- **Texture workflow / realistic style:** attributed CC BY 3.0 photographic grass,
+  metre-scaled shader sampling blended into original terrain albedo/normals; no
+  claim of measured/scanned PBR values. 1,103 meadow tufts and 79 grounded rocks.
+- **Lighting / lookdev:** adjusted outdoor fill and haze; lake-centre CPU panorama
+  captured from actual terrain for approximate water reflections. This is static,
+  not real-time reflection, and has viewpoint/parallax limitations.
+- **Export / QA:** single-threaded HTTPS Pages build, desktop AND mobile texture
+  compression with ETC2/ASTC import enabled; original source hash is unchanged.
+  UI menu touch emulation is explicitly enabled. Retained failed focus test drove
+  an explicit browser lifecycle bridge rather than a fabricated test pass.

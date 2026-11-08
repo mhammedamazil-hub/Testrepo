@@ -76,7 +76,7 @@ class GameProjectTest(unittest.TestCase):
     def test_actual_engine_and_rendered_gameplay_evidence(self):
         physics=json.loads((ROOT/'docs/game/headless-validation.json').read_text())
         self.assertEqual(physics['status'],'HEADLESS_GAMEPLAY_PASS')
-        self.assertEqual(len(physics['checks']),14)
+        self.assertGreaterEqual(len(physics['checks']),26)
         self.assertTrue(all(item['passed'] for item in physics['checks']))
         self.assertFalse(physics['rendered'])
         web=json.loads((ROOT/'docs/game/browser-validation.json').read_text())
@@ -85,6 +85,52 @@ class GameProjectTest(unittest.TestCase):
         self.assertTrue(web['driving']['driving'])
         self.assertFalse(web['after']['driving'])
         self.assertEqual(web['console_errors'],[])
+
+    def test_realism_assets_and_provenance(self):
+        manifest=json.loads((GAME/'assets/detail_manifest.json').read_text())
+        self.assertEqual(manifest['source_blend_sha256'],json.loads((GAME/'assets/asset_manifest.json').read_text())['source_sha256'])
+        self.assertLessEqual(manifest['vehicle_triangles'],16000)
+        self.assertLessEqual(manifest['near_spruce_triangles'],4500)
+        self.assertGreater(manifest['placements']['grass'],900)
+        for name,metadata in manifest['files'].items():
+            content=(GAME/'assets'/name).read_bytes()
+            self.assertEqual(hashlib.sha256(content).hexdigest(),metadata['sha256'],name)
+        car=glb_json(GAME/'assets/touring_car.glb')
+        self.assertEqual(len(car['meshes']),5)  # batched body plus 4 wheel pivots
+        spruce=glb_json(GAME/'assets/spruce_near.glb')
+        self.assertGreaterEqual(len(spruce['materials']),2)  # don't decimate all foliage away
+        photo=json.loads((GAME/'assets/grass_surface.provenance.json').read_text())
+        self.assertEqual(photo['license'],'CC BY 3.0')
+        self.assertEqual(hashlib.sha256((GAME/'assets/grass_surface.jpg').read_bytes()).hexdigest(),photo['sha256'])
+        self.assertIn('qubodup',(GAME/'CREDITS.md').read_text())
+
+    def test_mobile_web_export_contract(self):
+        preset=(GAME/'export_presets.cfg').read_text()
+        self.assertIn('variant/thread_support=false',preset)
+        self.assertIn('vram_texture_compression/for_mobile=true',preset)
+        self.assertIn('world_data*.json',preset)
+        settings=(GAME/'project.godot').read_text()
+        self.assertIn('pointing/emulate_mouse_from_touch=true',settings)
+        self.assertIn('textures/vram_compression/import_etc2_astc=true',settings)
+        shell=(GAME/'web/shell.html').read_text()
+        self.assertIn('touch-action:none',shell)
+        self.assertIn('orientation:portrait',shell)
+        touch=(GAME/'code/touch_controls.gd').read_text()
+        self.assertIn('InputEventScreenTouch',touch)
+        self.assertIn('InputEventScreenDrag',touch)
+        self.assertIn('NOTIFICATION_APPLICATION_FOCUS_OUT',touch)
+
+    def test_actual_mobile_browser_evidence(self):
+        proof=json.loads((ROOT/'docs/game/mobile-browser-validation.json').read_text())
+        self.assertEqual(proof['status'],'MOBILE_BROWSER_GAMEPLAY_PASS')
+        self.assertTrue(all(item['passed'] for item in proof['checks']))
+        self.assertGreater(len(proof['checks']),10)
+        self.assertGreater(proof['distance_driven_meters'],3)
+        self.assertTrue(proof['initial']['touch_enabled'])
+        self.assertEqual(proof['gpu']['canvas'],[1920,1080])
+        self.assertFalse(proof['physical_phone_tested'])
+        self.assertFalse(proof['target_60fps_verified'])
+        self.assertEqual(proof['console_errors'],[])
 
 
 if __name__=='__main__':unittest.main()

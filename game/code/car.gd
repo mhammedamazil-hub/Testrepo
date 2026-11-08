@@ -23,7 +23,7 @@ func _ready() -> void:
 	collider.position.y = 0.70
 	collider.shape = box
 	add_child(collider)
-	model = preload("res://assets/vehicle.glb").instantiate()
+	model = preload("res://assets/touring_car.glb").instantiate()
 	add_child(model)
 	for label in ["FL", "FR", "RL", "RR"]:
 		var wheel := model.find_child("Wheel_" + label, true, false) as Node3D

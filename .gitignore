@@ -15,3 +15,6 @@ node_modules/
 # Godot extracts these embedded GLB images during import; reproduce from GLB.
 /game/assets/terrain_*.png*
 /game/assets/road_asphalt.png*
+
+# Godot-generated embedded branch atlas; original spruce_shoot.png is authored.
+/game/assets/spruce_near_*.png*

@@ -1,0 +1,264 @@
+{
+  "status": "MOBILE_BROWSER_GAMEPLAY_PASS",
+  "scope": "Chromium mobile emulation with real CDP touch events; CPU SwiftShader, not a physical device or hardware performance certificate",
+  "viewport": [
+    932,
+    430
+  ],
+  "checks": [
+    {
+      "name": "Mobile touch controls auto-detected",
+      "passed": true
+    },
+    {
+      "name": "Native 1920x1080 canvas retained",
+      "passed": true
+    },
+    {
+      "name": "Touch begins the actual game",
+      "passed": true
+    },
+    {
+      "name": "Two-finger movement plus camera orbit",
+      "passed": true
+    },
+    {
+      "name": "Joystick walks and releases without stuck input",
+      "passed": true
+    },
+    {
+      "name": "Touch ENTER takes the wheel",
+      "passed": true
+    },
+    {
+      "name": "Multi-touch GAS and steering drive physical car",
+      "passed": true
+    },
+    {
+      "name": "Touch BRAKE stops car",
+      "passed": true
+    },
+    {
+      "name": "Touch EXIT returns to walking",
+      "passed": true
+    },
+    {
+      "name": "Browser touch cancellation releases controls",
+      "passed": true
+    },
+    {
+      "name": "Touch PAUSE opens pause menu",
+      "passed": true
+    },
+    {
+      "name": "Touch resumes from pause menu",
+      "passed": true
+    },
+    {
+      "name": "Browser focus loss pauses and releases held touch",
+      "passed": true
+    },
+    {
+      "name": "Portrait orientation shows landscape guidance",
+      "passed": true
+    },
+    {
+      "name": "No browser/runtime errors",
+      "passed": true
+    }
+  ],
+  "initial": {
+    "camera_pitch": -0.19,
+    "camera_yaw": -0.02723821811378,
+    "car": [
+      67.7087020874023,
+      3.44509983062744,
+      25
+    ],
+    "draw_calls": 90,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 1,
+    "frame_samples": 0,
+    "laps": 0,
+    "last_touch": [
+      0,
+      0
+    ],
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 0,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.49509978294373,
+      25.0680866241455
+    ],
+    "playing": false,
+    "primitives": 103463,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0,
+    "touch_actions": {},
+    "touch_enabled": true,
+    "touch_fingers": 0
+  },
+  "walking": {
+    "camera_pitch": -0.19,
+    "camera_yaw": -0.32723821811378,
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 114,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 45,
+    "frame_samples": 21,
+    "laps": 0,
+    "last_touch": [
+      1200,
+      440
+    ],
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 2418.7,
+    "paused": false,
+    "player": [
+      71.062614440918,
+      3.56022977828979,
+      19.6863765716553
+    ],
+    "playing": true,
+    "primitives": 105589,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0,
+    "touch_actions": {},
+    "touch_enabled": true,
+    "touch_fingers": 0
+  },
+  "driving": {
+    "camera_pitch": -0.19,
+    "camera_yaw": -0.127193729036667,
+    "car": [
+      68.2246398925781,
+      3.34011077880859,
+      20.7073917388916
+    ],
+    "draw_calls": 122,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 82,
+    "frame_samples": 58,
+    "laps": 0,
+    "last_touch": [
+      285,
+      840.000061035156
+    ],
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 2493.8,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.3156726360321,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 103478,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 8,
+    "touch_actions": {
+      "forward": 1,
+      "right": 0.3125
+    },
+    "touch_enabled": true,
+    "touch_fingers": 2
+  },
+  "final": {
+    "camera_pitch": -0.19,
+    "camera_yaw": -0.355526403249515,
+    "car": [
+      71.3302230834961,
+      4.07729911804199,
+      12.1339807510376
+    ],
+    "draw_calls": 123,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 165,
+    "frame_samples": 121,
+    "laps": 0,
+    "last_touch": [
+      300,
+      790
+    ],
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 4491,
+    "paused": false,
+    "player": [
+      70.7363204956055,
+      3.2232677936554,
+      7.56127405166626
+    ],
+    "playing": true,
+    "primitives": 113145,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0,
+    "touch_actions": {},
+    "touch_enabled": true,
+    "touch_fingers": 0
+  },
+  "gpu": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "canvas": [
+      1920,
+      1080
+    ]
+  },
+  "console_errors": [],
+  "distance_driven_meters": 4.323502920335048,
+  "physical_phone_tested": false,
+  "target_60fps_verified": false
+}
