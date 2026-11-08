@@ -1,0 +1,35 @@
+name: Build Sourcebook Android APK
+on:
+  push:
+    branches: [arena/26f76d74-testrepo]
+    paths: ['android/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install pinned Android SDK tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Preserve personal debug signing identity between builds
+        uses: actions/cache@v4
+        with:
+          path: android/.signing
+          key: sourcebook-personal-debug-signing-v1
+      - name: Compile, sign and verify APK
+        run: bash android/scripts/build-apk.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sourcebook-android-debug
+          path: |
+            android/build/sourcebook-debug.apk
+            android/build/sourcebook-debug.apk.sha256
+          if-no-files-found: error

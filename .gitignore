@@ -7,3 +7,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+/android/build/
+/android/.signing/
+*.keystore
+*.jks
