@@ -43,7 +43,7 @@ public class OfflineActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state); WebView.setWebContentsDebuggingEnabled(false); newRoot();
         TextView loading=new TextView(this);loading.setText("Starting the Rust core on this phone…");loading.setPadding(dp(25),dp(50),dp(25),0);root.addView(loading);
-        io.execute(()->{try{System.loadLibrary("sourcebook");org.json.JSONObject result=new org.json.JSONObject(nativeInit(getFilesDir().getAbsolutePath()));if(!result.optBoolean("ok"))throw new Exception(result.optString("error"));modelLoaded=result.optBoolean("model_loaded");runOnUiThread(()->{connect(URI.create("https://sourcebook.offline/"));String warning=result.optString("warning");if(!warning.isEmpty())notice(warning);if(!modelLoaded)notice("Offline storage is ready. Use Model to import a GGUF for AI.");});}catch(Throwable e){runOnUiThread(()->{loading.setText("Could not initialize the embedded Rust core: "+e.getMessage());});}});
+        io.execute(()->{try{System.loadLibrary("sourcebook");org.json.JSONObject result=new org.json.JSONObject(nativeInit(getFilesDir().getAbsolutePath()));if(!result.optBoolean("ok"))throw new Exception(result.optString("error"));modelLoaded=result.optBoolean("model_loaded");runOnUiThread(()->{connect(URI.create("https://sourcebook.offline/"));String warning=result.optString("warning");if(!warning.isEmpty())notice(warning);if(!modelLoaded)notice("Storage is ready. Add an API provider in Settings; local weights are optional.");});}catch(Throwable e){runOnUiThread(()->{loading.setText("Could not initialize the embedded Rust core: "+e.getMessage());});}});
     }
     private int dp(int value) { return (int)(value * getResources().getDisplayMetrics().density + .5f); }
     private void newRoot() {
@@ -59,9 +59,9 @@ public class OfflineActivity extends Activity {
     private void connect(URI address) {
         destroyBrowser(); origin = address; newRoot();
         LinearLayout toolbar = new LinearLayout(this); toolbar.setPadding(dp(8),0,dp(8),0); toolbar.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        TextView label = new TextView(this); label.setText("Offline · Rust + GGUF"); label.setTextSize(12); label.setMaxLines(1); label.setEllipsize(android.text.TextUtils.TruncateAt.END); toolbar.addView(label,new LinearLayout.LayoutParams(0,dp(48),1));
+        TextView label = new TextView(this); label.setText("On-device Rust"); label.setTextSize(12); label.setMaxLines(1); label.setEllipsize(android.text.TextUtils.TruncateAt.END); toolbar.addView(label,new LinearLayout.LayoutParams(0,dp(48),1));
         Button refresh = new Button(this); refresh.setText("Reload"); refresh.setOnClickListener(v -> {if(web!=null)web.reload();}); toolbar.addView(refresh);
-        Button choose = new Button(this); choose.setText("Model"); choose.setOnClickListener(v -> modelDialog());toolbar.addView(choose);
+        Button choose = new Button(this); choose.setText("Local AI"); choose.setOnClickListener(v -> modelDialog());toolbar.addView(choose);
         Button cancel = new Button(this); cancel.setText("Cancel AI"); cancel.setOnClickListener(v -> {nativeCancel();notice("Cancellation requested");});toolbar.addView(cancel);root.addView(toolbar);
         web = new WebView(this); WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false); settings.setAllowContentAccess(true);
@@ -107,8 +107,8 @@ public class OfflineActivity extends Activity {
     private void notice(String text) { runOnUiThread(()->Toast.makeText(this,text,Toast.LENGTH_LONG).show()); }
     private WebResourceResponse blocked(){return new WebResourceResponse("text/plain","UTF-8",403,"Network disabled",null,new ByteArrayInputStream(new byte[0]));}
     private void modelDialog(){
-        new AlertDialog.Builder(this).setTitle(modelLoaded?"On-device model loaded":"Import offline model")
-        .setMessage("Choose a decoder-only text-instruct .gguf file you already downloaded. The model is copied into this app's private storage and used by llama.cpp through Rust. No server or Internet permission. Start with a small 0.5B–1.5B Q4 model; larger models can exceed your phone's RAM. CPU inference may be slow. Import replaces the current model.\n\nOffline speech/transcription, network imports and public sharing are not included.")
+        new AlertDialog.Builder(this).setTitle(modelLoaded?"Optional local model loaded":"Optional local AI")
+        .setMessage("Choose a decoder-only text-instruct .gguf file you already downloaded. The model is copied into this app's private storage and used by llama.cpp through Rust. This optional engine needs GGUF weights; API providers do not. No local server is used. Start with a small 0.5B–1.5B Q4 model; larger models can exceed your phone's RAM. CPU inference may be slow. Import replaces the current model.\n\nOffline speech/transcription are not included. Direct APIs and website imports require Internet. yt-dlp/FFmpeg are not bundled.")
         .setNegativeButton("Close",null).setPositiveButton("Choose GGUF",(d,w)->{if(importing){notice("Model import already in progress");return;}Intent pick=new Intent(Intent.ACTION_OPEN_DOCUMENT);pick.addCategory(Intent.CATEGORY_OPENABLE);pick.setType("*/*");try{startActivityForResult(pick,PICK_MODEL);}catch(Exception e){notice("No file picker available");}}).show();
     }
     private void importModel(Uri uri){
@@ -129,6 +129,8 @@ public class OfflineActivity extends Activity {
     }
     public final class NativeBridge {
         @JavascriptInterface public boolean isOffline(){return true;}
+        @JavascriptInterface public boolean networkEnabled(){return true;}
+        @JavascriptInterface public void setAppearance(boolean dark){runOnUiThread(()->{if(!trustedPage())return;int bg=dark?Color.rgb(17,19,20):Color.rgb(248,249,249);root.setBackgroundColor(bg);getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);root.setSystemUiVisibility(dark?0:android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);if(root.getChildCount()>0&&root.getChildAt(0) instanceof LinearLayout){LinearLayout bar=(LinearLayout)root.getChildAt(0);for(int i=0;i<bar.getChildCount();i++){if(bar.getChildAt(i) instanceof TextView)((TextView)bar.getChildAt(i)).setTextColor(dark?Color.rgb(225,234,229):Color.rgb(32,57,45));}}});}
         @JavascriptInterface public boolean modelLoaded(){return modelLoaded;}
         @JavascriptInterface public void request(String id,String method,String path,String body){
             if(id==null||!id.matches("[0-9]{1,10}")||body==null||body.length()>16*1024*1024)return;

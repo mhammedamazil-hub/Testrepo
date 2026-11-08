@@ -44,8 +44,17 @@ pub struct Slide {
     pub notes: String,
 }
 #[derive(Clone, Serialize, Deserialize)]
+pub struct Scene {
+    pub title: String,
+    pub caption: String,
+    pub seconds: u32,
+}
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Material {
+    MotionGraphic {
+        scenes: Vec<Scene>,
+    },
     Flashcards {
         cards: Vec<Card>,
     },
@@ -76,6 +85,12 @@ fn tree_valid(b: &Branch, depth: usize, budget: &mut usize) -> bool {
 impl Material {
     fn validate(&self) -> bool {
         match self {
+            Self::MotionGraphic { scenes } => {
+                (1..=8).contains(&scenes.len())
+                    && scenes.iter().all(|s| {
+                        bounded(&s.title) && bounded(&s.caption) && (2..=12).contains(&s.seconds)
+                    })
+            }
             Self::Flashcards { cards } => {
                 (1..=50).contains(&cards.len())
                     && cards.iter().all(|c| bounded(&c.front) && bounded(&c.back))
@@ -112,6 +127,7 @@ impl Material {
     }
     fn kind(&self) -> &'static str {
         match self {
+            Self::MotionGraphic { .. } => "motion-graphic",
             Self::Flashcards { .. } => "flashcards",
             Self::Quiz { .. } => "quiz",
             Self::MindMap { .. } => "mind-map",
@@ -121,6 +137,20 @@ impl Material {
     }
     fn markdown(&self) -> String {
         match self {
+            Self::MotionGraphic { scenes } => scenes
+                .iter()
+                .enumerate()
+                .map(|(i, s)| {
+                    format!(
+                        "## Scene {} ({}s)\n\n{}\n\n{}",
+                        i + 1,
+                        s.seconds,
+                        s.title,
+                        s.caption
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join("\n\n"),
             Self::Flashcards { cards } => cards
                 .iter()
                 .enumerate()
@@ -232,6 +262,9 @@ pub(super) async fn generate_content(
     evidence: &[Evidence],
 ) -> Result<(String, Option<Value>)> {
     let schema = match p.kind.as_str() {
+        "motion-graphic" => Some(
+            r#"{"type":"motion-graphic","scenes":[{"title":"Key idea","caption":"Evidence [1]","seconds":5}]}"#,
+        ),
         "flashcards" => {
             Some(r#"{"type":"flashcards","cards":[{"front":"Question [1]","back":"Answer [1]"}]}"#)
         }
@@ -252,11 +285,7 @@ pub(super) async fn generate_content(
     let format = if let Some(s) = schema {
         format!("Return ONLY valid JSON in this exact schema (no Markdown fence): {s}. Use 8–12 cards/questions, 6–10 slides when appropriate. Quiz answer is a zero-based integer. Mind map maximum depth 5 and maximum 120 nodes. Table rows must match column count. Use concise text. Include source citation markers inside relevant strings.")
     } else if p.kind == "audio-overview" {
-        if a.media.tts_model.is_empty() {
-            return Err(bad(
-                "Set AI_TTS_MODEL and optionally AI_TTS_VOICE to enable real audio generation",
-            ));
-        }
+        ai::media_provider(a, "speech").await?;
         "Write a conversational single-narrator audio overview, maximum 3000 characters. Plain speech without Markdown, stage directions or citation markers. Explain key ideas and mention source titles naturally. Never invent facts. This script will be synthesized into audio.".into()
     } else if p.kind == "podcast-script" {
         "Write a two-host podcast SCRIPT, clearly labeling speakers and source citations. This is a script, not audio.".into()
@@ -272,7 +301,7 @@ pub(super) async fn generate_content(
     } else {
         prompt
     };
-    let content = complete(a, n, &prompt, evidence, false).await?;
+    let content = complete_for(a, n, &prompt, evidence, false, &p.kind).await?;
     if schema.is_some() {
         let data = parse_material(&content, &p.kind)?;
         Ok((
@@ -401,6 +430,17 @@ pub(super) async fn restore(
     for s in &mut n.sources {
         s.title = text(&s.title, "Source title", 300)?;
         s.content = text(&s.content, "Source content", MAX_TEXT)?;
+        if s.frames.len() > 8
+            || s.frames.iter().any(|f| {
+                f.jpeg.len() > 400_000
+                    || !base64::engine::general_purpose::STANDARD
+                        .decode(&f.jpeg)
+                        .map(|b| b.starts_with(&[0xff, 0xd8]))
+                        .unwrap_or(false)
+            })
+        {
+            return Err(bad("Invalid imported JPEG frames"));
+        }
         let new = id();
         if mapping.insert(s.id.clone(), new.clone()).is_some() {
             return Err(bad("Duplicate source IDs in imported notebook"));
@@ -606,9 +646,7 @@ async fn provider_bytes(mut r: reqwest::Response, max: usize) -> Result<Vec<u8>>
     Ok(bytes)
 }
 pub(super) async fn synthesize(a: &App, nid: &str, item: &mut Artifact) -> Result<()> {
-    if a.media.tts_model.is_empty() {
-        return Err(bad("AI_TTS_MODEL is required"));
-    }
+    let provider = ai::media_provider(a, "speech").await?;
     if item.content.chars().count() > 4000 {
         return Err(bad(
             "Generated audio script exceeds 4000 characters; request a shorter overview",
@@ -618,9 +656,9 @@ pub(super) async fn synthesize(a: &App, nid: &str, item: &mut Artifact) -> Resul
         .ai_slots
         .try_acquire()
         .map_err(|_| Error(StatusCode::TOO_MANY_REQUESTS, "Server busy".into()))?;
-    let mut req=a.client.post(format!("{}/audio/speech",a.config.base_url.trim_end_matches('/'))).json(&json!({"model":a.media.tts_model,"voice":a.media.voice,"input":item.content,"response_format":"mp3"}));
-    if !a.config.api_key.is_empty() {
-        req = req.bearer_auth(&a.config.api_key);
+    let mut req=a.client.post(format!("{}/audio/speech",provider.base_url.trim_end_matches('/'))).json(&json!({"model":provider.model,"voice":a.media.voice,"input":item.content,"response_format":"mp3"}));
+    if !provider.api_key.is_empty() {
+        req = req.bearer_auth(&provider.api_key);
     }
     let response = req.send().await.map_err(|_| {
         Error(
@@ -689,11 +727,7 @@ pub(super) async fn transcribe(
 ) -> Result<Json<Source>> {
     authorized(&h, &a)?;
     a.notebook(&nid).await?;
-    if a.media.transcription_model.is_empty() {
-        return Err(bad(
-            "Set AI_TRANSCRIPTION_MODEL to enable audio/video transcription",
-        ));
-    }
+    let provider = ai::media_provider(&a, "transcription").await?;
     let title = text(&p.title, "Source title", 300)?;
     let ext = p.filename.rsplit('.').next().unwrap_or("").to_lowercase();
     let mime = match ext.as_str() {
@@ -723,18 +757,18 @@ pub(super) async fn transcribe(
         .mime_str(mime)
         .map_err(internal)?;
     let form = reqwest::multipart::Form::new()
-        .text("model", a.media.transcription_model.clone())
+        .text("model", provider.model.clone())
         .text("response_format", "json")
         .part("file", part);
     let mut req = a
         .client
         .post(format!(
             "{}/audio/transcriptions",
-            a.config.base_url.trim_end_matches('/')
+            provider.base_url.trim_end_matches('/')
         ))
         .multipart(form);
-    if !a.config.api_key.is_empty() {
-        req = req.bearer_auth(&a.config.api_key);
+    if !provider.api_key.is_empty() {
+        req = req.bearer_auth(&provider.api_key);
     }
     let response = req.send().await.map_err(|_| {
         Error(
@@ -747,6 +781,7 @@ pub(super) async fn transcribe(
         .map_err(|_| bad("Transcription provider returned invalid JSON"))?;
     let content = text(data["text"].as_str().unwrap_or(""), "Transcript", MAX_TEXT)?;
     let source = Source {
+        frames: vec![],
         id: id(),
         title,
         content,

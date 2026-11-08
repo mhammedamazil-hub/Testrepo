@@ -1,6 +1,8 @@
+mod ai;
 #[cfg(all(feature = "android-offline", target_os = "android"))]
 mod android_offline;
 mod studio;
+mod video;
 use axum::{
     extract::{DefaultBodyLimit, Path, State},
     http::{HeaderMap, StatusCode},
@@ -29,6 +31,8 @@ fn now() -> u64 {
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Source {
+    #[serde(default)]
+    pub frames: Vec<video::Frame>,
     pub id: String,
     pub title: String,
     pub content: String,
@@ -117,6 +121,7 @@ pub struct Config {
 }
 #[derive(Clone)]
 pub struct App {
+    pub ai: Arc<RwLock<ai::Settings>>,
     pub offline: bool,
     pub db: Arc<RwLock<Database>>,
     pub config: Config,
@@ -178,7 +183,14 @@ impl App {
             .redirect(reqwest::redirect::Policy::none())
             .timeout(Duration::from_secs(120))
             .build()?;
+        let ai_path = config.data.with_extension("ai.json");
+        let settings = match tokio::fs::read(ai_path).await {
+            Ok(bytes) => serde_json::from_slice(&bytes)?,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => ai::Settings::default(),
+            Err(e) => return Err(e.into()),
+        };
         Ok(Self {
+            ai: Arc::new(RwLock::new(settings)),
             offline: cfg!(all(feature = "android-offline", target_os = "android")),
             db: Arc::new(RwLock::new(db)),
             config,
@@ -279,6 +291,8 @@ pub fn router(app: App) -> Router {
             get(|| async { Json(json!({"status":"ok","version":env!("CARGO_PKG_VERSION")})) }),
         )
         .route("/api/config", get(config))
+        .route("/api/ai", get(ai::get).put(ai::save))
+        .route("/api/notebooks/{id}/video", post(video::ingest))
         .route("/api/share/{token}", get(studio::shared))
         .route("/api/share/{token}/media/{item}", get(studio::shared_media))
         .route(
@@ -348,8 +362,9 @@ pub fn router(app: App) -> Router {
 }
 async fn config(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
     authorized(&h, &a)?;
+    let active = ai::resolve(&a, "chat").await;
     Ok(Json(
-        json!({"model":a.config.model,"configured":!a.config.model.is_empty(),"offline":a.offline,"api_key_set":!a.config.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":!a.media.tts_model.is_empty(),"transcription_configured":!a.media.transcription_model.is_empty()}),
+        json!({"model":active.model,"configured":!active.model.is_empty(),"offline":a.offline,"api_key_set":!active.api_key.is_empty(),"formats":["text","markdown","pdf","url","docx"],"generators":KINDS,"audio_configured":ai::media_provider(&a,"speech").await.is_ok(),"transcription_configured":ai::media_provider(&a,"transcription").await.is_ok()}),
     ))
 }
 async fn list(State(a): State<App>, h: HeaderMap) -> Result<Json<Value>> {
@@ -619,6 +634,7 @@ async fn add_source(
     };
     let content = text(&content, "Extracted source text", MAX_TEXT)?;
     let source = Source {
+        frames: vec![],
         id: id(),
         title,
         content,
@@ -736,9 +752,29 @@ async fn complete(
     evidence: &[Evidence],
     history: bool,
 ) -> Result<String> {
-    if a.config.model.is_empty() {
-        return Err(bad("AI is not configured. Set AI_BASE_URL, AI_MODEL and (if needed) AI_API_KEY on the server."));
+    complete_for(
+        a,
+        n,
+        instruction,
+        evidence,
+        history,
+        if history { "chat" } else { "source-guide" },
+    )
+    .await
+}
+async fn complete_for(
+    a: &App,
+    n: &Notebook,
+    instruction: &str,
+    evidence: &[Evidence],
+    history: bool,
+    task: &str,
+) -> Result<String> {
+    let provider = ai::resolve(a, task).await;
+    if provider.model.is_empty() {
+        return Err(bad("Add an AI provider and choose a default in Settings."));
     }
+    let local = provider.kind == "native";
     let _permit = a.ai_slots.try_acquire().map_err(|_| {
         Error(
             StatusCode::TOO_MANY_REQUESTS,
@@ -747,7 +783,7 @@ async fn complete(
     })?;
     let context = evidence
         .iter()
-        .take(if a.offline { 4 } else { 12 })
+        .take(if local { 4 } else { 12 })
         .map(|e| {
             format!(
                 "[{}] {}\n{}",
@@ -755,7 +791,7 @@ async fn complete(
                 e.title,
                 e.excerpt
                     .chars()
-                    .take(if a.offline { 700 } else { 1200 })
+                    .take(if local { 700 } else { 1200 })
                     .collect::<String>()
             )
         })
@@ -769,69 +805,18 @@ async fn complete(
             .messages
             .iter()
             .rev()
-            .take(if a.offline { 2 } else { 8 })
+            .take(if local { 2 } else { 8 })
             .collect::<Vec<_>>()
             .into_iter()
             .rev()
         {
             messages.push(
-                json!({"role":m.role,"content":m.content.chars().take(if a.offline {700} else {8000}).collect::<String>()}),
+                json!({"role":m.role,"content":m.content.chars().take(if local {700} else {8000}).collect::<String>()}),
             );
         }
     }
     messages.push(json!({"role":"user","content":instruction}));
-    #[cfg(all(feature = "android-offline", target_os = "android"))]
-    if a.offline {
-        return android_offline::complete(messages).await;
-    }
-    let endpoint = format!(
-        "{}/chat/completions",
-        a.config.base_url.trim_end_matches('/')
-    );
-    let mut request = a
-        .client
-        .post(endpoint)
-        .json(&json!({"model":a.config.model,"messages":messages,"max_tokens":4096}));
-    if !a.config.api_key.is_empty() {
-        request = request.bearer_auth(&a.config.api_key);
-    }
-    let mut response = request.send().await.map_err(|_| {
-        Error(
-            StatusCode::BAD_GATEWAY,
-            "AI provider connection failed; check the endpoint, network and server configuration"
-                .into(),
-        )
-    })?;
-    if !response.status().is_success() {
-        return Err(Error(StatusCode::BAD_GATEWAY,format!("AI provider returned HTTP {}. Check credentials, model and quota. Provider response omitted to protect secrets.",response.status())));
-    }
-    let mut bytes = Vec::new();
-    while let Some(c) = response
-        .chunk()
-        .await
-        .map_err(|_| bad("Provider response interrupted"))?
-    {
-        if bytes.len() + c.len() > 2_000_000 {
-            return Err(bad("AI response too large"));
-        }
-        bytes.extend_from_slice(&c);
-    }
-    let result: Value = serde_json::from_slice(&bytes).map_err(|_| {
-        Error(
-            StatusCode::BAD_GATEWAY,
-            "Provider returned invalid JSON".into(),
-        )
-    })?;
-    result["choices"][0]["message"]["content"]
-        .as_str()
-        .filter(|s| !s.trim().is_empty())
-        .map(str::to_owned)
-        .ok_or_else(|| {
-            Error(
-                StatusCode::BAD_GATEWAY,
-                "Provider must return an OpenAI-compatible text chat completion".into(),
-            )
-        })
+    ai::request(a, &provider, messages).await
 }
 #[derive(Deserialize)]
 struct ChatInput {
@@ -983,6 +968,7 @@ pub const KINDS: &[&str] = &[
     "slide-outline",
     "slides",
     "audio-overview",
+    "motion-graphic",
 ];
 #[derive(Deserialize)]
 struct GenerateInput {
@@ -1113,6 +1099,7 @@ mod tests {
             ("Space", "Stars are distant balls of plasma"),
         ] {
             n.sources.push(Source {
+                frames: vec![],
                 id: id(),
                 title: title.into(),
                 content: content.into(),

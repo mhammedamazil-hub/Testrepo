@@ -89,7 +89,7 @@ pub extern "system" fn Java_app_sourcebook_mobile_OfflineActivity_nativeInit(
                 .enable_all()
                 .build()
                 .map_err(|e| e.to_string())?;
-            let app = runtime
+            let mut app = runtime
                 .block_on(App::open(Config {
                     data: PathBuf::from(&directory).join("notebooks.json"),
                     token: TOKEN.into(),
@@ -98,6 +98,7 @@ pub extern "system" fn Java_app_sourcebook_mobile_OfflineActivity_nativeInit(
                     api_key: String::new(),
                 }))
                 .map_err(|e| e.to_string())?;
+            app.offline = false;
             let _ = EMBEDDED.set(Embedded {
                 runtime,
                 router: router(app),

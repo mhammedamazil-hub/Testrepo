@@ -15,12 +15,14 @@ function boot(options = {}) {
   w.confirm = () => true;
   if(options.nativeBridge)w.SourcebookAndroid=options.nativeBridge;
   const requests = [];
+  const aiSettings=options.aiSettings;
   let notebook = { id: 'test-notebook', title: 'Research', description: '', sources: [], messages: [], notes: options.notes || [], artifacts: options.artifacts || [], created: 1, updated: 1 };
   w.fetch = async (url, options = {}) => {
     const payload = options.body ? JSON.parse(options.body) : undefined;
     requests.push({ url, method: options.method, payload, token: options.headers?.Authorization });
     let data;
-    if (url === '/api/config') data = { model: 'test-model', configured: true, api_key_set: true };
+    if(url === '/api/ai') data=options.method==='PUT'?payload:(aiSettings||{providers:[],assignments:{},tasks:['default','chat','flashcards','quiz','slides','vision','motion-graphic']});
+    else if (url === '/api/config') data = { model: 'test-model', configured: true, api_key_set: true };
     else if (url === '/api/notebooks') data = [{ ...notebook, source_count: notebook.sources.length }];
     else if (url.endsWith('/review')) {
       const art = notebook.artifacts.find(a => url.includes(a.id));
@@ -45,7 +47,7 @@ test('loads authenticated notebook library and opens workspace', async () => {
   assert.equal(w.document.querySelector('#model-status').textContent, 'test-model · Connected');
   w.document.querySelector('.notebook-card').click(); await tick();
   assert.equal(w.document.querySelector('#workspace').hidden, false);
-  assert.equal(w.document.querySelectorAll('.studio-tool').length, 12);
+  assert.equal(w.document.querySelectorAll('.studio-tool').length, 13);
   assert.ok(requests.every(r => r.token === 'Bearer test-token-with-enough-characters'));
   dom.window.close();
 });

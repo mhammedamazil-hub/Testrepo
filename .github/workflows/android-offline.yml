@@ -1,4 +1,4 @@
-name: Build offline Rust Android APK
+name: Build standalone Rust Android APK
 on:
   push:
     branches: [arena/26f76d74-testrepo]

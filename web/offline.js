@@ -14,6 +14,6 @@ if (window.SourcebookAndroid?.request && window.SourcebookAndroid?.isOffline()) 
         return new Promise((resolve,reject)=>{const id=String(++serial);pending.set(id,{resolve,reject});try{window.SourcebookAndroid.request(id,options.method||'GET',url.pathname+url.search,options.body||'');}catch(e){pending.delete(id);reject(e);}});
     };
     sessionStorage.setItem('sourcebook-token','local-android-session-no-network');
-    document.documentElement.classList.add('offline-app');
+    document.documentElement.classList.add(window.SourcebookAndroid.networkEnabled?.()?'standalone-app':'offline-app');
     document.addEventListener('DOMContentLoaded',()=>{const foot=document.querySelector('.source-foot');if(foot)foot.textContent='Your sources and answers stay in this app on your phone.';const home=document.querySelector('.home-bottom span:last-child');if(home)home.textContent='▣ Stored on this phone';});
 }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="app.sourcebook.offline">
-    <!-- Deliberately NO INTERNET permission: model inference and Rust requests stay on-device. -->
-    <application android:label="Sourcebook Offline" android:icon="@drawable/ic_sourcebook"
+    <!-- Network is opt-in through configured API providers and explicit URL imports. No app server. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application android:label="Sourcebook" android:icon="@drawable/ic_sourcebook"
         android:theme="@style/AppTheme" android:allowBackup="false" android:extractNativeLibs="true"
         android:usesCleartextTraffic="false" android:supportsRtl="true">
         <activity android:name="app.sourcebook.mobile.OfflineActivity" android:exported="true"
