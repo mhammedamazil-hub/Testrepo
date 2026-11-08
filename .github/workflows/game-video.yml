@@ -81,12 +81,25 @@ jobs:
           # second. Export the variable, then time the command.
           export SIM_SS="$SS"
           start=$(date +%s)
-          /tmp/gamesim video /tmp/assets /tmp/frames/f "$FRAMES" "$FPS" | tee /tmp/video.log
+          # Capture instead of piping: if the renderer dies, the log is the only evidence, and
+          # GitHub's log endpoint is not reachable from everywhere. `::error::` turns the tail
+          # into an annotation, which the API does expose.
+          set +e
+          /tmp/gamesim video /tmp/assets /tmp/frames/f "$FRAMES" "$FPS" > /tmp/video.log 2>&1
+          rc=$?
+          set -e
           end=$(date +%s)
+          tail -40 /tmp/video.log
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::the renderer exited $rc after $((end - start)) s. Tail: $(tail -c 900 /tmp/video.log | tr '\n' '|')"
+            exit "$rc"
+          fi
           echo "render took $((end - start)) s for $FRAMES frames"
           echo "RENDER_SECONDS=$((end - start))" >> "$GITHUB_ENV"
           grep -q "^PASS: rendered" /tmp/video.log
           echo "frames on disk: $(ls /tmp/frames | wc -l)"
+          echo "disk: $(df -h /tmp | tail -1)"
+          echo "memory: $(free -m | sed -n 2p)"
 
       - name: Encode the clip
         run: |
@@ -122,6 +135,13 @@ jobs:
             echo "| render time | ${RENDER_SECONDS} s ($(( RENDER_SECONDS / (${{ github.event.inputs.frames || 150 }} > 0 ? (${{ github.event.inputs.frames || 150 }}) : 1) )) s per frame) |"
           } >> "$GITHUB_STEP_SUMMARY"
           tail -3 /tmp/video.log >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: render-log
+          path: /tmp/video.log
+          if-no-files-found: warn
 
       - uses: actions/upload-artifact@v4
         with:

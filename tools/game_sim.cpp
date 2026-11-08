@@ -1024,6 +1024,71 @@ static bool bfs(const Level& lv, int r0, int c0, int r1, int c1, Route* out) {
     return true;
 }
 
+// Where the camera sits on frame i of the video move.
+//
+// The move is a straight-ish drift across the lawn, but a lawn has trees on it: the first
+// version interpolated the endpoints, walked the camera through a trunk, and the pre-pass in
+// main() caught it. So the ideal position is snapped to the nearest cell the body actually
+// fits in (the same g_safe grid the path planner uses). 30 cm cells, so the correction is
+// invisible at walking speed.
+struct VideoCam {
+    float x, z, yaw, pitch;
+};
+static VideoCam video_cam_at(const float a[5], const float b[5], float u, float e) {
+    VideoCam c{};
+    c.x = a[0] + (b[0] - a[0]) * e + sinf(u * 3.14159265f) * -1.4f;
+    c.z = a[1] + (b[1] - a[1]) * e;
+    c.yaw = a[2] + (b[2] - a[2]) * e;
+    c.pitch = a[3] + (b[3] - a[3]) * e;
+    return c;
+}
+static bool snap_to_safe(const Level& lv, float* x, float* z) {
+    int r0, c0;
+    lv.to_cell(*x, *z, &r0, &c0);
+    for (int ring = 0; ring <= 14; ++ring) {          // 14 cells = 4.2 m
+        float best = 1e9f;
+        int br = -1, bc = -1;
+        for (int dr = -ring; dr <= ring; ++dr)
+            for (int dc = -ring; dc <= ring; ++dc) {
+                if (ring > 0 && abs(dr) != ring && abs(dc) != ring) continue;
+                const int r = r0 + dr, c = c0 + dc;
+                if (r < 0 || c < 0 || r >= (int)lv.rows || c >= (int)lv.cols) continue;
+                if (!g_safe[(size_t)r * lv.cols + c]) continue;
+                const float cx = lv.x0 + ((float)c + 0.5f) * lv.cell;
+                const float cz = lv.z0 + ((float)r + 0.5f) * lv.cell;
+                const float dx = cx - *x, dz = cz - *z;
+                const float d = dx * dx + dz * dz;
+                if (d < best) { best = d; br = r; bc = c; }
+            }
+        if (br >= 0) {
+            *x = lv.x0 + ((float)bc + 0.5f) * lv.cell;
+            *z = lv.z0 + ((float)br + 0.5f) * lv.cell;
+            return true;
+        }
+    }
+    return false;
+}
+
+static void place_video_frame(Game& g, const float a[5], const float b[5], float u, float e,
+                              int i, int n_frames, bool apply) {
+    VideoCam c = video_cam_at(a, b, u, e);
+    if (apply) {
+        float x = c.x, z = c.z;
+        if (!g.lv.body_fits(x, z, Game::kBodyRadius)) snap_to_safe(g.lv, &x, &z);
+        g.p.feet[0] = x;
+        g.p.feet[2] = z;
+        g.p.feet[1] = g.lv.ground_at(x, z);
+        g.p.yaw = c.yaw * 3.14159265f / 180.0f;
+        g.p.pitch = c.pitch * 3.14159265f / 180.0f;
+        const float dx = x - a[0], dz = z - a[1];
+        const float phase = sqrtf(dx * dx + dz * dz) * 2.1f;    // bob, in phase with distance
+        g.p.feet[1] += 0.022f * sinf(phase) * 0.5f;
+        g.p.pitch += 0.0045f * sinf(phase * 2.0f);
+    }
+    (void)i;
+    (void)n_frames;
+}
+
 int main(int argc, char** argv) {
     if (argc < 3) {
         std::fprintf(stderr, "usage: %s play|shot|video <assets_dir> <out> [frames] [fps]\n",
@@ -1112,21 +1177,49 @@ int main(int argc, char** argv) {
         // frame 150 it has drifted west and turned to face the pool terrace.
         const float a[5] = {17.0f, -19.5f, -14.0f, -1.0f, 0.0f};
         const float b[5] = {-4.5f, -14.5f, 26.0f, 6.0f, 0.0f};
+
+        // Validate the whole move BEFORE spending seventeen minutes rendering it. The CI
+        // failure this replaces was a camera that walked into a tree at frame 40.
+        int snapped = 0, blocked = 0;
+        float jump = 0.0f, px = a[0], pz = a[1];
+        for (int i = 0; i < n_frames; ++i) {
+            const float u = n_frames > 1 ? (float)i / (float)(n_frames - 1) : 0.0f;
+            const float e = u * u * (3.0f - 2.0f * u);
+            VideoCam c = video_cam_at(a, b, u, e);
+            float x = c.x, z = c.z;
+            if (!g.lv.body_fits(x, z, Game::kBodyRadius)) {
+                ++snapped;
+                if (!snap_to_safe(g.lv, &x, &z)) {
+                    if (++blocked <= 6)
+                        std::printf("  frame %d: no walkable ground within 4 m of %.1f %.1f\n",
+                                    i, x, z);
+                }
+            }
+            const float step = sqrtf((x - px) * (x - px) + (z - pz) * (z - pz));
+            if (step > jump) jump = step;
+            px = x;
+            pz = z;
+        }
+        std::printf("camera path: %d frames, %d snapped out of foliage, %d unreachable, "
+                    "largest per-frame step %.2f m\n", n_frames, snapped, blocked, jump);
+        if (blocked) {
+            std::printf("FAIL: the camera path cannot be walked\n");
+            return 1;
+        }
+        if (jump > 1.2f) {
+            std::printf("FAIL: the camera teleports between frames (%.2f m), the clip would "
+                        "judder\n", jump);
+            return 1;
+        }
+        if (std::getenv("VIDEO_VALIDATE_ONLY")) {
+            std::printf("PASS: camera path validated (nothing rendered)\n");
+            return 0;
+        }
         for (int i = 0; i < n_frames; ++i) {
             const float u = n_frames > 1 ? (float)i / (float)(n_frames - 1) : 0.0f;
             const float e = u * u * (3.0f - 2.0f * u);        // ease in/out, no lurch
             g_time = (float)i / fps;
-            g.p.feet[0] = a[0] + (b[0] - a[0]) * e + sinf(u * 3.14159265f) * -1.4f;
-            g.p.feet[2] = a[1] + (b[1] - a[1]) * e;
-            g.p.feet[1] = g.lv.ground_at(g.p.feet[0], g.p.feet[2]);
-            g.p.yaw = (a[2] + (b[2] - a[2]) * e) * 3.14159265f / 180.0f;
-            g.p.pitch = (a[3] + (b[3] - a[3]) * e) * 3.14159265f / 180.0f;
-            // a walking bob, in phase with the distance covered, so the shot breathes
-            const float walked = (a[0] - g.p.feet[0]) * (a[0] - g.p.feet[0]) +
-                                 (a[1] - g.p.feet[2]) * (a[1] - g.p.feet[2]);
-            const float phase = sqrtf(walked) * 2.1f;
-            g.p.feet[1] += 0.022f * sinf(phase) * 0.5f;
-            g.p.pitch += 0.0045f * sinf(phase * 2.0f);
+            place_video_frame(g, a, b, u, e, i, n_frames, true);
             if (!g.lv.body_fits(g.p.feet[0], g.p.feet[2], 0.26f)) {
                 std::printf("FAIL: camera path leaves walkable ground at frame %d (%.1f %.1f)\n",
                             i, g.p.feet[0], g.p.feet[2]);
