@@ -1,16 +1,16 @@
 {
   "status": "PASS",
-  "decoded_frames": 480,
-  "unique_decoded_frame_hashes": 480,
+  "revision": 2,
+  "decoded_frames": 1200,
+  "unique_decoded_frame_hashes": 1200,
   "dimensions": [
     1920,
     1080
   ],
-  "fps": 24.0,
+  "fps": 60.0,
   "duration_seconds": 20.0,
   "scene_hash_matches": true,
-  "mean_sampled_frame_difference_8bit": 0.6757470705684484,
-  "max_sampled_frame_difference_8bit": 2.0748841762542725,
-  "min_sampled_frame_difference_8bit": 0.013564814813435078,
-  "notes": "Independent sandbox full decode and frame uniqueness check; no repeated full-frame images. Visual realism assessed separately."
+  "mean_sampled_frame_difference_8bit": 1.4501555092738407,
+  "max_sampled_frame_difference_8bit": 3.4871296882629395,
+  "notes": "Native full-HD 60 fps, no repeated full-frame images; artistic realism requires separate review."
 }

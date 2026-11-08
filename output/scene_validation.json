@@ -1,41 +1,53 @@
 {
   "technical_status": "PASS",
+  "revision": 2,
   "checks": {
+    "revision_2": true,
     "native_full_hd": true,
-    "twenty_seconds_at_24fps": true,
+    "twenty_seconds_at_60fps": true,
     "cycles_cpu": true,
     "denoising": true,
     "agx": true,
-    "real_3d_mountain": true,
+    "actual_mountain_geometry": true,
     "forest_instances": true,
-    "no_external_image_projections": true,
-    "no_missing_asset_dependencies": true,
-    "actual_water_surface": true,
-    "water_dielectric": true,
-    "animated_ripples": true,
-    "real_camera_parallax": true,
-    "deep_focus_landscape": true,
-    "short_clip_safe": true
+    "volumetric_tree_canopies": true,
+    "wind_sway": true,
+    "packed_photographic_sky": true,
+    "dramatic_mist_banks": true,
+    "finite_valley_mist": true,
+    "seven_animated_birds": true,
+    "no_photo_backplates": true,
+    "no_missing_assets": true,
+    "camera_reveals_fixed_sun": true,
+    "sunlit_water_at_end": true,
+    "raytraced_backlight": true,
+    "motion_blur": true,
+    "geometric_water_waves": true,
+    "physical_water_ior": true,
+    "water_absorption": true,
+    "animated_capillary_waves": true,
+    "substantial_drone_flight": true,
+    "rising_drone": true
   },
   "camera_positions": [
     [
-      0.0,
-      -74.0,
-      8.0
+      12.0,
+      -68.0,
+      4.5
     ],
     [
-      0.6499999761581421,
-      -72.69999694824219,
-      8.119999885559082
+      -13.55528736114502,
+      -16.585834503173828,
+      9.292438507080078
     ],
     [
-      1.5,
-      -71.0,
-      8.300000190734863
+      -42.0,
+      35.0,
+      13.5
     ]
   ],
-  "objects": 5718,
-  "unique_polygons": 2277832,
-  "visual_status": "NOT_CERTIFIED: consult preview and QA notes",
+  "objects": 5758,
+  "unique_polygons": 2224092,
+  "visual_status": "NOT_CERTIFIED until first/mid/last and motion tests are reviewed",
   "blender": "4.2.23 LTS"
 }

@@ -1,19 +1,19 @@
-# Alpine Mirror
+# Alpine Mirror — verified revision 2
 
-**Revision 2 production render is enabled:** 20 seconds, 1920×1080, **60 fps / 1,200 native frames**, rising lake-drone flight, backlit morning, deeper foliage, breezy water and distant birds. The final strong-cinematic-rays choice is settled; see [revision brief](docs/REVISION_2.md). Until the new render completes, the existing MP4 and delivery report are the previously delivered **24-fps revision 1**, not a completed 60-fps revision.
+## Completed 20-second 1080p60 delivery
 
-A CPU-rendered, procedural Blender reconstruction of the supplied alpine-lake reference. The photograph is used for art direction only: mountains, forest, shore, water, boulders, grass and lupines are 3D geometry with procedural materials.
+- `output/Alpine_Mirror_1080p_20s.mp4` — **1920×1080, 60 fps, 1,200 native rendered frames, exactly 20 seconds**, H.264, silent.
+- `output/Alpine_Mirror_1080p.png` — original revision-2 full-HD 384-sample hero still.
+- `output/Alpine_Mirror.blend` — the exact packed, editable Blender 4.2 LTS scene used by all clips.
+- `output/delivery_validation.json`, `output/independent_verification.json`, `output/recovery_validation.json` — full-decode, native-frame and recovery provenance reports.
 
-## Previously completed revision-1 delivery (24 fps)
+[Successful recovery and final assembly](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42446280821). Preserved 88 completed clips byte-for-byte and recovered only 144 missing frames in small jobs. No upscaling, retiming, interpolation or fabricated frames. Final assembly stream-copies compatible clips, without another lossy encode.
 
-- `output/Alpine_Mirror_1080p_20s.mp4` — **1920×1080, 24 fps, 480 natively rendered frames, 20 seconds**, H.264, silent.
-- `output/Alpine_Mirror_1080p.png` — higher-sample full-HD hero still.
-- `output/Alpine_Mirror.blend` — editable Blender 4.2 LTS scene, including camera and ripple animation.
-- `output/delivery_validation.json` — full-movie decode validation, created **only after the render and encode succeed**.
+**Visual disclosure:** technical verification is not a photorealism certification. This remains a procedural 3D reconstruction with an art-directed CC0 photographic sky and ray-traced volumetric mist; separate artistic review is required.
 
-**Render completed:** [successful CPU render run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42077709412). The prior movie, still and delivery reports are present. The local Blender working file may already contain revision 2 while its movie is still pending. An independent sandbox decode verified 480 unique decoded frame hashes, 1920×1080, 24 fps, exactly 20.0 seconds, and a scene SHA-256 matching the delivered Blender file. See `output/independent_verification.json`.
+The earlier full-render workflow hit worker time limits. Use the recovery workflow for this recovery, not an unnecessary restart of all completed clips. Before any future fresh full render, reduce the original workflow's twelve-frame chunks using measured worst-case frame times.
 
-**Quality disclosure:** the result is a procedural CG reconstruction, not an ultra-photoreal/AAA-approved match to the supplied photograph. Foliage, geology, snow and composition still differ; technical completion is not artistic approval.
+[Historical 11.4-second preview](https://github.com/mhammedamazil-hub/Testrepo/raw/93d4d430e2ad68b066694489e079a61ef31f04e0/output/Alpine_Mirror_PARTIAL_1080p60.mp4) remains downloadable from its original commit. Its redundant working-tree copy is removed only after the verified full movie is archived, to keep the delivery within storage limits.
 
 ## Rebuild locally
 
