@@ -8,7 +8,7 @@
     "rea:doctor": "npm run rea -- doctor --json",
     "rea:mcp": "npm run rea -- mcp",
     "rea:install-android": "python3 scripts/install-android-tools.py",
-    "test:web": "node --test tests/web.cjs"
+    "test:web": "node --test tests/*.cjs"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",

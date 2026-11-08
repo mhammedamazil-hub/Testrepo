@@ -15,4 +15,5 @@ if (window.SourcebookAndroid?.request && window.SourcebookAndroid?.isOffline()) 
     };
     sessionStorage.setItem('sourcebook-token','local-android-session-no-network');
     document.documentElement.classList.add('offline-app');
+    document.addEventListener('DOMContentLoaded',()=>{const foot=document.querySelector('.source-foot');if(foot)foot.textContent='Your sources and answers stay in this app on your phone.';const home=document.querySelector('.home-bottom span:last-child');if(home)home.textContent='▣ Stored on this phone';});
 }

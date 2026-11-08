@@ -1,4 +1,7 @@
-# Sourcebook for Android
+# Sourcebook for Android (server-connected variant)
+
+**Need no server? Use [Sourcebook Offline (Rust + GGUF)](OFFLINE-ANDROID.md) instead.** This page documents the older remote-server client, not the new standalone APK.
+
 
 ## What this APK is
 

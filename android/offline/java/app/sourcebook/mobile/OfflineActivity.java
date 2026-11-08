@@ -65,7 +65,7 @@ public class OfflineActivity extends Activity {
         Button cancel = new Button(this); cancel.setText("Cancel AI"); cancel.setOnClickListener(v -> {nativeCancel();notice("Cancellation requested");});toolbar.addView(cancel);root.addView(toolbar);
         web = new WebView(this); WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false); settings.setAllowContentAccess(true);
-        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setSafeBrowsingEnabled(true);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setSafeBrowsingEnabled(false);
         settings.setSupportMultipleWindows(false); settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setMediaPlaybackRequiresUserGesture(true); settings.setBuiltInZoomControls(false);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
@@ -100,7 +100,7 @@ public class OfflineActivity extends Activity {
             @Override public boolean onJsAlert(WebView view,String url,String message,JsResult result){new AlertDialog.Builder(OfflineActivity.this).setMessage(message).setPositiveButton("OK",(d,w)->result.confirm()).setOnCancelListener(d->result.cancel()).show();return true;}
             @Override public boolean onJsConfirm(WebView view,String url,String message,JsResult result){new AlertDialog.Builder(OfflineActivity.this).setMessage(message).setNegativeButton("Cancel",(d,w)->result.cancel()).setPositiveButton("OK",(d,w)->result.confirm()).setOnCancelListener(d->result.cancel()).show();return true;}
         });
-        web.setDownloadListener((url,agent,disposition,mime,length)->notice("Use the download buttons in the updated Sourcebook interface. Update the server if needed."));
+        web.setDownloadListener((url,agent,disposition,mime,length)->notice("Use the document export buttons in this offline interface."));
         root.addView(web,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1));web.loadUrl(address.toString());
     }
     private boolean trustedPage() { return web!=null && OriginPolicy.sameOrigin(origin,web.getUrl()); }
@@ -114,7 +114,7 @@ public class OfflineActivity extends Activity {
     private void importModel(Uri uri){
         importing=true;notice("Copying and loading model. Keep the app open; this may take a few minutes.");getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         io.execute(()->{
-            java.io.File temp=new java.io.File(getFilesDir(),"model-import.partial");
+            java.io.File temp=new java.io.File(getFilesDir(),"model-import-"+java.util.UUID.randomUUID()+".partial");
             try(java.io.InputStream input=getContentResolver().openInputStream(uri);java.io.FileOutputStream output=new java.io.FileOutputStream(temp)){
                 if(input==null)throw new java.io.IOException("Cannot open selected file");
                 byte[] magic=new byte[4];int read=0;while(read<4){int n=input.read(magic,read,4-read);if(n<0)break;read+=n;}

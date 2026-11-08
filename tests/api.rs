@@ -512,3 +512,56 @@ async fn docx_extracts_text_and_rejects_invalid_archives() {
     );
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn offline_storage_and_network_boundaries_without_socket_server() {
+    let (mut app, _, path) = setup("http://127.0.0.1:1/disabled".into()).await;
+    app.offline = true;
+    let router = sourcebook::router(app);
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"On phone"})),
+        true,
+    )
+    .await;
+    let base = format!("/api/notebooks/{}", book["id"].as_str().unwrap());
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/sources"),
+            Some(json!({"title":"Local","content":"On-device source"})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    let (status, error) = request(
+        &router,
+        "POST",
+        &format!("{base}/sources"),
+        Some(json!({"title":"Web","kind":"url","url":"https://example.com"})),
+        true,
+    )
+    .await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert!(error["error"].as_str().unwrap().contains("offline"));
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/share"),
+            Some(json!({})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    let (_, config) = request(&router, "GET", "/api/config", None, true).await;
+    assert_eq!(config["offline"], true);
+    std::fs::remove_file(path).unwrap();
+}

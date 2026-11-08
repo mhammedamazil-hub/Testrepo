@@ -1,5 +1,8 @@
 # Sourcebook Offline: embedded Rust + on-device GGUF
 
+**[Download the verified ARM64 offline APK artifact](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42499842998/artifacts/13625236121)** (ZIP; extract `sourcebook-offline-arm64.apk`). Build: [42499842998](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42499842998), compiled and signed successfully. The ZIP is approximately 5.5 MB without model weights. A GitHub login may be required for Actions artifact downloads. This sandbox cannot retrieve the binary because GitHub artifact storage redirects to a blocked host; the browser download remains available.
+
+
 This is a separate APK (`app.sourcebook.offline`) from the server-connected client.
 Its Rust core is compiled into `libsourcebook.so` and called through JNI **in the
 same process**. It never binds a TCP port and does not require Termux, Ollama,
@@ -62,3 +65,24 @@ The build is debug-signed for personal sideloading, not a Play Store release.
 
 Do not infer runtime/model quality from compilation alone: real-model device
 inference and airplane-mode testing require a compatible phone and GGUF file.
+
+## First-run checks and verified scope
+
+1. Install the offline APK (it can coexist with the old server-connected app).
+2. Enable airplane mode. Open it: the notebook library should load without a login/server prompt.
+3. Create a notebook, import a small text/PDF/DOCX source and create a note.
+4. Tap Model and select your own downloaded instruct GGUF. Allow time and enough RAM/storage.
+5. Ask a short source-based question. Use Cancel AI if it takes too long.
+6. Generate a short quiz/flashcard set, check its evidence and answers, then export/restore a notebook.
+
+The build verified cross-compilation, APK signature and absence of INTERNET permission.
+Fourteen local browser/IPC tests cover offline request routing/chunking, blocked external
+requests, mobile study behavior and native save/print contracts. The desktop Rust tests
+passed for the first offline implementation revision. The native JNI/GGUF combination
+has **not yet been exercised with a real model on a physical phone** here; the checklist
+above is still device acceptance testing, not a claim that it was performed. This APK
+should be treated as an experimental build until that testing is done.
+
+Supported model container is GGUF, not another app's private model storage, `.task`,
+`.litertlm`, or an arbitrary `.bin`. Model license terms still apply. A model file is
+not provided, downloaded automatically or hidden inside this small APK.

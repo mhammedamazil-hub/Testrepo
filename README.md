@@ -2,6 +2,14 @@
 
 An independent, local-first NotebookLM-style research app. **The server, provider calls, ingestion, persistence, CLI, study validation, grading and media handling are written in Rust.** The embedded browser client uses HTML/CSS/JavaScript. Not affiliated with Google; this is a substantial alternative, not a claim of complete proprietary-feature parity.
 
+## Offline Android APK — no server
+
+A separate **Sourcebook Offline** APK now packages the **Rust core + llama.cpp** directly inside the Android app. It has **no Internet permission, no localhost listener, and no server URL/token to configure**. Import your own compatible text-instruct GGUF and run AI on the phone's CPU. Requires **ARM64 Android 9+** with a current System WebView. Models are not bundled.
+
+[Download the first verified offline APK artifact](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42499842998/artifacts/13625236121) · [Offline installation, model import and limits](docs/OFFLINE-ANDROID.md)
+
+This replaces the external-server requirement **for the offline variant**. The older server-connected APK and desktop CLI remain separate options. Network webpage imports, public links and speech/transcription are not offline features; see the offline guide before downloading.
+
 ## Features
 
 - **Notebooks:** create, search, rename, delete, full JSON export and restore into a new notebook.
@@ -113,7 +121,7 @@ Do **not** mistake the current implementation for a complete clone:
 - Google Drive OAuth/sync, Google Docs/Sheets integration, YouTube transcript fetching, web search/deep research.
 - OCR/image understanding, embedding/vector retrieval, streamed responses and persistent background job queues.
 - Generated videos, rendered infographics, native PPTX export, two-host/interactive audio. PDF export currently uses the browser's print system, not a Rust PDF renderer.
-- Multi-user accounts, edit collaboration, enterprise administration, offline embedded-server APKs and native desktop installers. A server-connected Android APK is now available below.
+- Multi-user accounts, edit collaboration, enterprise administration, native desktop installers. Separate offline and server-connected Android APKs are available.
 
 Full private-service parity requires separate integrations, infrastructure and provider capabilities; simply installing REA cannot recover Google's backend. Feature research used the accessible [notebooklm-py feature reference](https://github.com/teng-lin/notebooklm-py). No proprietary APK/EXE/DEB was downloaded or decompiled.
 
@@ -137,6 +145,6 @@ See [HTTP API reference](docs/API.md). Existing independent REA setup is documen
 
 ## Android APK / mobile
 
-The Android client now lives in [`android/`](android/) with a dedicated [APK build workflow](.github/workflows/android.yml). It connects to your running Rust server and exposes the existing app features through mobile **Sources / Chat / Studio** tabs, native document picking/saving, audio playback/download, and Android print/PDF. It is **not an offline embedded-server APK**. See [Android setup and download instructions](docs/ANDROID.md) for requirements, signing, LAN/HTTPS connection and limitations.
+The Android client now lives in [`android/`](android/) with a dedicated [APK build workflow](.github/workflows/android.yml). It connects to your running Rust server and exposes the existing app features through mobile **Sources / Chat / Studio** tabs, native document picking/saving, audio playback/download, and Android print/PDF. That older client is **not** the offline APK; choose the separate Rust+GGUF build above for no-server use. See [Android setup and download instructions](docs/ANDROID.md) for requirements, signing, LAN/HTTPS connection and limitations.
 
 The v0.2 Rust expansion subsequently passed GitHub build/tests. The mobile update has **10 passing local browser tests**, including tab switching and native save/print bridge contracts. APK compilation, pure-Java URL-policy tests, signing and signature verification also passed [the Android build](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487957011). Physical-device testing is still required.
