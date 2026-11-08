@@ -1,0 +1,65 @@
+{
+  "checks": [
+    {
+      "check": "Native project viewport is 1920x1080",
+      "passed": true
+    },
+    {
+      "check": "Original terrain and road imported",
+      "passed": true
+    },
+    {
+      "check": "Real skeletal animation imported",
+      "passed": true
+    },
+    {
+      "check": "Player stands on physical terrain",
+      "passed": true
+    },
+    {
+      "check": "Vehicle stands on physical terrain",
+      "passed": true
+    },
+    {
+      "check": "Walking changes actual character position",
+      "passed": true
+    },
+    {
+      "check": "Enter car near vehicle",
+      "passed": true
+    },
+    {
+      "check": "Driving moves collision body",
+      "passed": true
+    },
+    {
+      "check": "Cannot exit a moving car",
+      "passed": true
+    },
+    {
+      "check": "Brake stops the vehicle",
+      "passed": true
+    },
+    {
+      "check": "Exit stationary vehicle",
+      "passed": true
+    },
+    {
+      "check": "Pause freezes player physics",
+      "passed": true
+    },
+    {
+      "check": "Checkpoint loop completes a lap",
+      "passed": true
+    },
+    {
+      "check": "Recovery resets route progress",
+      "passed": true
+    }
+  ],
+  "engine": "4.4.1-stable (official)",
+  "fps_benchmarked": false,
+  "rendered": false,
+  "scope": "Actual Godot physics/input/state/import tests. Headless frame rate is NOT rendering performance.",
+  "status": "HEADLESS_GAMEPLAY_PASS"
+}

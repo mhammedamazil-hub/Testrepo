@@ -1,6 +1,0 @@
-Package: libnspr4
-Version: 2:4.35-1
-Architecture: amd64
-Package: libnss3
-Version: 2:3.87.1-1+deb12u4
-Architecture: amd64

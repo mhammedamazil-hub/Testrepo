@@ -1,0 +1,49 @@
+name: Alpine game validation and Web build
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths:
+      - game/**
+      - tools/game/**
+      - tests/test_game_project.py
+      - .github/workflows/game-build.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: alpine-game-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate-and-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install lightweight test dependencies only
+        run: python -m pip install numpy==1.26.4 Pillow==13.0.0 imageio-ffmpeg==0.8.1
+      - name: Restore verified official Godot and Web templates
+        run: python tools/game/setup_toolchain.py
+      - name: Import actual game assets
+        run: .cache/godot/Godot_v4.4.1-stable_linux.x86_64 --headless --path game --editor --import
+      - name: Test actual Godot physics, walking, driving and interactions
+        shell: bash
+        run: |
+          set -euo pipefail
+          .cache/godot/Godot_v4.4.1-stable_linux.x86_64 --headless --path game --fixed-fps 60 --script res://tests/physics_smoke.gd | tee /tmp/game-physics.log
+          grep -q GAMEPLAY_SMOKE_PASS /tmp/game-physics.log
+      - name: Test source, evidence and production/recovery safeguards
+        run: python -m unittest discover -s tests -v
+      - name: Export actual single-threaded Godot Web release
+        run: python tools/game/export_game.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alpine-Mirror-playable-Web
+          path: |
+            .exports/Alpine_Mirror_Web.zip
+            .exports/web-export.json
+            docs/game/headless-validation.json
+          include-hidden-files: true
+          retention-days: 3

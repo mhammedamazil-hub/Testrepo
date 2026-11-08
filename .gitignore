@@ -12,3 +12,6 @@ __pycache__/
 .godot/
 .exports/
 node_modules/
+# Godot extracts these embedded GLB images during import; reproduce from GLB.
+/game/assets/terrain_*.png*
+/game/assets/road_asphalt.png*

@@ -1,0 +1,65 @@
+{
+  "source": "output/Alpine_Mirror.blend",
+  "source_sha256": "ef72c7f780af86dd6b89a07ae13aab9970d485ed782e835c19061c57b343dfc3",
+  "original_unique_polygons": 2224092,
+  "terrain_triangles": 61400,
+  "terrain_method": "Retessellated native heightfields; preserves original eroded vertices sampled on fixed grids",
+  "textures": "Cycles CPU-baked original mountain/ground albedo and tangent normals, 1024 square each",
+  "forest": "Original native tree placements, filtered along new road; CPU-rendered original spruce impostor",
+  "forest_instances": 1551,
+  "route_samples": 160,
+  "route_meters": 965.45,
+  "vehicle": "Original Blender mesh; no brands; separate wheel origins",
+  "character": "Original Blender mesh and 11-bone skeleton; exported Idle and Walk NLA clips",
+  "shutdown_workaround": "Validated short-lived authoring process exits explicitly; native embedded-bpy finalization issue remains unresolved",
+  "files": {
+    "Alpine_Massif_albedo.png": {
+      "bytes": 1287580,
+      "sha256": "a886ba628e27492c1bab1949c585062e5d9d2b89b8ce623beee11f2d9d557976"
+    },
+    "terrain.glb": {
+      "bytes": 7998160,
+      "sha256": "df54e53ec2fb2c840014d50366df7eb424286d25c6bec03ac26dbb25c896ccca"
+    },
+    "Alpine_Massif_normal.png": {
+      "bytes": 2462685,
+      "sha256": "b564bd1cdca77bf94ffa31ba2bbb72567b91499b3fb10709bf1ed8048e59c8b0"
+    },
+    "Alpine_Ground_albedo.png": {
+      "bytes": 1755519,
+      "sha256": "dc7a10c89c09851485df12585f28fb39ac0025e4f58c9f8f2eeba1995068f621"
+    },
+    "Alpine_Ground_normal.png": {
+      "bytes": 623203,
+      "sha256": "865d2a90486a90c114051c2dca67bbee7fd8e0aab7f0194491540f494462bda2"
+    },
+    "asphalt.png": {
+      "bytes": 299773,
+      "sha256": "0ac07f1735c2f0d3b2a5e7d53c53f844f8b7960c60f5f6f44bab663a120a76d0"
+    },
+    "road.glb": {
+      "bytes": 343436,
+      "sha256": "ef26397ad32d120228a7cb959792f52aea62422563dd3cc22a3bcc8619f9a9ec"
+    },
+    "spruce_impostor.png": {
+      "bytes": 624895,
+      "sha256": "985867502585ee272e6e933d78bb12a7381ca58e4015408274b6afae2714fa46"
+    },
+    "vehicle.glb": {
+      "bytes": 347652,
+      "sha256": "09e3307fd28e8e9197b7030a88cdd1b7db52f7080c79d9163632a269fe2fac60"
+    },
+    "hiker.glb": {
+      "bytes": 286748,
+      "sha256": "e6eb2ba716462521ea47b84a16f5860e8d3ca4fa7433cd1c9976ec22568d773b"
+    },
+    "sky.jpg": {
+      "bytes": 451368,
+      "sha256": "8abbb9f99d576bb3316c16e0828605da84db86d9e2d6cb15e2fa09fcc571030d"
+    },
+    "world_data.json": {
+      "bytes": 53452,
+      "sha256": "a4f4fa13517baf46623f39368dde2f4a4c6c89a0bca629c68006f36e7425a9b8"
+    }
+  }
+}

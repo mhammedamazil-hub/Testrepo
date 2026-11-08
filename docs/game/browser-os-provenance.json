@@ -1,0 +1,9 @@
+{
+  "source": "Official Debian bookworm libnspr4 and libnss3, apt-get download in pinned browser-libs workflow",
+  "transport_commit": "f85f4edf71903b880266559db705055dba629185",
+  "checksums": {
+    "libnspr4_2%3a4.35-1_amd64.deb": "6cca09767e94e4b5d2888ef31ad797bd3e7cec27fbbe98b49b10d4884746ce77",
+    "libnss3_2%3a3.87.1-1+deb12u4_amd64.deb": "666bce4768414a6a79d2dacb1549f922cedb1facd373790a477e12739878284e"
+  },
+  "versions": "Package: libnspr4\nVersion: 2:4.35-1\nArchitecture: amd64\nPackage: libnss3\nVersion: 2:3.87.1-1+deb12u4\nArchitecture: amd64\n"
+}

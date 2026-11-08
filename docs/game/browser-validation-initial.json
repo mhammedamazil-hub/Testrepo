@@ -1,0 +1,191 @@
+{
+  "status": "BROWSER_GAMEPLAY_FAIL",
+  "engine": "Actual Godot 4.4.1 Web release",
+  "gpu": {
+    "canvas": [
+      1920,
+      1080
+    ],
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "initial": {
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 677,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "fps": 3,
+    "fps_target": 60,
+    "frame_samples": 0,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 0,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 352929,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "before": {
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 661,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "fps": 1,
+    "fps_target": 60,
+    "frame_samples": 17,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 4533.8,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 340653,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "driving": {
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 661,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "fps": 1,
+    "fps_target": 60,
+    "frame_samples": 17,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 4533.8,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 340653,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "after": {
+    "car": [
+      67.7161560058594,
+      3.33249568939209,
+      24.7261962890625
+    ],
+    "draw_calls": 661,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "fps": 1,
+    "fps_target": 60,
+    "frame_samples": 30,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 4669.8,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 340653,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "final": {
+    "car": [
+      67.7161560058594,
+      3.33249568939209,
+      24.7261962890625
+    ],
+    "draw_calls": 707,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "fps": 1,
+    "fps_target": 60,
+    "frame_samples": 43,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 4533.8,
+    "paused": false,
+    "player": [
+      69.8153762817383,
+      3.31637597084045,
+      24.783390045166
+    ],
+    "playing": true,
+    "primitives": 353019,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "distance_driven_meters": 0,
+  "console_errors": [],
+  "messages": [
+    "Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org",
+    "OpenGL API OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)) - Compatibility - Using Device: WebKit - WebKit WebGL"
+  ],
+  "performance_scope": "Sandbox headless Chromium software graphics; not representative of hardware GPU speed",
+  "target_1080p_verified": true,
+  "target_60fps_verified": false
+}

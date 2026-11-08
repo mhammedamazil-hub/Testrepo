@@ -1,0 +1,201 @@
+{
+  "status": "BROWSER_GAMEPLAY_PASS",
+  "engine": "Actual Godot 4.4.1 Web release",
+  "gpu": {
+    "canvas": [
+      1920,
+      1080
+    ],
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "initial": {
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 75,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 21,
+    "frame_samples": 3,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 1823.2,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 77205,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "before": {
+    "car": [
+      67.7087020874023,
+      3.33107614517212,
+      25
+    ],
+    "draw_calls": 70,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 13,
+    "fps_target": 60,
+    "frame": 38,
+    "frame_samples": 20,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 3080.2,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 74751,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "driving": {
+    "car": [
+      67.8239974975586,
+      3.34007048606873,
+      20.7693309783936
+    ],
+    "draw_calls": 69,
+    "driving": true,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 46,
+    "frame_samples": 28,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 1861,
+    "paused": false,
+    "player": [
+      70.2077713012695,
+      3.31572437286377,
+      25.0680866241455
+    ],
+    "playing": true,
+    "primitives": 74667,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 6.68
+  },
+  "after": {
+    "car": [
+      67.9280166625977,
+      3.32082009315491,
+      16.9502582550049
+    ],
+    "draw_calls": 75,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 69,
+    "frame_samples": 51,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 2002.9,
+    "paused": false,
+    "player": [
+      70.0272369384766,
+      3.23748660087585,
+      17.0074520111084
+    ],
+    "playing": true,
+    "primitives": 77235,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "final": {
+    "car": [
+      67.9280166625977,
+      3.32082009315491,
+      16.9502582550049
+    ],
+    "draw_calls": 74,
+    "driving": false,
+    "engine": "Godot 4.4.1",
+    "enhanced_shadows": false,
+    "fps": 1,
+    "fps_target": 60,
+    "frame": 81,
+    "frame_samples": 9,
+    "laps": 0,
+    "native_resolution_target": [
+      1920,
+      1080
+    ],
+    "p95_frame_ms": 1814.5,
+    "paused": false,
+    "player": [
+      70.0272369384766,
+      3.23748660087585,
+      17.0074520111084
+    ],
+    "playing": true,
+    "primitives": 77141,
+    "render_scale": 1,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "renderer": "gl_compatibility",
+    "speed_mps": 0
+  },
+  "distance_driven_meters": 4.232239761873511,
+  "console_errors": [],
+  "messages": [
+    "Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org",
+    "OpenGL API OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)) - Compatibility - Using Device: WebKit - WebKit WebGL"
+  ],
+  "performance_scope": "Sandbox headless Chromium software graphics; not representative of hardware GPU speed",
+  "target_1080p_verified": true,
+  "target_60fps_verified": false
+}

@@ -1,6 +1,6 @@
 # Blender -> Godot game build brief
 
-Status: authorized to build. User confirmed the existing Alpine terrain through the environment clarification. No playable game or achieved frame rate is claimed yet.
+Status: playable Godot prototype built and rendered at native 1920 x 1080; actual walking/driving interactions tested. The user confirmed the existing Alpine terrain. **60 FPS was not achieved in the sandbox software-rendering test and remains an unmet acceptance gate.** See `docs/game/BUILD_STATUS.md` and the machine-readable evidence.
 
 ## Locked requirements
 

@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Alpine Mirror — Lakeside Escape</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071215;color:#e9eee4;font-family:system-ui,sans-serif}body{display:grid;place-items:center}#canvas{display:block;width:min(100vw,177.7778vh);height:min(56.25vw,100vh);outline:none;background:#071215}#loading{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;padding:9vw;background:radial-gradient(ellipse at 80% 20%,#204b4f,#071215 70%);z-index:3}small{color:#9bcdb0;letter-spacing:.22em;font-size:11px}h1{font-size:clamp(52px,7vw,110px);letter-spacing:-.065em;line-height:.88;font-weight:500;margin:35px 0 28px}p{font-size:16px;color:#a6bab4;max-width:500px;line-height:1.6}.track{height:2px;background:#264145;max-width:380px;margin-top:28px}.bar{height:100%;background:#a3d6b7;width:0;transition:width .2s}#status{font-size:12px;margin-top:14px;letter-spacing:.08em}#error{white-space:pre-wrap;color:#ffc6b5}#badge{position:absolute;right:6vw;bottom:5vh;font-size:11px;letter-spacing:.18em;color:#8ca8a1}
+</style>$GODOT_HEAD_INCLUDE</head><body>
+<canvas id="canvas" width="1920" height="1080" tabindex="0" aria-label="Alpine Mirror game. WASD to move, E to enter car, Space to jump or brake, Escape to pause.">Your browser needs WebGL 2 to play.</canvas>
+<div id="loading"><small>A / M &nbsp; — &nbsp; AN ALPINE ESCAPE</small><h1>ALPINE<br>MIRROR</h1><p id="description">Preparing the mountain road.<br>A real Godot game, built from our Blender landscape.</p><div class="track"><div class="bar" id="bar"></div></div><div id="status">LOADING THE LAKESIDE</div><p id="error"></p><div id="badge">1920 × 1080 &nbsp; / &nbsp; 60 FPS TARGET</div></div>
+<script src="$GODOT_URL"></script><script>
+const config=$GODOT_CONFIG;
+config.canvas=document.getElementById('canvas');config.canvasResizePolicy=0;
+const engine=new Engine(config);
+window.alpineEngine=engine;
+engine.startGame({onProgress:(current,total)=>{const progress=total>0?Math.min(1,current/total):0;document.getElementById('bar').style.width=(progress*100)+'%';document.getElementById('status').textContent=total>0?`LOADING  ${Math.round(progress*100)}%`:'PREPARING THE LAKESIDE';}}).then(()=>{document.getElementById('loading').style.display='none';document.getElementById('canvas').focus();window.alpineReady=true;}).catch(error=>{document.getElementById('status').textContent='COULD NOT START';document.getElementById('error').textContent=String(error)+'\nThis game needs a WebGL 2-capable browser. Check the console for details.';console.error(error);window.alpineStartupError=String(error);});
+window.addEventListener('keydown',event=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code))event.preventDefault();});
+</script></body></html>

@@ -9,5 +9,5 @@
     "Godot_v4.4.1-stable_linux.x86_64.zip": "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa"
   },
   "transport": "Temporary Git transport only; remove tracked cache after local installation",
-  "transport_commit": "6354722"
+  "transport_commit": "635472281ec62bccc91ff0c188fbc7b450d68658"
 }
