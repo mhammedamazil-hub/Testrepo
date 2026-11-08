@@ -1,3 +1,5 @@
+> **Latest release:** [licensed foliage, live planar water, sun shafts, and the playable custom Alpine framework](LIBRARY_RUNTIME_STATUS.md). Both game editions are published; the report below retains historical first-build evidence.
+
 # Alpine Mirror game — playable prototype status
 
 ## Verdict
