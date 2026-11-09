@@ -1,0 +1,26 @@
+name: Acquire licensed photographic Milky Way sky
+on:
+  push:
+    branches: [arena/f0bb5c2d-testrepo]
+    paths: [.github/workflows/night-sky.yml, tools/game/fetch_night_sky.py]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  acquire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: arena/f0bb5c2d-testrepo
+      - run: python3 -m pip install Pillow==13.0.0
+      - run: python3 tools/game/fetch_night_sky.py
+      - name: Save CC0 sky on the active branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add engine/public/world/night
+          git commit -m 'Add verified CC0 photographic Milky Way night sky'
+          git pull --rebase origin arena/f0bb5c2d-testrepo
+          git push origin arena/f0bb5c2d-testrepo
