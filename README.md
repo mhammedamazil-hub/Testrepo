@@ -4,6 +4,14 @@ This is an in-progress **on-device** Android port of [1jehuang/jcode](https://gi
 
 The earlier `tablet-agent-debug-apk` artifact was an unrelated SSH client. **Do not use it for this project.** The previous app has been replaced by an experimental local PTY frontend; this work is not yet verified on a tablet.
 
+## Install and try
+
+A first ARM64 debug APK was built by [this Actions run](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42659504625). Download `jcode-android-arm64-debug` from its artifacts, unzip it, then install `app-debug.apk`. If you previously installed the old SSH prototype, uninstall it first: this build has the same application ID but a different debug signing key. Uninstalling removes that app’s private files.
+
+Open the app, optionally import a trusted project ZIP while stopped, then tap **Start** to launch the local jcode TUI. Use **Keyboard** to enter text and follow jcode’s provider setup. Stop jcode and use **Export ZIP** to save your workspace. The app-private workspace is not the tablet’s shared Downloads folder.
+
+This is an experimental build: the compiler and packaging succeeded, but it has **not** been run on a Galaxy Tab A9, so startup and provider setup remain unverified.
+
 ## Architecture and limitations
 
 The Actions build attempts to compile jcode for Android ARM64 using the Android NDK, package it in the app's native library directory, and run it locally under a pseudo-terminal. A private workspace supports ZIP import/export; the terminal has a keyboard and extra keys. It uses the Android CA store and an Internet connection to access model providers; you must configure a supported provider through jcode. No SSH server is required.
