@@ -1,0 +1,60 @@
+{
+  "scope": "Real Chromium DOM/CSS and actual AlpineInput event handlers. No WebGL or hardware performance claim.",
+  "checks": [
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "wheel",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "arrows",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "wheel",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "arrows",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "wheel",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "arrows",
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    }
+  ],
+  "passed": true
+}

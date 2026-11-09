@@ -1,3 +1,5 @@
+> Historical After Dark 0.2 evidence. Current controls, responsive rendering and corrected circuit are documented in [Circuit v3](../circuit-v3/README.md). Fixed-size 1080p checks below apply to the older build, not the new responsive pixel-budget settings.
+
 # Alpine: After Dark — release validation
 
 ## Scope

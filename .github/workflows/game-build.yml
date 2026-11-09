@@ -7,6 +7,8 @@ on:
       - game/assets/**
       - game/CREDITS.md
       - docs/game/after-dark/**
+      - docs/game/circuit-v3/**
+      - tests/test_circuit_release.py
       - roadster_lite.glb
       - tools/game/**
       - tests/test_game_project.py
@@ -40,6 +42,7 @@ jobs:
         run: |
           npm ci --prefix engine
           npm test --prefix engine
+          node engine/tests/circuit-drive.js
           npm run build --prefix engine
       - name: Make the custom game the main site and retain its previous URL
         run: |
@@ -50,7 +53,7 @@ jobs:
           shutil.copytree(source,site)
           shutil.copytree(source,site/'alpine')
           (site/'.nojekyll').touch()
-          assert (site/'social/after-dark-v2.jpg').is_file()
+          assert (site/'social/after-dark-circuit-v3.jpg').is_file()
           html=(site/'index.html').read_text()
           assert 'og:image' in html and 'Alpine: After Dark' in html
           shutil.make_archive('.exports/Alpine_After_Dark_Web','zip',source)
@@ -99,9 +102,11 @@ jobs:
           assert 'twitter:card' in html and 'summary_large_image' in html
           bundle=re.search(r'<script[^>]+src="([^"]+)"',html).group(1)
           assert len(read(bundle)[0])>10000
-          image,mime=read('social/after-dark-v2.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
+          image,mime=read('social/after-dark-circuit-v3.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
           model,_=read('world/roadster/roadster.glb');assert model[:4]==b'glTF'
           meta=json.loads(read('world/roadster/model.json')[0]);assert meta['license']=='CC-BY-4.0'
+          route=json.loads(read('world/track/route.json')[0]);assert route['width']==10 and len(route['points'])==640
+          assert 'steering-wheel' in html and 'gas-pedal' in html and 'brake-pedal' in html
           assert 'Alpine: After Dark' in read('alpine/')[0].decode()
           print('CUSTOM_GAME_AND_SOCIAL_PREVIEW_HTTPS_PASS',base)
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Not a physical-phone/60 FPS certificate.\n')

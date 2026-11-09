@@ -25,13 +25,13 @@
     -800
   ],
   "checkpoints": [
-    24,
-    64,
-    104,
-    148
+    160,
+    320,
+    480,
+    0
   ],
   "assets": {
-    "terrain": "terrain.glb",
+    "terrain": "track/terrain.glb",
     "road": "road.glb",
     "vehicle": "roadster/roadster.glb",
     "character": "hiker.glb",

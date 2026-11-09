@@ -1,0 +1,12 @@
+{
+  "source": "docs/game/circuit-v3/launcher-ui.png",
+  "source_sha256": "e8a34f3db3a1c86e05bb531247f7e6bed89c4a694b716687ecd885f0134226c7",
+  "image": "engine/public/social/after-dark-circuit-v3.jpg",
+  "image_sha256": "52bf29f5f90a4415cda9c455c1475cb86924cba352038b5d7ccd85ed1be6a0aa",
+  "dimensions": [
+    1200,
+    630
+  ],
+  "method": "Actual Chromium WebGL2 launcher with Performance render preset explicitly selected for software-renderer QA. Full UI screenshot 1200x630, RGB JPEG quality 90. No generated concept art or substituted model/sky.",
+  "credit": "Roadster 2020: metarex.4d, CC-BY-4.0. Night sky: Greg Zaal / Poly Haven, CC0-1.0. Sources and modifications in game/CREDITS.md."
+}

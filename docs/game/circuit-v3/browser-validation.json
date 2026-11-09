@@ -1,0 +1,150 @@
+{
+  "scope": "Real Chromium mobile emulation, actual WebGL2 software rendering and actual touch input/Rapier. Simulation stepped by test timer independently of expensive render readbacks. Performance graphics preset (about 0.52MP) explicitly selected. Not real-time/FPS/physical-phone evidence.",
+  "checks": [
+    {
+      "name": "Game initializes with actual graded terrain, four contacts and dynamic car",
+      "passed": true
+    },
+    {
+      "name": "Full-bleed landscape aspect matches visible viewport",
+      "passed": true
+    },
+    {
+      "name": "Wheel and pedal touch drive the actual dynamic car",
+      "passed": true
+    },
+    {
+      "name": "Dedicated brake pedal stops the car",
+      "passed": true
+    },
+    {
+      "name": "Explicit D/R selector selects reverse",
+      "passed": true
+    },
+    {
+      "name": "Gas pedal drives in selected reverse gear",
+      "passed": true
+    },
+    {
+      "name": "Nearest recovery preserves lap time and clears motion",
+      "passed": true
+    },
+    {
+      "name": "Recovery returns to road with four contacts",
+      "passed": true
+    },
+    {
+      "name": "Both steering modes switch in live gameplay",
+      "passed": true
+    },
+    {
+      "name": "Polygon button and gas preserve full independent steering",
+      "passed": true
+    },
+    {
+      "name": "Touch cancellation releases steering and pedal",
+      "passed": true
+    },
+    {
+      "name": "Portrait camera and render have correct aspect without black bands",
+      "passed": true
+    },
+    {
+      "name": "Walking retains its own joystick and hides driving pedals",
+      "passed": true
+    },
+    {
+      "name": "On-foot joystick still moves the real character",
+      "passed": true
+    },
+    {
+      "name": "Pause/resume preserves gameplay",
+      "passed": true
+    },
+    {
+      "name": "Focus loss pauses and clears held controls",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "completed": true,
+  "final": {
+    "framework": "Alpine 0.3 / Circuit",
+    "physics": "Rapier dynamic rigid body / 4 raycast wheels",
+    "vehicle_model": "Tesla Roadster 2020 / metarex.4d",
+    "vehicle_mass_kg": 2200,
+    "car_dynamic": true,
+    "night": true,
+    "headlights": true,
+    "wheel_contacts": 4,
+    "wheel_suspension": [
+      0.19273900985717773,
+      0.19403418898582458,
+      0.19327890872955322,
+      0.1919810175895691
+    ],
+    "acceleration_g": 1.4648123402948797e-7,
+    "vehicle_assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "paused",
+    "paused": true,
+    "in_vehicle": false,
+    "touch_enabled": true,
+    "render_size": [
+      489,
+      1060
+    ],
+    "position": {
+      "x": 70.183837890625,
+      "y": 3.337329149246216,
+      "z": 23.242286682128906
+    },
+    "car_position": {
+      "x": 67.86006927490234,
+      "y": 3.853180170059204,
+      "z": 23.536052703857422
+    },
+    "player_position": {
+      "x": 70.183837890625,
+      "y": 3.337329149246216,
+      "z": 23.242286682128906
+    },
+    "speed": -0.004912977693495567,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0,
+      "y": 0,
+      "throttle": 0,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 2.449999999999996,
+    "reflection_frames": 4,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": false,
+    "grass_instances": 807,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": false,
+    "graphics_quality": "performance",
+    "render_pixel_budget": 518400,
+    "responsive_view": true,
+    "steering_mode": "wheel",
+    "road_assist": true,
+    "track_width": 10,
+    "route_distance": 0.0008281288961263331,
+    "measured_fps": 0,
+    "frame_p95_ms": 0,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  }
+}

@@ -61,4 +61,4 @@ Compatible unfurling clients such as Discord can display the title and image wit
 
 ## Fidelity and performance boundary
 
-Actual Roadster art, real photographed stars, PBR/reflections and force-driven physics improve the prototype. **This is not photorealism/AAA/Unreal parity**, and 60 Hz physics is not proof of 60 FPS rendering. Native 1920×1080 is retained; physical-phone frame rate is unverified. CPU SwiftShader tests are functional/render evidence only.
+Actual Roadster art, real photographed stars, PBR/reflections and force-driven physics improve the prototype. **This is not photorealism/AAA/Unreal parity**, and 60 Hz physics is not proof of 60 FPS rendering. The first release retained fixed native 1920×1080. [Circuit v3](../game/circuit-v3/README.md) now uses responsive full-screen aspect with explicit Full (~2.07 MP), Balanced and Performance pixel-budget settings; physical-phone frame rate is unverified. CPU SwiftShader tests are functional/render evidence only.

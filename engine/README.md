@@ -1,4 +1,4 @@
-# Alpine: After Dark — Runtime 0.2
+# Alpine: After Dark — Runtime 0.3
 
 A free browser driving/exploration prototype with an original custom framework. Three.js renders the world; Rapier WASM simulates the dynamic vehicle and walking collisions. Blender/bpy is the offline asset compiler, not the browser runtime. No paid GPU, Steam integration or manufacturer endorsement.
 
@@ -10,9 +10,9 @@ A free browser driving/exploration prototype with an original custom framework. 
 - `npm test --prefix engine` — actual Rapier suspension, inertia, acceleration/braking, wall collision, airborne behavior, slope gravity, grass grip, walk/jump, safe entry/exit and recovery tests.
 - `npm run dev --prefix engine` — port 3001, binds 0.0.0.0 and accepts Arena preview hosts.
 - `npm run build --prefix engine` — standalone static game in `.exports/alpine`.
-- `node tools/game/after_dark_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
+- `node tools/game/circuit_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
 
-Drive Roadster or Explore on Foot from the launcher. WASD/arrows move, mouse drag looks, Shift runs, Space jumps/brakes, E enters/exits, R recovers, N changes day/night, H toggles headlights, Escape pauses. Touch joystick, look region and independently held pedals/actions are included. Garage, controls and pause panels are functional.
+Drive Roadster or Explore on Foot from the launcher. Touch driving supports both a drag-around-rim steering wheel and angular left/right buttons; switch below the steering control or in Controls. Actual ribbed gas/brake pedal shapes, a stopped-car D/R selector, independent camera touch and nearest-safe recovery replace the old joystick/pedal text buttons. Walking retains its own joystick. WASD/arrows move, mouse drag looks, Shift runs, Space jumps/brakes, E enters/exits, R recovers, N changes day/night, H toggles headlights, Escape pauses. Both driving modes support independent simultaneous steering, gas, brake and look inputs. Garage, controls and pause panels are functional.
 
 ## Roadster and real physics
 
@@ -22,6 +22,12 @@ The owner's repository-root `roadster_lite.glb` is preserved unchanged. `tools/g
 
 Measured flat/dry 60 Hz simulation: 0–60 mph **2.43 s**; stopping from 26.95 m/s takes **2.20 s / 29.09 m**. These are solver tests, not road tests or certified factory specifications. No Pacejka calibration, thermal/battery model, damage, tire deformation, buoyancy, rockets or suction fans.
 
+## Corrected circuit and mobile HUD
+
+The custom road is a smooth 640-point, 10 m wide loop over a separately graded terrain derivative. The previous terrain intersected the road at 45/160 sampled center points (up to 0.67 m). Render/collision road vertices now match, all 960 lane samples pass clearance/ray tests, and an actual input-driven Rapier endurance test completes a lap with four contacts throughout. Physical guardrails, road-corridor decoration exclusion, forward swept gates/finish and nearest-safe recovery preserve useful progress. Optional road assist eases/caps force requests and requests braking before bends; it never scripts the body or steers automatically.
+
+Compact progress/timer, live route map, suggested bend speed, wrong-way/off-road prompts and a smaller speed/gear HUD replace the oversized telemetry card. [Evidence, reproduction and limits](../docs/game/circuit-v3/README.md). AI-generated images in `../docs/design/` are user-selected concepts, not game screenshots.
+
 ## Night, presentation and social cards
 
 Default night uses **real Milky Way photography**, Satara Night by Greg Zaal / Poly Haven (CC0), plus art-directed moon/fill lighting and car head/brake lights. It is not an astronomically accurate local sky. Daytime, planar water reflections and occluded daytime sun shafts remain available. Shadows, reflections and shafts are optimized intermediate buffers, not ray tracing or volumetric GI.
@@ -30,8 +36,8 @@ The responsive launcher is premium-PC-game-inspired, without fabricated reviews,
 
 ## Authoring and boundaries
 
-`tools/game/prepare_library_assets.py` compiles licensed Poly Haven foliage, terrain textures and a level contract. It must preserve the Roadster vehicle selection. The original cinematic `output/Alpine_Mirror.blend` is not edited; its SHA256 stays in `level.json`. Tree cards use an isolated photographic needle island, not opaque cone/wood atlas regions. Provenance is in `game/assets/library/manifest.json` and `public/world/night/provenance.json`.
+`tools/game/prepare_library_assets.py` compiles licensed Poly Haven foliage, terrain textures and a level contract. It preserves the Roadster/corrected terrain selection. Rebuild the custom circuit with `node tools/game/build_track.mjs` then `python tools/game/grade_track_terrain.py` (NumPy required); source terrain and cinematic remain unchanged. The original cinematic `output/Alpine_Mirror.blend` is not edited; its SHA256 stays in `level.json`. Tree cards use an isolated photographic needle island, not opaque cone/wood atlas regions. Provenance is in `game/assets/library/manifest.json` and `public/world/night/provenance.json`.
 
-Native main rendering is 1920×1080. **60 FPS is a target, not a verified physical-phone result.** CPU SwiftShader captures are functional evidence only. This remains a playable prototype with simplified terrain, vegetation and rendering, not Unreal/GTA parity or certified photorealism.
+The view fills the actual portrait/landscape aspect without letterboxing or stretching. Full defaults to a ~1920×1080 pixel budget; explicit Balanced (~1280×720 budget) and Performance (~960×540 budget) modes can be selected in Controls. Actual dimensions adapt to viewport shape. **60 FPS is a target, not a verified physical-phone result.** CPU SwiftShader captures are functional evidence only. This remains a playable prototype with simplified terrain, vegetation and rendering, not Unreal/GTA parity or certified photorealism.
 
 See `THIRD_PARTY_NOTICES.txt`, `../game/CREDITS.md`, and `../docs/research/roadster-physics-and-night.md`. The deployed `world/credits.txt` includes dependency notices and asset attribution, including “Powered by Poly Haven.”

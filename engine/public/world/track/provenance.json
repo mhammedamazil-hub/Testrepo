@@ -1,0 +1,7 @@
+{
+  "source": "game/assets/terrain.glb",
+  "source_sha256": "df54e53ec2fb2c840014d50366df7eb424286d25c6bec03ac26dbb25c896ccca",
+  "output_sha256": "3cf0a54b6b65be8e6904b74a7b5e2177df223393fdc95c21e9432e9604bb70a7",
+  "graded_vertices": 534,
+  "modifications": "Only custom derivative: grade terrain below road in a 20m corridor, blend to original terrain over next 10m. Recomputed runtime vertex normals. Original cinematic/shared terrain untouched."
+}

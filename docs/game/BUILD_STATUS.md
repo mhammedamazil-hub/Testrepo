@@ -1,3 +1,5 @@
+> **Current gameplay/UI upgrade:** [Circuit v3](circuit-v3/README.md) — wheel or polygon steering, pedal controls, full-screen mobile view and corrected road.
+
 > **Current primary edition:** [Alpine: After Dark](../../engine/README.md) — custom Roadster/night runtime; root and `/alpine/` now target that edition. This document preserves historical release evidence, not current vehicle/deployment claims.
 
 > **Latest release:** [licensed foliage, live planar water, sun shafts, and the playable custom Alpine framework](LIBRARY_RUNTIME_STATUS.md). Both game editions are published; the report below retains historical first-build evidence.

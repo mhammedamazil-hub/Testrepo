@@ -3,6 +3,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {Water} from 'three/addons/objects/Water.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {ROADSTER} from './vehicle-spec.js';
+import {ribbon,nearestRoute} from './track.js';
 
 export const asset=name=>new URL('world/'+name,document.baseURI).href;
 export class AlpineWorld {
@@ -11,6 +12,9 @@ export class AlpineWorld {
  async load(){
   this.data=await fetch(asset('world_data.json')).then(r=>r.json());
   this.scatter=await fetch(asset('world_data_detail.json')).then(r=>r.json());
+  this.track=await fetch(asset('track/route.json')).then(r=>r.json());this.data.route=this.track.points;
+  this.scatter.rocks=this.scatter.rocks.filter(p=>nearestRoute(this.data.route,{x:p[0],z:p[2]}).distance>8);
+  this.scatter.grass=this.scatter.grass.filter(p=>nearestRoute(this.data.route,{x:p[0],z:p[2]}).distance>6);
   const [terrain,road,vehicle,character,pine,grass,rocks,sky,ground,groundNormal,groundArm,ripple,cutout,nightSky]=await Promise.all([
    ...['terrain','road','vehicle','character','pine','grass','rocks'].map(key=>this.loader.loadAsync(asset(this.level.assets[key]))),
    this.texture('sky.jpg',true),this.texture('library/ground_diff.jpg',true),this.texture('library/ground_normal.jpg'),this.texture('library/ground_arm.jpg'),this.texture('ground_detail_normal.png'),this.texture('spruce_impostor.png',true),this.texture('night/milky-way.jpg',true)
@@ -24,10 +28,19 @@ export class AlpineWorld {
   this.sun.shadow.bias=-.0002;this.sun.shadow.normalBias=.05;this.scene.add(this.sun,this.sun.target);
   this.sunDisk=new T.Mesh(new T.SphereGeometry(22,16,12),new T.MeshBasicMaterial({color:0xffe1ac,transparent:true,depthWrite:false,toneMapped:false,fog:false}));
   this.sunDisk.position.set(...this.level.sun);this.sunDisk.name='VisibleSunForOccludedShafts';this.scene.add(this.sunDisk);
+  // Original road was intersected by terrain; custom road shares its exact render/collision strip.
+  let roadMaterial;road.scene.traverse(m=>{if(m.isMesh&&m.name.includes('Road'))roadMaterial=m.material.clone();});
+  road.scene.clear();
+  const makeStrip=(width,offset,lift,material,collide=false)=>{const data=ribbon(this.data.route,width,offset,lift),g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(data.positions,3));g.setAttribute('uv',new T.BufferAttribute(data.uvs,2));g.setIndex(new T.BufferAttribute(data.indices,1));g.computeVertexNormals();const m=new T.Mesh(g,material);m.name=collide?'Lakeside_Road_V2':'Road_Paint';m.receiveShadow=true;road.scene.add(m);return m;};
+  makeStrip(this.track.width,0,0,roadMaterial,true);
+  const paint=new T.MeshStandardMaterial({color:0xd8e9e4,roughness:.85});
+  for(const side of [-1,1])makeStrip(.10,side*4.65,.018,paint);
+  const center=makeStrip(.10,0,.019,paint),ix=center.geometry.index.array;center.geometry.setIndex(new T.BufferAttribute(Uint32Array.from(ix.filter((_,i)=>Math.floor(i/6)%8<3)),1));
   for(const root of [terrain.scene,road.scene]){
    this.scene.add(root);root.updateMatrixWorld(true);
    root.traverse(mesh=>{if(!mesh.isMesh)return;mesh.castShadow=false;mesh.receiveShadow=true;
     if(mesh.name.includes('Alpine_Ground')){
+     mesh.geometry.computeVertexNormals();
      mesh.material=mesh.material.clone();mesh.material.roughness=.96;
      mesh.material.onBeforeCompile=shader=>{
       Object.assign(shader.uniforms,{alpineGround:{value:ground},alpineFineNormal:{value:groundNormal},alpineArm:{value:groundArm}});
@@ -46,7 +59,7 @@ export class AlpineWorld {
          normal=normalize(mat3(S,B,normal)*normalize(fine)); }`);
      };
     }
-    if(!mesh.name.includes('Center_Lines'))this.addCollider(mesh);
+    if(root===terrain.scene||mesh.name==='Lakeside_Road_V2')this.addCollider(mesh);
    });
   }
   this.car=vehicle.scene;this.person=character.scene;this.scene.add(this.car,this.person);
@@ -59,6 +72,7 @@ export class AlpineWorld {
   this.mixer=new T.AnimationMixer(this.person);this.clips={};for(const clip of character.animations)this.clips[clip.name.toLowerCase().includes('walk')?'walk':'idle']=this.mixer.clipAction(clip);
   this.activeClip=null;this.playAnimation('idle');
   const near=[],far=[];
+  this.data.forest=this.data.forest.filter(p=>nearestRoute(this.data.route,{x:p[0],z:p[2]}).distance>8);
   for(const p of this.data.forest){const close=this.data.route.some(r=>(r[0]-p[0])**2+(r[2]-p[2])**2<32**2);far.push({...p,near:close});if(close)near.push([...p,Math.abs(p[0]*.71)%(Math.PI*2)]);}
   for(const p of near)this.physics.world.createCollider(RAPIER.ColliderDesc.cylinder(p[3]*.4,Math.max(.14,p[3]*.018)).setTranslation(p[0],p[1]+p[3]*.4,p[2]).setFriction(.6));
   for(const p of this.scatter.rocks)this.physics.world.createCollider(RAPIER.ColliderDesc.ball(p[3]*.43).setTranslation(p[0],p[1]+p[3]*.36,p[2]).setFriction(.7));
@@ -71,8 +85,19 @@ export class AlpineWorld {
   const reflect=this.water.onBeforeRender;
   this.water.onBeforeRender=(...args)=>{if(this.lastMirrorFrame===this.frame)return;this.lastMirrorFrame=this.frame;this.reflectionFrames++;reflect.apply(this.water,args);};
   this.scene.add(this.water);
-  this.markers=this.level.checkpoints.map(index=>{const m=new T.Mesh(new T.TorusGeometry(2.9,.055,6,40),new T.MeshBasicMaterial({color:0xa5e2bd}));const p=this.data.route[index];m.position.set(p[0],p[1]+2.9,p[2]);const next=this.data.route[(index+1)%this.data.route.length];m.rotation.y=Math.atan2(-(next[0]-p[0]),-(next[2]-p[2]));this.scene.add(m);return m;});
+  this.addGuardrails();
+  this.markers=this.track.gates.map(index=>{const m=new T.Mesh(new T.TorusGeometry(5,.065,6,40),new T.MeshBasicMaterial({color:0xa5e2bd}));const p=this.data.route[index];m.position.set(p[0],p[1]+4.7,p[2]);const next=this.data.route[(index+1)%this.data.route.length];m.rotation.y=Math.atan2(-(next[0]-p[0]),-(next[2]-p[2]));this.scene.add(m);return m;});
   this.setNight(true);
+ }
+ addGuardrails(){
+  const route=this.data.route,count=route.length/4*2,rail=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshStandardMaterial({color:0x697e88,metalness:.55,roughness:.5}),count),dummy=new T.Object3D();let instance=0;
+  for(let i=0;i<route.length;i+=4){const a=route[i],b=route[(i+4)%route.length],dx=b[0]-a[0],dz=b[2]-a[2],length=Math.hypot(dx,dz),angle=Math.atan2(dx,dz);
+   for(const side of [-1,1]){const x=(a[0]+b[0])/2-dz/length*6.1*side,z=(a[2]+b[2])/2+dx/length*6.1*side,y=(a[1]+b[1])/2+.55;
+    dummy.position.set(x,y,z);dummy.rotation.set(0,angle,0);dummy.scale.set(.15,.55,length+.08);dummy.updateMatrix();rail.setMatrixAt(instance++,dummy.matrix);
+    this.physics.world.createCollider(RAPIER.ColliderDesc.cuboid(.10,.45,length/2+.04).setTranslation(x,y,z).setRotation({x:0,y:Math.sin(angle/2),z:0,w:Math.cos(angle/2)}).setFriction(.15).setRestitution(.02));
+   }
+  }
+  rail.receiveShadow=true;this.scene.add(rail);
  }
  setNight(night){
   this.night=night;this.scene.background=night?this.nightSky:this.daySky;

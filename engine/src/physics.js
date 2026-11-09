@@ -40,7 +40,7 @@ export class AlpinePhysics {
   this.footVelocity={x:0,z:0};this.wheelStates=[];this.acceleration=0;this.lastSpeed=0;this.braking=false;
  }
  addTrimesh(vertices,indices,surface='ground'){
-  const collider=this.world.createCollider(RAPIER.ColliderDesc.trimesh(vertices,indices).setFriction(surface==='road'?.95:.65));
+  const collider=this.world.createCollider(RAPIER.ColliderDesc.trimesh(vertices,indices,RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES).setFriction(surface==='road'?.95:.65));
   collider.userData={surface};return collider;
  }
  reset(route){

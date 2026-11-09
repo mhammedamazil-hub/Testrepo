@@ -4,14 +4,15 @@
 
 **[Play free in your browser](https://mhammedamazil-hub.github.io/Testrepo/)** · [Compatibility /alpine/ URL](https://mhammedamazil-hub.github.io/Testrepo/alpine/) · [Runtime and controls](engine/README.md)
 
-The custom **Three.js + Rapier WASM** edition is now the primary game. Drive the supplied Roadster beneath real Milky Way photography, or explore on foot. Includes a premium-PC-game-inspired launcher, functional garage/controls/pause panels, touch controls, checkpoints, recovery, day/night and headlights. Static Open Graph/Twitter cards use the actual first-screen capture.
+The custom **Three.js + Rapier WASM** edition is now the primary game. Drive the supplied Roadster beneath real Milky Way photography, or explore on foot. Includes a premium-PC-game-inspired launcher, compact race HUD/live minimap, switchable steering wheel or polygon direction buttons, pedal-shaped gas/brake, functional garage/controls/pause, day/night and headlights. Static Open Graph/Twitter cards use the actual first-screen capture.
 
 - **Actual dynamic vehicle:** four raycast suspension contacts, force-driven AWD, load-limited tire grip, body inertia, collision and gravity. The original user-uploaded `roadster_lite.glb` is unchanged; its compiled derivative has independent wheel pivots.
 - **Research, not invented factory data:** mass/power/suspension/tire/aero estimates are disclosed. Measured simulation: **2.43 s 0–60 mph, 29.09 m braking from 26.95 m/s**; not manufacturer-certified real-car results. [Sources, assumptions and limits](docs/research/roadster-physics-and-night.md).
 - **Night sky:** Satara Night, actual star/Milky Way photography by Greg Zaal / Poly Haven, CC0. Roadster model by metarex.4d, CC-BY-4.0. [Credits](game/CREDITS.md).
 - **Desktop:** WASD/arrows, drag to look, E enter/exit, Space jump/brake, Shift run, R recover, N day/night, H headlights, Escape pause.
-- **Phones:** landscape recommended; independent joystick/look/pedals/actions. Chromium mobile emulation is tested; physical-phone performance remains unverified.
-- Native **1920×1080** rendering and fixed **60 Hz physics**. **60 FPS is a target, not achieved/certified device coverage.** This is a playable prototype, not photorealistic/AAA/Unreal parity.
+- **Phones:** full-screen portrait/landscape view; steering wheel or angular left/right buttons, independent gas/brake pedals and D/R selector. Walking retains a joystick. Chromium mobile emulation is tested; physical-phone performance remains unverified.
+- **Circuit repair:** graded terrain no longer protrudes through the road; 10 m wide smooth circuit, guardrails, ordered swept checkpoints/finish, nearest-safe recovery and optional road assist. [Actual implementation and full-lap physics test](docs/game/circuit-v3/README.md).
+- Responsive render aspect; **Full (~2.07 MP)** default, Balanced and Performance settings; fixed **60 Hz physics**. **60 FPS is a target, not achieved/certified device coverage.** This is a playable prototype, not photorealistic/AAA/Unreal parity.
 - [Validation/publication workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) builds only the custom game to root and `/alpine/`. Godot sources remain in [`game/`](game/README.md) as a legacy edition; they are no longer the primary release or part of this build.
 
 The original completed cinematic below is preserved separately and is not changed by the game upgrade.
