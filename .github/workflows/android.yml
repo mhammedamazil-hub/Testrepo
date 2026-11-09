@@ -16,6 +16,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
+      - name: Install Android NDK
+        run: >-
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "ndk;27.2.12479018"
       - name: Build jcode for Android arm64
         shell: bash
         run: |
