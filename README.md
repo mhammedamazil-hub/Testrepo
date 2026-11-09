@@ -27,7 +27,10 @@ The separate older server-connected Android client remains available.
 - **Sharing:** revocable, unguessable read-only links. Explicitly enabling sharing exposes **all** sources, notes, history, materials and audio in that notebook to anyone with the link. Shared users cannot mutate owner data; quiz practice in shared views is local and unsaved.
 - **CLI:** manage notebooks, add sources, ask, generate, save notes, restore/export, review quizzes/cards, generate source guides, download structured files/MP3, enable/revoke sharing.
 - **Bring your own AI:** multiple OpenAI-compatible, Gemini and Anthropic providers, with separate assignments per task. Optional local/native providers; no required GGUF or Google login for API use. Owner-only Settings saves redacted configuration and keys with restricted file permissions (not custom encryption).
-- **Video research (desktop):** public YouTube/Instagram links via separately installed yt-dlp + FFmpeg; up to 8 sampled frames sent to an assigned vision model and retained with labelled observations. No audio analysis; tools are not bundled in Android.
+- **Video research:** Android can send public YouTube segments directly to a compatible Gemini vision model, or sample up to eight frames from a chosen device video using Android’s decoder. No audio is analyzed in the local-frame route. Desktop yt-dlp/FFmpeg remains an optional separate path; Instagram downloading is not bundled.
+- **NIE source-only intelligence:** notebook-aware explanations, evidence and synthesis under a strict no-external-knowledge/no-browsing policy. Models still use learned language abilities; prompts cannot erase training or guarantee compliance.
+- **Source discovery:** explicit notebook-title Wikipedia search with add-to-notebook actions; search results are not evidence until imported.
+- **Experimental 3D shelf:** keyboard/touch notebook selection, persistent List fallback and reduced-motion-respecting transitions. Source badges use local assets, not third-party favicons.
 - **Motion graphics:** validated timed scenes with an animated typography storyboard preview and JSON export, not rendered MP4.
 
 Studio JSON is parsed into typed Rust structures and validated before saving. The client builds study views using safe DOM text nodes, not provider-generated HTML. Older Markdown-only materials remain readable.

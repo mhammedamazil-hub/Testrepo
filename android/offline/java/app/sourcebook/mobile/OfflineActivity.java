@@ -198,7 +198,7 @@ public class OfflineActivity extends Activity {
     }
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
-        if(request==PICK_VIDEO){final String notebook=videoNotebook,title=videoTitle;videoNotebook=null;videoTitle=null;if(result==RESULT_OK&&data!=null&&data.getData()!=null){notice("Sampling up to 8 frames locally, then sending them to your vision provider. No audio is analyzed.");extractVideo(data.getData(),notebook,title);}else{videoBusy=false;videoResult(false,"Video selection cancelled","",notebook);}}
+        if(request==PICK_VIDEO){if(videoNotebook==null||videoTitle==null){videoBusy=false;notice("Video selection was interrupted. Please choose the file again.");return;}final String notebook=videoNotebook,title=videoTitle;videoNotebook=null;videoTitle=null;if(result==RESULT_OK&&data!=null&&data.getData()!=null){notice("Sampling up to 8 frames locally, then sending them to your vision provider. No audio is analyzed.");extractVideo(data.getData(),notebook,title);}else{videoBusy=false;videoResult(false,"Video selection cancelled","",notebook);}}
         if(request==PICK_MODEL && result==RESULT_OK && data!=null && data.getData()!=null)importModel(data.getData());
         if(request==PICK_FILE && fileCallback!=null){
             Uri[] chosen=null;

@@ -78,12 +78,30 @@ structures are rejected. Keep the app open; Android may kill background work.
 
 ## Video and motion graphics: precise scope
 
-**Android does not bundle Python, yt-dlp or FFmpeg.** The video-link action
-returns an explicit capability error. It does not remotely offload to a hidden
-server. To analyze video links today, use the desktop Rust app with installed
-`yt-dlp` and `ffmpeg` on PATH, then export/restore the resulting notebook on Android.
-Alternatively import an existing transcript. A fully packaged Android downloader
-and frame extraction pipeline remains unimplemented.
+### Android: two supported paths (0.6 experimental)
+
+1. **Public YouTube URL → Gemini.** Assign a Gemini model with video/YouTube
+   support to **vision** in Settings. Enter a watch/short/youtu.be link, then a
+   start/end segment (max 600 seconds, ending within 24 hours). Rust normalizes
+   the video URL and sends Gemini `fileData` with requested `videoMetadata`
+   offsets. The provider fetches this explicitly authorized source; this is not
+   chat browsing. No yt-dlp, local download or external workspace server is used.
+   Account/model support, private/age/region restrictions, provider token limits
+   and billing apply. This yields labelled **generated video observations**, not
+   a certified transcript; verify them in the original. No frames are retained
+   for this direct-URL route. Real provider execution was not tested here.
+2. **Choose video from device → native frame sampling.** Android's document
+   picker gives temporary access to your file. MediaMetadataRetriever decodes up
+   to eight scaled JPEGs (longest edge about 640px) from the first ten minutes.
+   Rust sends those frames to the assigned vision API, keeps the sampled frames
+   with the generated observations, and clearly labels approximate timestamps.
+   **No audio is analyzed**, and sparse frames may miss events. Use a supported
+   codec such as MP4/H.264; corrupt/unsupported files return errors. Keep the app
+   open. Physical-device codec decoding and provider analysis remain untested.
+
+Android still does not bundle Python, yt-dlp or FFmpeg, and **does not download
+Instagram videos**. For Instagram, import a saved video you have permission to
+use. No DRM/login bypass or hidden external processing server is included.
 
 The desktop pipeline accepts public HTTPS YouTube/Instagram links, uses yt-dlp
 without configuration/cookies/playlists, limits metadata duration to 10 minutes,
@@ -146,3 +164,38 @@ wire protocol and selected model using a minimal request. Manual IDs remain
 supported; model discovery is limited to the first page on some services.
 Neither successful compilation nor mock-provider tests verify your real key,
 project billing, region eligibility, or an individual provider's model access.
+
+
+## 0.6 NIE, discovery and spatial UI
+
+`src/nie-system.txt` contains the thirteen-section Notebook Intelligence Engine
+policy with a mandatory **strict source-only override**. Chat, source guides and
+study generation get the notebook title, inventory and current retrieved excerpts.
+The optional constrained local engine uses a shorter equivalent policy to stay
+within its token budget. The engine is instructed to explain and connect ideas
+rather than paste paragraphs, distinguish inference from fact, cite real current
+excerpts and admit insufficient evidence. It has no browsing/tool declarations.
+The policy forbids external-memory facts and general-knowledge fallbacks, but a
+prompt cannot erase pretrained weights or guarantee factual compliance. Check
+citations. Retrieval is bounded; no claim of full-notebook processing is made.
+
+**Discover sources** is a separate, explicitly user-triggered Wikipedia title
+search implemented in Rust, not a model generating unverified URLs. Results are
+search suggestions, not evidence or quality endorsements. Only **Add source**
+fetches and imports a selected page. There is no automatic external search when
+creating a notebook or answering questions. The empty conversation offers this
+opt-in discovery action. This allows finding material without giving NIE browsing
+tools. Availability of the live search service remains network dependent.
+
+The library defaults to an experimental CSS 3D shelf with touch swipes, arrows,
+keyboard navigation and an immediate persistent **List** fallback. Transitions
+cover tabs, workspace entry, dialogs, messages, interactive surfaces and shelf
+selection; system reduced-motion preference disables animation. Local PDF,
+YouTube, Instagram, web, document, text, audio and video source badges do not make
+favicon requests to trackers. The design uses no remote assets or canvas engine.
+
+Validation includes mocked Gemini video/fileData schema and segment bounds,
+invalid frame rejection, NIE policy tests, browser shelf fallback/native-picker
+contracts and mobile/desktop Chromium layout checks. These are not proof of live
+Gemini video support, decoder behavior on a physical phone, or search availability.
+Reference: [Google Gemini video cookbook](https://github.com/google-gemini/cookbook/blob/main/quickstarts/Video_understanding.ipynb).
