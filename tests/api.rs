@@ -711,3 +711,92 @@ async fn gemini_discovery_and_connection_use_native_schema_and_redact_errors() {
     }
     server.abort();
 }
+
+#[tokio::test]
+async fn youtube_is_sent_as_authorized_media_not_browsing_and_frames_are_bounded() {
+    let mock=Router::new().route("/v1beta/models/{model}",post(|Json(p):Json<Value>|async move{
+        assert!(p.get("tools").is_none());let parts=&p["contents"][0]["parts"];
+        assert_eq!(parts[1]["fileData"]["fileUri"],"https://www.youtube.com/watch?v=nLRL_NcnK-4");assert_eq!(parts[1]["videoMetadata"]["startOffset"],"60s");assert_eq!(parts[1]["videoMetadata"]["endOffset"],"120s");
+        Json(json!({"candidates":[{"content":{"parts":[{"text":"The supplied segment introduces programming concepts; verify in original."}]}}]}))
+    }));
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let base = format!("http://{}/v1beta", listener.local_addr().unwrap());
+    let server = tokio::spawn(async move { axum::serve(listener, mock).await.unwrap() });
+    let (_, router, path) = setup(base.clone()).await;
+    let pid = uuid::Uuid::new_v4().to_string();
+    let payload = json!({"providers":[{"id":pid,"name":"Video AI","kind":"gemini","base_url":base,"model":"video-test","api_key":"test-only"}],"assignments":{"vision":pid}});
+    assert_eq!(
+        request(&router, "PUT", "/api/ai", Some(payload), true)
+            .await
+            .0,
+        StatusCode::OK
+    );
+    let (_, book) = request(
+        &router,
+        "POST",
+        "/api/notebooks",
+        Some(json!({"title":"CS50"})),
+        true,
+    )
+    .await;
+    let base = format!("/api/notebooks/{}", book["id"].as_str().unwrap());
+    let(status,source)=request(&router,"POST",&format!("{base}/video"),Some(json!({"title":"Lecture","url":"https://youtu.be/nLRL_NcnK-4?si=tracking","start":60,"end":120})),true).await;
+    assert_eq!(status, StatusCode::OK, "{source}");
+    assert_eq!(source["kind"], "video-observations");
+    assert_eq!(source["frames"], json!([]));
+    assert!(source["content"]
+        .as_str()
+        .unwrap()
+        .contains("not a verified transcript"));
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/video"),
+            Some(json!({"title":"Too long","url":"https://youtu.be/nLRL_NcnK-4","end":1000})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/video-frames"),
+            Some(json!({"title":"Empty","frames":[]})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            &router,
+            "POST",
+            &format!("{base}/video-frames"),
+            Some(json!({"title":"Invalid","frames":[{"seconds":0,"jpeg":"bm90LWEtanBlZw=="}]})),
+            true
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            &router,
+            "GET",
+            &format!("{base}/recommendations"),
+            None,
+            false
+        )
+        .await
+        .0,
+        StatusCode::UNAUTHORIZED
+    );
+    std::fs::remove_file(path.with_extension("ai.json")).unwrap();
+    std::fs::remove_file(path).unwrap();
+    server.abort();
+}

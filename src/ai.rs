@@ -175,7 +175,7 @@ fn parts(content: &Value, kind: &str) -> Value {
     } else {
         content.as_array().cloned().unwrap_or_default()
     };
-    Value::Array(items.into_iter().filter_map(|p|{if p["type"]=="text"{Some(if kind=="gemini"{json!({"text":p["text"]})}else{p})}else if p["type"]=="image_url"{let raw=p["image_url"]["url"].as_str()?;let (head,data)=raw.strip_prefix("data:")?.split_once(";base64,")?;Some(if kind=="gemini"{json!({"inlineData":{"mimeType":head,"data":data}})}else{json!({"type":"image","source":{"type":"base64","media_type":head,"data":data}})})}else{None}}).collect())
+    Value::Array(items.into_iter().filter_map(|p|{if p["type"]=="text"{Some(if kind=="gemini"{json!({"text":p["text"]})}else{p})}else if p["type"]=="video_url" && kind=="gemini"{Some(json!({"fileData":{"fileUri":p["url"]},"videoMetadata":{"startOffset":format!("{}s",p["start"].as_u64().unwrap_or(0)),"endOffset":format!("{}s",p["end"].as_u64().unwrap_or(600))}}))}else if p["type"]=="image_url"{let raw=p["image_url"]["url"].as_str()?;let (head,data)=raw.strip_prefix("data:")?.split_once(";base64,")?;Some(if kind=="gemini"{json!({"inlineData":{"mimeType":head,"data":data}})}else{json!({"type":"image","source":{"type":"base64","media_type":head,"data":data}})})}else{None}}).collect())
 }
 pub(super) async fn request(a: &App, p: &Provider, messages: Vec<Value>) -> Result<String> {
     if p.kind == "native" {

@@ -23,13 +23,15 @@ import java.util.concurrent.Executors;
 
 /** Offline Android host for the in-process Rust core and CPU GGUF inference. */
 public class OfflineActivity extends Activity {
-    private static final int PICK_FILE = 10, SAVE_FILE = 11, PICK_MODEL = 12;
+    private static final int PICK_FILE = 10, SAVE_FILE = 11, PICK_MODEL = 12, PICK_VIDEO = 13;
     private static native String nativeInit(String directory);
     private static native String nativeRequest(String method,String path,String body);
     private static native String nativeLoadModel(String path);
     private static native void nativeCancel();
     private volatile boolean modelLoaded;
     private volatile boolean importing;
+    private volatile boolean videoBusy;
+    private String videoNotebook, videoTitle;
     private static final int MAX_EXPORT = 24 * 1024 * 1024;
     private volatile URI origin;
     private WebView web;
@@ -69,7 +71,7 @@ public class OfflineActivity extends Activity {
             @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest req) {
                 String url=req.getUrl().toString();
                 if(OriginPolicy.sameOrigin(origin,url))return false;
-                notice("This build has no Internet access. Export a notebook instead of opening network links.");
+                notice("External navigation is disabled inside this workspace. Import a URL as a source instead.");
                 return true;
             }
             @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest req) {
@@ -135,6 +137,14 @@ public class OfflineActivity extends Activity {
             io.execute(()->{String reply;try{reply=nativeRequest(method,path,body);}catch(Throwable e){reply="{\"status\":500,\"type\":\"application/json\",\"body\":\"eyJlcnJvciI6Ik5hdGl2ZSByZXF1ZXN0IGZhaWxlZCJ9\"}";}final String payload=reply;runOnUiThread(()->{if(web!=null){for(int offset=0;offset<payload.length();offset+=48000){String chunk=payload.substring(offset,Math.min(offset+48000,payload.length()));web.evaluateJavascript("window.__sourcebookNativeChunk("+id+","+offset+","+payload.length()+","+org.json.JSONObject.quote(chunk)+")",null);}}});});
         }
 
+        @JavascriptInterface public void chooseVideo(String notebook,String title){runOnUiThread(()->{
+            if(!trustedPage())return;if(videoBusy){notice("A video is already being processed");return;}
+            if(notebook==null||!notebook.matches("[a-fA-F0-9-]{36}")||title==null||title.trim().isEmpty()||title.length()>300){notice("Open a notebook and enter a video title first");return;}
+            videoBusy=true;videoNotebook=notebook;videoTitle=title;
+            Intent pick=new Intent(Intent.ACTION_OPEN_DOCUMENT);pick.addCategory(Intent.CATEGORY_OPENABLE);pick.setType("video/*");
+            try{startActivityForResult(pick,PICK_VIDEO);}catch(Exception e){videoBusy=false;videoResult(false,"No video picker available","",notebook);}
+        });}
+
         @JavascriptInterface public void saveFile(String filename,String mime,String base64) {
             if(base64==null || base64.length()>MAX_EXPORT*4/3+8){notice("Export exceeds the Android save limit (24 MB)");return;}
             runOnUiThread(()->{
@@ -160,8 +170,35 @@ public class OfflineActivity extends Activity {
             });
         }
     }
+    private void videoResult(boolean ok,String message,String source,String notebook){
+        runOnUiThread(()->{try{if(trustedPage()){org.json.JSONObject result=new org.json.JSONObject();result.put("ok",ok);result.put("message",message);result.put("source",source);result.put("notebook",notebook);web.evaluateJavascript("window.__sourcebookVideoResult&&window.__sourcebookVideoResult("+result.toString()+")",null);}}catch(Exception e){notice(message);}});
+    }
+    private void extractVideo(Uri uri,String notebook,String title){
+        io.execute(()->{android.media.MediaMetadataRetriever reader=new android.media.MediaMetadataRetriever();
+            try{
+                if(!"content".equals(uri.getScheme()))throw new Exception("Choose a video with the Android document picker");
+                reader.setDataSource(this,uri);String duration=reader.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);long length=Long.parseLong(duration);if(length<=0)throw new Exception("Video duration unavailable");
+                long window=Math.min(length,600000L);org.json.JSONArray frames=new org.json.JSONArray();
+                int width=640,height=360;try{int w=Integer.parseInt(reader.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)),h=Integer.parseInt(reader.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));if(w>0&&h>0){width=w>=h?640:Math.max(2,640*w/h);height=h>=w?640:Math.max(2,640*h/w);}}catch(Exception ignored){}
+                for(int i=0;i<8;i++){
+                    long millis=i*Math.max(0,window-1)/7;
+                    android.graphics.Bitmap bitmap=reader.getScaledFrameAtTime(millis*1000,android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC,width,height);
+                    if(bitmap==null)continue;
+                    java.io.ByteArrayOutputStream output=new java.io.ByteArrayOutputStream();bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG,72,output);bitmap.recycle();byte[] bytes=output.toByteArray();if(bytes.length>300000)throw new Exception("Video frame exceeds size limit");
+                    org.json.JSONObject frame=new org.json.JSONObject();frame.put("seconds",millis/1000);frame.put("jpeg",Base64.encodeToString(bytes,Base64.NO_WRAP));frames.put(frame);
+                }
+                if(frames.length()==0)throw new Exception("Android could not decode this video. Try a standard MP4/H.264 file.");
+                org.json.JSONObject body=new org.json.JSONObject();body.put("title",title);body.put("frames",frames);
+                org.json.JSONObject reply=new org.json.JSONObject(nativeRequest("POST","/api/notebooks/"+notebook+"/video-frames",body.toString()));
+                org.json.JSONObject payload=new org.json.JSONObject(new String(Base64.decode(reply.getString("body"),Base64.DEFAULT),java.nio.charset.StandardCharsets.UTF_8));
+                if(reply.getInt("status")>=400)throw new Exception(payload.optString("error","Video analysis failed"));
+                videoResult(true,"Sampled video frames analyzed. No audio was processed.",payload.getString("id"),notebook);
+            }catch(Exception e){videoResult(false,e.getMessage()==null?"Video processing failed":e.getMessage(),"",notebook);}finally{try{reader.release();}catch(Exception ignored){}videoBusy=false;}
+        });
+    }
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
+        if(request==PICK_VIDEO){final String notebook=videoNotebook,title=videoTitle;videoNotebook=null;videoTitle=null;if(result==RESULT_OK&&data!=null&&data.getData()!=null){notice("Sampling up to 8 frames locally, then sending them to your vision provider. No audio is analyzed.");extractVideo(data.getData(),notebook,title);}else{videoBusy=false;videoResult(false,"Video selection cancelled","",notebook);}}
         if(request==PICK_MODEL && result==RESULT_OK && data!=null && data.getData()!=null)importModel(data.getData());
         if(request==PICK_FILE && fileCallback!=null){
             Uri[] chosen=null;

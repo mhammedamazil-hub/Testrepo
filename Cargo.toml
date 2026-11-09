@@ -1,6 +1,6 @@
 [package]
 name = "sourcebook"
-version = "0.5.1"
+version = "0.6.0"
 edition = "2021"
 license = "MIT"
 description = "Local-first, source-grounded research notebooks with bring-your-own AI"
