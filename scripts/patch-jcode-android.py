@@ -18,3 +18,12 @@ for old, new in changes.items():
         raise SystemExit(f'upstream changed: expected exactly one {old}')
     s = s.replace(old, new)
 p.write_text(s)
+
+# rquickjs 0.14 does not ship Android bindings. Generate them with bindgen.
+p = Path('vendor/jcode/crates/jcode-codemode/Cargo.toml')
+s = p.read_text()
+old = 'rquickjs = { version = "0.14", features = ["futures"] }'
+new = 'rquickjs = { version = "0.14", features = ["futures", "bindgen"] }'
+if s.count(old) != 1:
+    raise SystemExit('upstream changed: rquickjs dependency no longer matches')
+p.write_text(s.replace(old, new))
