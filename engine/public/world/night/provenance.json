@@ -1,0 +1,75 @@
+{
+  "asset": "Satara Night",
+  "author": "Greg Zaal",
+  "source": "https://polyhaven.com/a/satara_night",
+  "license": "CC0-1.0",
+  "credit": "Powered by Poly Haven",
+  "source_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/satara_night.jpg",
+  "source_md5": "8c3bf649037c1adfc24c320fb4aad4a7",
+  "source_sha256": "d916354d2ac1fd497fc80b230f0f36d2a95f9fc4c3e33c5fedf344d6aebcb2af",
+  "source_bytes": 7995511,
+  "output_sha256": "e9b24e6f3367ea3441d6f5fd4f5a01a00e100f73d2a90c29a40965cc9e84314f",
+  "output_bytes": 1366291,
+  "dimensions": [
+    4096,
+    2048
+  ],
+  "modifications": "Resized photographic tonemapped sky; lower hemisphere feathered to dark navy to remove village/ground backplates. Stars and Milky Way remain real photography. Artistic long-exposure sky, not an astronomy simulation.",
+  "official_info": {
+    "evs_cap": 20,
+    "type": 0,
+    "tags": [
+      "stars",
+      "tree",
+      "lamp",
+      "milky way",
+      "galaxy",
+      "hut"
+    ],
+    "date_published": 1513059334,
+    "name": "Satara Night",
+    "old_id": 115,
+    "categories": [
+      "outdoor",
+      "skies",
+      "nature",
+      "clear",
+      "night",
+      "high contrast",
+      "artificial light"
+    ],
+    "coords": [
+      -24.39453,
+      31.777809
+    ],
+    "date_taken": 1508009940,
+    "authors": {
+      "Greg Zaal": "All"
+    },
+    "sponsors": [
+      "8571269",
+      {
+        "name": "Rick Kay"
+      }
+    ],
+    "files_hash": "fbb3442d14e72597042f9014de06157f1edaa54b",
+    "max_resolution": [
+      16384,
+      8192
+    ],
+    "description": "Free 16K unclipped HDRI: clear, starry night with the Milky Way and bright village lamps, high-contrast warm highlights and silhouetted trees and huts.",
+    "category_id": "24945c11-43a0-5c33-8ca4-f64e71d72260",
+    "category": "Fields & Countryside/Grassland & Meadows/Savanna & Bushveld",
+    "attributes": {
+      "time_of_day": "night",
+      "weather": "clear",
+      "light_type": "mixed",
+      "contrast": "high",
+      "environment": "outdoor",
+      "sky_view": "open"
+    },
+    "img_version": "c56b2516",
+    "download_count": 618562,
+    "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/satara_night.png?width=256&height=256&format=webp&v=c56b2516"
+  }
+}
