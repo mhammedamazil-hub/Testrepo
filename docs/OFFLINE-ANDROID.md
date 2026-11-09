@@ -17,8 +17,9 @@ that is a separate, server-connected client.
 
 1. Open the app. No server URL, server token, Termux, or localhost server is needed.
 2. Open **Settings**, choose a provider preset, and **Add an AI provider**.
-3. Enter its exact model ID and API key, choose a **default** task assignment,
-   then save. APIs do **not** require importing a GGUF model.
+3. Enter your API key, select **Load models**, choose a returned model, and use
+   **Test connection**. Testing sends a small billable request but does not save settings.
+   Choose a **default** under **Task routing**, then **Save changes**. APIs do **not** require importing a GGUF model.
 4. Add more providers/models if desired: assign flashcards to one, quizzes to
    another, chat/slides to others. Unassigned text tasks inherit the default.
 5. Create a notebook, add sources, then use Sources / Chat / Studio.
@@ -64,7 +65,7 @@ templates, not `.task`, `.litertlm`, arbitrary `.bin` or another app's private
 models. No non-GGUF engine has been implemented. If you do not want GGUF, use API
 models; do not expect a different local format to work in this APK.
 
-Use **Local AI → Choose GGUF** only if you want this optional engine. Start with
+Use **Settings → App & device → Manage local AI → Choose GGUF** only if you want this optional engine. Start with
 a small licensed 0.5B–1.5B Q4 model you have downloaded separately. The app copies
 it into private storage (second-copy space required; max 8 GB and free-space
 limit). Add a native provider and assign it as desired. No weights are bundled.
@@ -120,3 +121,28 @@ in this sandbox; those remain device acceptance tests.
 References: [official Android runtime guide](https://github.com/ggml-org/llama.cpp/blob/7d7f0287530bc8981690f361d8c1627dbae1c99a/docs/android.md),
 [pinned runtime C API](https://github.com/ggml-org/llama.cpp/blob/7d7f0287530bc8981690f361d8c1627dbae1c99a/include/llama.h),
 [Rust JNI](https://github.com/jni-rs/jni-rs).
+
+
+## 0.5.1 mobile refinement and provider troubleshooting
+
+The old native top toolbar is removed. Reload, local-model management and local
+cancellation are under **Settings → App & device**. AI connections, task routing
+and device preferences are separate settings tabs with a pinned Save action.
+The first new connection automatically becomes the default until you change it.
+Endpoint/protocol/key removal live in an advanced disclosure, not the main form.
+
+The UI uses quieter flat surfaces and document icons instead of a decorative AI
+orb/gradients. Sources can be searched by title or extracted content without
+changing selections. Answers have Copy; text inputs grow with your question.
+Request errors remain inline, with Retry and a shortcut to connection settings.
+
+If Gemini returns HTTP 400, the earlier generic message cannot identify the
+account-specific cause. This revision shows a bounded structured provider message
+with the configured credential/token-like strings redacted, plus appropriate
+model/auth/quota guidance. Raw response bodies and headers are never shown.
+**Load models** uses your provider's real list (Gemini filters for generateContent)
+instead of guessing current model IDs. **Test connection** validates the native
+wire protocol and selected model using a minimal request. Manual IDs remain
+supported; model discovery is limited to the first page on some services.
+Neither successful compilation nor mock-provider tests verify your real key,
+project billing, region eligibility, or an individual provider's model access.
