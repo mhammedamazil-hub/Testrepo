@@ -1,4 +1,4 @@
-# Alpine: After Dark — Runtime 0.3
+# Alpine: After Dark — Runtime 0.4
 
 A free browser driving/exploration prototype with an original custom framework. Three.js renders the world; Rapier WASM simulates the dynamic vehicle and walking collisions. Blender/bpy is the offline asset compiler, not the browser runtime. No paid GPU, Steam integration or manufacturer endorsement.
 
@@ -10,7 +10,7 @@ A free browser driving/exploration prototype with an original custom framework. 
 - `npm test --prefix engine` — actual Rapier suspension, inertia, acceleration/braking, wall collision, airborne behavior, slope gravity, grass grip, walk/jump, safe entry/exit and recovery tests.
 - `npm run dev --prefix engine` — port 3001, binds 0.0.0.0 and accepts Arena preview hosts.
 - `npm run build --prefix engine` — standalone static game in `.exports/alpine`.
-- `node tools/game/circuit_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
+- `node tools/game/beyond_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
 
 Drive Roadster or Explore on Foot from the launcher. Touch driving supports both a drag-around-rim steering wheel and angular left/right buttons; switch below the steering control or in Controls. Actual ribbed gas/brake pedal shapes, a stopped-car D/R selector, independent camera touch and nearest-safe recovery replace the old joystick/pedal text buttons. Walking retains its own joystick. WASD/arrows move, mouse drag looks, Shift runs, Space jumps/brakes, E enters/exits, R recovers, N changes day/night, H toggles headlights, Escape pauses. Both driving modes support independent simultaneous steering, gas, brake and look inputs. Garage, controls and pause panels are functional.
 
@@ -21,6 +21,14 @@ The owner's repository-root `roadster_lite.glb` is preserved unchanged. `tools/g
 `src/physics.js` uses a **dynamic** 2200 kg rigid chassis and Rapier's four-wheel raycast vehicle controller: suspension load, tire forces, actual inertia/gravity/collisions, drag, wheel torque/power limits and load-limited longitudinal friction. Ordinary driving does not assign the body's position, speed or yaw. The walking character remains a kinematic collision controller, not a ragdoll. Mass, power, suspension, tire, inertia and aerodynamic parameters are disclosed estimates in `src/vehicle-spec.js`, not published Tesla measurements. Historical concept marketing is separated from simulation results in `../docs/research/roadster-physics-and-night.md`.
 
 Measured flat/dry 60 Hz simulation: 0–60 mph **2.43 s**; stopping from 26.95 m/s takes **2.20 s / 29.09 m**. These are solver tests, not road tests or certified factory specifications. No Pacejka calibration, thermal/battery model, damage, tire deformation, buoyancy, rockets or suction fans.
+
+## Beyond the Road: lobby, grass and fictional flight
+
+The car-first sports-game-inspired lobby has real Play/Garage/Training/Settings actions and Drive/Flight selection. **Flight is opt-in game fiction, not a Tesla capability.** J / FLY arms it in the vehicle. Gas applies forward thrust, wheel/buttons steer, Space / Lift climbs, C/Ctrl / Down descends, Shift / Boost adds force using a finite charge, S / Brake air-brakes, and L / Land requests assisted landing. Exit is blocked while armed; recovery disarms. Six air gates use 3D swept crossings. Ground driving/walking remain the default.
+
+**10,845 additional ground-conforming instanced grass plants** use original tapered blades and GPU wind, retaining the existing photographic grass. No replacement car/sky or hidden resolution reduction. Full's ~2.07 MP budget and existing texture/shadow/reflection settings remain unchanged. Native same-material multi-draw car batching (with unchanged fallback), invisible-shaft bypass, active-material prewarming, object reuse, exact cheaper route queries, throttled diagnostics and on-demand static lobby rendering reduce avoidable work. They do not guarantee every tablet's FPS or ultra-realism. [Research, actual A/B pixel/workload results and limits](../docs/research/tablet-rendering-and-flight.md).
+
+`node tools/game/beyond_ui_test.cjs` validates real touch/layout for driving and flight. `node engine/tests/route-query-benchmark.js` is only a CPU query microbenchmark, not a whole-game speedup. Build additional grass with `python tools/game/build_meadow.py` after the graded terrain (NumPy required). [Release evidence](../docs/game/beyond-road-v4/README.md).
 
 ## Corrected circuit and mobile HUD
 

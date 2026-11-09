@@ -1,0 +1,19 @@
+{
+  "scope": "Same actual night scene, grass, camera, resolution, textures, original vehicle geometry and materials, shadows and reflections. Original opaque nodes versus exact same-material native multi-draw batches. Transparent glass unchanged. Edge rasterization differences are measured, not hidden. Not FPS.",
+  "available": true,
+  "batches": 7,
+  "batched_source_meshes": 28,
+  "before": {
+    "calls": 238,
+    "triangles": 983118
+  },
+  "after": {
+    "calls": 175,
+    "triangles": 983118
+  },
+  "mean_absolute_channel_error": 0.000017345452022479706,
+  "maximum_channel_error": 13,
+  "changed_pixel_fraction": 0.0000019272724469421894,
+  "width": 994,
+  "height": 522
+}

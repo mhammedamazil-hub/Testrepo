@@ -1,0 +1,19 @@
+{
+  "scope": "Same actual night scene, grass, camera, render dimensions, shadows, texture and reflection sizes. Historical zero-opacity shafts pipeline vs disabled shafts/ACES-only pipeline. Synchronous same-render readback with preserveDrawingBuffer false. Not device FPS or a whole-version GPU benchmark.",
+  "width": 994,
+  "height": 522,
+  "before": {
+    "calls": 181,
+    "triangles": 983124,
+    "shaft_updates": 1
+  },
+  "after": {
+    "calls": 175,
+    "triangles": 983118,
+    "shaft_updates": 0
+  },
+  "mean_absolute_channel_error": 0,
+  "maximum_channel_error": 0,
+  "nonblack_pixels": 472781,
+  "quality": "performance"
+}

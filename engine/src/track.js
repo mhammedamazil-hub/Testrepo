@@ -7,15 +7,15 @@ export function makeRoute(source,count=640){
  for(let pass=0;pass<8;pass++){const y=points.map((p,i)=>(points[(i+count-1)%count][1]+2*p[1]+points[(i+1)%count][1])/4);points.forEach((p,i)=>p[1]=y[i]);}
  return points;
 }
-export function nearestRoute(points,p){
- let best={distance:Infinity};
+// Exact all-segment search, but no per-candidate objects or square roots.
+export function nearestRoute(points,p,out={}){
+ let best=Infinity,index=0,tBest=0,bx=0,bz=0,bdx=0,bdz=0,blen=1;
  for(let i=0;i<points.length;i++){
-  const a=points[i],b=points[(i+1)%points.length],dx=b[0]-a[0],dz=b[2]-a[2],length=Math.hypot(dx,dz);
-  const t=Math.max(0,Math.min(1,((p.x-a[0])*dx+(p.z-a[2])*dz)/(length*length)));
-  const x=a[0]+t*dx,z=a[2]+t*dz,distance=Math.hypot(p.x-x,p.z-z);
-  if(distance<best.distance)best={index:i,t,x,z,y:a[1]+(b[1]-a[1])*t,distance,tangent:{x:dx/length,z:dz/length},signed:((p.x-x)*-dz+(p.z-z)*dx)/length};
+  const a=points[i],b=points[(i+1)%points.length],dx=b[0]-a[0],dz=b[2]-a[2],length2=dx*dx+dz*dz;
+  const t=Math.max(0,Math.min(1,((p.x-a[0])*dx+(p.z-a[2])*dz)/length2)),x=a[0]+t*dx,z=a[2]+t*dz,d2=(p.x-x)**2+(p.z-z)**2;
+  if(d2<best){best=d2;index=i;tBest=t;bx=x;bz=z;bdx=dx;bdz=dz;blen=length2;}
  }
- return best;
+ const length=Math.sqrt(blen);out.index=index;out.t=tBest;out.x=bx;out.z=bz;out.y=points[index][1]+(points[(index+1)%points.length][1]-points[index][1])*tBest;out.distance=Math.sqrt(best);out.tangent||={x:0,z:0};out.tangent.x=bdx/length;out.tangent.z=bdz/length;out.signed=((p.x-bx)*-bdz+(p.z-bz)*bdx)/length;return out;
 }
 // Identical vertices are used by the rendered surface and the Rapier collider.
 export function ribbon(points,width=TRACK_WIDTH,offset=0,lift=0){

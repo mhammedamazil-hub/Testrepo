@@ -4,10 +4,13 @@ import {Water} from 'three/addons/objects/Water.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {ROADSTER} from './vehicle-spec.js';
 import {ribbon,nearestRoute} from './track.js';
+import {addMeadow} from './meadow.js';
+import {flightCourse} from './flight.js';
+import {batchVehicle} from './vehicle-batch.js';
 
 export const asset=name=>new URL('world/'+name,document.baseURI).href;
 export class AlpineWorld {
- constructor(scene,renderer,physics,level){this.scene=scene;this.renderer=renderer;this.physics=physics;this.level=level;this.loader=new GLTFLoader();this.textures=new T.TextureLoader();this.details=[];this.reflectionFrames=0;this.frame=0;this.lastMirrorFrame=-1;}
+ constructor(scene,renderer,physics,level){this.scene=scene;this.renderer=renderer;this.physics=physics;this.level=level;this.loader=new GLTFLoader();this.textures=new T.TextureLoader();this.tempOffset=new T.Vector3();this.tempSteer=new T.Quaternion();this.tempRoll=new T.Quaternion();this.axisUp=new T.Vector3(0,1,0);this.axisRight=new T.Vector3(1,0,0);this.details=[];this.reflectionFrames=0;this.frame=0;this.lastMirrorFrame=-1;}
  async texture(name,color=false){const t=await this.textures.loadAsync(asset(name));t.colorSpace=color?T.SRGBColorSpace:T.NoColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());return t;}
  async load(){
   this.data=await fetch(asset('world_data.json')).then(r=>r.json());
@@ -69,6 +72,7 @@ export class AlpineWorld {
   this.car.traverse(n=>{if(!n.isMesh)return;for(const m of Array.isArray(n.material)?n.material:[n.material]){if(/rear_lights/i.test(m.name))this.tailMaterials.push(m);if(/car_main_paint/i.test(m.name)){m.envMapIntensity=1.6;m.clearcoat=.65;m.clearcoatRoughness=.17;}}});
   for(const x of [-.61,.61]){const light=new T.SpotLight(0xd9ecff,4200,95,.30,.55,2);light.position.set(x,.56,-2.02);light.target.position.set(x,-.12,-65);light.castShadow=x<0;light.shadow.mapSize.set(512,512);light.shadow.bias=-.0002;light.shadow.normalBias=.035;this.car.add(light,light.target);this.lamps.push(light);}
 
+  this.vehicleBatch=batchVehicle(this.car,this.renderer);
   this.mixer=new T.AnimationMixer(this.person);this.clips={};for(const clip of character.animations)this.clips[clip.name.toLowerCase().includes('walk')?'walk':'idle']=this.mixer.clipAction(clip);
   this.activeClip=null;this.playAnimation('idle');
   const near=[],far=[];
@@ -77,6 +81,8 @@ export class AlpineWorld {
   for(const p of near)this.physics.world.createCollider(RAPIER.ColliderDesc.cylinder(p[3]*.4,Math.max(.14,p[3]*.018)).setTranslation(p[0],p[1]+p[3]*.4,p[2]).setFriction(.6));
   for(const p of this.scatter.rocks)this.physics.world.createCollider(RAPIER.ColliderDesc.ball(p[3]*.43).setTranslation(p[0],p[1]+p[3]*.36,p[2]).setFriction(.7));
   this.instances(pine.scene,near,60,115,'pine');this.instances(grass.scene,this.scatter.grass,35,70,'grass');this.instances(rocks.scene,this.scatter.rocks,60,150,'rocks');
+  addMeadow(this,await fetch(asset('meadow/grass.json')).then(r=>r.json()));
+  this.addFlightVisuals();
   this.forest(cutout,far);
   this.water=new Water(new T.PlaneGeometry(...this.level.lake.size),{textureWidth:512,textureHeight:512,waterNormals:ripple,sunDirection:new T.Vector3(...this.level.sun).normalize(),sunColor:0xffe5bf,waterColor:0x124b48,distortionScale:1.7,fog:true});
   this.water.rotation.x=-Math.PI/2;this.water.position.set(...this.level.lake.position);this.water.name='CurrentFramePlanarLake';
@@ -88,6 +94,11 @@ export class AlpineWorld {
   this.addGuardrails();
   this.markers=this.track.gates.map(index=>{const m=new T.Mesh(new T.TorusGeometry(5,.065,6,40),new T.MeshBasicMaterial({color:0xa5e2bd}));const p=this.data.route[index];m.position.set(p[0],p[1]+4.7,p[2]);const next=this.data.route[(index+1)%this.data.route.length];m.rotation.y=Math.atan2(-(next[0]-p[0]),-(next[2]-p[2]));this.scene.add(m);return m;});
   this.setNight(true);
+ }
+ addFlightVisuals(){
+  this.flightGates=flightCourse(this.data.route).map((p,i)=>{const mesh=new T.Mesh(new T.TorusGeometry(6,.12,6,40),new T.MeshBasicMaterial({color:0x86eafa}));mesh.position.copy(p);const next=this.data.route[([32,128,224,320,448,576][i]+1)%640];mesh.rotation.y=Math.atan2(-(next[0]-p.x),-(next[2]-p.z));mesh.visible=false;this.scene.add(mesh);return mesh;});
+  this.thrusters=[];const material=new T.MeshBasicMaterial({color:0x79ddff,transparent:true,opacity:.65,blending:T.AdditiveBlending,depthWrite:false});
+  for(const x of [-.64,.64]){const plume=new T.Mesh(new T.ConeGeometry(.16,1.4,7),material);plume.position.set(x,.07,.9);plume.visible=false;this.car.add(plume);this.thrusters.push(plume);}
  }
  addGuardrails(){
   const route=this.data.route,count=route.length/4*2,rail=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshStandardMaterial({color:0x697e88,metalness:.55,roughness:.5}),count),dummy=new T.Object3D();let instance=0;
@@ -143,20 +154,22 @@ export class AlpineWorld {
   geometry.setAttribute('alpineNear',new T.InstancedBufferAttribute(near,1));mesh.frustumCulled=false;mesh.name='DistantForest';this.forestMaterial=material;this.scene.add(mesh);
  }
  update(camera,dt){
-  this.frame++;this.water.material.uniforms.time.value+=dt*.45;
+  this.frame++;if(this.meadow)this.meadow.time.value+=dt;this.water.material.uniforms.time.value+=dt*.45;
   for(const cell of this.details)cell.mesh.visible=cell.center.distanceToSquared(camera.position)<cell.range**2;
-  const p=this.physics.car.translation(),q=this.physics.car.rotation();this.car.quaternion.copy(q);this.car.position.copy(p).add(new T.Vector3(0,-ROADSTER.centerOfMassHeight,0).applyQuaternion(this.car.quaternion));
+  const p=this.physics.car.translation(),q=this.physics.car.rotation();this.car.quaternion.copy(q);this.car.position.copy(p).add(this.tempOffset.set(0,-ROADSTER.centerOfMassHeight,0).applyQuaternion(this.car.quaternion));
   this.person.position.copy(this.physics.player.translation());this.person.visible=!this.physics.inVehicle;
   const speed=Math.hypot(this.physics.footVelocity.x,this.physics.footVelocity.z);this.playAnimation(speed>.3?'walk':'idle');this.mixer.update(dt);
   if(speed>.3)this.person.rotation.y=Math.atan2(-this.physics.footVelocity.x,-this.physics.footVelocity.z);
   for(let i=0;i<this.wheels.length;i++){const w=this.wheels[i],state=this.physics.wheelStates[i];if(!state)continue;
-   const steer=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),state.steering),roll=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),-state.rotation);
+   const steer=this.tempSteer.setFromAxisAngle(this.axisUp,state.steering),roll=this.tempRoll.setFromAxisAngle(this.axisRight,-state.rotation);
    for(const mesh of [w.spin,w.caliper])if(mesh)mesh.position.set(state.connection.x,state.connection.y-state.suspension+ROADSTER.centerOfMassHeight,state.connection.z);
    if(w.spin)w.spin.quaternion.copy(steer).multiply(roll).multiply(w.baseSpin);
    if(w.caliper)w.caliper.quaternion.copy(steer).multiply(w.baseCaliper);
   }
+  this.vehicleBatch.update();
+  for(const plume of this.thrusters){plume.visible=this.physics.flight.active;plume.scale.y=this.physics.flight.boosting?1.6:1;plume.material.opacity=this.physics.flight.boosting?.9:.55;}
   for(const m of this.tailMaterials)m.emissiveIntensity=this.physics.braking?6:2;
   for(const light of this.lamps)light.visible=this.night&&this.headlights;
-  const focus=this.physics.inVehicle?p:this.physics.player.translation();this.sun.target.position.copy(focus);this.sun.position.copy(focus).add(this.lightDirection.clone().multiplyScalar(700));
+  const focus=this.physics.inVehicle?p:this.physics.player.translation();this.sun.target.position.copy(focus);this.sun.position.copy(focus).add(this.tempOffset.copy(this.lightDirection).multiplyScalar(700));
  }
 }

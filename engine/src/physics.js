@@ -1,13 +1,13 @@
 import RAPIER from '@dimforge/rapier3d-compat';
 import {ROADSTER as SPEC} from './vehicle-spec.js';
+import {rotate} from './vehicle-math.js';
+export {rotate} from './vehicle-math.js';
+import {RoadsterFlight} from './flight.js';
 export const moveToward=(v,t,d)=>v<t?Math.min(t,v+d):Math.max(t,v-d);
 export const distanceXZ=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const identity={x:0,y:0,z:0,w:1};
 const neutral={x:0,y:0,throttle:0,brake:false,jump:false,run:false};
-export function rotate(q,v){
- const tx=2*(q.y*v.z-q.z*v.y),ty=2*(q.z*v.x-q.x*v.z),tz=2*(q.x*v.y-q.y*v.x);
- return {x:v.x+q.w*tx+q.y*tz-q.z*ty,y:v.y+q.w*ty+q.z*tx-q.x*tz,z:v.z+q.w*tz+q.x*ty-q.y*tx};
-}
+
 
 /** Dynamic rigid-body vehicle + actual Rapier raycast tire/spring solver.
  * No direct speed/yaw/translation assignment during ordinary driving.
@@ -15,7 +15,7 @@ export function rotate(q,v){
 export class AlpinePhysics {
  static async create(){await RAPIER.init();return new AlpinePhysics();}
  constructor(){
-  this.world=new RAPIER.World({x:0,y:-9.81,z:0});this.world.timestep=1/60;
+  this.flight=new RoadsterFlight(SPEC.mass);this.world=new RAPIER.World({x:0,y:-9.81,z:0});this.world.timestep=1/60;
   this.player=this.world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased());
   this.playerCollider=this.world.createCollider(RAPIER.ColliderDesc.capsule(.62,.27).setTranslation(0,.89,0),this.player);
   const body=RAPIER.RigidBodyDesc.dynamic().setCcdEnabled(true).setCanSleep(true).setLinearDamping(.035).setAngularDamping(.15)
@@ -37,7 +37,7 @@ export class AlpinePhysics {
   this.walker=this.world.createCharacterController(.025);this.walker.enableSnapToGround(.35);this.walker.setMaxSlopeClimbAngle(.83);this.walker.setMinSlopeSlideAngle(.9);this.walker.enableAutostep(.25,.15,false);
   this.walker.setApplyImpulsesToDynamicBodies(true);this.walker.setCharacterMass(78);
   this.inVehicle=false;this.speed=0;this.steering=0;this.yaw=0;this.playerVy=0;this.grounded=false;this.carGrounded=false;this.autoHold=true;
-  this.footVelocity={x:0,z:0};this.wheelStates=[];this.acceleration=0;this.lastSpeed=0;this.braking=false;
+  this.footVelocity={x:0,z:0};this.wheelStates=SPEC.wheels.map(w=>({name:w.name,connection:null}));this.vehicleFilter=c=>c.parent()?.handle!==this.car.handle;this.acceleration=0;this.lastSpeed=0;this.braking=false;
  }
  addTrimesh(vertices,indices,surface='ground'){
   const collider=this.world.createCollider(RAPIER.ColliderDesc.trimesh(vertices,indices,RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES).setFriction(surface==='road'?.95:.65));
@@ -45,7 +45,7 @@ export class AlpinePhysics {
  }
  reset(route){
   const a=route[0],b=route[2];this.yaw=Math.atan2(-(b[0]-a[0]),-(b[2]-a[2]));
-  this.speed=0;this.lastSpeed=0;this.steering=0;this.playerVy=0;this.autoHold=true;this.footVelocity={x:0,z:0};
+  this.flight.reset();this.speed=0;this.lastSpeed=0;this.steering=0;this.playerVy=0;this.autoHold=true;this.footVelocity={x:0,z:0};
   this.car.resetForces(true);this.car.resetTorques(true);this.car.setLinvel({x:0,y:0,z:0},true);this.car.setAngvel({x:0,y:0,z:0},true);
   this.car.setTranslation({x:a[0],y:a[1]+SPEC.centerOfMassHeight+.16,z:a[2]},true);
   this.car.setRotation({x:0,y:Math.sin(this.yaw/2),z:0,w:Math.cos(this.yaw/2)},true);
@@ -59,6 +59,7 @@ export class AlpinePhysics {
    if(distanceXZ(car,person)>4.3)return {ok:false,message:'Walk closer to the Roadster.'};
    this.inVehicle=true;this.player.setEnabled(false);return {ok:true,message:'AWD ready. Ease into the throttle; brake before the bends.'};
   }
+  if(this.flight.active)return {ok:false,message:'Land and disarm flight before exiting.'};
   const velocity=this.car.linvel();if(Math.hypot(velocity.x,velocity.y,velocity.z)>1.5)return {ok:false,message:'Stop before stepping out.'};
   const up=rotate(this.car.rotation(),{x:0,y:1,z:0});if(up.y<.35)return {ok:false,message:'Vehicle overturned. Use RECOVER.'};
   for(const sign of [1,-1]){
@@ -84,7 +85,7 @@ export class AlpinePhysics {
    movement=this.walker.computedMovement();this.grounded=this.walker.computedGrounded();const p=this.player.translation();
    this.player.setNextKinematicTranslation({x:p.x+movement.x,y:p.y+movement.y,z:p.z+movement.z});
   }
-  const throttle=this.inVehicle?input.throttle:0;
+  const throttle=this.inVehicle&&!this.flight.active?input.throttle:0;
   if(Math.abs(throttle)>.05)this.autoHold=false;
   const limit=SPEC.steeringMax/(1+(Math.abs(this.speed)/21)**1.35);
   this.steering=moveToward(this.steering,-(this.inVehicle?input.x:0)*limit,dt*1.6);
@@ -121,13 +122,15 @@ export class AlpinePhysics {
   const drag=.5*SPEC.airDensity*SPEC.dragArea*speed;
   const rolling=this.carGrounded?SPEC.rollingCoefficient*SPEC.mass*9.81/Math.max(1,speed):0;
   this.car.addForce({x:-v.x*(drag+rolling),y:-v.y*drag,z:-v.z*(drag+rolling)},true);
-  if(this.carGrounded)this.car.addForce({x:0,y:-.5*SPEC.airDensity*SPEC.downforceArea*speed*speed,z:0},true);
-  this.driver.updateVehicle(dt,RAPIER.QueryFilterFlags.EXCLUDE_KINEMATIC,undefined,c=>c.parent()?.handle!==this.car.handle);
+  if(this.carGrounded&&!this.flight.active)this.car.addForce({x:0,y:-.5*SPEC.airDensity*SPEC.downforceArea*speed*speed,z:0},true);
+  if(this.flight.active){const p=this.car.translation(),hit=this.world.castRay(new RAPIER.Ray({x:p.x,y:p.y+1,z:p.z},{x:0,y:-1,z:0}),250,true,undefined,undefined,undefined,this.car);const ground=hit?p.y+1-hit.timeOfImpact:0;this.flight.apply(this.car,dt,input,ground,this.carGrounded);if(!this.flight.active)this.autoHold=true;}
+  else this.flight.apply(this.car,dt,input,0,this.carGrounded);
+  this.driver.updateVehicle(dt,RAPIER.QueryFilterFlags.EXCLUDE_KINEMATIC,undefined,this.vehicleFilter);
   this.world.step();
   const forward=rotate(this.car.rotation(),{x:0,y:0,z:-1}),newV=this.car.linvel();
   this.speed=newV.x*forward.x+newV.y*forward.y+newV.z*forward.z;
   this.yaw=Math.atan2(-forward.x,-forward.z);this.acceleration=(this.speed-this.lastSpeed)/dt;this.lastSpeed=this.speed;
-  this.wheelStates=SPEC.wheels.map((w,i)=>({name:w.name,contact:this.driver.wheelIsInContact(i),suspension:this.driver.wheelSuspensionLength(i),rotation:this.driver.wheelRotation(i),steering:this.driver.wheelSteering(i),force:this.driver.wheelSuspensionForce(i),radius:w.radius,connection:this.driver.wheelChassisConnectionPointCs(i)}));
+  for(let i=0;i<4;i++){const state=this.wheelStates[i];state.contact=this.driver.wheelIsInContact(i);state.suspension=this.driver.wheelSuspensionLength(i);state.rotation=this.driver.wheelRotation(i);state.steering=this.driver.wheelSteering(i);state.force=this.driver.wheelSuspensionForce(i);state.radius=SPEC.wheels[i].radius;state.connection=this.driver.wheelChassisConnectionPointCs(i);}
   this.carGrounded=this.wheelStates.some(w=>w.contact);
   return movement;
  }

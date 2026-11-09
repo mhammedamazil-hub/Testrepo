@@ -1,0 +1,12 @@
+{
+  "source": "docs/game/beyond-road-v4/launcher-ui.png",
+  "source_sha256": "ce2fbcdd2e0fbe5f8ab026484417e5665d83a6c2b3c1e250efebec7ac51493dc",
+  "image": "engine/public/social/after-dark-beyond-v4.jpg",
+  "image_sha256": "e57549289076494b01df4271787453fc2c983dbf263c790340bc1d521db7a902",
+  "dimensions": [
+    1200,
+    630
+  ],
+  "method": "Actual WebGL2 Chromium lobby capture. Performance preset explicitly selected for CPU-software QA, then RGB JPEG quality 90. Not the AI design reference; no substituted car/sky.",
+  "credit": "Roadster 2020 by metarex.4d, CC-BY-4.0; Satara Night photo by Greg Zaal / Poly Haven, CC0-1.0. Full source/modifications in game/CREDITS.md."
+}

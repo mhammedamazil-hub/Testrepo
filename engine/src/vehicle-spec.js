@@ -3,7 +3,7 @@ import model from '../roadster-model.json' with {type:'json'};
 /** Research-informed game configuration, NOT manufacturer-certified telemetry.
  * Historical announced 2020 concept: AWD, 10,000 Nm wheel torque, 1.9s claimed
  * 0–60. Mass, power, tire coefficients, springs and aero below are estimates.
- * No thrusters, suction fans or claims about the newer Roadster are simulated.
+ * Driving-only configuration. Opt-in fictional flight lives in flight.js, not Tesla telemetry.
  */
 export const ROADSTER=Object.freeze({
  name:'Roadster 2020', mass:2200, centerOfMassHeight:.55,

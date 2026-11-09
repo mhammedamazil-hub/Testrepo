@@ -1,0 +1,8 @@
+{
+  "seed": 41024,
+  "plants": 10845,
+  "geometry": "Original procedural tapered blade clumps, instanced spatially. Existing CC0 photographic grass retained separately.",
+  "placement": "Barycentric height against custom graded terrain, route corridor 7.5\u201325m, lake excluded.",
+  "terrain_sha256": "3cf0a54b6b65be8e6904b74a7b5e2177df223393fdc95c21e9432e9604bb70a7",
+  "output_sha256": "33074c2071803dfc03b8c661243db31752f60477a41e683ce60ba6191c8f9c9d"
+}

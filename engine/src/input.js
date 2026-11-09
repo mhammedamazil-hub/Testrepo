@@ -1,4 +1,4 @@
-const keys={KeyW:'forward',ArrowUp:'forward',KeyS:'back',ArrowDown:'back',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',ShiftLeft:'run',ShiftRight:'run',Space:'jump'};
+const keys={KeyW:'forward',ArrowUp:'forward',KeyS:'back',ArrowDown:'back',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',ShiftLeft:'run',ShiftRight:'run',Space:'jump',ControlLeft:'descend',ControlRight:'descend',KeyC:'descend'};
 /** Independent pointer ownership and source-counted actions prevent stuck pedals. */
 export class AlpineInput {
  constructor(canvas,command,look){
@@ -8,7 +8,7 @@ export class AlpineInput {
   document.body.classList.toggle('touch',this.touch);
   addEventListener('keydown',e=>{
    if(keys[e.code]){e.preventDefault();this.press('key:'+e.code,keys[e.code]);}
-   else if(!e.repeat){const action={KeyE:'interact',KeyR:'reset',Escape:'pause',KeyM:'mute',KeyF:'fullscreen',KeyG:'rays',KeyQ:'rear',KeyN:'night',KeyH:'headlights'}[e.code];if(action)this.command(action);}
+   else if(!e.repeat){const action={KeyE:'interact',KeyR:'reset',Escape:'pause',KeyM:'mute',KeyF:'fullscreen',KeyG:'rays',KeyQ:'rear',KeyN:'night',KeyH:'headlights',KeyJ:'flight',KeyL:'land'}[e.code];if(action)this.command(action);}
   });
   addEventListener('keyup',e=>this.release('key:'+e.code));
   const release=()=>{this.clear();this.command('focusLost');};
@@ -47,6 +47,6 @@ export class AlpineInput {
   let x=(this.held('right')?1:0)-(this.held('left')?1:0)+(driving?(this.steeringMode==='wheel'?this.wheelValue:0):this.stick.x);
   let y=(this.held('back')?1:0)-(this.held('forward')?1:0)+(driving?0:this.stick.y);
   const n=driving?1:Math.max(1,Math.hypot(x,y));x=Math.max(-1,Math.min(1,x/n));y=Math.max(-1,Math.min(1,y/n));
-  return {x:Math.abs(x)>.1?x:0,y:Math.abs(y)>.1?y:0,throttle:(this.held('forward')?this.gear:0)-(this.held('back')?1:0),brake:this.held('jump')||this.held('brake'),jump:consume?this.consume('jump'):this.pending.has('jump'),run:this.held('run')};
+  return {x:Math.abs(x)>.1?x:0,y:Math.abs(y)>.1?y:0,throttle:(this.held('forward')?this.gear:0)-(this.held('back')?1:0),brake:this.held('jump')||this.held('brake'),jump:consume?this.consume('jump'):this.pending.has('jump'),run:this.held('run'),lift:(this.held('lift')||this.held('jump')?1:0)-(this.held('descend')?1:0),boost:this.held('boost')||this.held('run'),flightBrake:this.held('brake')||this.held('back')};
  }
 }

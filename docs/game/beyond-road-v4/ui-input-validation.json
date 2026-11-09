@@ -1,0 +1,126 @@
+{
+  "scope": "Real Chromium DOM/CSS and actual AlpineInput event handlers. No WebGL or hardware performance claim.",
+  "checks": [
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "wheel",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "arrows",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "wheel",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "mode": "arrows",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "wheel",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "arrows",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "wheel",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 724,
+        "height": 1280
+      },
+      "mode": "arrows",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "wheel",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "arrows",
+      "flying": false,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "wheel",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "arrows",
+      "flying": true,
+      "layout_and_multitouch": true,
+      "cancel_and_blur": true
+    }
+  ],
+  "passed": true
+}

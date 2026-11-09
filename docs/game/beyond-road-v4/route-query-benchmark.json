@@ -1,0 +1,21 @@
+{
+  "scope": "CPU-only nearest-route microbenchmark over the same exact 640-segment closed route and 5000 deterministic queries. Historical v3 algorithm versus exact squared-distance/reusable-result implementation. Not FPS or physical-tablet evidence.",
+  "queries": 5000,
+  "previous_ms": [
+    288.941699,
+    269.902738,
+    253.644719,
+    258.173505,
+    261.54334300000005
+  ],
+  "optimized_ms": [
+    40.92915299999993,
+    27.308047999999985,
+    27.309720999999854,
+    27.736155000000053,
+    27.390889000000016
+  ],
+  "previous_median_ms": 261.54334300000005,
+  "optimized_median_ms": 27.390889000000016,
+  "median_speedup": 9.548552549718263
+}

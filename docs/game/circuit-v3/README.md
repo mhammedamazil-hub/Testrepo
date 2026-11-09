@@ -1,3 +1,5 @@
+> Historical Circuit v3 evidence. The current lobby/grass/fictional-flight and unchanged-preset optimization update is [Beyond the Road v4](../beyond-road-v4/README.md).
+
 # Circuit v3 — mobile controls, full-screen view and road repair
 
 ## What changed
