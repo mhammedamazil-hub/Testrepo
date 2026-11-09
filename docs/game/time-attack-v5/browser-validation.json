@@ -1,0 +1,275 @@
+{
+  "scope": "Real Chromium mobile emulation, actual WebGL2 software rendering and actual touch input/Rapier. Simulation stepped by test timer independently of expensive render readbacks. Performance graphics preset (about 0.52MP) explicitly selected. Not real-time/FPS/physical-phone evidence.",
+  "checks": [
+    {
+      "name": "Preserve drawing buffer is disabled without a resolution change",
+      "passed": true
+    },
+    {
+      "name": "Track kerbs, corner boards, start structure and frozen scenery are present",
+      "passed": true
+    },
+    {
+      "name": "Night shafts pass is fully bypassed",
+      "passed": true
+    },
+    {
+      "name": "Added instanced grass is present",
+      "passed": true
+    },
+    {
+      "name": "Unchanged HUD refreshes retain existing text and gear DOM nodes",
+      "passed": true
+    },
+    {
+      "name": "Lobby garage is functional",
+      "passed": true
+    },
+    {
+      "name": "Lobby settings are functional",
+      "passed": true
+    },
+    {
+      "name": "Game initializes with actual graded terrain, four contacts and dynamic car",
+      "passed": true
+    },
+    {
+      "name": "Night optimization removes real rendering work",
+      "passed": true
+    },
+    {
+      "name": "Identical-quality night image is preserved in A/B readback",
+      "passed": true
+    },
+    {
+      "name": "Opaque batching preserves the visible image",
+      "passed": true
+    },
+    {
+      "name": "Native batching reduces recorded draw submissions when available",
+      "passed": true
+    },
+    {
+      "name": "Frozen static transforms preserve exact pixels",
+      "passed": true
+    },
+    {
+      "name": "Static optimization retains every draw and triangle",
+      "passed": true
+    },
+    {
+      "name": "Time trial starts with a three-second stationary countdown",
+      "passed": true
+    },
+    {
+      "name": "Full-bleed landscape aspect matches visible viewport",
+      "passed": true
+    },
+    {
+      "name": "Wheel and pedal touch drive the actual dynamic car",
+      "passed": true
+    },
+    {
+      "name": "Dedicated brake pedal stops the car",
+      "passed": true
+    },
+    {
+      "name": "Explicit D/R selector selects reverse",
+      "passed": true
+    },
+    {
+      "name": "Gas pedal drives in selected reverse gear",
+      "passed": true
+    },
+    {
+      "name": "Nearest recovery preserves lap time and clears motion",
+      "passed": true
+    },
+    {
+      "name": "Recovery returns to road with four contacts",
+      "passed": true
+    },
+    {
+      "name": "Both steering modes switch in live gameplay",
+      "passed": true
+    },
+    {
+      "name": "Polygon button and gas preserve full independent steering",
+      "passed": true
+    },
+    {
+      "name": "Touch cancellation releases steering and pedal",
+      "passed": true
+    },
+    {
+      "name": "Portrait camera and render have correct aspect without black bands",
+      "passed": true
+    },
+    {
+      "name": "Ground-only finite thruster hop lifts the actual car",
+      "passed": true
+    },
+    {
+      "name": "Airborne exit is safely blocked",
+      "passed": true
+    },
+    {
+      "name": "Lift and boost consume shared finite gas with independent touch sources",
+      "passed": true
+    },
+    {
+      "name": "Limited hop automatically returns to ground driving without instant refill",
+      "passed": true
+    },
+    {
+      "name": "Holding lift cannot sustain flight, refill aloft or count as a clean race lap",
+      "passed": true
+    },
+    {
+      "name": "Walking retains its own joystick and hides driving pedals",
+      "passed": true
+    },
+    {
+      "name": "On-foot joystick still moves the real character",
+      "passed": true
+    },
+    {
+      "name": "Pause/resume preserves gameplay",
+      "passed": true
+    },
+    {
+      "name": "Focus loss pauses and clears held controls",
+      "passed": true
+    },
+    {
+      "name": "Lobby flight selection launches the playable training mode",
+      "passed": true
+    },
+    {
+      "name": "Real full runtime lap awards a clean medal and persists a personal best",
+      "passed": true
+    },
+    {
+      "name": "Personal-best HUD is visible and readable in gameplay",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "completed": true,
+  "final": {
+    "framework": "Alpine 0.5 / Short Hop Time Attack",
+    "physics": "Rapier dynamic rigid body / 4 raycast wheels",
+    "vehicle_model": "Tesla Roadster 2020 / metarex.4d",
+    "vehicle_mass_kg": 2200,
+    "car_dynamic": true,
+    "night": false,
+    "headlights": true,
+    "wheel_contacts": 4,
+    "wheel_suspension": [
+      0.1964932084083557,
+      0.19507631659507751,
+      0.19476187229156494,
+      0.19133597612380981
+    ],
+    "acceleration_g": 0.017071480681733458,
+    "vehicle_assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "playing",
+    "paused": false,
+    "in_vehicle": true,
+    "touch_enabled": true,
+    "render_size": [
+      994,
+      522
+    ],
+    "position": {
+      "x": 67.44218444824219,
+      "y": 3.820302724838257,
+      "z": 24.85362434387207
+    },
+    "car_position": {
+      "x": 67.44218444824219,
+      "y": 3.820302724838257,
+      "z": 24.85362434387207
+    },
+    "player_position": {
+      "x": 70.19868469238281,
+      "y": 3.2952606678009033,
+      "z": 25.223735809326172
+    },
+    "speed": 7.999102789227499,
+    "grounded": true,
+    "car_grounded": true,
+    "flight_active": false,
+    "flight_seconds_left": 6,
+    "flight_powered_limit": 6,
+    "flight_refill_ground_only": true,
+    "race_valid": true,
+    "race_countdown": 0,
+    "race_best": {
+      "time": 121.59999999999438,
+      "splits": [
+        31.766666666666143,
+        61.833333333331105,
+        92.13333333332939
+      ],
+      "assisted": true
+    },
+    "static_nodes": 141,
+    "track_art": {
+      "kerbs": 2,
+      "boards": 17,
+      "reflectors": 160
+    },
+    "flight_boost": 100,
+    "flight_target_height": 0,
+    "flight_landing": false,
+    "flight_gate": 0,
+    "meadow_instances": 10845,
+    "vehicle_batch_enabled": true,
+    "vehicle_batches": 7,
+    "gpu": {
+      "calls": 256,
+      "triangles": 1220483
+    },
+    "night_pass_bypassed": false,
+    "preserve_drawing_buffer": false,
+    "input": {
+      "x": 0,
+      "y": 0,
+      "throttle": 0,
+      "brake": false,
+      "jump": false,
+      "run": false,
+      "lift": 0,
+      "boost": false,
+      "flightBrake": false
+    },
+    "checkpoint": 0,
+    "laps": 1,
+    "elapsed": 0,
+    "reflection_frames": 13,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": true,
+    "grass_instances": 807,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": false,
+    "graphics_quality": "performance",
+    "render_pixel_budget": 518400,
+    "responsive_view": true,
+    "steering_mode": "wheel",
+    "road_assist": true,
+    "track_width": 10,
+    "route_distance": 0.2833263472715264,
+    "measured_fps": 0,
+    "frame_p95_ms": 0,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  }
+}

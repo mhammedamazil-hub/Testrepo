@@ -1,3 +1,5 @@
+> Historical v0.4 evidence. Its unlimited-hover controller has been replaced by [finite short hops and Time Attack v0.5](../time-attack-v5/README.md).
+
 # Beyond the Road — v0.4 release evidence
 
 Actual local Chromium/WebGL2 screenshots, not AI concepts. QA explicitly selects the existing Performance preset under software rendering to complete deterministic tests; default Full quality/budgets are unchanged. This is not physical-tablet FPS evidence.

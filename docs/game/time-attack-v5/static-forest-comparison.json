@@ -1,0 +1,18 @@
+{
+  "scope": "Same scene/camera/quality and all content retained. A/B of static matrix updates. Forest remains one instanced mesh (the exploratory cell split was rejected for extra draw overhead). 200 scene.updateMatrixWorld calls, median five runs; not game FPS or device GPU timing.",
+  "static_nodes": 141,
+  "before": {
+    "calls": 192,
+    "triangles": 997012
+  },
+  "after": {
+    "calls": 192,
+    "triangles": 997012
+  },
+  "before_matrix_ms": 7.400000000372529,
+  "after_matrix_ms": 4.099999999627471,
+  "mean_channel_error": 0,
+  "max_channel_error": 0,
+  "width": 994,
+  "height": 522
+}

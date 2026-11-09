@@ -1,4 +1,4 @@
-# Alpine: After Dark — Runtime 0.4
+# Alpine: After Dark — Runtime 0.5
 
 A free browser driving/exploration prototype with an original custom framework. Three.js renders the world; Rapier WASM simulates the dynamic vehicle and walking collisions. Blender/bpy is the offline asset compiler, not the browser runtime. No paid GPU, Steam integration or manufacturer endorsement.
 
@@ -10,7 +10,7 @@ A free browser driving/exploration prototype with an original custom framework. 
 - `npm test --prefix engine` — actual Rapier suspension, inertia, acceleration/braking, wall collision, airborne behavior, slope gravity, grass grip, walk/jump, safe entry/exit and recovery tests.
 - `npm run dev --prefix engine` — port 3001, binds 0.0.0.0 and accepts Arena preview hosts.
 - `npm run build --prefix engine` — standalone static game in `.exports/alpine`.
-- `node tools/game/beyond_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
+- `node tools/game/time_attack_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
 
 Drive Roadster or Explore on Foot from the launcher. Touch driving supports both a drag-around-rim steering wheel and angular left/right buttons; switch below the steering control or in Controls. Actual ribbed gas/brake pedal shapes, a stopped-car D/R selector, independent camera touch and nearest-safe recovery replace the old joystick/pedal text buttons. Walking retains its own joystick. WASD/arrows move, mouse drag looks, Shift runs, Space jumps/brakes, E enters/exits, R recovers, N changes day/night, H toggles headlights, Escape pauses. Both driving modes support independent simultaneous steering, gas, brake and look inputs. Garage, controls and pause panels are functional.
 
@@ -22,13 +22,17 @@ The owner's repository-root `roadster_lite.glb` is preserved unchanged. `tools/g
 
 Measured flat/dry 60 Hz simulation: 0–60 mph **2.43 s**; stopping from 26.95 m/s takes **2.20 s / 29.09 m**. These are solver tests, not road tests or certified factory specifications. No Pacejka calibration, thermal/battery model, damage, tire deformation, buoyancy, rockets or suction fans.
 
-## Beyond the Road: lobby, grass and fictional flight
+## Short Hop / Time Attack
 
-The car-first sports-game-inspired lobby has real Play/Garage/Training/Settings actions and Drive/Flight selection. **Flight is opt-in game fiction, not a Tesla capability.** J / FLY arms it in the vehicle. Gas applies forward thrust, wheel/buttons steer, Space / Lift climbs, C/Ctrl / Down descends, Shift / Boost adds force using a finite charge, S / Brake air-brakes, and L / Land requests assisted landing. Exit is blocked while armed; recovery disarms. Six air gates use 3D swept crossings. Ground driving/walking remain the default.
+Normal driving now starts with a three-second countdown, three ordered sector splits, saved same-assist personal-best comparison and Gold/Silver/Bronze targets (130/160/above 160s). Recovery, hops or changed assist make the current lap practice-only; the following lap is a new attempt. Original kerbs, start/finish checker paint and gantry, course reflectors, corner boards and asphalt aggregate/rubber detail improve the existing circuit without changing its collider/route. Added static art is merged/instanced, with no extra dynamic lights or shadow maps.
 
-**10,845 additional ground-conforming instanced grass plants** use original tapered blades and GPU wind, retaining the existing photographic grass. No replacement car/sky or hidden resolution reduction. Full's ~2.07 MP budget and existing texture/shadow/reflection settings remain unchanged. Native same-material multi-draw car batching (with unchanged fallback), invisible-shaft bypass, active-material prewarming, object reuse, exact cheaper route queries, throttled diagnostics and on-demand static lobby rendering reduce avoidable work. They do not guarantee every tablet's FPS or ultra-realism. [Research, actual A/B pixel/workload results and limits](../docs/research/tablet-rendering-and-flight.md).
+**The previous unlimited-hover flight was removed.** J / HOP launches a brief cold-gas-inspired arc, only with ground contact and ≥85% supply. Lift/Space, Down/C/Ctrl, forward thrust, boost/Shift, air brake and stabilization all share finite gas. There is no airborne regeneration/re-arm. Automatic descent begins after 2.8s; absolute powered limit is 6s. Land / L uses remaining gas only. Empty means gravity, not free landing thrust. Ground refill takes 20s. **Those are GAME SETTINGS, not official Tesla duration/refill data.** No wings/airplane cruise or certified real Tesla/aircraft simulation. The supplied 2020 art is not claimed to be the newer Rocket trim. Ground driving and walking remain intact.
 
-`node tools/game/beyond_ui_test.cjs` validates real touch/layout for driving and flight. `node engine/tests/route-query-benchmark.js` is only a CPU query microbenchmark, not a whole-game speedup. Build additional grass with `python tools/game/build_meadow.py` after the graded terrain (NumPy required). [Release evidence](../docs/game/beyond-road-v4/README.md).
+Full graphics/pixel budget, existing textures, shadows, water and vegetation remain unchanged. Static-scene matrix freezing, camera-vector reuse and change-only HUD text/gear updates supplement prior native car batching, invisible-shaft bypass and CPU-query optimizations. The exploratory forest cell split was rejected for increased draw overhead; the original one-draw instanced forest remains. No universal physical-tablet FPS or photorealism promise.
+
+[Official-source correction, design and performance limits](../docs/research/short-hop-and-time-attack.md) · [Actual screenshots and release checks](../docs/game/time-attack-v5/README.md).
+
+`node tools/game/time_attack_ui_test.cjs` validates real touch/layout for driving and hops. `node engine/tests/route-query-benchmark.js` is only a CPU query microbenchmark, not a whole-game speedup. Build added grass with `python tools/game/build_meadow.py` after the graded terrain (NumPy required).
 
 ## Corrected circuit and mobile HUD
 

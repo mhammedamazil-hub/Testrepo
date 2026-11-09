@@ -17,7 +17,7 @@ class BeyondRoadTest(unittest.TestCase):
  def test_inactive_effect_is_disabled_not_just_invisibly_blended(self):
   source=(ROOT/'engine/src/main.js').read_text();self.assertIn('this.effects.enabled=enabled;this.clearEffects.enabled=!enabled',source);self.assertIn('preserveDrawingBuffer:false',source);self.assertIn('await this.renderer.compileAsync',source);self.assertIn('now-this.lastTelemetry>250',source);self.assertIn('now-this.lastHUD>50',source)
  def test_flight_is_labelled_fictional_and_never_assigns_body_motion(self):
-  html=(ROOT/'engine/index.html').read_text();self.assertIn('FICTIONAL THRUSTER MODE',html);self.assertIn('FICTIONAL FLIGHT',html);source=(ROOT/'engine/src/flight.js').read_text();self.assertIn('addForce',source);self.assertIn('addTorque',source)
+  html=(ROOT/'engine/index.html').read_text();self.assertIn('FINITE THRUSTER HOPS',html);self.assertIn('GAME SETTINGS',html);source=(ROOT/'engine/src/flight.js').read_text();self.assertIn('addForce',source);self.assertIn('addTorque',source)
   for direct in ['setTranslation','setLinvel','setRotation','setAngvel']:self.assertNotIn(direct,source)
  def test_lobby_actions_and_independent_flight_touch_inputs_are_real(self):
   source=(ROOT/'engine/index.html').read_text()

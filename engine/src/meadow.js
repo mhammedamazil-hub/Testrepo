@@ -15,7 +15,7 @@ export function addMeadow(world,placements){
  const cells=new Map();for(const p of placements){const key=Math.floor(p[0]/64)+','+Math.floor(p[2]/64);if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);}
  const dummy=new T.Object3D();for(const plants of cells.values()){
   const mesh=new T.InstancedMesh(geometry,material,plants.length),center=new T.Vector3();plants.forEach((p,i)=>{dummy.position.set(p[0],p[1],p[2]);dummy.rotation.set(0,p[4],0);dummy.scale.setScalar(p[3]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);center.add(dummy.position);});
-  center.multiplyScalar(1/plants.length);mesh.name='MeadowBlades';mesh.receiveShadow=true;mesh.castShadow=false;mesh.computeBoundingSphere();mesh.boundingSphere.radius+=.2;world.scene.add(mesh);world.details.push({mesh,center,range:105});
+  center.multiplyScalar(1/plants.length);mesh.name='MeadowBlades';mesh.receiveShadow=true;mesh.castShadow=false;mesh.computeBoundingSphere();mesh.boundingSphere.radius+=.2;world.scene.add(mesh);world.staticRoots.push(mesh);world.details.push({mesh,center,range:105});
  }
  world.meadow={time,material,geometry,count:placements.length,cells:cells.size};
 }

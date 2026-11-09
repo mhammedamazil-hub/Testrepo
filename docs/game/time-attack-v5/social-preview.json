@@ -1,0 +1,12 @@
+{
+  "source": "docs/game/time-attack-v5/launcher-ui.png",
+  "source_sha256": "b5a9d5786e99f5ac13f0563958da4fca3903a2f4f624eaf700a5e56bb255d420",
+  "image": "engine/public/social/after-dark-time-attack-v5.jpg",
+  "image_sha256": "902b29033a72b27e1e3374b383d2835791954fed896fbffc66f9140cd424ccc5",
+  "dimensions": [
+    1200,
+    630
+  ],
+  "method": "Actual WebGL2 Chromium lobby capture, explicit Performance preset for software QA, converted to JPEG quality 90. Not an AI reference or substituted game scene.",
+  "credit": "Roadster 2020 by metarex.4d, CC-BY-4.0; Satara Night by Greg Zaal / Poly Haven, CC0. Full source credits in game/CREDITS.md."
+}

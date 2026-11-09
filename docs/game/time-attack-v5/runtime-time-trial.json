@@ -1,0 +1,32 @@
+{
+  "scope": "Actual runtime tick, terrain, contacts, checkpoint ordering, countdown and TimeTrial persistence, driven only by a test-input pursuit driver. No car transform/velocity assignment after reset. Not a human/tablet FPS test.",
+  "ticks": 7477,
+  "laps": 1,
+  "max_distance": 0.7165789412181708,
+  "result": {
+    "time": 121.59999999999438,
+    "valid": true,
+    "record": true,
+    "assisted": true,
+    "medal": "GOLD",
+    "reason": ""
+  },
+  "best": {
+    "time": 121.59999999999438,
+    "splits": [
+      31.766666666666143,
+      61.833333333331105,
+      92.13333333332939
+    ],
+    "assisted": true
+  },
+  "saved": {
+    "time": 121.59999999999438,
+    "splits": [
+      31.766666666666143,
+      61.833333333331105,
+      92.13333333332939
+    ],
+    "assisted": true
+  }
+}

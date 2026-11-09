@@ -9,6 +9,8 @@ on:
       - docs/game/after-dark/**
       - docs/game/circuit-v3/**
       - docs/game/beyond-road-v4/**
+      - docs/game/time-attack-v5/**
+      - tests/test_short_hop.py
       - tests/test_beyond_road.py
       - tests/test_circuit_release.py
       - roadster_lite.glb
@@ -55,7 +57,7 @@ jobs:
           shutil.copytree(source,site)
           shutil.copytree(source,site/'alpine')
           (site/'.nojekyll').touch()
-          assert (site/'social/after-dark-beyond-v4.jpg').is_file()
+          assert (site/'social/after-dark-time-attack-v5.jpg').is_file()
           html=(site/'index.html').read_text()
           assert 'og:image' in html and 'Alpine: After Dark' in html
           shutil.make_archive('.exports/Alpine_After_Dark_Web','zip',source)
@@ -104,12 +106,12 @@ jobs:
           assert 'twitter:card' in html and 'summary_large_image' in html
           bundle=re.search(r'<script[^>]+src="([^"]+)"',html).group(1)
           assert len(read(bundle)[0])>10000
-          image,mime=read('social/after-dark-beyond-v4.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
+          image,mime=read('social/after-dark-time-attack-v5.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
           model,_=read('world/roadster/roadster.glb');assert model[:4]==b'glTF'
           meta=json.loads(read('world/roadster/model.json')[0]);assert meta['license']=='CC-BY-4.0'
           route=json.loads(read('world/track/route.json')[0]);assert route['width']==10 and len(route['points'])==640
           grass=json.loads(read('world/meadow/grass.json')[0]);assert len(grass)>10000
-          assert 'FICTIONAL THRUSTER MODE' in html and 'boost-control' in html
+          assert 'FINITE THRUSTER HOPS' in html and 'boost-control' in html and 'trial-best' in html
           assert 'steering-wheel' in html and 'gas-pedal' in html and 'brake-pedal' in html
           assert 'Alpine: After Dark' in read('alpine/')[0].decode()
           print('CUSTOM_GAME_AND_SOCIAL_PREVIEW_HTTPS_PASS',base)

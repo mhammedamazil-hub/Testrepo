@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {updateText,updateHTML} from '../src/ui-value.js';
+test('unchanged HUD text is not replaced while changed values update',()=>{let writes=0,text='D';const node={get textContent(){return text;},set textContent(v){writes++;text=v;}};for(let i=0;i<60;i++)assert.equal(updateText(node,'D'),false);assert.equal(writes,0);assert.equal(updateText(node,'R'),true);assert.equal(text,'R');assert.equal(writes,1);});
+test('unchanged gear markup retains DOM rather than recreating spans',()=>{let writes=0,html='D <span>/ R</span>';const node={get innerHTML(){return html;},set innerHTML(v){writes++;html=v;}};assert.equal(updateHTML(node,html),false);assert.equal(writes,0);assert.equal(updateHTML(node,'R'),true);assert.equal(writes,1);});

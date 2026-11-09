@@ -1,3 +1,5 @@
+> Historical v0.4 implementation research. The continuous hover/airborne recharge described below is superseded by [v0.5 finite-thruster corrections](short-hop-and-time-attack.md). Prior optimization measurements remain scoped to v0.4.
+
 # Tablet smoothness, grass and fictional Roadster flight
 
 ## Research: preserve the existing Full preset before lowering quality
