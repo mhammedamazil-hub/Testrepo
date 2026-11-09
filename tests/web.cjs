@@ -167,3 +167,7 @@ test('source search filters content without dropping selected sources',async()=>
 test('spatial shelf has a list fallback, source identities are local, and video offers native picker',async()=>{
  const calls=[];const{dom,w}=boot({nativeBridge:{chooseVideo:(...args)=>calls.push(args)}});await tick();assert.equal(w.document.querySelectorAll('.spatial-book').length,1);assert.equal(w.document.querySelector('.spatial-book').getAttribute('aria-current'),'true');w.document.querySelector('[data-library-view=list]').click();assert.equal(w.localStorage.getItem('sourcebook-library-view'),'list');assert.equal(w.document.querySelector('#spatial-library').hidden,true);w.document.querySelector('.notebook-card').click();await tick();w.document.querySelector('#add-video').click();const form=w.document.querySelector('#modal form');form.querySelector('input').value='Lecture';[...form.querySelectorAll('button')].find(b=>b.textContent.includes('Choose video from device')).click();assert.deepEqual(calls,[['test-notebook','Lecture']]);dom.window.close();
 });
+
+test('spatial shelf supports opening the selected notebook with the keyboard',async()=>{
+ const{dom,w}=boot();await tick();w.document.querySelector('#spatial-stage').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));await tick();assert.equal(w.document.querySelector('#workspace').hidden,false);dom.window.close();
+});
