@@ -25,13 +25,15 @@ jobs:
           set -o pipefail
           NDK="$ANDROID_HOME/ndk/27.2.12479018"
           test -x "$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
+          export ANDROID_NDK_HOME="$NDK"
+          export PATH="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
           export CC_aarch64_linux_android="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
           export CXX_aarch64_linux_android="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang++"
           export AR_aarch64_linux_android="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
           export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$CC_aarch64_linux_android"
           export CARGO_BUILD_RUSTC_WRAPPER=""
           cd vendor/jcode
-          cargo build --locked --release --no-default-features --bin jcode --target aarch64-linux-android -j 3 2>&1 | tee "$RUNNER_TEMP/jcode-build.log" || {
+          cargo build --locked --release --no-default-features --features linux-compat-vendored-openssl --bin jcode --target aarch64-linux-android -j 3 2>&1 | tee "$RUNNER_TEMP/jcode-build.log" || {
             tail -100 "$RUNNER_TEMP/jcode-build.log" | sed 's/%/%25/g; s/\r/%0D/g; s/$/%0A/' | tr -d '\n' | sed 's/^/::error::/'
             exit 1
           }
