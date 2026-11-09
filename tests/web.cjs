@@ -21,7 +21,9 @@ function boot(options = {}) {
     const payload = options.body ? JSON.parse(options.body) : undefined;
     requests.push({ url, method: options.method, payload, token: options.headers?.Authorization });
     let data;
-    if(url === '/api/ai') data=options.method==='PUT'?payload:(aiSettings||{providers:[],assignments:{},tasks:['default','chat','flashcards','quiz','slides','vision','motion-graphic']});
+    if(url === '/api/ai/models') data={models:['available-flash','other-model']};
+    else if(url === '/api/ai/test') data={ok:true,model:payload.model,latency_ms:42};
+    else if(url === '/api/ai') data=options.method==='PUT'?payload:(aiSettings||{providers:[],assignments:{},tasks:['default','chat','flashcards','quiz','slides','vision','motion-graphic']});
     else if (url === '/api/config') data = { model: 'test-model', configured: true, api_key_set: true };
     else if (url === '/api/notebooks') data = [{ ...notebook, source_count: notebook.sources.length }];
     else if (url.endsWith('/review')) {
@@ -75,7 +77,7 @@ test('adds pasted source, asks with selection, and safely renders model/citation
 test('disconnect removes access token and visible research data', async () => {
   const { dom, w } = boot(); await tick();
   w.document.querySelector('#settings-button').click(); await tick();
-  w.document.querySelector('#modal .secondary').click();
+  w.document.querySelector('#disconnect-workspace').click();
   assert.equal(w.sessionStorage.getItem('sourcebook-token'), null);
   assert.equal(w.document.querySelectorAll('.notebook-card').length, 0);
   assert.equal(w.document.querySelector('#modal-title').textContent, 'Welcome to your workspace');
@@ -148,4 +150,12 @@ test('provider editor saves per-task routes without putting keys in browser stor
 });
 test('motion graphic storyboard uses text nodes, cycles scenes, and exposes truthful limits',async()=>{
  const art={id:'motion',title:'Research story',kind:'motion-graphic',content:'Outline',evidence:[],created:1,data:{type:'motion-graphic',scenes:[{title:'<script>not executable</script>',caption:'Finding [1]',seconds:3},{title:'Second idea',caption:'Another finding [1]',seconds:4}]}};const{dom,w}=boot({artifacts:[art]});await tick();w.document.querySelector('.notebook-card').click();await tick();w.document.querySelector('.saved-item button').click();assert.ok(w.document.querySelector('.motion-stage').textContent.includes('<script>'));assert.equal(w.document.querySelectorAll('#modal-body script').length,0);[...w.document.querySelectorAll('.study-controls button')].find(b=>b.textContent.includes('Next scene')).click();assert.ok(w.document.querySelector('.motion-stage').textContent.includes('Second idea'));assert.ok(w.document.querySelector('#modal-body').textContent.includes('not a rendered MP4'));dom.window.close();
+});
+
+
+test('settings owns Android controls; none are injected in the notebook header',async()=>{
+ const calls=[];const{dom,w}=boot({nativeBridge:{request(){},reloadWorkspace:()=>calls.push('reload'),openLocalAI:()=>calls.push('local'),cancelAI:()=>calls.push('cancel')}});await tick();w.document.querySelector('#settings-button').click();await tick();w.document.querySelector('[data-settings-tab=app]').click();const buttons=[...w.document.querySelectorAll('.device-controls button')];assert.equal(buttons.length,3);buttons.forEach(b=>b.click());assert.deepEqual(calls,['reload','local','cancel']);assert.equal(w.document.querySelectorAll('header .device-controls').length,0);dom.window.close();
+});
+test('connection editor discovers models and tests draft configuration before saving',async()=>{
+ const {dom,w,requests}=boot();await tick();w.document.querySelector('#settings-button').click();await tick();const preset=w.document.querySelector('[aria-label="Provider preset"]');preset.value='Gemini';w.document.querySelector('.add-provider').click();w.document.querySelector('.load-models').click();await tick();const choices=w.document.querySelector('[aria-label="Available models"]');assert.equal(choices.hidden,false);choices.value='available-flash';choices.dispatchEvent(new w.Event('change'));w.document.querySelector('.test-connection').click();await tick();assert.ok(w.document.querySelector('.connection-result').textContent.includes('Connected to available-flash'));assert.equal(requests.find(r=>r.url==='/api/ai/test').payload.kind,'gemini');assert.equal(requests.some(r=>r.url==='/api/ai'&&r.method==='PUT'),false);w.document.querySelector('#modal .primary').click();await tick();const save=requests.find(r=>r.url==='/api/ai'&&r.method==='PUT');assert.equal(save.payload.providers[0].model,'available-flash');assert.equal(save.payload.assignments.default,save.payload.providers[0].id);dom.window.close();
 });

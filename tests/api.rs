@@ -665,3 +665,49 @@ async fn provider_keys_are_redacted_persisted_and_task_routing_is_applied() {
     std::fs::remove_file(path).unwrap();
     server.abort();
 }
+
+#[tokio::test]
+async fn gemini_discovery_and_connection_use_native_schema_and_redact_errors() {
+    use axum::http::HeaderMap;
+    let mock=Router::new()
+      .route("/v1beta/models",axum::routing::get(|h:HeaderMap|async move{assert_eq!(h["x-goog-api-key"],"secret-for-test");Json(json!({"models":[{"name":"models/available-flash","supportedGenerationMethods":["generateContent"]},{"name":"models/embed-only","supportedGenerationMethods":["embedContent"]}]}))}))
+      .route("/v1beta/models/{model}",post(|axum::extract::Path(model):axum::extract::Path<String>,h:HeaderMap,Json(p):Json<Value>|async move{
+          assert_eq!(h["x-goog-api-key"],"secret-for-test");
+          if model=="bad:generateContent" {return (StatusCode::BAD_REQUEST,Json(json!({"error":{"message":"Invalid model. Credential secret-for-test key=AIzaExampleMustNotLeak"}})));}
+          assert_eq!(model,"available-flash:generateContent");assert!(p.get("messages").is_none());assert_eq!(p["contents"][0]["role"],"user");assert_eq!(p["contents"][0]["parts"][0]["text"],"Reply with OK.");assert_eq!(p["systemInstruction"]["parts"][0]["text"],"Connection check. Reply briefly.");
+          (StatusCode::OK,Json(json!({"candidates":[{"content":{"parts":[{"text":"private thinking","thought":true},{"text":"OK"}]}}]})))
+      }));
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let base = format!("http://{}/v1beta", listener.local_addr().unwrap());
+    let server = tokio::spawn(async move { axum::serve(listener, mock).await.unwrap() });
+    let (_, router, path) = setup(base.clone()).await;
+    let mut p = json!({"id":uuid::Uuid::new_v4().to_string(),"name":"Gemini","kind":"gemini","base_url":base,"model":"models/available-flash","api_key":"secret-for-test"});
+    assert_eq!(
+        request(&router, "POST", "/api/ai/test", Some(p.clone()), false)
+            .await
+            .0,
+        StatusCode::UNAUTHORIZED
+    );
+    let (status, models) = request(&router, "POST", "/api/ai/models", Some(p.clone()), true).await;
+    assert_eq!(status, StatusCode::OK, "{models}");
+    assert_eq!(models["models"], json!(["available-flash"]));
+    let (status, test) = request(&router, "POST", "/api/ai/test", Some(p.clone()), true).await;
+    assert_eq!(status, StatusCode::OK, "{test}");
+    assert_eq!(test["ok"], true);
+    assert!(!test.to_string().contains("private thinking"));
+    p["model"] = json!("bad");
+    let (status, error) = request(&router, "POST", "/api/ai/test", Some(p), true).await;
+    assert_eq!(status, StatusCode::BAD_GATEWAY);
+    assert!(error["error"].as_str().unwrap().contains("Invalid model"));
+    assert!(!error.to_string().contains("secret-for-test"));
+    assert!(!error.to_string().contains("AIzaExample"));
+    assert_eq!(
+        request(&router, "GET", "/api/ai", None, true).await.1["providers"],
+        json!([]),
+        "Tests must not silently save configuration"
+    );
+    if path.exists() {
+        std::fs::remove_file(path).unwrap();
+    }
+    server.abort();
+}

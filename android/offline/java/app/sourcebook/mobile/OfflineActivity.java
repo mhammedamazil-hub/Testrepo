@@ -58,11 +58,6 @@ public class OfflineActivity extends Activity {
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void connect(URI address) {
         destroyBrowser(); origin = address; newRoot();
-        LinearLayout toolbar = new LinearLayout(this); toolbar.setPadding(dp(8),0,dp(8),0); toolbar.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        TextView label = new TextView(this); label.setText("On-device Rust"); label.setTextSize(12); label.setMaxLines(1); label.setEllipsize(android.text.TextUtils.TruncateAt.END); toolbar.addView(label,new LinearLayout.LayoutParams(0,dp(48),1));
-        Button refresh = new Button(this); refresh.setText("Reload"); refresh.setOnClickListener(v -> {if(web!=null)web.reload();}); toolbar.addView(refresh);
-        Button choose = new Button(this); choose.setText("Local AI"); choose.setOnClickListener(v -> modelDialog());toolbar.addView(choose);
-        Button cancel = new Button(this); cancel.setText("Cancel AI"); cancel.setOnClickListener(v -> {nativeCancel();notice("Cancellation requested");});toolbar.addView(cancel);root.addView(toolbar);
         web = new WebView(this); WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false); settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setSafeBrowsingEnabled(false);
@@ -130,7 +125,10 @@ public class OfflineActivity extends Activity {
     public final class NativeBridge {
         @JavascriptInterface public boolean isOffline(){return true;}
         @JavascriptInterface public boolean networkEnabled(){return true;}
-        @JavascriptInterface public void setAppearance(boolean dark){runOnUiThread(()->{if(!trustedPage())return;int bg=dark?Color.rgb(17,19,20):Color.rgb(248,249,249);root.setBackgroundColor(bg);getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);root.setSystemUiVisibility(dark?0:android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);if(root.getChildCount()>0&&root.getChildAt(0) instanceof LinearLayout){LinearLayout bar=(LinearLayout)root.getChildAt(0);for(int i=0;i<bar.getChildCount();i++){if(bar.getChildAt(i) instanceof TextView)((TextView)bar.getChildAt(i)).setTextColor(dark?Color.rgb(225,234,229):Color.rgb(32,57,45));}}});}
+        @JavascriptInterface public void reloadWorkspace(){runOnUiThread(()->{if(trustedPage())web.reload();});}
+        @JavascriptInterface public void openLocalAI(){runOnUiThread(()->{if(trustedPage())modelDialog();});}
+        @JavascriptInterface public void cancelAI(){runOnUiThread(()->{if(trustedPage()){nativeCancel();notice("Local generation cancellation requested");}});}
+        @JavascriptInterface public void setAppearance(boolean dark){runOnUiThread(()->{if(!trustedPage())return;int bg=dark?Color.rgb(22,24,23):Color.rgb(248,249,247);root.setBackgroundColor(bg);getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);root.setSystemUiVisibility(dark?0:android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);});}
         @JavascriptInterface public boolean modelLoaded(){return modelLoaded;}
         @JavascriptInterface public void request(String id,String method,String path,String body){
             if(id==null||!id.matches("[0-9]{1,10}")||body==null||body.length()>16*1024*1024)return;

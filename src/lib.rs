@@ -292,6 +292,8 @@ pub fn router(app: App) -> Router {
         )
         .route("/api/config", get(config))
         .route("/api/ai", get(ai::get).put(ai::save))
+        .route("/api/ai/test", post(ai::test_connection))
+        .route("/api/ai/models", post(ai::models))
         .route("/api/notebooks/{id}/video", post(video::ingest))
         .route("/api/share/{token}", get(studio::shared))
         .route("/api/share/{token}/media/{item}", get(studio::shared_media))

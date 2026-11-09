@@ -109,8 +109,8 @@ pub(super) async fn save(
             id: input.id,
             name: text(&input.name, "Provider name", 100)?,
             kind: input.kind,
-            base_url: input.base_url.trim_end_matches('/').into(),
-            model: input.model,
+            base_url: input.base_url.trim().trim_end_matches('/').into(),
+            model: input.model.trim().trim_start_matches("models/").into(),
             api_key: key,
         };
         validate(&provider)?;
@@ -212,13 +212,7 @@ pub(super) async fn request(a: &App, p: &Provider, messages: Vec<Value>) -> Resu
         )
     })?;
     if !response.status().is_success() {
-        return Err(Error(
-            StatusCode::BAD_GATEWAY,
-            format!(
-                "AI provider returned HTTP {}. Response omitted to protect credentials.",
-                response.status()
-            ),
-        ));
+        return Err(provider_error(response, p).await);
     }
     let mut bytes = Vec::new();
     while let Some(c) = response
@@ -235,6 +229,7 @@ pub(super) async fn request(a: &App, p: &Provider, messages: Vec<Value>) -> Resu
     let answer = match p.kind.as_str() {
         "gemini" => v["candidates"][0]["content"]["parts"].as_array().map(|p| {
             p.iter()
+                .filter(|x| x["thought"] != true)
                 .filter_map(|x| x["text"].as_str())
                 .collect::<Vec<_>>()
                 .join("\n")
@@ -278,4 +273,187 @@ pub(super) async fn media_provider(a: &App, task: &str) -> Result<Provider> {
         return Err(bad("Speech/transcription currently require an OpenAI-compatible audio API, not Gemini/Anthropic text protocols or the native text engine"));
     }
     Ok(provider)
+}
+
+/// Only structured, bounded provider messages are shown; never raw HTTP bodies/headers.
+async fn provider_error(mut response: reqwest::Response, p: &Provider) -> Error {
+    let status = response.status();
+    let mut bytes = Vec::new();
+    while let Ok(Some(chunk)) = response.chunk().await {
+        if bytes.len() + chunk.len() > 16384 {
+            break;
+        }
+        bytes.extend_from_slice(&chunk);
+    }
+    let value: Value = serde_json::from_slice(&bytes).unwrap_or(Value::Null);
+    let raw = value["error"]["message"]
+        .as_str()
+        .or_else(|| value["message"].as_str())
+        .unwrap_or("");
+    let mut message = raw.to_string();
+    if !p.api_key.is_empty() {
+        message = message.replace(&p.api_key, "[redacted]");
+    }
+    // Strip tokens even when a provider echoes a fragment/URL-encoded credential.
+    message = message
+        .split_whitespace()
+        .map(|word| {
+            if word.contains("AIza") || word.contains("sk-") || word.contains("key=") {
+                "[redacted]"
+            } else {
+                word
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+        .filter(|c| !c.is_control())
+        .take(600)
+        .collect();
+    let hint=match status.as_u16(){400=>"Check the exact model ID, API key restrictions and request support. Use Load models and Test connection in Settings.",401|403=>"Check API key validity, project permissions, region restrictions and billing.",404=>"This model or endpoint was not found. Load models in Settings and choose an available model.",429=>"Provider quota or rate limit reached. Check billing/quota, then retry later.",_=>"Check provider availability and configuration."};
+    Error(
+        StatusCode::BAD_GATEWAY,
+        format!(
+            "{} returned HTTP {}. {} {}",
+            p.name,
+            status.as_u16(),
+            message,
+            hint
+        ),
+    )
+}
+async fn draft(a: &App, input: ProviderInput, require_model: bool) -> Result<Provider> {
+    let guard = a.ai.read().await;
+    let old = guard.providers.iter().find(|p| p.id == input.id);
+    let api_key = if input.clear_key {
+        String::new()
+    } else {
+        input
+            .api_key
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| old.map(|p| p.api_key.clone()).unwrap_or_default())
+    };
+    let mut p = Provider {
+        id: input.id,
+        name: input.name,
+        kind: input.kind,
+        base_url: input.base_url.trim().trim_end_matches('/').into(),
+        model: input.model.trim().trim_start_matches("models/").into(),
+        api_key,
+    };
+    if !require_model && p.model.is_empty() {
+        p.model = "discovery".into();
+    }
+    validate(&p)?;
+    Ok(p)
+}
+pub(super) async fn test_connection(
+    State(a): State<App>,
+    h: HeaderMap,
+    Json(input): Json<ProviderInput>,
+) -> Result<Json<Value>> {
+    authorized(&h, &a)?;
+    let p = draft(&a, input, true).await?;
+    let _slot = a
+        .ai_slots
+        .try_acquire()
+        .map_err(|_| bad("Another AI job is running; retry shortly"))?;
+    let start = std::time::Instant::now();
+    tokio::time::timeout(
+        Duration::from_secs(60),
+        request(
+            &a,
+            &p,
+            vec![
+                json!({"role":"system","content":"Connection check. Reply briefly."}),
+                json!({"role":"user","content":"Reply with OK."}),
+            ],
+        ),
+    )
+    .await
+    .map_err(|_| bad("Connection test timed out after 60 seconds"))??;
+    Ok(Json(
+        json!({"ok":true,"model":p.model,"latency_ms":start.elapsed().as_millis(),"message":"Model responded successfully. Settings are not saved until you press Save."}),
+    ))
+}
+pub(super) async fn models(
+    State(a): State<App>,
+    h: HeaderMap,
+    Json(input): Json<ProviderInput>,
+) -> Result<Json<Value>> {
+    authorized(&h, &a)?;
+    if a.offline {
+        return Err(bad("Model discovery requires a network"));
+    }
+    let p = draft(&a, input, false).await?;
+    if p.kind == "native" {
+        return Err(bad("Use Local AI in Settings to import compatible weights. This runtime has no remote model list."));
+    }
+    let _slot = a
+        .ai_slots
+        .try_acquire()
+        .map_err(|_| bad("Another AI job is running; retry shortly"))?;
+    let base = p.base_url.trim_end_matches('/');
+    let mut request = a
+        .client
+        .get(format!("{base}/models"))
+        .timeout(Duration::from_secs(30));
+    if p.kind == "gemini" {
+        request = request
+            .header("x-goog-api-key", &p.api_key)
+            .query(&[("pageSize", "1000")]);
+    } else if p.kind == "anthropic" {
+        request = request
+            .header("x-api-key", &p.api_key)
+            .header("anthropic-version", "2023-06-01");
+    } else if !p.api_key.is_empty() {
+        request = request.bearer_auth(&p.api_key);
+    }
+    let mut response = request
+        .send()
+        .await
+        .map_err(|_| bad("Could not fetch models. Check the base URL, network and API key."))?;
+    if !response.status().is_success() {
+        return Err(provider_error(response, &p).await);
+    }
+    let mut bytes = Vec::new();
+    while let Some(c) = response
+        .chunk()
+        .await
+        .map_err(|_| bad("Model list interrupted"))?
+    {
+        if bytes.len() + c.len() > MAX_TEXT {
+            return Err(bad("Model list too large"));
+        }
+        bytes.extend_from_slice(&c);
+    }
+    let v: Value = serde_json::from_slice(&bytes).map_err(|_| bad("Invalid model list JSON"))?;
+    let mut models: Vec<String> = if p.kind == "gemini" {
+        v["models"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|m| {
+                m["supportedGenerationMethods"]
+                    .as_array()
+                    .is_some_and(|a| a.iter().any(|x| x == "generateContent"))
+            })
+            .filter_map(|m| m["name"].as_str())
+            .map(|s| s.trim_start_matches("models/").to_string())
+            .collect()
+    } else {
+        v["data"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|m| m["id"].as_str())
+            .map(str::to_string)
+            .collect()
+    };
+    models.sort();
+    models.dedup();
+    models.truncate(1000);
+    Ok(Json(
+        json!({"models":models,"note":"Models advertised by this endpoint. Availability and task support depend on your account; use Test connection. Listing may be limited to the first page."}),
+    ))
 }
