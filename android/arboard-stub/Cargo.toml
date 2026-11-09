@@ -1,0 +1,10 @@
+[package]
+name = "arboard"
+version = "3.6.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[features]
+default = ["image-data"]
+image-data = []
+wayland-data-control = []

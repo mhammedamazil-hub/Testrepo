@@ -27,3 +27,12 @@ new = 'rquickjs = { version = "0.14", features = ["futures", "bindgen"] }'
 if s.count(old) != 1:
     raise SystemExit('upstream changed: rquickjs dependency no longer matches')
 p.write_text(s.replace(old, new))
+
+# arboard has no Android platform. Fail clipboard operations explicitly rather
+# than pretending they work; text input remains available through the terminal.
+p = Path('vendor/jcode/Cargo.toml')
+s = p.read_text()
+if '[patch.crates-io]' not in s:
+    raise SystemExit('upstream changed: expected an existing crates.io patch section')
+s = s.replace('[patch.crates-io]', '[patch.crates-io]\narboard = { path = "../../android/arboard-stub" }', 1)
+p.write_text(s)
