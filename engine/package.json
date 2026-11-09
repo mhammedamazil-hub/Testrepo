@@ -1,10 +1,20 @@
 {
   "name": "alpine-runtime",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Original small game framework using Blender-authored GLBs, Three.js rendering and Rapier physics; not an Unreal replacement.",
   "type": "module",
-  "scripts": {"dev": "vite --host 0.0.0.0", "build": "vite build", "test": "node --test tests/*.test.js"},
-  "dependencies": {"three": "0.187.0", "@dimforge/rapier3d-compat": "0.21.0", "postprocessing": "6.39.6"},
-  "devDependencies": {"vite": "8.3.6"}
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "three": "0.187.0",
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "postprocessing": "6.39.6"
+  },
+  "devDependencies": {
+    "vite": "8.3.6"
+  }
 }

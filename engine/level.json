@@ -33,7 +33,7 @@
   "assets": {
     "terrain": "terrain.glb",
     "road": "road.glb",
-    "vehicle": "touring_car.glb",
+    "vehicle": "roadster/roadster.glb",
     "character": "hiker.glb",
     "pine": "library/pine.glb",
     "grass": "library/grass.glb",

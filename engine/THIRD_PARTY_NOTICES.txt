@@ -1,4 +1,17 @@
-Alpine Runtime 0.1 third-party notices
+Alpine: After Dark — Runtime 0.2 third-party notices
+
+Tesla Roadster 2020 — metarex.4d — CC-BY-4.0
+Source: https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8
+License: https://creativecommons.org/licenses/by/4.0/
+Adapted from the owner's supplied roadster_lite.glb: normalized transform,
+body/wheel/caliper pivots, decimation, resized textures, lamp/clearcoat edits.
+Detailed provenance and hashes: world/roadster/model.json.
+
+Satara Night — Greg Zaal / Poly Haven — CC0-1.0
+Source: https://polyhaven.com/a/satara_night
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Photographic Milky Way resized to 4096x2048; lower hemisphere feathered.
+Powered by Poly Haven. Provenance and hashes: world/night/provenance.json.
 
 Blender/bpy is used for authoring only; it is not bundled.
 Poly Haven asset provenance and CC0 credits: world/credits.txt, library/manifest.json.

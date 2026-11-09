@@ -1,0 +1,58 @@
+{
+  "title": "Tesla Roadster 2020",
+  "author": "metarex.4d",
+  "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+  "license": "CC-BY-4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source_sha256": "e10253ef699ed774a4d9f749bd01d176931b8980a0e7af6a9b717bfd443a44d3",
+  "output_sha256": "d9ecef7a8b761bfbaad2ad9a6a0c8812b1d510a72a67a92c402c28c35e34d4f7",
+  "source_bytes": 14525956,
+  "output_bytes": 14892468,
+  "compiler": "Blender bpy 4.2.23 LTS",
+  "triangles": 176119,
+  "dimensions_m": [
+    1.8910850286483765,
+    1.179545709863305,
+    4.626222610473633
+  ],
+  "wheels": [
+    {
+      "name": "FL",
+      "center": [
+        -0.8295148611068726,
+        0.3250129222869873,
+        -1.4607789516448975
+      ],
+      "radius": 0.32501304615288973
+    },
+    {
+      "name": "FR",
+      "center": [
+        0.8465427756309509,
+        0.32503101229667664,
+        -1.4608266353607178
+      ],
+      "radius": 0.3250130610540509
+    },
+    {
+      "name": "RL",
+      "center": [
+        -0.8657378554344177,
+        0.35297030210494995,
+        1.460803747177124
+      ],
+      "radius": 0.34420443314593285
+    },
+    {
+      "name": "RR",
+      "center": [
+        0.8487099409103394,
+        0.3527785539627075,
+        1.4608019590377808
+      ],
+      "radius": 0.3440160824684426
+    }
+  ],
+  "modifications": "Normalized original supplied model units as metres; front aligned to -Z; ground-centred; merged body/rotating wheels/calipers separately; bounded decimation on large meshes; textures capped at 1024; clearcoat and lamp emission. Dimensions/wheel centres are MODEL measurements, not certified Tesla drawings.",
+  "original_unchanged": true
+}

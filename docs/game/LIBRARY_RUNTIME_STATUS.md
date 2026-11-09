@@ -1,3 +1,5 @@
+> **Current primary edition:** [Alpine: After Dark](../../engine/README.md) — custom Roadster/night runtime; root and `/alpine/` now target that edition. This document preserves historical release evidence, not current vehicle/deployment claims.
+
 # Licensed vegetation / live-water / custom-runtime release
 
 ## Play both published editions

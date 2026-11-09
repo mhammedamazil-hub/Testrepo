@@ -1,0 +1,11 @@
+{
+  "scope": "Deterministic Rapier simulation on a flat dry test plane at 60Hz. Not a physical Tesla measurement or rendering benchmark.",
+  "zero_to_60_mph_seconds": 2.4333333333333296,
+  "speed_at_brake_mps": 26.950983600771345,
+  "braking_to_point_one_mps_seconds": 2.199999999999997,
+  "braking_distance_m": 29.09238309530774,
+  "mass_kg": 2200,
+  "gravity_mps2": 9.81,
+  "assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+  "traction_model": "Load-limited force plus Rapier raycast tire impulses; estimated dry mu 1.35, grass 0.65; not measured tire/Pacejka data."
+}

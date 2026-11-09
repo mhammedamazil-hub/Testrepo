@@ -1,28 +1,20 @@
-# Alpine Mirror — landscape and playable game prototype
+# Alpine: After Dark — Roadster Expedition
 
-## Playable Godot game
+## Play the custom Alpine game
 
-The Alpine mountain-and-lake scene now has a separate, real **Godot 4.4.1 walking/driving prototype** under [`game/`](game/README.md): a roughly 965 m lakeside loop, an animated hiker, a drivable car, enter/exit controls, checkpoints, camera controls and pause/recovery.
+**[Play free in your browser](https://mhammedamazil-hub.github.io/Testrepo/)** · [Compatibility /alpine/ URL](https://mhammedamazil-hub.github.io/Testrepo/alpine/) · [Runtime and controls](engine/README.md)
 
-**Native 1920×1080 rendering is verified. The requested 60 FPS has not been achieved in the available CPU software-rendering test.** This is a playable prototype, not a production-ready 1080p60 or GTA-scale game. [Build status and actual rendered evidence](docs/game/BUILD_STATUS.md).
+The custom **Three.js + Rapier WASM** edition is now the primary game. Drive the supplied Roadster beneath real Milky Way photography, or explore on foot. Includes a premium-PC-game-inspired launcher, functional garage/controls/pause panels, touch controls, checkpoints, recovery, day/night and headlights. Static Open Graph/Twitter cards use the actual first-screen capture.
 
-- Play using the Arena live preview, or build the Web package with `python3 tools/game/setup_toolchain.py` followed by `python3 tools/game/export_game.py`.
-- **[Play online on GitHub Pages](https://mhammedamazil-hub.github.io/Testrepo/)** — deployment and public HTTPS runtime-file checks passed. [Publishing setup](game/README.md#github-pages-hosting). Game/build changes on the active branch automatically rebuild and republish.
-- **Phone controls (landscape):** left stick moves/steers; drag the right side to look; onscreen enter/exit, gas, reverse, jump/brake, run, pause and recover. Chromium multi-touch emulation is verified; physical-device coverage is not certified.
-- **Desktop controls:** WASD/arrows, E enter/exit, Space jump/brake, Escape pause, R recover; T toggles touch controls. [Full controls and visual-realism improvements](game/README.md).
-- [Specialist skill usage](docs/GAME_SKILL_USAGE.md), [actual engine physics checks](docs/game/headless-validation.json), [rendered browser gameplay checks](docs/game/browser-validation.json).
-- [Game validation/build workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) produces a downloadable Web artifact. A green build validates code/gameplay/export, **not 60 FPS**.
+- **Actual dynamic vehicle:** four raycast suspension contacts, force-driven AWD, load-limited tire grip, body inertia, collision and gravity. The original user-uploaded `roadster_lite.glb` is unchanged; its compiled derivative has independent wheel pivots.
+- **Research, not invented factory data:** mass/power/suspension/tire/aero estimates are disclosed. Measured simulation: **2.43 s 0–60 mph, 29.09 m braking from 26.95 m/s**; not manufacturer-certified real-car results. [Sources, assumptions and limits](docs/research/roadster-physics-and-night.md).
+- **Night sky:** Satara Night, actual star/Milky Way photography by Greg Zaal / Poly Haven, CC0. Roadster model by metarex.4d, CC-BY-4.0. [Credits](game/CREDITS.md).
+- **Desktop:** WASD/arrows, drag to look, E enter/exit, Space jump/brake, Shift run, R recover, N day/night, H headlights, Escape pause.
+- **Phones:** landscape recommended; independent joystick/look/pedals/actions. Chromium mobile emulation is tested; physical-phone performance remains unverified.
+- Native **1920×1080** rendering and fixed **60 Hz physics**. **60 FPS is a target, not achieved/certified device coverage.** This is a playable prototype, not photorealistic/AAA/Unreal parity.
+- [Validation/publication workflow](https://github.com/mhammedamazil-hub/Testrepo/actions/workflows/game-build.yml) builds only the custom game to root and `/alpine/`. Godot sources remain in [`game/`](game/README.md) as a legacy edition; they are no longer the primary release or part of this build.
 
-The game assets are derived from a copy of the original scene; the completed cinematic below is preserved separately.
-
-## New: original Alpine browser framework
-
-A second playable edition lives in [`engine/`](engine/README.md): real **Three.js + Rapier WASM** gameplay over the same Blender-authored landscape. It includes actual CC0 Poly Haven grass geometry, photographic pine/bark, current-frame planar lake reflections, occluded sun shafts, touch controls, collision, driving, checkpoints and pause/recovery. Godot also receives the library assets, a live reflection camera and screen-space shafts.
-
-- **[Play the Alpine framework edition](https://mhammedamazil-hub.github.io/Testrepo/alpine/)** — deployed alongside Godot by the combined Pages workflow.
-- [Bounded 32-repository library/license survey and exact asset decisions](docs/research/open-source-runtime-and-assets.md).
-- [Actual mobile WebGL2/Rapier checks](docs/game/alpine-browser-validation.json) · [Godot Web render check](docs/game/godot-library-browser-validation.json).
-- This is one original small framework around **bpy authoring**, not an Unreal-level renderer or a claim to have ported the game to every surveyed engine. Native 1080p and 60 Hz physics are not verified 60 FPS; physical phones remain untested. The scene is **not photorealistic/AAA**.
+The original completed cinematic below is preserved separately and is not changed by the game upgrade.
 
 ## Completed 20-second 1080p60 cinematic delivery
 

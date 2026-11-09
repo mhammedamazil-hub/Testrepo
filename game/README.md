@@ -1,3 +1,5 @@
+> **Legacy Godot edition.** Current development and the public root have moved to [the custom Alpine: After Dark runtime](../engine/README.md). These sources are preserved, but the current publication workflow does not rebuild Godot. Hosting instructions below describe the former release.
+
 # Alpine Mirror — Lakeside Escape
 
 A **real Godot 4.4.1 3D walking/driving prototype**, built from the Alpine Blender landscape in this repository. Not a prerecorded video or a JavaScript imitation of Godot.

@@ -6,7 +6,7 @@ export class AlpineInput {
   document.body.classList.toggle('touch',this.touch);
   addEventListener('keydown',e=>{
    if(keys[e.code]){e.preventDefault();this.press('key:'+e.code,keys[e.code]);}
-   else if(!e.repeat){const action={KeyE:'interact',KeyR:'reset',Escape:'pause',KeyM:'mute',KeyF:'fullscreen',KeyG:'rays',KeyQ:'rear'}[e.code];if(action)this.command(action);}
+   else if(!e.repeat){const action={KeyE:'interact',KeyR:'reset',Escape:'pause',KeyM:'mute',KeyF:'fullscreen',KeyG:'rays',KeyQ:'rear',KeyN:'night',KeyH:'headlights'}[e.code];if(action)this.command(action);}
   });
   addEventListener('keyup',e=>this.release('key:'+e.code));
   const release=()=>{this.clear();this.command('focusLost');};

@@ -1,88 +1,71 @@
-name: Alpine game validation and Web build
+name: Alpine After Dark validation and publication
 on:
   push:
     branches: [arena/f0bb5c2d-testrepo]
     paths:
       - engine/**
-      - game/**
+      - game/assets/**
+      - game/CREDITS.md
+      - docs/game/after-dark/**
+      - roadster_lite.glb
       - tools/game/**
       - tests/test_game_project.py
       - tests/test_library_runtime.py
+      - tests/test_after_dark.py
       - .github/workflows/game-build.yml
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
   group: alpine-game-${{ github.ref }}
-  # Do not interrupt an in-flight Pages deployment with a newer push.
   cancel-in-progress: false
 jobs:
   validate-and-export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install lightweight test dependencies only
-        run: python -m pip install numpy==1.26.4 Pillow==13.0.0 imageio-ffmpeg==0.8.1
-      - name: Restore verified official Godot and Web templates
-        run: python tools/game/setup_toolchain.py
-      - name: Import actual game assets
-        run: .cache/godot/Godot_v4.4.1-stable_linux.x86_64 --headless --path game --editor --import
-      - name: Test actual Godot physics, walking, driving and interactions
-        shell: bash
-        run: |
-          set -euo pipefail
-          .cache/godot/Godot_v4.4.1-stable_linux.x86_64 --headless --path game --fixed-fps 60 --script res://tests/physics_smoke.gd | tee /tmp/game-physics.log
-          grep -q GAMEPLAY_SMOKE_PASS /tmp/game-physics.log
-      - name: Test source, evidence and production/recovery safeguards
+      - run: python -m pip install numpy==1.26.4 Pillow==13.0.0 imageio-ffmpeg==0.8.1
+      - name: Validate source, asset provenance and social metadata
         run: python -m unittest discover -s tests -v
-      - name: Export actual single-threaded Godot Web release
-        run: python tools/game/export_game.py
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: engine/package-lock.json
-      - name: Test and build the original Three/Rapier Alpine framework
+      - name: Test real dynamic vehicle physics and build standalone game
         run: |
           npm ci --prefix engine
           npm test --prefix engine
           npm run build --prefix engine
-      - name: Prepare static GitHub Pages site
+      - name: Make the custom game the main site and retain its previous URL
         run: |
           python - <<'PY'
           from pathlib import Path
           import shutil
-          source = Path('.exports/web')
-          site = Path('.exports/pages')
-          assert 'variant/thread_support=false' in Path('game/export_presets.cfg').read_text(), 'Pages cannot set COOP/COEP headers for a threaded build'
-          # Pages sets its own compression headers. Do not ship sidecars that
-          # need the custom preview server's Content-Encoding handling.
-          shutil.copytree(source, site, ignore=shutil.ignore_patterns('*.gz'))
-          shutil.copytree('.exports/alpine',site / 'alpine')
-          (site / '.nojekyll').touch()
-          assert (site / 'index.html').is_file()
-          assert (site / 'index.wasm').stat().st_size < 100 * 1024 * 1024
+          source=Path('.exports/alpine');site=Path('.exports/pages')
+          shutil.copytree(source,site)
+          shutil.copytree(source,site/'alpine')
+          (site/'.nojekyll').touch()
+          assert (site/'social/after-dark-v2.jpg').is_file()
+          html=(site/'index.html').read_text()
+          assert 'og:image' in html and 'Alpine: After Dark' in html
+          shutil.make_archive('.exports/Alpine_After_Dark_Web','zip',source)
           PY
-      - name: Upload GitHub Pages site
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: .exports/pages
           retention-days: 3
       - uses: actions/upload-artifact@v4
         with:
-          name: Alpine-Mirror-playable-Web
-          path: |
-            .exports/Alpine_Mirror_Web.zip
-            .exports/web-export.json
-            docs/game/headless-validation.json
-          include-hidden-files: true
+          name: Alpine-After-Dark-playable-Web
+          path: .exports/Alpine_After_Dark_Web.zip
           retention-days: 3
   deploy-pages:
-    name: Publish playable game to GitHub Pages
+    name: Publish and verify custom Roadster game
     needs: validate-and-export
     if: github.ref == 'refs/heads/arena/f0bb5c2d-testrepo'
     runs-on: ubuntu-24.04
@@ -95,37 +78,31 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check Pages configuration
-        uses: actions/configure-pages@v5
-      - name: Deploy playable Godot Web export
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v4
         id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Verify public game files over HTTPS
+      - name: Check public raw HTML, bundles, real model and crawler image
         env:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           python - <<'PY'
-          import os
-          import urllib.request
-          base = os.environ['PAGES_URL'].rstrip('/') + '/'
-          with urllib.request.urlopen(base, timeout=60) as response:
-              html = response.read().decode('utf-8')
-              assert response.status == 200
-              assert 'Alpine Mirror' in html and '$GODOT_' not in html
-              assert 'src="index.js"' in html
-          for name, magic in [('index.wasm', b'\x00asm'), ('index.pck', b'GDPC')]:
-              with urllib.request.urlopen(base + name, timeout=60) as response:
-                  assert response.status == 200 and response.read(4) == magic, name
-                  if name.endswith('.wasm'):
-                      assert response.headers.get_content_type() == 'application/wasm'
-          for name in ['index.js', 'index.audio.worklet.js', 'index.audio.position.worklet.js']:
-              with urllib.request.urlopen(base + name, timeout=60) as response:
-                  assert response.status == 200 and response.read(1), name
-          for name in ['alpine/', 'alpine/world/library/manifest.json', 'alpine/world/credits.txt']:
-              with urllib.request.urlopen(base + name, timeout=60) as response:
-                  assert response.status == 200 and response.read(1), name
-          print('PAGES_HTTPS_FILES_PASS:', base)
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
-              summary.write('## Play Alpine Mirror\n\n' + base + '\n\n')
-              summary.write('Public HTTPS page, JS/worklets and real WASM/PCK headers verified. This is not a 60 FPS benchmark.\n')
+          import os,re,urllib.request,json
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          def read(name):
+              url=base+name+('?release='+os.environ['GITHUB_SHA'])
+              request=urllib.request.Request(url,headers={'User-Agent':'Discordbot/2.0 (Alpine release smoke check)','Cache-Control':'no-cache'})
+              with urllib.request.urlopen(request,timeout=90) as r:
+                  assert r.status==200,name
+                  return r.read(),r.headers.get_content_type()
+          html,_=read('');html=html.decode()
+          assert 'Alpine: After Dark' in html and 'property="og:image"' in html
+          assert 'twitter:card' in html and 'summary_large_image' in html
+          bundle=re.search(r'<script[^>]+src="([^"]+)"',html).group(1)
+          assert len(read(bundle)[0])>10000
+          image,mime=read('social/after-dark-v2.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
+          model,_=read('world/roadster/roadster.glb');assert model[:4]==b'glTF'
+          meta=json.loads(read('world/roadster/model.json')[0]);assert meta['license']=='CC-BY-4.0'
+          assert 'Alpine: After Dark' in read('alpine/')[0].decode()
+          print('CUSTOM_GAME_AND_SOCIAL_PREVIEW_HTTPS_PASS',base)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Not a physical-phone/60 FPS certificate.\n')
           PY

@@ -1,0 +1,292 @@
+{
+  "checks": [
+    {
+      "name": "Open Graph title/image and Twitter card exist in raw non-JavaScript HTML",
+      "passed": true
+    },
+    {
+      "name": "Actual native 1920x1080 render",
+      "passed": true
+    },
+    {
+      "name": "Dynamic 2200kg Roadster chassis and four suspension contacts",
+      "passed": true
+    },
+    {
+      "name": "Photographic night sky is default and headlights are enabled",
+      "passed": true
+    },
+    {
+      "name": "Touch controls auto-detected",
+      "passed": true
+    },
+    {
+      "name": "Garage opens a real specification panel",
+      "passed": true
+    },
+    {
+      "name": "Controls/settings panel opens",
+      "passed": true
+    },
+    {
+      "name": "Launch button starts in the actual Roadster",
+      "passed": true
+    },
+    {
+      "name": "Multi-touch throttle and steering move the dynamic body",
+      "passed": true
+    },
+    {
+      "name": "Physical brakes stop the car",
+      "passed": true
+    },
+    {
+      "name": "Safe exit activates the character",
+      "passed": true
+    },
+    {
+      "name": "On-foot movement and camera work with two independent fingers",
+      "passed": true
+    },
+    {
+      "name": "Touch cancellation releases movement",
+      "passed": true
+    },
+    {
+      "name": "Day/night switching changes the live world and returns to night",
+      "passed": true
+    },
+    {
+      "name": "Headlight toggle operates independently",
+      "passed": true
+    },
+    {
+      "name": "Pause/resume UI preserves gameplay",
+      "passed": true
+    },
+    {
+      "name": "Focus loss pauses and clears held input",
+      "passed": true
+    },
+    {
+      "name": "Portrait retains native canvas resolution",
+      "passed": true
+    },
+    {
+      "name": "Live reflection target updated during the expedition",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "initial": {
+    "framework": "Alpine 0.2 / After Dark",
+    "physics": "Rapier dynamic rigid body / 4 raycast wheels",
+    "vehicle_model": "Tesla Roadster 2020 / metarex.4d",
+    "vehicle_mass_kg": 2200,
+    "car_dynamic": true,
+    "night": true,
+    "headlights": true,
+    "wheel_contacts": 4,
+    "wheel_suspension": [
+      0.1915680170059204,
+      0.1956351101398468,
+      0.19438427686691284,
+      0.19042623043060303
+    ],
+    "acceleration_g": -7.504501455835322e-7,
+    "vehicle_assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "menu",
+    "paused": false,
+    "in_vehicle": false,
+    "touch_enabled": true,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "position": {
+      "x": 70.20777130126953,
+      "y": 3.3508222103118896,
+      "z": 25.068086624145508
+    },
+    "car_position": {
+      "x": 67.70677947998047,
+      "y": 3.8419246673583984,
+      "z": 25.02382469177246
+    },
+    "player_position": {
+      "x": 70.20777130126953,
+      "y": 3.3508222103118896,
+      "z": 25.068086624145508
+    },
+    "speed": -0.006828416741883907,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0,
+      "y": 0,
+      "throttle": 0,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 0,
+    "reflection_frames": 4,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": false,
+    "grass_instances": 1103,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": true,
+    "measured_fps": 0.021563400440432583,
+    "frame_p95_ms": 187159.19999999998,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  },
+  "driving": {
+    "framework": "Alpine 0.2 / After Dark",
+    "physics": "Rapier dynamic rigid body / 4 raycast wheels",
+    "vehicle_model": "Tesla Roadster 2020 / metarex.4d",
+    "vehicle_mass_kg": 2200,
+    "car_dynamic": true,
+    "night": true,
+    "headlights": true,
+    "wheel_contacts": 4,
+    "wheel_suspension": [
+      0.21435904502868652,
+      0.22008934617042542,
+      0.16937577724456787,
+      0.17123687267303467
+    ],
+    "acceleration_g": 1.1184611588565327,
+    "vehicle_assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "playing",
+    "paused": false,
+    "in_vehicle": true,
+    "touch_enabled": true,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "position": {
+      "x": 67.84215545654297,
+      "y": 3.885481834411621,
+      "z": 23.611709594726562
+    },
+    "car_position": {
+      "x": 67.84215545654297,
+      "y": 3.885481834411621,
+      "z": 23.611709594726562
+    },
+    "player_position": {
+      "x": 70.20777130126953,
+      "y": 3.3508224487304688,
+      "z": 25.068086624145508
+    },
+    "speed": 5.453763001909034,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0.30477572710378376,
+      "y": -0.9524241471993242,
+      "throttle": 1,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 0.9000000000000011,
+    "reflection_frames": 39,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": false,
+    "grass_instances": 1103,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": true,
+    "measured_fps": 0.07088653610214947,
+    "frame_p95_ms": 71180.5,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  },
+  "final": {
+    "framework": "Alpine 0.2 / After Dark",
+    "physics": "Rapier dynamic rigid body / 4 raycast wheels",
+    "vehicle_model": "Tesla Roadster 2020 / metarex.4d",
+    "vehicle_mass_kg": 2200,
+    "car_dynamic": true,
+    "night": true,
+    "headlights": true,
+    "wheel_contacts": 4,
+    "wheel_suspension": [
+      0.19491231441497803,
+      0.18980279564857483,
+      0.19111961126327515,
+      0.19619375467300415
+    ],
+    "acceleration_g": -3.0553416649829416e-7,
+    "vehicle_assumptions": "2200kg, 800kW, suspension/aero/tire data are explicit engineering estimates, not published Tesla measurements.",
+    "authoring": "Blender bpy 4.2.23 LTS",
+    "phase": "playing",
+    "paused": false,
+    "in_vehicle": false,
+    "touch_enabled": true,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "position": {
+      "x": 71.29969024658203,
+      "y": 3.6870572566986084,
+      "z": 16.437503814697266
+    },
+    "car_position": {
+      "x": 68.63813781738281,
+      "y": 3.8488614559173584,
+      "z": 18.429012298583984
+    },
+    "player_position": {
+      "x": 71.29969024658203,
+      "y": 3.6870572566986084,
+      "z": 16.437503814697266
+    },
+    "speed": 0.004635120746852455,
+    "grounded": true,
+    "car_grounded": true,
+    "input": {
+      "x": 0,
+      "y": 0,
+      "throttle": 0,
+      "brake": false,
+      "jump": false,
+      "run": false
+    },
+    "checkpoint": 0,
+    "laps": 0,
+    "elapsed": 6.466666666666649,
+    "reflection_frames": 105,
+    "water": "real-time planar mirrored camera",
+    "shafts": "screen-space depth-occluded radial scattering",
+    "rays_enabled": false,
+    "grass_instances": 1103,
+    "pine_instances": 1551,
+    "library_grass_triangles": 79,
+    "native_1080": true,
+    "measured_fps": 0.05422425260776054,
+    "frame_p95_ms": 54864.5,
+    "physical_phone_tested": false,
+    "target_60fps_verified": false
+  },
+  "physical_phone_tested": false,
+  "target_60fps_verified": false,
+  "scope": "Actual Chromium mobile emulation / WebGL2 SwiftShader / dynamic Rapier WASM. Screenshot is real game UI, not generated concept art. CPU software rendering is not a phone or hardware FPS benchmark."
+}

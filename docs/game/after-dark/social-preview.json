@@ -1,0 +1,12 @@
+{
+  "source": "docs/game/after-dark/launcher-ui.png",
+  "source_sha256": "dfeb948c4687f47739e7f5aee2f2d65631f68e0c8738327060d0a96d4afdb880",
+  "image": "engine/public/social/after-dark-v2.jpg",
+  "image_sha256": "78818b260199ec6af9ea05a92b9633b119f2dd4f525ac80ec2d2d35ddc8080e3",
+  "dimensions": [
+    1200,
+    630
+  ],
+  "method": "Actual Chromium WebGL2 mobile-emulated launch screen captured by tools/game/after_dark_browser_test.cjs, converted RGB JPEG quality 90 with Pillow; no generated promotional art or composited replacement vehicle/sky.",
+  "credit": "Roadster 2020 model: metarex.4d, CC-BY-4.0. Milky Way: Greg Zaal / Poly Haven, CC0-1.0. Full sources/modifications in game/CREDITS.md."
+}

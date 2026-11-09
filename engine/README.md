@@ -1,35 +1,37 @@
-# Alpine Runtime 0.1
+# Alpine: After Dark — Runtime 0.2
 
-An **original small browser game framework**, not a from-scratch renderer or an Unreal replacement. Blender/bpy compiles licensed geometry, textures and a hashed level contract; Three.js handles WebGL2 rendering, postprocessing provides occluded sun shafts, and the actual Rapier WASM solver handles collision/character movement. `bpy` is an offline authoring API, not the browser's real-time runtime.
+A free browser driving/exploration prototype with an original custom framework. Three.js renders the world; Rapier WASM simulates the dynamic vehicle and walking collisions. Blender/bpy is the offline asset compiler, not the browser runtime. No paid GPU, Steam integration or manufacturer endorsement.
 
-## Play / build (no paid service)
+## Play / build
 
-- Godot edition: https://mhammedamazil-hub.github.io/Testrepo/
-- Alpine framework edition after deployment: https://mhammedamazil-hub.github.io/Testrepo/alpine/
+- Main site after publication: https://mhammedamazil-hub.github.io/Testrepo/
+- Compatibility URL: https://mhammedamazil-hub.github.io/Testrepo/alpine/
 - `npm ci --prefix engine`
-- `npm test --prefix engine` — actual Rapier floor, walk/run/jump, enter/drive/brake/exit, wall collision and recovery tests.
+- `npm test --prefix engine` — actual Rapier suspension, inertia, acceleration/braking, wall collision, airborne behavior, slope gravity, grass grip, walk/jump, safe entry/exit and recovery tests.
 - `npm run dev --prefix engine` — port 3001, binds 0.0.0.0 and accepts Arena preview hosts.
-- `npm run build --prefix engine` — standalone static game in `.exports/alpine`; asset plugin copies only allowlisted Blender resources, not the repository.
-- `node tools/game/alpine_browser_test.cjs` — real Chromium CDP touch input and WebGL2 rendering, using the existing downloaded test browser. This is emulation, not a physical phone benchmark.
+- `npm run build --prefix engine` — standalone static game in `.exports/alpine`.
+- `node tools/game/after_dark_browser_test.cjs` — real Chromium CDP multi-touch and WebGL2 QA using the separately downloaded test browser. Not a physical-phone benchmark.
 
-## Authoring pipeline
+Drive Roadster or Explore on Foot from the launcher. WASD/arrows move, mouse drag looks, Shift runs, Space jumps/brakes, E enters/exits, R recovers, N changes day/night, H toggles headlights, Escape pauses. Touch joystick, look region and independently held pedals/actions are included. Garage, controls and pause panels are functional.
 
-`tools/game/prepare_library_assets.py` uses real bpy 4.2.23 to import the verified Poly Haven grass glTF, select its 79-triangle tiny-a mesh, normalize its transform, combine independent photographic opacity maps, and export actual GLBs. It adapts the photographic pine needle island and bark onto our 412-triangle branch-card LOD. The mixed source atlas's opaque cone/wood islands are explicitly excluded; applying the whole atlas to foliage would produce opaque rectangles. Compiled files have SHA256 hashes in `game/assets/library/manifest.json`.
+## Roadster and real physics
 
-The original cinematic `.blend` is not edited. Its SHA256 is carried in the bpy-produced `level.json`. Scene terrain, road, character, vehicle and placements are shared with Godot, not a disconnected sample scene. To rebuild library inputs, the free public `library-assets.yml` workflow acquires bounded verified sources; raw downloads stay in ignored `.cache`, not the final distributable.
+The owner's repository-root `roadster_lite.glb` is preserved unchanged. `tools/game/prepare_roadster.py` uses bpy to compile its body, four independently spinning wheels/calipers, delivery textures and measured geometry into `public/world/roadster/`. Author: metarex.4d; CC-BY-4.0. `roadster-model.json` records source/output hashes, attribution and model-derived dimensions.
 
-## Framework boundaries
+`src/physics.js` uses a **dynamic** 2200 kg rigid chassis and Rapier's four-wheel raycast vehicle controller: suspension load, tire forces, actual inertia/gravity/collisions, drag, wheel torque/power limits and load-limited longitudinal friction. Ordinary driving does not assign the body's position, speed or yaw. The walking character remains a kinematic collision controller, not a ragdoll. Mass, power, suspension, tire, inertia and aerodynamic parameters are disclosed estimates in `src/vehicle-spec.js`, not published Tesla measurements. Historical concept marketing is separated from simulation results in `../docs/research/roadster-physics-and-night.md`.
 
-- `src/physics.js`: fixed 60 Hz kinematic controllers over actual Rapier trimesh collision; gravity, snap-to-ground, walking/running/jump, bicycle steering, acceleration/braking, blocked-door checks and recovery. This is not a full rigid-body suspension/tire simulator.
-- `src/input.js`: keyboard plus independently owned touch pointers; source-counted held actions, look/joystick/pedals, cancellation and focus-loss release.
-- `src/world.js`: shared GLB/PBR loader, cell-based vegetation instancing, real current-frame mirrored-camera water (512-square target), animated normals/Fresnel, sun/shadows and occlusion source.
-- `src/main.js`: scene lifecycle, pause, collision-aware follow camera, checkpoints/laps/local best, HUD, telemetry and optional synthesized sound.
-- Shafts: depth-occluded screen-space radial scattering; **not** true volumetric clouds, voxel GI or path tracing. Water: planar reflection; **not** ray tracing, fluid simulation or underwater refraction.
-- Main view: native 1920×1080, 60 FPS **target**, 60 Hz physics. Shadows/reflections/shaft intermediate buffers are lower resolution. Physical-phone testing and verified 60 FPS are **not** claimed; CPU SwiftShader tests are functional/visual evidence only.
-- Trees still use optimized cards and distant impostors; terrain, car and character are simplified. This is an improved playable prototype, **not photorealism or Unreal/GTA parity**.
+Measured flat/dry 60 Hz simulation: 0–60 mph **2.43 s**; stopping from 26.95 m/s takes **2.20 s / 29.09 m**. These are solver tests, not road tests or certified factory specifications. No Pacejka calibration, thermal/battery model, damage, tire deformation, buoyancy, rockets or suction fans.
 
-Both engines remain separate, usable editions. Only **one** custom framework was created, and Alpine is playable in it; this does not pretend to implement or port the game to every surveyed engine.
+## Night, presentation and social cards
 
-## Licenses
+Default night uses **real Milky Way photography**, Satara Night by Greg Zaal / Poly Haven (CC0), plus art-directed moon/fill lighting and car head/brake lights. It is not an astronomically accurate local sky. Daytime, planar water reflections and occluded daytime sun shafts remain available. Shadows, reflections and shafts are optimized intermediate buffers, not ray tracing or volumetric GI.
 
-See `THIRD_PARTY_NOTICES.txt` (Three MIT, Rapier Apache-2.0, postprocessing **Zlib**), shared `game/CREDITS.md`, and `docs/research/library-catalog.json`. The shipped `world/credits.txt` includes full dependency notices and “Powered by Poly Haven.” CC0 asset licensing is distinct from the API server repository's AGPL license. Existing CC-BY-3.0 legacy grass credit is preserved in the shared repository.
+The responsive launcher is premium-PC-game-inspired, without fabricated reviews, player counts or storefront badges. Static HTML includes Open Graph/Twitter title, description and an absolute 1200×630 JPEG of the actual launcher. Crawlers need no JavaScript to read metadata. Platform card support and cache refresh are outside the game's control. The custom game is deployed to both root and `/alpine/`; Godot sources are retained as legacy, not built by this publication workflow.
+
+## Authoring and boundaries
+
+`tools/game/prepare_library_assets.py` compiles licensed Poly Haven foliage, terrain textures and a level contract. It must preserve the Roadster vehicle selection. The original cinematic `output/Alpine_Mirror.blend` is not edited; its SHA256 stays in `level.json`. Tree cards use an isolated photographic needle island, not opaque cone/wood atlas regions. Provenance is in `game/assets/library/manifest.json` and `public/world/night/provenance.json`.
+
+Native main rendering is 1920×1080. **60 FPS is a target, not a verified physical-phone result.** CPU SwiftShader captures are functional evidence only. This remains a playable prototype with simplified terrain, vegetation and rendering, not Unreal/GTA parity or certified photorealism.
+
+See `THIRD_PARTY_NOTICES.txt`, `../game/CREDITS.md`, and `../docs/research/roadster-physics-and-night.md`. The deployed `world/credits.txt` includes dependency notices and asset attribution, including “Powered by Poly Haven.”

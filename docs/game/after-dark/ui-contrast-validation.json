@@ -1,0 +1,30 @@
+{
+  "scope": "DOM-only actual HTML/CSS regression after correcting touch sticky-hover contrast; no renderer/gameplay is mocked or claimed by this check.",
+  "checks": [
+    {
+      "mobile": true,
+      "selector": "[data-command=\"reset\"]",
+      "color": "rgb(233, 240, 247)",
+      "background": "rgba(12, 35, 58, 0.79)"
+    },
+    {
+      "mobile": true,
+      "selector": "#sky-button",
+      "color": "rgb(233, 240, 247)",
+      "background": "rgba(11, 24, 39, 0.49)"
+    },
+    {
+      "mobile": false,
+      "selector": "[data-command=\"reset\"]",
+      "color": "rgb(9, 24, 41)",
+      "background": "rgb(188, 231, 241)"
+    },
+    {
+      "mobile": false,
+      "selector": "#sky-button",
+      "color": "rgb(9, 24, 41)",
+      "background": "rgb(188, 231, 241)"
+    }
+  ],
+  "passed": true
+}
