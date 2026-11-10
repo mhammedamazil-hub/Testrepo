@@ -510,6 +510,6 @@
       "No claims about health benefits",
       "No stock-photo-only storytelling"
     ],
-    "sample_sentence": "Lot KL-2026-014. TGSEB grade, 5.2 mm sieve, 6.1% piperine, EtO not detected, Salmonella absent in 25 g. That is the whole pitch."
+    "sample_sentence": "Lot {lot}. {grade} grade, {sieve} mm sieve, {piperine}% piperine, EtO not detected, Salmonella absent in 25 g. That is the whole pitch."
   }
 }

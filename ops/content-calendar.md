@@ -42,7 +42,7 @@ no claims about health.
 
 ## 10 launch-week post captions
 
-1. Lot KL-2026-014. 5.2 mm sieve, 6.1% piperine, EtO not detected.
+1. Lot KL-2026-001. 5.2 mm sieve, 6.1% piperine, EtO not detected.
 2. We reject about six lots in a hundred. This is why.
 3. The bag has a number on it. Ask any other pepper what its number is.
 4. Four spices, two clusters, one district.

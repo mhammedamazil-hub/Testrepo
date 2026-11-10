@@ -1,4 +1,5 @@
 import { usd, int, pct, computePlan, cashRunway } from '../lib/model.mjs';
+import { fillLot } from '../lib/lotref.mjs';
 
 const rule = (n = 72) => '\n' + '-'.repeat(n) + '\n';
 
@@ -315,7 +316,7 @@ ${t.brand_voice.do.map(x => `- ${x}`).join('\n')}
 **Do not**
 ${t.brand_voice.dont.map(x => `- ${x}`).join('\n')}
 
-> ${t.brand_voice.sample_sentence}
+> ${fillLot(t, t.brand_voice.sample_sentence) ?? t.brand_voice.sample_sentence}
 
 ${rule()}
 ## 11. Risk register

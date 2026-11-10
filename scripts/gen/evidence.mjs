@@ -6,6 +6,7 @@
  * empty, the documents say so rather than printing a convincing fabrication.
  */
 import { readFileSync, existsSync } from 'node:fs';
+import { buildPassport } from '../lib/passport.mjs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -45,6 +46,8 @@ export function loadEvidence() {
     lots: entries.map(e => ({
       at: e.at, supplier: e.supplier, lot: e.lot, disposition: e.disposition,
       grade: e.grade, codes: e.reasons.map(r => r.code),
+      // a released lot's passport code is part of the evidence: it is what a buyer checks
+      passport: e.disposition === 'RELEASE' && e.lot ? buildPassport(e).code : null,
     })),
   };
 
@@ -75,9 +78,13 @@ ${breakdown.length === 0 ? '_None. No lot has been held or rejected._' : breakdo
 
 ## Every lot, in order
 
-${entries.length === 0 ? '_Empty._' : `| When | Supplier | Lot | Disposition | Findings |
+${entries.length === 0 ? '_Empty._' : `| When | Supplier | Lot | Disposition | Findings | Passport |
 |---|---|---|---|---|
-${entries.map(e => `| ${e.at.slice(0, 16).replace('T', ' ')} | ${e.supplier} | ${e.lot ?? '—'} | ${e.disposition} | ${e.reasons.length ? e.reasons.map(r => r.code).join(', ') : 'clear'} |`).join('\n')}`}
+${entries.map(e => `| ${e.at.slice(0, 16).replace('T', ' ')} | ${e.supplier} | ${e.lot ?? '—'} | ${e.disposition} | ${e.reasons.length ? e.reasons.map(r => r.code).join(', ') : 'clear'} | ${e.disposition === 'RELEASE' && e.lot ? buildPassport(e).code : '—'} |`).join('\n')}`}
+
+A passport code is a digest of the panel above plus the supplier and the lot number. Change one
+measured value and the code changes, which is the only useful property it has. It is not a
+signature and it is not proof of origin; the page says so where a buyer will read it.
 
 ## Why this log exists
 

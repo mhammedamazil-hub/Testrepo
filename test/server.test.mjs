@@ -133,3 +133,104 @@ test('the app never invokes the ECC install state or writes outside its queue', 
     assert.ok(app.locals.queuePath.includes('queue.json'));
   });
 });
+
+// ---------------------------------------------------------------- lot passports
+
+test('GET /api/passport/KL-2026-001 returns a passport for a released lot', async () => {
+  await withServer(async base => {
+    await fetch(`${base}/api/lots`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ supplier: 'Idukki cluster A', panel: CLEAN }),
+    });
+    const res = await fetch(`${base}/api/passport/KL-2026-001`);
+    assert.equal(res.status, 200);
+    const p = await res.json();
+    assert.equal(p.lot, 'KL-2026-001');
+    assert.match(p.code, /^KP-[0-9A-F]{8}$/);
+    assert.equal(p.panel.piperine_pct, 6.1);
+  });
+});
+
+test('the passport code verifies back against the lot it came from', async () => {
+  await withServer(async base => {
+    await fetch(`${base}/api/lots`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ supplier: 'Idukki cluster A', panel: CLEAN }),
+    });
+    const p = await (await fetch(`${base}/api/passport/KL-2026-001`)).json();
+    const res = await fetch(`${base}/api/passport/KL-2026-001/verify?code=${encodeURIComponent(p.code)}`);
+    const v = await res.json();
+    assert.equal(v.verified, true);
+    assert.equal(v.lot, 'KL-2026-001');
+  });
+});
+
+test('verification fails for a code that belongs to another lot', async () => {
+  await withServer(async base => {
+    await fetch(`${base}/api/lots`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ supplier: 'Idukki cluster A', panel: CLEAN }),
+    });
+    const res = await fetch(`${base}/api/passport/KL-2026-001/verify?code=KP-00000000`);
+    const v = await res.json();
+    assert.equal(v.verified, false);
+    // a wrong code is a normal answer to a normal question, not an error status
+    assert.equal(res.status, 200);
+  });
+});
+
+test('an unknown lot number returns 404 rather than an invented passport', async () => {
+  await withServer(async base => {
+    const res = await fetch(`${base}/api/passport/KL-2026-999`);
+    assert.equal(res.status, 404);
+    const json = await res.json();
+    assert.equal(json.error !== undefined, true);
+  });
+});
+
+test('a rejected lot has no passport, even if someone guesses its position', async () => {
+  await withServer(async base => {
+    await fetch(`${base}/api/lots`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        supplier: 'Kasaragod trader',
+        panel: CLEAN.replace('ethylene_oxide: not detected', 'ethylene_oxide: 0.05'),
+      }),
+    });
+    // the rejected lot never got KL-2026-001, so that number must not resolve to it
+    const res = await fetch(`${base}/api/passport/KL-2026-001`);
+    assert.equal(res.status, 404);
+  });
+});
+
+test('GET /passport/<lot> serves an HTML page, and /passport without a lot explains itself', async () => {
+  await withServer(async base => {
+    await fetch(`${base}/api/lots`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ supplier: 'Idukki cluster A', panel: CLEAN }),
+    });
+    const page = await fetch(`${base}/passport/KL-2026-001`);
+    assert.equal(page.status, 200);
+    assert.match(page.headers.get('content-type'), /text\/html/);
+    const html = await page.text();
+    assert.match(html, /KP-[0-9A-F]{8}/);
+    assert.match(html, /KL-2026-001/);
+
+    const bare = await fetch(`${base}/passport`);
+    assert.equal(bare.status, 200);
+    assert.match(await bare.text(), /lot number/i);
+  });
+});
+
+test('a lot number is escaped before it reaches the page', async () => {
+  await withServer(async base => {
+    const res = await fetch(`${base}/passport/${encodeURIComponent('<script>alert(1)</script>')}`);
+    const body = await res.text();
+    assert.equal(body.includes('<script>alert(1)</script>'), false);
+  });
+});

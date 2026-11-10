@@ -1,4 +1,5 @@
 import { usd, int, pct, computePlan } from '../lib/model.mjs';
+import { lotRef, lotRefLong, hasLot } from '../lib/lotref.mjs';
 
 const line = '-'.repeat(72);
 
@@ -92,7 +93,7 @@ ${line}
 
 ## Email 1 — the lot sheet
 
-**Subject:** Lot KL-2026-014 — TGSEB, 6.1% piperine, EtO not detected
+**Subject:** Lot ${lotRefLong(t)}
 
 > [First name],
 >
@@ -100,7 +101,7 @@ ${line}
 > panel before it leaves: aflatoxin, ochratoxin, Salmonella, heavy metals, pesticide residues,
 > and ethylene oxide.
 >
-> Lot KL-2026-014: TGSEB grade, 5.2 mm sieve, 6.1% piperine, 10.8% moisture, EtO not detected.
+> Lot ${lotRef(t)}: ${t.siteLot?.grade ?? 'graded'}, ${t.siteLot?.panel?.sieve_mm ?? '—'} mm sieve, ${t.siteLot?.panel?.piperine_pct ?? '—'}% piperine, ${t.siteLot?.panel?.moisture_pct ?? '—'}% moisture, EtO not detected.
 > ${usd(t.unit_economics.b2b_micro_lot.revenue_usd)} per 25 kg bag FOB Kochi. Duty is 0% into the EU
 > and the US.
 >
@@ -126,7 +127,7 @@ container reads a specific number and knows the sender tests.
 
 ## Email 3 — day 9, the sample offer
 
-**Subject:** 500 g of KL-2026-014, no strings
+**Subject:** 500 g of ${lotRef(t)}, no strings
 
 > I would rather you cook with it than read about it.
 >
@@ -429,7 +430,7 @@ ${line}
 
 ## 10 launch-week post captions
 
-1. Lot KL-2026-014. 5.2 mm sieve, 6.1% piperine, EtO not detected.
+1. Lot ${lotRef(t)}. ${t.siteLot?.panel?.sieve_mm ?? '—'} mm sieve, ${t.siteLot?.panel?.piperine_pct ?? '—'}% piperine, EtO not detected.
 2. We reject about six lots in a hundred. This is why.
 3. The bag has a number on it. Ask any other pepper what its number is.
 4. Four spices, two clusters, one district.
@@ -476,19 +477,19 @@ ${line}
 
 **Subject:** Still on the shelf
 
-> Your cart is holding a 500 g Tellicherry Bold. Current lot: KL-2026-014, 6.1% piperine.
+> Your cart is holding a 500 g Tellicherry Bold. Current lot: ${lotRef(t)}, ${t.siteLot?.panel?.piperine_pct ?? '—'}% piperine.
 > It will still be there tomorrow. The lot number will change when this one sells out.
 
 **Email B, 48 h**
 
-**Subject:** Last call on lot KL-2026-014
+**Subject:** Last call on lot ${lotRef(t)}
 
 > When this lot is gone, the next one gets a new number and a new panel. The price does not
 > change. The proof does.
 
 ## FLOW 3 — Post-purchase (3 emails)
 
-**Day 0 — Subject: Lot KL-2026-014, panel inside**
+**Day 0 — Subject: Lot ${lotRef(t)}, panel inside**
 
 > Your bag is on its way. The panel for this lot is attached and the number is printed on the
 > liner. If the numbers and the bag ever disagree, that is our problem, not yours.

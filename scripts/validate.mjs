@@ -132,6 +132,69 @@ if (exists2(join(ROOT, 'data', 'lot-queue.json'))) {
   check('every released lot has a valid KL number', released.every(e => /^KL-\d{4}-\d{3}$/.test(e.lot ?? '')));
   check('no rejected or held lot carries a lot number', entries.filter(e => e.disposition !== 'RELEASE').every(e => e.lot === null));
   check('lot numbers are unique', new Set(released.map(e => e.lot)).size === released.length);
+
+  // 12. The passport is only worth anything if it is (a) stable, (b) sensitive to every
+  //     measured value, and (c) impossible for a non-released lot. All three are checked
+  //     here against the real queue, not against a fixture.
+  const { buildPassport, panelDigest, verifyCode } = await import('./lib/passport.mjs');
+  for (const e of released) {
+    const code = buildPassport(e).code;
+    check(`passport code is well formed for ${e.lot}`, /^KP-[0-9A-F]{8}$/.test(code), code);
+    check(`passport verifies for ${e.lot}`, verifyCode(e, code));
+    check(`passport rejects a wrong code for ${e.lot}`, verifyCode(e, code.replace(/.$/, c => (c === '0' ? '1' : '0'))) === false);
+
+    // flip every numeric field and confirm the digest moves
+    const blind = Object.entries(e.panel).filter(([, v]) => typeof v === 'number');
+    const stuck = blind.filter(([k, v]) => panelDigest({ ...e, panel: { ...e.panel, [k]: v + 0.01 } }) === code).map(([k]) => k);
+    check(`passport covers every measured value on ${e.lot}`, stuck.length === 0, stuck.join(', ') || `${blind.length} fields`);
+
+    // the evidence log must show the same code the live app serves
+    const log = g('ops/evidence-log.md') ?? '';
+    check(`evidence log carries the passport for ${e.lot}`, log.includes(code), code);
+  }
+  for (const e of entries.filter(x => x.disposition !== 'RELEASE')) {
+    check(`no passport can be built for an unreleased lot (${e.supplier})`, (() => {
+      try { buildPassport(e); return false; } catch { return true; }
+    })());
+  }
+}
+
+// 13. No generated document may quote a lot number the gate never issued.
+//     This is the whole brand promise, applied to our own collateral. It has already
+//     failed once: the brand-voice sample sentence and seven sales emails carried a
+//     hard-coded "KL-2026-014" that no lot ever received.
+{
+  const issued = new Set();
+  const queueFile = join(ROOT, 'data', 'lot-queue.json');
+  if (existsSync(queueFile)) {
+    const parsed = JSON.parse(readFileSync(queueFile, 'utf8'));
+    for (const e of parsed.entries ?? []) if (e.lot) issued.add(e.lot);
+  }
+
+  const generated = [
+    'company/company-dossier.md', 'company/one-pager.md', 'deck/deck.md', 'deck/deck.html',
+    'site/index.html', 'site/desk.html', 'ops/trade-lot-sheet.md', 'ops/b2b-outreach.md',
+    'ops/exception-playbooks.md', 'ops/SOP-01-lot-intake-and-release.md',
+    'ops/investor-update-template.md', 'ops/content-calendar.md', 'ops/evidence-log.md',
+  ];
+
+  let fabricated = 0;
+  let cited = 0;
+  for (const rel of generated) {
+    const body = g(rel);
+    if (!body) continue;
+    for (const m of body.matchAll(/KL-\d{4}-(\d{3})/g)) {
+      cited += 1;
+      if (!issued.has(m[0])) {
+        fabricated += 1;
+        fail.push(`${rel} quotes ${m[0]}, which the gate never issued`);
+      }
+    }
+  }
+  check('no generated document invents a lot number', fabricated === 0,
+    `${cited} references, ${issued.size} lot(s) issued`);
+  check('generated documents cite the live lot', issued.size === 0 || cited > 0,
+    `${cited} references`);
 }
 
 // ---- report ----

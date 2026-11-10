@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T02:59:17.970Z",
+  "generated_at": "2026-11-10T11:39:29.490Z",
   "source": "data/lot-queue.json",
   "enforced_by": "scripts/lib/rules.mjs",
   "totals": {
@@ -21,7 +21,8 @@
       "lot": "KL-2026-001",
       "disposition": "RELEASE",
       "grade": "TGSEB",
-      "codes": []
+      "codes": [],
+      "passport": "KP-CD719E6B"
     },
     {
       "at": "2026-11-10T02:58:50.392Z",
@@ -31,7 +32,8 @@
       "grade": "MG-1",
       "codes": [
         "ETO"
-      ]
+      ],
+      "passport": null
     }
   ]
 }

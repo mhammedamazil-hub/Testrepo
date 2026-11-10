@@ -11,7 +11,7 @@ Executive Chef, Head of Sourcing, or Procurement Manager.
 
 ## Email 1 — the lot sheet
 
-**Subject:** Lot KL-2026-014 — TGSEB, 6.1% piperine, EtO not detected
+**Subject:** Lot KL-2026-001 — TGSEB, 6.1% piperine, EtO not detected
 
 > [First name],
 >
@@ -19,7 +19,7 @@ Executive Chef, Head of Sourcing, or Procurement Manager.
 > panel before it leaves: aflatoxin, ochratoxin, Salmonella, heavy metals, pesticide residues,
 > and ethylene oxide.
 >
-> Lot KL-2026-014: TGSEB grade, 5.2 mm sieve, 6.1% piperine, 10.8% moisture, EtO not detected.
+> Lot KL-2026-001: TGSEB, 5.2 mm sieve, 6.1% piperine, 10.8% moisture, EtO not detected.
 > $320 per 25 kg bag FOB Kochi. Duty is 0% into the EU
 > and the US.
 >
@@ -45,7 +45,7 @@ container reads a specific number and knows the sender tests.
 
 ## Email 3 — day 9, the sample offer
 
-**Subject:** 500 g of KL-2026-014, no strings
+**Subject:** 500 g of KL-2026-001, no strings
 
 > I would rather you cook with it than read about it.
 >

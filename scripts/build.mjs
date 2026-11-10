@@ -8,6 +8,7 @@ import { site } from './gen/site.mjs';
 import { salesAssets } from './gen/ops.mjs';
 import { desk } from './gen/desk.mjs';
 import { loadEvidence } from './gen/evidence.mjs';
+import { buildPassport } from './lib/passport.mjs';
 
 const t = loadTruth();
 const model = computePlan(t);
@@ -17,8 +18,11 @@ const evidence = loadEvidence();
 // RELEASED lot from the real queue, or says plainly that nothing has been released.
 if (evidence.latestReleased) {
   t.siteLot = evidence.latestReleased;
+  // the storefront shows the code, and it is derived from the same panel the gate saw
+  t.siteLotCode = buildPassport(evidence.latestReleased).code;
 } else {
   t.siteLot = null;
+  t.siteLotCode = null;
 }
 
 const out = [];

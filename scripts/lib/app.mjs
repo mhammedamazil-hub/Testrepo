@@ -13,6 +13,8 @@ import { dirname } from 'node:path';
 
 import { openQueue } from './queue.mjs';
 import { parsePanel } from './rules.mjs';
+import { buildPassport, verifyCode } from './passport.mjs';
+import { passportPage, verifyPage, passportIndexPage, notFoundPage } from './passport-page.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -48,6 +50,17 @@ function json(res, status, body) {
     'x-content-type-options': 'nosniff',
   });
   res.end(payload);
+}
+
+function html(res, status, body) {
+  res.writeHead(status, {
+    'content-type': 'text/html; charset=utf-8',
+    'content-length': Buffer.byteLength(body),
+    'cache-control': 'no-store',
+    'x-content-type-options': 'nosniff',
+    'content-security-policy': "frame-ancestors *",
+  });
+  res.end(body);
 }
 
 async function readBody(req, limit = 64 * 1024) {
@@ -115,6 +128,59 @@ export function createApp({ queuePath, truth = null }) {
 
         const status = result.disposition === 'RELEASE' ? 201 : 422;
         return json(res, status, result);
+      }
+
+      // ---------------- passports ----------------
+      // A passport is resolved against the live queue on every request. A cached one
+      // would be a document about a record, and documents about records drift.
+      if (path.startsWith('/api/passport')) {
+        if (method !== 'GET') return json(res, 405, { error: 'Method not allowed' });
+
+        if (path === '/api/passport' || path === '/api/passport/') {
+          const q = queue();
+          return json(res, 200, {
+            lots: q.list().filter(e => e.disposition === 'RELEASE' && e.lot)
+              .map(e => ({ lot: e.lot, code: buildPassport(e).code, grade: e.grade, released_at: e.at })),
+          });
+        }
+
+        const verifyMatch = path.match(/^\/api\/passport\/([^/]+)\/verify$/);
+        if (verifyMatch) {
+          const lot = verifyMatch[1];
+          const entry = queue().list().find(e => e.lot === lot);
+          if (!entry) return json(res, 404, { error: `No released lot ${lot}` });
+          const code = url.searchParams.get('code') ?? '';
+          return json(res, 200, { lot, verified: verifyCode(entry, code), code: buildPassport(entry).code });
+        }
+
+        const lotMatch = path.match(/^\/api\/passport\/([^/]+)$/);
+        if (lotMatch) {
+          const entry = queue().list().find(e => e.lot === lotMatch[1]);
+          if (!entry) return json(res, 404, { error: `No released lot ${lotMatch[1]}` });
+          return json(res, 200, buildPassport(entry));
+        }
+
+        return json(res, 404, { error: `No passport route ${path}` });
+      }
+
+      if (path === '/passport' || path === '/passport/') {
+        return html(res, 200, passportIndexPage(queue().list()));
+      }
+
+      if (path.startsWith('/passport/') && method === 'GET') {
+        const rest = path.slice('/passport/'.length);
+        const entries = queue().list();
+
+        const verifyMatch = rest.match(/^([^/]+)\/verify$/);
+        if (verifyMatch) {
+          const entry = entries.find(e => e.lot === verifyMatch[1]);
+          if (!entry) return html(res, 404, notFoundPage(verifyMatch[1], entries.filter(e => e.lot)));
+          return html(res, 200, verifyPage(entry, url.searchParams.get('code') ?? ''));
+        }
+
+        const entry = entries.find(e => e.lot === rest);
+        if (!entry) return html(res, 404, notFoundPage(rest, entries.filter(e => e.lot)));
+        return html(res, 200, passportPage(entry));
       }
 
       if (path === '/api/rules' && method === 'GET') {

@@ -10,7 +10,7 @@ by hand is `company/source-of-truth.json`.
 npm install
 npm run build      # regenerate every document, deck, and page from the JSON
 npm run validate   # re-derive all financials independently; fails on any mismatch
-npm start          # preview: / storefront  ·  /deck investor deck
+npm start          # preview: / storefront · /desk lot gate · /passport check a lot · /deck
 ```
 
 ## What is here
@@ -23,6 +23,9 @@ npm start          # preview: / storefront  ·  /deck investor deck
 | `company/model-output.json` | Derived financials, machine-readable, for diffing |
 | `deck/deck.html` / `deck/deck.md` | 15-slide investor deck, self-contained, printable |
 | `site/index.html` | Storefront for the brand |
+| `site/desk.html` | The live intake desk — paste a panel, the gate decides |
+| `scripts/lib/passport.mjs` | Lot passports: a code derived from the panel the gate evaluated |
+| `ops/evidence-log.md` | Every lot through the gate, with its passport code, generated from the real queue |
 | `ops/SOP-01-lot-intake-and-release.md` | The lot gate. No lot number, no sale. |
 | `ops/trade-lot-sheet.md` | What a B2B buyer receives with a shipment |
 | `ops/b2b-outreach.md` | Four-touch sequence, call script, objection table |
@@ -36,6 +39,25 @@ npm start          # preview: / storefront  ·  /deck investor deck
 2. Grade to Tellicherry / Malabar Garbled and test every lot to the destination's limits.
 3. Assign a lot number — only after the panel clears.
 4. Sell it two ways: retail packs under our own mark, and 25 kg micro-lots to kitchens.
+
+## The part a buyer can check
+
+Every bag carries a lot number. That claim is worth nothing unless the buyer can test it, so
+each released lot also carries a **passport code** — a digest of the panel the gate actually
+evaluated, plus the supplier and the lot number.
+
+```
+KL-2026-001   →   KP-CD719E6B
+```
+
+Change one measured value and the code changes. `/passport/KL-2026-001` shows the panel;
+`/api/passport/KL-2026-001/verify?code=…` answers yes or no. A rejected lot cannot have one:
+`buildPassport()` throws for anything that is not a release, exactly as `assignLotNumber()` does.
+
+What it proves: that the page you are reading is the record behind the code on that bag.
+What it does not prove: that the laboratory was honest, or that the sample came from the bag.
+The passport says so itself, in the place a buyer will read it. Accreditation, sealed samples
+and chain of custody are what close that gap, and no hash can close it for you.
 
 ## The numbers
 
@@ -85,6 +107,33 @@ npx ecc memory search "lot gate"
 ## What this is not
 
 Pre-revenue planning material. Prices, freight, and retail observations are point-in-time.
-The lot `KL-2026-014` on the site is illustrative. Regulatory limits are quoted from EU Reg
-2023/915 and Reg (EC) 2073/2005 to explain the quality gate — verify destination requirements
-before shipping anything real.
+
+The lot shown on the storefront is **not** illustrative: it is read from the live queue at build
+time, and if no lot has been released the page says so rather than printing a convincing panel.
+In a fresh clone `data/` is gitignored, so the queue starts empty and the site renders the
+pre-launch card — that is the honest state, not a broken one.
+
+Regulatory limits are quoted from EU Reg 2023/915 and Reg (EC) 2073/2005 to explain the quality
+gate — verify destination requirements before shipping anything real.
+
+## The bug this project was hiding from itself
+
+The brand-voice sample sentence — the one line that defines how the company writes — said:
+
+> Lot **KL-2026-014**. TGSEB grade, 5.2 mm sieve, 6.1% piperine, EtO not detected…
+
+No lot `KL-2026-014` ever existed. Neither did the one in seven sales emails, the content
+calendar, or the abandonment flow. A pepper company whose entire pitch is *"the number on the
+bag resolves to a real panel"* was quoting a number that resolved to nothing, in its own
+outbound copy.
+
+It happened the ordinary way: someone wrote a plausible number into a template and nobody
+owned the template. The fix is not a correction, it is a rule:
+
+- Lot references are filled from the queue at build time (`scripts/lib/lotref.mjs`).
+- If no lot has been released, the template renders `[current lot]`, not a number.
+- `scripts/validate.mjs` scans every generated document and **fails the build** for any
+  `KL-\d{4}-\d{3}` that the gate never issued.
+
+That check was verified by deliberately reintroducing `KL-2026-014`: validation exits 1 and
+names the file. Which is the only kind of check worth having.

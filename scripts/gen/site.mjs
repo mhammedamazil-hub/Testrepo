@@ -20,6 +20,7 @@ function lotCard(t) {
   }
   const p = lot.panel || {};
   const yn = v => (v === undefined ? '—' : /^(absent|not detected|nd|none)$/i.test(String(v)) ? 'not detected' : String(v));
+  const code = t.siteLotCode;
   return `<div class="lotcard">
     <h4>Lot ${lot.lot}</h4>
     <dl>
@@ -30,8 +31,10 @@ function lotCard(t) {
       <dt>Ochratoxin A</dt><dd class="ok">${p.ochratoxin_a_ugkg ?? '—'} µg/kg</dd>
       <dt>Salmonella</dt><dd class="ok">${yn(p.salmonella_25g)}</dd>
       <dt>Ethylene oxide</dt><dd class="ok">${yn(p.ethylene_oxide)}</dd>
+      ${code ? `<dt>Bag code</dt><dd class="ok">${code}</dd>` : ''}
     </dl>
-    <p class="hint">Panel produced by the intake gate, logged ${new Date(lot.at).toISOString().slice(0, 10)}.</p>
+    <p class="hint">Panel produced by the intake gate, logged ${new Date(lot.at).toISOString().slice(0, 10)}.
+    ${code ? `Check it yourself: <a href="/passport/${encodeURIComponent(lot.lot)}">the lot passport</a>.` : ''}</p>
   </div>`;
 }
 
@@ -163,6 +166,7 @@ export function site(t, model = computePlan(t)) {
     <li><a href="#pepper">The pepper</a></li>
     <li><a href="#gate">The lot gate</a></li>
     <li><a href="#b2b">Trade</a></li>
+    <li><a href="/passport">Check a lot</a></li>
   </ul>
   <a class="cta" href="#b2b">Request a lot sheet</a>
 </nav></div></header>
@@ -223,7 +227,8 @@ export function site(t, model = computePlan(t)) {
     <div>
       <p class="lede">Restaurant groups and meal-kit kitchens buy the same pepper we retail,
          in the same graded lot, at ${usd(b2b[0].retail_usd)} per 25 kg bag. You get the lot
-         number and the panel with the bag, not on request.</p>
+         number and the panel with the bag, not on request — and a passport code you can
+         check against it at <a href="/passport" style="color:inherit">/passport</a>.</p>
       <ul>
         <li>MG-1 whole, 3.5-4.5 mm, piperine 4-6%</li>
         <li>Panel per lot: mycotoxins, microbiology, heavy metals, pesticide residues, EtO</li>
@@ -256,6 +261,7 @@ export function site(t, model = computePlan(t)) {
     <a href="#gate">Quality &amp; testing</a>
     <a href="#b2b">Trade enquiries</a>
     <a href="#pepper">Products</a>
+    <a href="/passport">Verify a lot</a>
   </div>
   <div>
     <h5>Registered</h5>

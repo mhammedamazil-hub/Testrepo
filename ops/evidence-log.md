@@ -23,10 +23,14 @@
 
 ## Every lot, in order
 
-| When | Supplier | Lot | Disposition | Findings |
+| When | Supplier | Lot | Disposition | Findings | Passport |
 |---|---|---|---|---|
-| 2026-11-10 02:58 | Idukki cluster A | KL-2026-001 | RELEASE | clear |
-| 2026-11-10 02:58 | Kasaragod trader | — | REJECT | ETO |
+| 2026-11-10 02:58 | Idukki cluster A | KL-2026-001 | RELEASE | clear | KP-CD719E6B |
+| 2026-11-10 02:58 | Kasaragod trader | — | REJECT | ETO | — |
+
+A passport code is a digest of the panel above plus the supplier and the lot number. Change one
+measured value and the code changes, which is the only useful property it has. It is not a
+signature and it is not proof of origin; the page says so where a buyer will read it.
 
 ## Why this log exists
 

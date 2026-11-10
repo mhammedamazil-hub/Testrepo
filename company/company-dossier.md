@@ -396,7 +396,7 @@ Derived with the ECC `brand-voice` extraction method, applied to a food-origin c
 - No claims about health benefits
 - No stock-photo-only storytelling
 
-> Lot KL-2026-014. TGSEB grade, 5.2 mm sieve, 6.1% piperine, EtO not detected, Salmonella absent in 25 g. That is the whole pitch.
+> Lot KL-2026-001. TGSEB grade, 5.2 mm sieve, 6.1% piperine, EtO not detected, Salmonella absent in 25 g. That is the whole pitch.
 
 
 ------------------------------------------------------------------------
