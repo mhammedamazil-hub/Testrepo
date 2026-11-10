@@ -167,10 +167,19 @@ ${rule()}
 ${t.capital.use_of_funds.map(l => `| ${l.line} | ${usd(l.usd)} | ${pct((l.usd / model.useOfFundsTotal) * 100, 0)} |`).join('\n')}
 | **Total** | **${usd(model.useOfFundsTotal)}** | **100%** |
 
-FY1 operating loss is ${usd(runway.firstYearBurn)}. On that burn, the raise buys
-**${runway.months.toFixed(1)} months** of runway before any revenue. That is not enough to
-reach the FY2 breakeven point on its own, which is why the first container cycle has to be
-funded from the raise and paid for by customers, not by the next cheque.
+Working capital is **${pct((t.capital.use_of_funds[0].usd / model.useOfFundsTotal) * 100, 0)}** of the
+raise. That ratio is the point: this is an inventory business wearing a brand, not a brand business
+that happens to hold inventory.
+
+FY1 operating loss is **${usd(runway.firstYearBurn)}** — only **${pct((runway.firstYearBurn / runway.raise) * 100, 0)}**
+of the raise. Read that carefully, because it is the most misleading number in this document.
+The operating loss is small; the **cash** requirement is not. Two container cycles of inventory
+${usd(t.capital.use_of_funds[0].usd)} are funded from the raise and only turn back into cash when a
+buyer pays, 45-60 days later. Cash outruns EBITDA, which is exactly how a profitable-looking spice
+business runs out of money.
+
+So the raise is not sized to cover the loss. It is sized to cover **inventory in transit** and the
+compliance stack, and the second container cycle is paid for by the first one's customers.
 
 ### Milestones
 

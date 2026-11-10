@@ -197,10 +197,19 @@ not add fixed headcount before FY3 route density exists.
 | Operating buffer and contingency | $10,000 | 7% |
 | **Total** | **$150,000** | **100%** |
 
-FY1 operating loss is $21,884. On that burn, the raise buys
-**82.3 months** of runway before any revenue. That is not enough to
-reach the FY2 breakeven point on its own, which is why the first container cycle has to be
-funded from the raise and paid for by customers, not by the next cheque.
+Working capital is **41%** of the
+raise. That ratio is the point: this is an inventory business wearing a brand, not a brand business
+that happens to hold inventory.
+
+FY1 operating loss is **$21,884** — only **15%**
+of the raise. Read that carefully, because it is the most misleading number in this document.
+The operating loss is small; the **cash** requirement is not. Two container cycles of inventory
+$62,000 are funded from the raise and only turn back into cash when a
+buyer pays, 45-60 days later. Cash outruns EBITDA, which is exactly how a profitable-looking spice
+business runs out of money.
+
+So the raise is not sized to cover the loss. It is sized to cover **inventory in transit** and the
+compliance stack, and the second container cycle is paid for by the first one's customers.
 
 ### Milestones
 
@@ -399,6 +408,7 @@ Derived with the ECC `brand-voice` extraction method, applied to a food-origin c
 | Ethylene oxide contamination in incoming lots | critical | Contract clause with every supplier: no EtO fumigation. Test every lot before it leaves India. Steam treatment only. Reject-on-positive with cost recovery. |
 | Aflatoxin and ochratoxin A above EU limit | high | Moisture spec max 12% at intake, covered drying, per-lot mycotoxin panel, reject lots from suppliers with two failures in a season. |
 | Salmonella detection | high | Validated steam treatment, post-treatment re-test, sealed liners, no re-bagging in open air. |
+| Retail price positioning sits above the visible reference points | high | Never sell against a kilo bag on price. Merchandise the 100 g trial pack as the entry point, put the lot number and panel on the front of the pack, and let the B2B channel carry volume. Track conversion by pack size; if the 500 g underperforms the 100 g for two quarters, reprice the 500 g toward EUR 58/kg rather than discount the brand. |
 | Origin fraud — cheaper foreign pepper re-bagged as Indian | high | Lot-level chain of custody, named grower clusters, isotope and trace-element screening on a sampling basis, published lot numbers. |
 | Crop and price volatility | medium | Forward contracts with two grower clusters, inventory never above 90 days, price-adjust B2B quotes every 30 days, no fixed-price retail commitments longer than 6 months. |
 | D2C acquisition cost creep | medium | Hard 90-day cut rule on any channel above USD 18 CAC; shift budget to B2B where repeat is contractual. |

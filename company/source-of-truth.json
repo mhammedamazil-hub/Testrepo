@@ -291,6 +291,12 @@
       "control": "Validated steam treatment, post-treatment re-test, sealed liners, no re-bagging in open air."
     },
     {
+      "risk": "Retail price positioning sits above the visible reference points",
+      "severity": "high",
+      "why": "The 500 g pack at EUR 42 is EUR 84/kg. The cheapest observed single-kilo specialty price for Tellicherry is EUR 36.93/kg, so a shopper comparing per-kilo will see us at roughly 2.3x the shelf reference and read it as expensive rather than better.",
+      "control": "Never sell against a kilo bag on price. Merchandise the 100 g trial pack as the entry point, put the lot number and panel on the front of the pack, and let the B2B channel carry volume. Track conversion by pack size; if the 500 g underperforms the 100 g for two quarters, reprice the 500 g toward EUR 58/kg rather than discount the brand."
+    },
+    {
       "risk": "Origin fraud \u2014 cheaper foreign pepper re-bagged as Indian",
       "severity": "high",
       "why": "This is the exact problem the company exists to solve, and the market's default behaviour.",

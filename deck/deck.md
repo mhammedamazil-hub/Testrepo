@@ -170,6 +170,8 @@ Milestone at month 12: repeat-order rate above 25% D2C and two multi-lot B2B acc
 
 **Salmonella detection** — Validated steam treatment, post-treatment re-test, sealed liners, no re-bagging in open air.
 
+**Retail price positioning sits above the visible reference points** — Never sell against a kilo bag on price. Merchandise the 100 g trial pack as the entry point, put the lot number and panel on the front of the pack, and let the B2B channel carry volume. Track conversion by pack size; if the 500 g underperforms the 100 g for two quarters, reprice the 500 g toward EUR 58/kg rather than discount the brand.
+
 **Origin fraud — cheaper foreign pepper re-bagged as Indian** — Lot-level chain of custody, named grower clusters, isotope and trace-element screening on a sampling basis, published lot numbers.
 
 ---
