@@ -1,0 +1,80 @@
+/* Explicit layer order keeps legacy rules from overriding real Astryx controls. */
+@layer reset, sourcebook-legacy, astryx-base, astryx-theme, sourcebook;
+@import '@astryxdesign/core/reset.css';
+@import '../web/style.css' layer(sourcebook-legacy);
+@import '@astryxdesign/core/astryx.css';
+@import '../src/themes/sourcebook/sourcebook.css';
+
+@layer sourcebook {
+  html[data-astryx-theme='sourcebook'] {
+    --bg: var(--color-background-body);
+    --rail: var(--color-background-surface);
+    --paper: var(--color-background-card);
+    --ink: var(--color-text-primary);
+    --muted: var(--color-text-secondary);
+    --line: var(--color-border);
+    --green: var(--color-accent);
+    --pale: var(--color-background-muted);
+    --field: var(--color-background-surface);
+  }
+  #astryx-root { display: contents; }
+  body { font-family: var(--font-family-body); }
+  .ax-library-actions { width: 100%; }
+  .quick-actions:has(.ax-library-actions) { display: block; }
+  .ax-library-actions > .astryx-button { flex: 1; }
+  .ax-settings { color: var(--color-text-primary); }
+  .ax-settings-nav {
+    position: sticky;
+    top: calc(var(--spacing-4) * 2 + 2.5rem);
+    z-index: 3;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-background-body);
+  }
+  .ax-settings-content { padding-block-end: var(--spacing-6); }
+  .ax-provider-card { border: 1px solid var(--color-border); }
+  .ax-provider-card .astryx-heading { font-family: var(--font-family-body); }
+  .ax-settings-save {
+    position: sticky;
+    bottom: var(--spacing-0);
+    z-index: 4;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-background-body);
+  }
+  .settings-dialog:has(.ax-settings) {
+    padding: 0;
+    border-radius: var(--radius-container);
+    background: var(--color-background-body);
+  }
+  .settings-dialog:has(.ax-settings) > .modal-head {
+    position: sticky;
+    top: 0;
+    min-height: calc(var(--spacing-4) * 2 + 2.5rem);
+    height: calc(var(--spacing-4) * 2 + 2.5rem);
+    z-index: 4;
+    padding: var(--spacing-4);
+    background: var(--color-background-body);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .settings-dialog:has(.ax-settings) .modal-head h2 {
+    font-family: var(--font-family-heading);
+    font-size: var(--text-heading-3-size);
+  }
+  .ax-studio-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-3);
+  }
+  .ax-studio-tools > .astryx-button { justify-content: flex-start; }
+  #studio-tools:has(.ax-studio-tools) { display: block; }
+  .book-cover small { color: inherit; }
+  .ax-settings .astryx-banner { min-width: 0; }
+  .ax-settings .astryx-text { overflow-wrap: anywhere; }
+  @media (max-width: 760px) {
+    .ax-settings-nav, .ax-settings-save { padding: var(--spacing-3); }
+    .ax-settings-content { padding: var(--spacing-3); }
+    .ax-library-actions .astryx-button { min-height: var(--spacing-10); }
+    .ax-studio-tools { gap: var(--spacing-2); }
+    .ax-settings input { font-size: var(--font-size-base); }
+    .ax-settings-save .astryx-button { width: 100%; }
+  }
+}

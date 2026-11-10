@@ -271,6 +271,33 @@ pub fn router(app: App) -> Router {
             }),
         )
         .route(
+            "/astryx.js",
+            get(|| async {
+                (
+                    [("content-type", "text/javascript; charset=utf-8")],
+                    include_str!("../web/astryx.js"),
+                )
+            }),
+        )
+        .route(
+            "/astryx.css",
+            get(|| async {
+                (
+                    [("content-type", "text/css; charset=utf-8")],
+                    include_str!("../web/astryx.css"),
+                )
+            }),
+        )
+        .route(
+            "/UI-LICENSES.txt",
+            get(|| async {
+                (
+                    [("content-type", "text/plain; charset=utf-8")],
+                    include_str!("../web/UI-LICENSES.txt"),
+                )
+            }),
+        )
+        .route(
             "/offline.js",
             get(|| async {
                 (

@@ -17,5 +17,8 @@ jobs:
           cache: npm
       # REA is independent of these tests; do not execute dependency install hooks.
       - run: npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+      - run: npm run build:web
+      - run: git diff --exit-code -- web/astryx.js web/astryx.css web/UI-LICENSES.txt src/themes/sourcebook/sourcebook.css src/themes/sourcebook/sourcebook.js src/themes/sourcebook/sourcebook.d.ts
+      - run: npm run check:design
       - run: node --check web/app.js
       - run: npm run test:web

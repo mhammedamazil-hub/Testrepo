@@ -77,7 +77,7 @@ public class OfflineActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest req) {
                 if(!OriginPolicy.sameOrigin(origin,req.getUrl().toString()))return blocked();
                 String path=req.getUrl().getPath();if("/".equals(path))path="/index.html";
-                String mime="/index.html".equals(path)?"text/html":"/style.css".equals(path)?"text/css":("/app.js".equals(path)||"/offline.js".equals(path))?"text/javascript":null;
+                String mime="/index.html".equals(path)?"text/html":("/style.css".equals(path)||"/astryx.css".equals(path))?"text/css":("/app.js".equals(path)||"/offline.js".equals(path)||"/astryx.js".equals(path))?"text/javascript":"/UI-LICENSES.txt".equals(path)?"text/plain":null;
                 if(mime==null)return blocked();
                 try{return new WebResourceResponse(mime,"UTF-8",getAssets().open("web"+path));}catch(Exception e){return blocked();}
             }
@@ -130,7 +130,7 @@ public class OfflineActivity extends Activity {
         @JavascriptInterface public void reloadWorkspace(){runOnUiThread(()->{if(trustedPage())web.reload();});}
         @JavascriptInterface public void openLocalAI(){runOnUiThread(()->{if(trustedPage())modelDialog();});}
         @JavascriptInterface public void cancelAI(){runOnUiThread(()->{if(trustedPage()){nativeCancel();notice("Local generation cancellation requested");}});}
-        @JavascriptInterface public void setAppearance(boolean dark){runOnUiThread(()->{if(!trustedPage())return;int bg=dark?Color.rgb(22,24,23):Color.rgb(248,249,247);root.setBackgroundColor(bg);getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);root.setSystemUiVisibility(dark?0:android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);});}
+        @JavascriptInterface public void setAppearance(boolean dark){runOnUiThread(()->{if(!trustedPage())return;int bg=dark?Color.rgb(18,20,14):Color.rgb(240,240,224);root.setBackgroundColor(bg);getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);root.setSystemUiVisibility(dark?0:android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);});}
         @JavascriptInterface public boolean modelLoaded(){return modelLoaded;}
         @JavascriptInterface public void request(String id,String method,String path,String body){
             if(id==null||!id.matches("[0-9]{1,10}")||body==null||body.length()>16*1024*1024)return;
