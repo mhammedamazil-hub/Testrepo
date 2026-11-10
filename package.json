@@ -2,13 +2,14 @@
   "name": "@kollampepper/ops",
   "version": "0.1.0",
   "private": true,
-  "description": "Ops for Kollam Pepper Co \u2014 single-source-of-truth data plus the generated company dossier, deck, and site.",
+  "description": "Ops for Kollam Pepper Co — single-source-of-truth data plus the generated company dossier, deck, and site.",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "validate": "node scripts/validate.mjs",
     "test": "node scripts/validate.mjs",
-    "start": "node scripts/serve.mjs"
+    "start": "node scripts/serve.mjs",
+    "memory:export": "node scripts/memory-export.mjs mem_20261110_3995ef09c658426fb916 mem_20261110_ccfba78e390d41b4a12e mem_20261110_85a46b4f232e443cbc13"
   },
   "homepage": "https://github.com/mhammedamazil-hub/Testrepo#readme",
   "license": "UNLICENSED",

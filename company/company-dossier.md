@@ -461,6 +461,11 @@ assumption in section 5. ECC supplied the discipline — the lot gate, the dispo
 GRI classification, the exception severity rules — and the audit trail that proved the numbers
 reconcile.
 
+**Three decisions were written into the ECC memory vault** (`npx ecc memory save`), so an agent
+opening this repo later inherits the reasoning rather than re-deriving it: why this company and
+which alternatives were rejected, why the financial model is driver-based, and what the lot gate
+is. A tracked copy lives at `docs/ECC-MEMORY.md`.
+
 
 ------------------------------------------------------------------------
 
