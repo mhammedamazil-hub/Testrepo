@@ -159,3 +159,22 @@ See [HTTP API reference](docs/API.md). Existing independent REA setup is documen
 The Android client now lives in [`android/`](android/) with a dedicated [APK build workflow](.github/workflows/android.yml). It connects to your running Rust server and exposes the existing app features through mobile **Sources / Chat / Studio** tabs, native document picking/saving, audio playback/download, and Android print/PDF. That older client is **not** the offline APK; choose the separate Rust+GGUF build above for no-server use. See [Android setup and download instructions](docs/ANDROID.md) for requirements, signing, LAN/HTTPS connection and limitations.
 
 The v0.2 Rust expansion subsequently passed GitHub build/tests. The mobile update has **10 passing local browser tests**, including tab switching and native save/print bridge contracts. APK compilation, pure-Java URL-policy tests, signing and signature verification also passed [the Android build](https://github.com/mhammedamazil-hub/Testrepo/actions/runs/42487957011). Physical-device testing is still required.
+
+### Astryx interface (0.7)
+
+The app now bundles **Meta Astryx** React 19 components, with a local Sourcebook
+ theme derived from Astryx Matcha: provider settings, per-task routing, device and
+ appearance controls, library actions, view selector, and Studio actions. The
+ notebook workspace and study viewers retain their existing interface; this is
+ an incremental integration, not a claim that every screen has been migrated.
+ Light, dark and system modes use the same theme. Fonts and UI assets are local;
+ no CDN or font download is needed by the APK.
+
+After editing `ui/` or `src/themes/sourcebook/`, run `npm ci --ignore-scripts`,
+ `npm run build:web`, `npm run check:design` and `npm run test:web`. Commit the
+ generated `web/astryx.js`, `web/astryx.css`, theme outputs and license notices.
+ Rust and Android consume those prebuilt assets without requiring Node at runtime.
+ The Astryx source doctor may flag bridge classes and CSS imports: these connect
+ the incremental React islands to the existing native dialog and legacy layout.
+ API providers still receive selected source content when invoked; local UI assets
+ do not make remote model calls offline.

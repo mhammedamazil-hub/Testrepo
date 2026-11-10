@@ -199,3 +199,13 @@ invalid frame rejection, NIE policy tests, browser shelf fallback/native-picker
 contracts and mobile/desktop Chromium layout checks. These are not proof of live
 Gemini video support, decoder behavior on a physical phone, or search availability.
 Reference: [Google Gemini video cookbook](https://github.com/google-gemini/cookbook/blob/main/quickstarts/Video_understanding.ipynb).
+
+### 0.7 UI assets
+
+The standalone APK embeds Astryx React components and the local Matcha-derived
+Sourcebook theme (`astryx.js`, `astryx.css`, `UI-LICENSES.txt`). These are served by
+native asset interception, not an external web server. Rebuild with
+`npm run build:web` after UI source changes before building the APK. Existing
+source ingestion, source-only answering, native video selection and optional
+local model controls remain available. API inference still requires networking;
+the interface itself has no CDN or external font dependency.
