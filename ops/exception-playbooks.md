@@ -43,6 +43,31 @@ destroys the shipment and can trigger a RASFF notification that follows the expo
 4. File the prior-disclosure equivalent in the destination market before a regulator asks.
 5. Root cause is almost always a fumigation contractor, not the grower. Audit the contractor.
 
+## EX-03a · Rejection letter to a supplier
+
+The letter is the quality system, not a courtesy. A supplier who is not told the code will
+assume the buyer haggled.
+
+**Subject:** Lot sample refused at intake — [FINDING CODE] at [VALUE]
+
+> [Supplier],
+>
+> We tested the [GRADE] sample you offered on [DATE]. Result: **rejected**, one finding.
+>
+> - [FINDING CODE]: [VALUE]. Limit is [LIMIT]. [ONE LINE ON WHY IT CANNOT BE NEGOTIATED]
+>
+> Everything else on the panel was within spec. That is the point: one number decided it.
+>
+> We are not buying this lot and we are not blending it down. Two conditions for the next one:
+> a signed no-EtO declaration naming your treatment contractor, and a re-test at our lab
+> before we discuss price. The letter is attached to your file either way.
+>
+> [Name], Kollam Pepper Co
+
+**Never do this:** never put a KL number in a rejection letter. A lot number is issued *only*
+on release, so a rejected lot has none — and writing one into the letter tells the supplier
+that the number is decorative. It is the one thing we sell.
+
 ## EX-04 · Transit delay past the promise date
 
 - Under 3 days and the customer is not launch-critical: notify, do not escalate, offer a credit
