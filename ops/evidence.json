@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-11-10T02:59:17.970Z",
+  "source": "data/lot-queue.json",
+  "enforced_by": "scripts/lib/rules.mjs",
+  "totals": {
+    "submitted": 2,
+    "released": 1,
+    "held": 0,
+    "rejected": 1
+  },
+  "rejection_breakdown": [
+    {
+      "code": "ETO",
+      "count": 1
+    }
+  ],
+  "lots": [
+    {
+      "at": "2026-11-10T02:58:50.379Z",
+      "supplier": "Idukki cluster A",
+      "lot": "KL-2026-001",
+      "disposition": "RELEASE",
+      "grade": "TGSEB",
+      "codes": []
+    },
+    {
+      "at": "2026-11-10T02:58:50.392Z",
+      "supplier": "Kasaragod trader",
+      "lot": null,
+      "disposition": "REJECT",
+      "grade": "MG-1",
+      "codes": [
+        "ETO"
+      ]
+    }
+  ]
+}

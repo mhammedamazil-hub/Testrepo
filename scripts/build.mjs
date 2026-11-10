@@ -6,9 +6,20 @@ import { dossier, onePager } from './gen/docs.mjs';
 import { deckMarkdown, deckHtml } from './gen/deck.mjs';
 import { site } from './gen/site.mjs';
 import { salesAssets } from './gen/ops.mjs';
+import { desk } from './gen/desk.mjs';
+import { loadEvidence } from './gen/evidence.mjs';
 
 const t = loadTruth();
 const model = computePlan(t);
+const evidence = loadEvidence();
+
+// The site's lot card is not allowed to invent a panel. It shows the most recent
+// RELEASED lot from the real queue, or says plainly that nothing has been released.
+if (evidence.latestReleased) {
+  t.siteLot = evidence.latestReleased;
+} else {
+  t.siteLot = null;
+}
 
 const out = [];
 function write(rel, body) {
@@ -23,7 +34,10 @@ write('company/one-pager.md', onePager(t, model));
 write('deck/deck.md', deckMarkdown(t, model));
 write('deck/deck.html', deckHtml(t, model));
 write('site/index.html', site(t, model));
+write('site/desk.html', desk(t));
 for (const a of salesAssets(t, model)) write(a.path, a.body);
+write('ops/evidence-log.md', evidence.markdown);
+write('ops/evidence.json', JSON.stringify(evidence.json, null, 2) + '\n');
 
 // machine-readable model output, so a human or an agent can diff it
 write('company/model-output.json', JSON.stringify({

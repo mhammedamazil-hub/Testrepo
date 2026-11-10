@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lot intake — Kollam Pepper Co</title>
+<style>
+  :root{--ink:#1c211c;--green:#2e4a3b;--accent:#c05a2e;--paper:#f4efe6;--sand:#e0d6c4;--muted:#6b7268;--ok:#2f7d4f;--warn:#a8791f;--bad:#a83232}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif}
+  .wrap{width:min(1120px,94vw);margin:0 auto}
+  header{border-bottom:1px solid var(--sand);background:#fffdf8}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .brand{font-weight:800;letter-spacing:.22em;font-size:14px}
+  .brand span{color:var(--accent)}
+  header a{font-size:13px;color:var(--muted);text-decoration:none}
+  header a:hover{color:var(--ink)}
+  h1{font-size:30px;letter-spacing:-.02em;margin:34px 0 6px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 26px;max-width:64ch;line-height:1.55}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+  .card{background:#fffdf8;border:1px solid var(--sand);padding:22px}
+  label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+  input,textarea{width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+        border:1px solid var(--sand);background:#fff;padding:11px;color:var(--ink)}
+  textarea{min-height:250px;resize:vertical;line-height:1.55}
+  input:focus,textarea:focus{outline:2px solid var(--green);outline-offset:-1px}
+  button{margin-top:14px;width:100%;background:var(--green);color:var(--paper);border:0;
+         padding:14px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;cursor:pointer}
+  button:hover{background:var(--accent)}
+  button:disabled{opacity:.55;cursor:wait}
+  .hint{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+  .verdict{border-left:5px solid var(--muted);padding:16px 18px;background:#fff;margin-bottom:16px}
+  .verdict.release{border-color:var(--ok)}
+  .verdict.hold{border-color:var(--warn)}
+  .verdict.reject{border-color:var(--bad)}
+  .verdict h2{margin:0 0 4px;font-size:22px;letter-spacing:.02em}
+  .verdict .lot{font-family:ui-monospace,monospace;font-size:15px;color:var(--green);font-weight:700}
+  .verdict .reason{font-size:13px;line-height:1.5;border-top:1px solid var(--sand);padding:9px 0;margin:0}
+  .verdict .reason code{background:#f0e9db;padding:1px 5px;font-size:11px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 18px}
+  .stats div{background:#fffdf8;border:1px solid var(--sand);padding:12px}
+  .stats b{display:block;font-size:24px;font-weight:800;line-height:1}
+  .stats span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .empty{font-size:13px;color:var(--muted);padding:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:12px;background:#fffdf8}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--sand)}
+  th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td.mono{font-family:ui-monospace,monospace}
+  .pill{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:2px;color:#fff}
+  .pill.RELEASE{background:var(--ok)}.pill.HOLD{background:var(--warn)}.pill.REJECT{background:var(--bad)}
+  .rules{font-size:12px;line-height:1.7;color:#3c463c}
+  .rules dt{font-weight:700;color:var(--ink)}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand">KOLLAM<span>·</span></div>
+  <div><a href="/">Storefront</a> &nbsp;·&nbsp; <a href="/deck">Deck</a> &nbsp;·&nbsp; <a href="/api/lots">Queue JSON</a></div>
+</div></header>
+
+<main class="wrap">
+  <h1>Lot intake</h1>
+  <p class="sub">Paste a lab panel. The gate decides. A lot only becomes sellable — and only then
+     receives a KL number — if it clears every limit in the specification. Nothing here is a
+     judgement call.</p>
+
+  <div class="stats" id="stats">
+    <div><b id="s-total">—</b><span>Submitted</span></div>
+    <div><b id="s-release">—</b><span>Released</span></div>
+    <div><b id="s-hold">—</b><span>Held</span></div>
+    <div><b id="s-reject">—</b><span>Rejected</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="card">
+      <label for="supplier">Supplier</label>
+      <input id="supplier" placeholder="Idukki cluster A" autocomplete="off">
+      <label for="panel" style="margin-top:16px">Lab panel (key: value per line)</label>
+      <textarea id="panel" spellcheck="false">grade: TGSEB
+sieve_mm: 5.2
+moisture_pct: 10.8
+piperine_pct: 6.1
+aflatoxin_b1_ugkg: 0.4
+aflatoxin_total_ugkg: 1.1
+ochratoxin_a_ugkg: 1.8
+salmonella_25g: absent
+ethylene_oxide: not detected
+lead_mgkg: 0.08
+foreign_matter_pct: 0.1</textarea>
+      <button id="submit">Run the gate</button>
+      <p class="hint">Try it: change <code>ethylene_oxide</code> to <code>0.05</code>, or
+        <code>moisture_pct</code> to <code>13.4</code>, and run it again. Delete a line and the lot
+        is held for a missing test.</p>
+    </div>
+
+    <div>
+      <div id="verdict"></div>
+      <div class="card" style="margin-top:16px">
+        <label style="margin-bottom:10px">Queue</label>
+        <div id="queue"><p class="empty">Loading…</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:26px">
+    <label style="margin-bottom:12px">The specification this gate enforces</label>
+    <dl class="rules">
+      <dt>Ethylene oxide</dt><dd>Banned for food use in the EU, measured with 2-chloroethanol. Any detection is a rejection.</dd>
+      <dt>Aflatoxin B1</dt><dd>≤ 5.0 µg/kg · total aflatoxins ≤ 10.0 µg/kg (Reg (EU) 2023/915)</dd>
+      <dt>Ochratoxin A</dt><dd>≤ 15 µg/kg for pepper</dd>
+      <dt>Salmonella</dt><dd>Absent in 25 g (Reg (EC) 2073/2005)</dd>
+      <dt>Lead</dt><dd>≤ 0.6 mg/kg for fruit spices</dd>
+      <dt>Moisture</dt><dd>≤ 12% at intake — held for covered re-drying, never paid as-is</dd>
+      <dt>Foreign matter</dt><dd>≤ 0.5% — held for re-cleaning</dd>
+      <dt>Missing test</dt><dd>An untested lot is not a clean lot. Any absent result holds the lot.</dd>
+    </dl>
+    <p class="hint">This is a demonstration surface for a planning exercise. No real lab data
+      leaves this page; entries are written to a local JSON queue.</p>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function esc(s){return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+async function refresh(){
+  const r = await fetch('/api/lots');
+  const { stats, entries } = await r.json();
+  $('s-total').textContent = stats.total;
+  $('s-release').textContent = stats.release;
+  $('s-hold').textContent = stats.hold;
+  $('s-reject').textContent = stats.reject;
+
+  const rows = entries.slice().reverse().slice(0, 12).map(e => `
+    <tr>
+      <td class="mono">${e.lot ? esc(e.lot) : '—'}</td>
+      <td>${esc(e.supplier)}</td>
+      <td><span class="pill ${e.disposition}">${e.disposition}</span></td>
+      <td>${e.reasons.length ? esc(e.reasons[0].code) : 'clear'}</td>
+    </tr>`).join('');
+
+  $('queue').innerHTML = entries.length
+    ? `<table><thead><tr><th>Lot</th><th>Supplier</th><th>Disposition</th><th>First finding</th></tr></thead><tbody>${rows}</tbody></table>`
+    : '<p class="empty">No lots submitted yet.</p>';
+}
+
+function render(v){
+  const cls = v.disposition.toLowerCase();
+  const headline = v.disposition === 'RELEASE'
+    ? 'Released for sale'
+    : v.disposition === 'HOLD'
+      ? 'Held — fixable, not sellable'
+      : 'Rejected — do not sell';
+  const lot = v.lot ? `<div class="lot">${esc(v.lot)}</div>` : '';
+  const reasons = v.reasons.length
+    ? v.reasons.map(r => `<p class="reason"><code>${esc(r.code)}</code> — ${esc(r.message)}</p>`).join('')
+    : '<p class="reason">Every limit cleared. The lot number is assigned and printed on the liner.</p>';
+  $('verdict').innerHTML = `<div class="verdict ${cls}"><h2>${headline}</h2>${lot}${reasons}</div>`;
+}
+
+$('submit').addEventListener('click', async () => {
+  const btn = $('submit');
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  try {
+    const res = await fetch('/api/lots', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ supplier: $('supplier').value || 'unnamed', panel: $('panel').value }),
+    });
+    const json = await res.json();
+    if (res.status === 400 || res.status === 409) {
+      $('verdict').innerHTML = `<div class="verdict reject"><h2>Panel refused</h2>
+        <p class="reason">${esc(json.error)}${json.detail ? ' — ' + esc(json.detail) : ''}</p></div>`;
+    } else {
+      render(json);
+    }
+    await refresh();
+  } catch (err) {
+    $('verdict').innerHTML = `<div class="verdict reject"><h2>Request failed</h2>
+      <p class="reason">${esc(err.message)}</p></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run the gate';
+  }
+});
+
+refresh();
+</script>
+</body></html>

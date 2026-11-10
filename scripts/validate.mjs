@@ -15,7 +15,8 @@ const t = JSON.parse(readFileSync(join(ROOT, 'company', 'source-of-truth.json'),
 const fail = [];
 const ok = [];
 const check = (name, cond, detail = '') => {
-  (cond ? ok : fail).push(detail ? `${name} — ${detail}` : name);
+  if (!cond && detail) fail.push(`${name} — ${detail}`);
+  else (cond ? ok : fail).push(detail ? `${name} — ${detail}` : name);
 };
 const near = (a, b, tol = 0.51) => Math.abs(a - b) <= tol;
 const sum = (o) => Object.values(o).reduce((x, y) => x + y, 0);
@@ -107,6 +108,30 @@ if (onePager) {
 const dossier = g('company/company-dossier.md');
 if (dossier) {
   check('dossier carries FY3 revenue', dossier.includes(Math.round(y3rev).toLocaleString('en-US')));
+}
+
+// 11. Every released lot in the queue must still pass the gate.
+//     A spec change that would invalidate historical lots fails the build.
+const { openQueue } = await import('./lib/queue.mjs');
+const { evaluateLot } = await import('./lib/rules.mjs');
+const { existsSync: exists2 } = await import('node:fs');
+if (exists2(join(ROOT, 'data', 'lot-queue.json'))) {
+  const q = openQueue(join(ROOT, 'data', 'lot-queue.json'));
+  const entries = q.list();
+  let gateMismatch = 0;
+  for (const e of entries) {
+    if (!e.panel) continue;
+    const re = evaluateLot(e.panel, t);
+    if (re.disposition !== e.disposition) {
+      gateMismatch += 1;
+      fail.push(`lot ${e.lot ?? e.supplier} was recorded ${e.disposition} but the current gate says ${re.disposition}`);
+    }
+  }
+  check('every queued lot reproduces under the current gate', gateMismatch === 0, `${entries.length} lots`);
+  const released = entries.filter(e => e.disposition === 'RELEASE');
+  check('every released lot has a valid KL number', released.every(e => /^KL-\d{4}-\d{3}$/.test(e.lot ?? '')));
+  check('no rejected or held lot carries a lot number', entries.filter(e => e.disposition !== 'RELEASE').every(e => e.lot === null));
+  check('lot numbers are unique', new Set(released.map(e => e.lot)).size === released.length);
 }
 
 // ---- report ----

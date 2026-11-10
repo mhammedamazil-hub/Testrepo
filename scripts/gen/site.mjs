@@ -1,5 +1,40 @@
 import { usd, int, computePlan } from '../lib/model.mjs';
 
+
+/**
+ * The hero lot card is generated from the real queue. It is never allowed to be a
+ * decorative fabrication: if no lot has passed the gate, the card says exactly that.
+ */
+function lotCard(t) {
+  const lot = t.siteLot;
+  if (!lot) {
+    return `<div class="lotcard">
+    <h4>Lot register</h4>
+    <dl>
+      <dt>Released lots</dt><dd>0</dd>
+      <dt>Status</dt><dd>Pre-launch</dd>
+    </dl>
+    <p class="hint">No lot has passed the gate yet, so no lot number is shown. A panel appears
+    here only after it has been produced by the intake gate and logged.</p>
+  </div>`;
+  }
+  const p = lot.panel || {};
+  const yn = v => (v === undefined ? '—' : /^(absent|not detected|nd|none)$/i.test(String(v)) ? 'not detected' : String(v));
+  return `<div class="lotcard">
+    <h4>Lot ${lot.lot}</h4>
+    <dl>
+      <dt>Grade</dt><dd>${lot.grade ?? '—'}</dd>
+      <dt>Piperine</dt><dd>${p.piperine_pct ?? '—'}%</dd>
+      <dt>Moisture</dt><dd>${p.moisture_pct ?? '—'}%</dd>
+      <dt>Aflatoxin B1</dt><dd class="ok">${p.aflatoxin_b1_ugkg ?? '—'} µg/kg</dd>
+      <dt>Ochratoxin A</dt><dd class="ok">${p.ochratoxin_a_ugkg ?? '—'} µg/kg</dd>
+      <dt>Salmonella</dt><dd class="ok">${yn(p.salmonella_25g)}</dd>
+      <dt>Ethylene oxide</dt><dd class="ok">${yn(p.ethylene_oxide)}</dd>
+    </dl>
+    <p class="hint">Panel produced by the intake gate, logged ${new Date(lot.at).toISOString().slice(0, 10)}.</p>
+  </div>`;
+}
+
 export function site(t, model = computePlan(t)) {
   const retail = t.products.filter(p => p.retail_eur > 0);
   const b2b = t.products.filter(p => p.sku.startsWith('KP-MG1'));
@@ -60,6 +95,7 @@ export function site(t, model = computePlan(t)) {
   .lotcard dl{display:grid;grid-template-columns:1fr auto;gap:9px 14px;margin:0;font-variant-numeric:tabular-nums}
   .lotcard dt{color:#9fb29e}.lotcard dd{margin:0;text-align:right;color:#f2ecdd;font-weight:600}
   .lotcard .ok{color:#8fd6a0}
+  .lotcard .hint{margin:14px 0 0;font-size:11px;line-height:1.5;color:#8fa294}
   /* ---------- sections ---------- */
   section{padding:78px 0}
   .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 14px}
@@ -138,18 +174,7 @@ export function site(t, model = computePlan(t)) {
        Every bag carries a lot number and a test panel. No panel, no sale.</p>
     <a class="btn" href="#pepper">See the lots</a>
   </div>
-  <div class="lotcard">
-    <h4>Lot KL-2026-014</h4>
-    <dl>
-      <dt>Grade</dt><dd>TGSEB · 5.2 mm sieve</dd>
-      <dt>Piperine</dt><dd>6.1%</dd>
-      <dt>Moisture</dt><dd>10.8%</dd>
-      <dt>Aflatoxin B1</dt><dd class="ok">not detected</dd>
-      <dt>Ochratoxin A</dt><dd class="ok">not detected</dd>
-      <dt>Salmonella</dt><dd class="ok">absent / 25 g</dd>
-      <dt>Ethylene oxide</dt><dd class="ok">not detected</dd>
-    </dl>
-  </div>
+  ${lotCard(t)}
 </div></div>
 
 <div class="proof"><div class="wrap">
@@ -239,9 +264,10 @@ export function site(t, model = computePlan(t)) {
   </div>
 </div>
 <div class="wrap"><p class="fine">
-  This is a planning prototype built for a business-case exercise. Prices, lot data (including
-  KL-2026-014), certifications and registration numbers shown here are illustrative and are not
-  offers to sell. Regulatory limits quoted are drawn from EU Regulation 2023/915 and Regulation
+  This is a planning prototype built for a business-case exercise. Prices, certifications and
+  registration numbers shown here are illustrative and are not offers to sell. Any lot panel
+  displayed is produced by the live intake gate and logged in <code>ops/evidence-log.md</code>;
+  if no lot has been released, no panel is shown. Regulatory limits quoted are drawn from EU Regulation 2023/915 and Regulation
   (EC) 2073/2005 and are shown to explain the quality gate, not as legal advice. Verify all
   destination requirements before shipping.
 </p></div></footer>

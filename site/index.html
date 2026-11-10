@@ -41,6 +41,7 @@
   .lotcard dl{display:grid;grid-template-columns:1fr auto;gap:9px 14px;margin:0;font-variant-numeric:tabular-nums}
   .lotcard dt{color:#9fb29e}.lotcard dd{margin:0;text-align:right;color:#f2ecdd;font-weight:600}
   .lotcard .ok{color:#8fd6a0}
+  .lotcard .hint{margin:14px 0 0;font-size:11px;line-height:1.5;color:#8fa294}
   /* ---------- sections ---------- */
   section{padding:78px 0}
   .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 14px}
@@ -120,16 +121,17 @@
     <a class="btn" href="#pepper">See the lots</a>
   </div>
   <div class="lotcard">
-    <h4>Lot KL-2026-014</h4>
+    <h4>Lot KL-2026-001</h4>
     <dl>
-      <dt>Grade</dt><dd>TGSEB · 5.2 mm sieve</dd>
+      <dt>Grade</dt><dd>TGSEB</dd>
       <dt>Piperine</dt><dd>6.1%</dd>
       <dt>Moisture</dt><dd>10.8%</dd>
-      <dt>Aflatoxin B1</dt><dd class="ok">not detected</dd>
-      <dt>Ochratoxin A</dt><dd class="ok">not detected</dd>
-      <dt>Salmonella</dt><dd class="ok">absent / 25 g</dd>
+      <dt>Aflatoxin B1</dt><dd class="ok">0.4 µg/kg</dd>
+      <dt>Ochratoxin A</dt><dd class="ok">1.8 µg/kg</dd>
+      <dt>Salmonella</dt><dd class="ok">not detected</dd>
       <dt>Ethylene oxide</dt><dd class="ok">not detected</dd>
     </dl>
+    <p class="hint">Panel produced by the intake gate, logged 2026-11-10.</p>
   </div>
 </div></div>
 
@@ -241,9 +243,10 @@
   </div>
 </div>
 <div class="wrap"><p class="fine">
-  This is a planning prototype built for a business-case exercise. Prices, lot data (including
-  KL-2026-014), certifications and registration numbers shown here are illustrative and are not
-  offers to sell. Regulatory limits quoted are drawn from EU Regulation 2023/915 and Regulation
+  This is a planning prototype built for a business-case exercise. Prices, certifications and
+  registration numbers shown here are illustrative and are not offers to sell. Any lot panel
+  displayed is produced by the live intake gate and logged in <code>ops/evidence-log.md</code>;
+  if no lot has been released, no panel is shown. Regulatory limits quoted are drawn from EU Regulation 2023/915 and Regulation
   (EC) 2073/2005 and are shown to explain the quality gate, not as legal advice. Verify all
   destination requirements before shipping.
 </p></div></footer>
