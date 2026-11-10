@@ -1,0 +1,30 @@
+{
+  "settings": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 60,
+    "seconds": 3,
+    "frames": 180,
+    "msaa": 0,
+    "antialiasing": "FXAA at native 1920x1080; no upscaling",
+    "shadow_cache": "Static parked car/lights/scene only; same map reused after warmup",
+    "contact_shadow": "Artistic soft decal, not ray-traced GI",
+    "directional_shadow": 2048,
+    "water_reflection": 1024,
+    "paint": "Export-only red physical clearcoat. Original GLB unchanged.",
+    "rendering": "Actual Three.js raster/PBR + photographic sky, not path tracing or a real-time FPS benchmark."
+  },
+  "video": "output/alpine-roadster-1080p60.mp4",
+  "bytes": 7212043,
+  "render_elapsed_seconds": 1953.036,
+  "source_frames": 180,
+  "decoded_frames": 180,
+  "unique_source_frames": 180,
+  "interpolated_frames": 0,
+  "errors": [],
+  "video_sha256": "e53252f79b6300a1773d0391d0ba7ad229e9bf7c3093c7a6644cf5d4ede8212e",
+  "source_sequence_sha256": "ee14135e3411b893e325665224911bb3d902f8bc385639a20bc51a7f800dca5d",
+  "embedded_full_credits": true,
+  "validation": "Complete H.264 decode succeeds: 1920x1080, 60 fps, 180 frames / 3.00s. All 180 native-resolution source PNGs distinct and intact. Midpoint decoded frame visually reviewed. Extra quality is export-only; original game settings and supplied GLB unchanged.",
+  "github_video": "docs/game/offline-cinematic/alpine-roadster-1080p60.mp4"
+}
