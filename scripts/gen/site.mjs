@@ -112,6 +112,9 @@ export function site(t, model = computePlan(t)) {
     .hero .wrap,.gate .wrap,.b2b .grid{grid-template-columns:1fr}
     .proof .wrap{grid-template-columns:repeat(2,1fr)}
     nav ul{display:none}
+    .hero{padding:56px 0 48px}
+    section{padding:52px 0}
+    .limits{grid-template-columns:1fr 1fr}
     footer .wrap{grid-template-columns:1fr}
   }
 </style>
