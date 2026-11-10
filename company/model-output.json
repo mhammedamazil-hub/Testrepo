@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-11-10T02:50:02.355Z",
+  "source": "company/source-of-truth.json",
+  "years": [
+    {
+      "label": "FY1 - Prove the lot (months 1-12)",
+      "revenue": 157660,
+      "gross_profit": 70116,
+      "gross_margin_pct": 44.47,
+      "opex": 92000,
+      "ebitda": -21884
+    },
+    {
+      "label": "FY2 - Repeat and route (months 13-24)",
+      "revenue": 486800,
+      "gross_profit": 216915,
+      "gross_margin_pct": 44.56,
+      "opex": 180000,
+      "ebitda": 36915
+    },
+    {
+      "label": "FY3 - Route density (months 25-36)",
+      "revenue": 895200,
+      "gross_profit": 397254,
+      "gross_margin_pct": 44.38,
+      "opex": 318400,
+      "ebitda": 78854
+    }
+  ],
+  "three_year_revenue": 1539660,
+  "bear_fy3_ebitda": -101532,
+  "unit_economics": {
+    "b2b_gross_margin_pct": 33.13,
+    "d2c_contribution_pct": 37.78
+  },
+  "use_of_funds_total": 150000
+}

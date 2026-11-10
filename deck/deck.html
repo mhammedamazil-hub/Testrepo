@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kollam Pepper Co — Investor Deck</title>
+<style>
+:root{--ink:#1c211c;--paper:#f4efe6;--green:#2e4a3b;--accent:#c05a2e;--muted:#6b7268}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#0d0f0d;color:var(--ink);font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif}
+.deck{display:block}
+.slide{position:relative;margin:0 auto 28px;width:min(1120px,94vw);min-height:630px;background:var(--paper);
+  padding:54px 64px 64px;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden}
+.slide::after{content:attr(data-n);position:absolute;right:34px;bottom:26px;font-size:12px;color:var(--muted);letter-spacing:.14em}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:26px}
+h1{font-size:44px;line-height:1.1;margin:0 0 30px;font-weight:800;letter-spacing:-.02em;max-width:24ch}
+.slide p{font-size:19px;line-height:1.55;margin:0 0 16px;max-width:62ch}
+.small{font-size:16px;color:var(--muted)}
+.meta{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.title-slide{background:var(--green);color:#f4efe6;justify-content:center}
+.title-slide h1{font-size:120px;margin:0 0 18px;letter-spacing:-.04em;color:#f4efe6}
+.title-slide .kicker{color:#d9c9a8}.title-slide .lede{font-size:24px;max-width:44ch;color:#e9e2d4}
+.title-slide .meta{color:#b9c4b3}
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0 22px}
+.ladder div{background:#fff;border-left:4px solid var(--accent);padding:16px 18px}
+.ladder span{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ladder b{font-size:30px;font-weight:800}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+h4{font-size:14px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px;color:var(--accent)}
+.sku{font-size:17px;font-weight:600;margin:0 0 14px}
+.sku small{font-weight:400;color:var(--muted);font-size:13px}
+.stamp{margin-top:auto;padding-top:18px;border-top:1px solid #cfc6b6;font-weight:700;font-size:17px}
+ol.gate{counter-reset:g;list-style:none;padding:0;margin:0 0 24px}
+ol.gate li{counter-increment:g;position:relative;padding:14px 0 14px 54px;border-bottom:1px solid #d8cfbf;font-size:19px}
+ol.gate li::before{content:counter(g);position:absolute;left:0;top:12px;width:34px;height:34px;border-radius:50%;
+  background:var(--green);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+table.fin{width:100%;border-collapse:collapse;font-size:18px;margin:0 0 20px}
+table.fin td,table.fin th{padding:11px 0;border-bottom:1px solid #d8cfbf;text-align:left}
+table.fin .num{text-align:right;font-variant-numeric:tabular-nums}
+table.fin .total td{border-top:2px solid var(--ink);border-bottom:none;font-weight:800;padding-top:14px}
+table.fin.wide th{font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.big-neg{font-size:52px;font-weight:800;color:var(--accent);margin:10px 0 18px!important}
+.limits{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 24px}
+.limits div{background:#fff;padding:18px 14px;border-top:4px solid var(--green)}
+.limits b{display:block;font-size:32px;font-weight:800;line-height:1}
+.limits small{font-size:13px;font-weight:600;color:var(--muted)}
+.limits span{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+ul.moat{list-style:none;padding:0;margin:0 0 20px}
+ul.moat li{position:relative;padding:12px 0 12px 26px;border-bottom:1px solid #d8cfbf;font-size:18px}
+ul.moat li::before{content:"";position:absolute;left:0;top:21px;width:9px;height:9px;background:var(--accent)}
+.closing{background:var(--green);color:#f4efe6}
+.closing h1{color:#fff}.closing .kicker{color:#d9c9a8}.closing li{border-color:#46614f;color:#e9e2d4}
+@media print{body{background:#fff}.slide{margin:0;width:100%;min-height:100vh;page-break-after:always}}
+@media(max-width:820px){.slide{padding:34px 26px}h1{font-size:30px}.title-slide h1{font-size:58px}
+  .cols,.ladder,.limits{grid-template-columns:1fr}.slide p{font-size:17px}}
+</style></head>
+<body><main class="deck"><section class="slide title-slide" data-n="01 / 15">
+           <div class="kicker">Kollam Pepper Co · 2026</div>
+           <h1>$150,000</h1>
+           <p class="lede">To ship two container cycles, clear the full EU and US compliance stack,
+     and turn a 3.9× price ladder into a brand.</p>
+     <p class="meta">Kochi, Kerala, India · Pre-seed</p>
+         </section>
+<section class="slide " data-n="02 / 15">
+           <div class="kicker">01 · The problem</div>
+           <h1>India grows the most storied pepper in the world and exports almost none of it</h1>
+           <p>The 2024/25 crop fell to a record-low <b>~48,000 t</b> while domestic consumption ran
+     <b>~81,000 t</b>. India net-imported pepper.</p>
+     <p>What does leave the country leaves as anonymous bulk. A buyer in Rotterdam cannot prove the
+     bag they bought came from Kerala at all — and the market's answer to that is cheaper pepper
+     from somewhere else, re-bagged.</p>
+         </section>
+<section class="slide " data-n="03 / 15">
+           <div class="kicker">02 · The wedge</div>
+           <h1>Verified provenance at lot level is the scarce input — not pepper</h1>
+           <div class="ladder">
+       <div><span>Farm gate</span><b>₹620/kg</b></div>
+       <div><span>Exporter landed</span><b>₹1,000/kg</b></div>
+       <div><span>Specialty retail</span><b>₹2,400/kg</b></div>
+     </div>
+     <p>That is a <b>3.9×</b> ladder. It is not climbed by being
+     better at freight. It is climbed by owning the grade, the test panel, and the mark.</p>
+         </section>
+<section class="slide " data-n="04 / 15">
+           <div class="kicker">03 · The product</div>
+           <h1>Two channels, one lot gate</h1>
+           <div class="cols">
+      <div><h4>D2C — our own mark</h4>
+        <p class="sku">Tellicherry Bold 100 g<br><small>100 g resealable kraft pouch · TGSEB-grade, 5.0 mm+ sieve, piperine 5-7%</small></p><p class="sku">Tellicherry Bold 500 g<br><small>500 g valve bag · TGSEB-grade, 5.0 mm+ sieve, piperine 5-7%</small></p><p class="sku">Malabar Line spice box (4 x 50 g)<br><small>Gift box: pepper, cardamom, clove, cinnamon · Lot-tested, same origin belt</small></p>
+      </div>
+      <div><h4>B2B — micro-lots</h4>
+        <p class="sku">MG-1 Kitchen Grade 25 kg<br><small>25 kg multi-wall paper bag, food-grade liner · Malabar Garbled MG-1, 3.5-4.5 mm, piperine 4-6%</small></p>
+        <p class="small">Restaurant groups and meal-kit kitchens who need a named origin and a printed test panel, not a commodity quote.</p>
+      </div>
+     </div>
+     <p class="stamp">Every SKU carries a KL-YYYY-NNN lot number. No number, no sale.</p>
+         </section>
+<section class="slide " data-n="05 / 15">
+           <div class="kicker">04 · How it works</div>
+           <h1>The lot gate</h1>
+           <ol class="gate">
+       <li>Signed supplier declaration — no ethylene-oxide fumigation</li>
+       <li>Moisture and water activity measured at intake</li>
+       <li>Full panel: mycotoxins, microbiology, heavy metals, pesticide residues, EtO</li>
+       <li>Grade verified by sieve and density</li>
+     </ol>
+     <p>Only then does a lot receive a number and enter sellable stock.
+     <b>This is the whole company.</b> Everything else is logistics.</p>
+         </section>
+<section class="slide " data-n="06 / 15">
+           <div class="kicker">05 · Unit economics</div>
+           <h1>B2B micro-lot — 33.1% gross margin</h1>
+           <table class="fin">
+      <tr><td>Revenue, one 25 kg bag of MG-1</td><td class="num">$320</td></tr>
+      <tr><td>COGS</td><td class="num">$214</td></tr>
+      <tr class="total"><td>Gross profit</td><td class="num">$106</td></tr>
+     </table>
+     <p>Duty into the EU and the US on whole pepper is <b>0%</b>. Tariff is not the constraint.
+     The test panel is: one rejected container costs more than a year of freight.</p>
+         </section>
+<section class="slide " data-n="07 / 15">
+           <div class="kicker">06 · Unit economics</div>
+           <h1>D2C pack — 37.8% contribution</h1>
+           <table class="fin">
+      <tr><td>Revenue, 500 g Tellicherry Bold</td><td class="num">$45</td></tr>
+      <tr><td>Goods</td><td class="num">$7</td></tr>
+      <tr><td>Fulfilment</td><td class="num">$7</td></tr>
+      <tr><td>Payment</td><td class="num">$1</td></tr>
+      <tr><td>Acquisition cost</td><td class="num">$12</td></tr>
+      <tr class="total"><td>Contribution</td><td class="num">$17</td></tr>
+     </table>
+     <p class="small">Planned at 56% D2C and 33.1% B2B — both midpoints of observed tier spreads.</p>
+         </section>
+<section class="slide " data-n="08 / 15">
+           <div class="kicker">07 · The plan</div>
+           <h1>$157,660 → $895,200</h1>
+           <table class="fin wide">
+      <tr><th></th><th class="num">FY1</th><th class="num">FY2</th><th class="num">FY3</th></tr>
+      <tr><td>Revenue</td><td class="num">$157,660</td><td class="num">$486,800</td><td class="num">$895,200</td></tr>
+      <tr><td>Gross margin</td><td class="num">44.5%</td><td class="num">44.6%</td><td class="num">44.4%</td></tr>
+      <tr class="total"><td>EBITDA</td><td class="num">-$21,884</td><td class="num">$36,915</td><td class="num">$78,854</td></tr>
+     </table>
+     <p class="small">Four drivers only: D2C orders, D2C average order value, B2B micro-lot count, and the two channel margins.</p>
+         </section>
+<section class="slide " data-n="09 / 15">
+           <div class="kicker">08 · Downside</div>
+           <h1>Bear case FY3 — -$101,532 EBITDA</h1>
+           <p>60% of planned revenue at
+     40.4% gross margin, opex held flat at $318,400.</p>
+     <p class="big-neg">-$101,532</p>
+     <p>That is the number to survive. It is survivable only if the raise covers the
+     $21,884 FY1 operating loss and no fixed headcount
+     is added before FY3 route density exists.</p>
+         </section>
+<section class="slide " data-n="10 / 15">
+           <div class="kicker">09 · Compliance</div>
+           <h1>Four numbers decide whether a shipment lives</h1>
+           <div class="limits">
+      <div><b>5.0 <small>µg/kg</small></b><span>Aflatoxin B1, EU max</span></div>
+      <div><b>10.0 <small>µg/kg</small></b><span>Total aflatoxins, EU max</span></div>
+      <div><b>15 <small>µg/kg</small></b><span>Ochratoxin A, pepper</span></div>
+      <div><b>25 <small>g</small></b><span>Salmonella absent in</span></div>
+     </div>
+     <p><b>Ethylene oxide</b> is banned for food use in the EU and measured with 2-chloroethanol.
+     There is no market where a positive result is a negotiable threshold. We test in India
+     before it ships.</p>
+         </section>
+<section class="slide " data-n="11 / 15">
+           <div class="kicker">10 · Moat</div>
+           <h1>Why this is defensible and not just trading</h1>
+           <ul class="moat">
+       <li><b>Lot-level chain of custody</b> with named grower clusters — expensive to build, boring to copy</li>
+       <li><b>Rejection data fed back</b> to clusters, so our supply improves and the spot market's does not</li>
+       <li><b>A brand that prints its own test results</b> — a liability for anyone competing on price alone</li>
+       <li><b>Two channels on one lot gate</b> — D2C carries margin, B2B carries predictable volume</li>
+     </ul>
+     <p class="stamp">A trader can undercut our price. A trader cannot undercut our paperwork without doing the work.</p>
+         </section>
+<section class="slide " data-n="12 / 15">
+           <div class="kicker">11 · Team</div>
+           <h1>Two founders, one advisor, and a deliberate absence of staff</h1>
+           <div class="cols">
+       <div><h4>Founder — Sourcing &amp; Quality</h4><p>Grower relationships, lot intake, testing,
+       rejections, Spices Board and FSSAI files.</p></div>
+       <div><h4>Founder — Commercial</h4><p>B2B accounts, pricing, export documentation,
+       importer relationships.</p></div>
+     </div>
+     <p>No sales team before month 15. No warehouse. No owned processing line. Co-packing and
+     third-party processing until route density justifies capital.</p>
+         </section>
+<section class="slide " data-n="13 / 15">
+           <div class="kicker">12 · Use of funds</div>
+           <h1>$150,000</h1>
+           <table class="fin">
+      <tr><td>First two container cycles (working capital, pepper + treatment + freight)</td><td class="num">$62,000</td></tr><tr><td>Compliance stack: FSSAI, Spices Board CRES, IEC, lab panel for 6 lots</td><td class="num">$18,000</td></tr><tr><td>Brand, packaging design, and site build</td><td class="num">$14,000</td></tr><tr><td>Trade shows (Anuga, Gulfood, Specialty Food Association) and samples</td><td class="num">$22,000</td></tr><tr><td>Paid acquisition test in 2 markets with a hard cut after 90 days</td><td class="num">$24,000</td></tr><tr><td>Operating buffer and contingency</td><td class="num">$10,000</td></tr>
+      <tr class="total"><td>Total</td><td class="num">$150,000</td></tr>
+     </table>
+     <p class="small">Month-12 milestone: repeat-order rate above 25% on D2C and two multi-lot B2B accounts.</p>
+         </section>
+<section class="slide " data-n="14 / 15">
+           <div class="kicker">13 · Risk</div>
+           <h1>What actually kills this company</h1>
+           <div class="cols">
+      <div><h4>Ethylene oxide contamination in incoming lots</h4><p>Contract clause with every supplier: no EtO fumigation. Test every lot before it leaves India. Steam treatment only. Reject-on-positive with cost recovery.</p></div><div><h4>Aflatoxin and ochratoxin A above EU limit</h4><p>Moisture spec max 12% at intake, covered drying, per-lot mycotoxin panel, reject lots from suppliers with two failures in a season.</p></div><div><h4>Salmonella detection</h4><p>Validated steam treatment, post-treatment re-test, sealed liners, no re-bagging in open air.</p></div><div><h4>Origin fraud — cheaper foreign pepper re-bagged as Indian</h4><p>Lot-level chain of custody, named grower clusters, isotope and trace-element screening on a sampling basis, published lot numbers.</p></div>
+     </div>
+         </section>
+<section class="slide closing" data-n="15 / 15">
+           <div class="kicker">14 · Why now</div>
+           <h1>Zero duty, a depleted crop, an under-built premium story</h1>
+           <ul class="moat">
+       <li>Whole pepper enters the EU and the US at <b>0% duty</b></li>
+       <li>India's FY 2024-25 spice exports hit a record <b>$4.72 B</b> — but pepper is only ~3% of that basket by value</li>
+       <li>The 2024/25 crop collapse made provenance a buying criterion, not a nice-to-have</li>
+     </ul>
+     <p>Buyers with budget have started asking for the test panel. Most suppliers cannot produce
+     one on demand.</p>
+         </section></main></body></html>

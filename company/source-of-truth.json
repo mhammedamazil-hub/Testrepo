@@ -1,0 +1,509 @@
+{
+  "_meta": {
+    "purpose": "Single source of truth for every number in every Kollam Pepper Co document. Deck, site, emails, and one-pager are generated from this file. If a number here changes, rebuild \u2014 do not hand-edit generated docs.",
+    "currency_note": "All plan figures in USD unless suffixed INR. Plan date 2026-11-10.",
+    "disclaimer": "All prices, demand, and cost figures are planning assumptions for a business case. They are not quotes."
+  },
+  "company": {
+    "legal_name": "Kollam Pepper Co",
+    "short_name": "Kollam",
+    "tagline": "Single-origin Tellicherry pepper, cleaned and graded in Kerala, shipped from the Malabar coast under our own mark.",
+    "one_liner": "A Kerala pepper house that owns the grade, the testing, and the story \u2014 instead of exporting anonymous bulk to whoever bids last.",
+    "founded": "2026",
+    "hq": "Kochi, Kerala, India",
+    "origin_hub": "Western Ghats growing belt within ~200 km of Kochi: Idukki, Pathanamthitta, Wayanad, Kasaragod",
+    "entity_plan": "Private Limited (Companies Act 2013), 2 founders + 1 advisor",
+    "brand_marks": {
+      "wordmark": "KOLLAM",
+      "lockup": "KOLLAM \u00b7 Malabar Pepper",
+      "primary_colour": "#2E4A3B",
+      "accent_colour": "#C05A2E",
+      "paper": "#F4EFE6"
+    }
+  },
+  "wedge": {
+    "statement": "India grows the world's most storied pepper and exports very little of it. The 2024/25 crop fell to a record-low ~48,000 t while domestic consumption ran ~81,000 t \u2014 so India net-imported. Buyers who want genuine Indian-origin pepper pay a premium for it, and they cannot tell where any given bag came from.",
+    "insight": "The scarce input is not pepper \u2014 it is verified Indian provenance at lot level. Our moat is the paper trail plus the grading, not the commodity.",
+    "strategy": "Buy small, cherry-pick the top-grade fraction of Kerala lots, steam-treat and test each lot to destination spec, then sell retail-ready packs and B2B micro-lots under our own mark. Never trade volume for its own sake."
+  },
+  "market": {
+    "channel_tiers": [
+      {
+        "tier": "Tier 0 \u2014 Farm gate / local trader",
+        "buyer": "Farmer sells to a village aggregator; ungraded, no testing",
+        "price_inr_per_kg": 620,
+        "confidence": "high",
+        "source": "Kochi terminal indicative black pepper price, Jun 2025, Rs 670-685/kg; farm-gate discounts to terminal of roughly 8-10% implied"
+      },
+      {
+        "tier": "Tier 1 \u2014 Regional processor / bulker",
+        "buyer": "Cleans, grades, bulks in 25 kg bags, sells FOB on spot",
+        "price_inr_per_kg": 760,
+        "confidence": "medium",
+        "source": "FOB range USD 3.45-8.50/kg by grade; USD 4.50-6.00 for MG-1 whole. INR 760/kg \u2248 USD 8.6/kg at 88.5 INR/USD, above published FOB because this line includes margin of the processor"
+      },
+      {
+        "tier": "Tier 2 \u2014 Exporter / importer landed",
+        "buyer": "Importer into EU/US pays CIF; duty is 0% on whole pepper into both",
+        "price_inr_per_kg": 1000,
+        "confidence": "medium",
+        "source": "FOB plus freight and insurance: ~USD 4,650 per container Nhava Sheva-Antwerp \u00f7 ~19 t net for a 20ft of bagged spice \u2248 USD 0.24/kg freight. Retail-grade landed expectation from buyer-side quotes"
+      },
+      {
+        "tier": "Tier 3 \u2014 Retail / specialty brand",
+        "buyer": "Buyer pays shelf price for 100 g - 1 kg branded packs",
+        "price_inr_per_kg": 2400,
+        "confidence": "high",
+        "source": "Observed 2025-26 retail: EUR 36.93/kg (FR, 1 kg), GBP 27.95/kg (UK, 1 kg), USD 33.19/lb = USD 73/kg (US, 1 lb bag), EUR 50/kg (DE, 50 g). INR 2,400/kg = USD 27.1/kg = GBP ~21/kg, i.e. below the cheapest observed single-kilo retail price"
+      }
+    ],
+    "headline_market_facts": [
+      {
+        "fact": "India exported 17.99 lakh tonnes of spices and spice products worth USD 4,722.65 M in FY 2024-25, a record",
+        "source": "Spices Board of India via PIB, 2025"
+      },
+      {
+        "fact": "Black pepper exports rose from 17,890 t (FY 2023-24) to 20,830 t (FY 2024-25), value up from Rs 736.5 crore to Rs 1,055 crore",
+        "source": "Spices Board data reported Jun 2025"
+      },
+      {
+        "fact": "The FY 2024/25 Indian pepper crop fell to ~48,000 t on El Nino heat while domestic consumption was ~81,000 t",
+        "source": "Nedspice data reported 2026"
+      },
+      {
+        "fact": "Pepper is only ~3% of India's spice export basket by value \u2014 the premium-origin story is under-commercialised",
+        "source": "Spices Board 2026"
+      }
+    ]
+  },
+  "products": [
+    {
+      "sku": "KP-T100",
+      "name": "Tellicherry Bold 100 g",
+      "format": "100 g resealable kraft pouch",
+      "grade": "TGSEB-grade, 5.0 mm+ sieve, piperine 5-7%",
+      "retail_eur": 12.9,
+      "retail_gbp": 11.5,
+      "retail_usd": 13.9,
+      "landed_cost_usd_per_kg_assumption": 14.5,
+      "positioning": "Trial size for gifting and first purchase"
+    },
+    {
+      "sku": "KP-T500",
+      "name": "Tellicherry Bold 500 g",
+      "format": "500 g valve bag",
+      "grade": "TGSEB-grade, 5.0 mm+ sieve, piperine 5-7%",
+      "retail_eur": 42.0,
+      "retail_gbp": 36.0,
+      "retail_usd": 45.0,
+      "landed_cost_usd_per_kg_assumption": 14.5,
+      "positioning": "The workhorse pack for home cooks"
+    },
+    {
+      "sku": "KP-MG1-25",
+      "name": "MG-1 Kitchen Grade 25 kg",
+      "format": "25 kg multi-wall paper bag, food-grade liner",
+      "grade": "Malabar Garbled MG-1, 3.5-4.5 mm, piperine 4-6%",
+      "retail_eur": 0,
+      "retail_gbp": 0,
+      "retail_usd": 320.0,
+      "landed_cost_usd_per_kg_assumption": 11.6,
+      "positioning": "B2B micro-lot for restaurant groups and meal-kit kitchens"
+    },
+    {
+      "sku": "KP-BLEND-12",
+      "name": "Malabar Line spice box (4 x 50 g)",
+      "format": "Gift box: pepper, cardamom, clove, cinnamon",
+      "grade": "Lot-tested, same origin belt",
+      "retail_eur": 29.0,
+      "retail_gbp": 25.0,
+      "retail_usd": 31.5,
+      "landed_cost_usd_per_kg_assumption": 21.0,
+      "positioning": "Seasonal gifting and corporate hampers"
+    }
+  ],
+  "unit_economics": {
+    "b2b_micro_lot": {
+      "label": "25 kg MG-1 kitchen-grade micro-lot",
+      "revenue_usd": 320.0,
+      "cogs_usd": 214.0,
+      "cogs_breakdown": {
+        "farm_gate_pepper_25kg_at_inr620": 175.0,
+        "grading_rejection_allowance_6pct": 10.5,
+        "steam_treatment_and_lab_per_kg_0_52": 13.0,
+        "export_paperwork_and_customs_clearance": 6.5,
+        "inland_freight_and_port_handling": 9.0,
+        "total": 214.0
+      },
+      "gross_profit_usd": 106.0,
+      "gross_margin_pct": 33.1,
+      "delivery_cost_usd_assumption": 41.0,
+      "contribution_usd": 65.0,
+      "note": "cogs_usd is the sum of cogs_breakdown. Revenue 320.0 - 214.0 = 106.0 gross profit (33.1%).",
+      "units_in_lot": 1
+    },
+    "d2c_500g": {
+      "label": "One 500 g Tellicherry pack, direct-to-consumer",
+      "revenue_usd": 45.0,
+      "cogs_usd": 7.25,
+      "cogs_note": "0.5 kg at USD 14.5/kg landed incl. pouch and label",
+      "fulfilment_usd": 7.4,
+      "payment_fee_usd": 1.35,
+      "cac_usd": 12.0,
+      "contribution_usd": 17.0,
+      "contribution_margin_pct": 37.8,
+      "note": "Revenue 45.0 - goods 7.25 - fulfilment 7.4 - payment 1.35 - CAC 12.0 = 17.0 contribution. Gross margin before CAC is ~60%, planned at 56%."
+    },
+    "basket_mix_assumption": {
+      "d2c_share_of_units": 0.62,
+      "b2b_share_of_units": 0.38,
+      "avg_d2c_order_value_usd": 58.0,
+      "avg_b2b_order_value_usd": 1280.0
+    },
+    "channel_margins": {
+      "d2c_gross_margin_pct": 56.0,
+      "d2c_margin_note": "45.0 revenue - 7.25 goods - 7.4 fulfilment - 1.35 payment - 1.8 returns/damage allowance = 27.2, 60.4%. Held at 56% for planning to absorb free-shipping thresholds and promo discounts.",
+      "b2b_gross_margin_pct": 33.1,
+      "b2b_margin_note": "(320.0 - 214.0) / 320.0 = 33.1%. Delivery is recharged to the buyer in the B2B quote, so it is not netted here."
+    }
+  },
+  "plan": {
+    "horizon": "36 months from first shipment",
+    "y1": {
+      "label": "FY1 - Prove the lot (months 1-12)",
+      "d2c_orders": 1350,
+      "b2b_micro_lots": 62,
+      "opex_usd": {
+        "founder_draws": 36000,
+        "part_time_qa_and_admin": 14400,
+        "co_packing_and_storage": 9600,
+        "testing_and_certification": 7200,
+        "trade_shows_and_sampling": 9000,
+        "brand_site_packaging_setup": 11000,
+        "insurance_and_compliance": 4800
+      }
+    },
+    "y2": {
+      "label": "FY2 - Repeat and route (months 13-24)",
+      "d2c_orders": 4200,
+      "b2b_micro_lots": 190,
+      "opex_usd": {
+        "founder_draws": 48000,
+        "ops_and_qa_hire": 42000,
+        "co_packing_and_storage": 26400,
+        "testing_and_certification": 14400,
+        "trade_shows_and_sampling": 12000,
+        "marketing": 30000,
+        "insurance_and_compliance": 7200
+      }
+    },
+    "y3": {
+      "label": "FY3 - Route density (months 25-36)",
+      "d2c_orders": 7600,
+      "b2b_micro_lots": 355,
+      "opex_usd": {
+        "founder_draws": 60000,
+        "team_of_three": 108000,
+        "co_packing_and_storage": 46800,
+        "testing_and_certification": 24000,
+        "trade_shows_and_sampling": 16000,
+        "marketing": 54000,
+        "insurance_and_compliance": 9600
+      }
+    },
+    "assumptions": [
+      "Channel gross margins are planning figures: 56% D2C before CAC, 33.1% B2B. Both are midpoints of observed tier spreads, not best cases.",
+      "B2B revenue per micro-lot held at USD 1,280 (four 25 kg bags) with no price escalation across three years.",
+      "D2C average order value fixed at USD 58 throughout; growth comes from order count, not price rises.",
+      "No private-label revenue, no contract packing revenue, no gifting seasonality modelled.",
+      "Freight USD 4,650 per 20ft from Nhava Sheva to Antwerp; a 19 t load at 25 kg per bag is 760 bags.",
+      "INR/USD held at 88.5 throughout.",
+      "Founder draws are below market salary in FY1 and FY2. That is a real cost the model understates."
+    ],
+    "drivers": {
+      "d2c_avg_order_value_usd": 58.0,
+      "b2b_revenue_per_micro_lot_usd": 1280.0,
+      "d2c_gross_margin_pct": 56.0,
+      "b2b_gross_margin_pct": 33.1,
+      "note": "Gross profit and EBITDA are not stored here. scripts/build.mjs derives them and scripts/validate.mjs recomputes them independently and fails the build on any mismatch."
+    },
+    "bear_case": {
+      "revenue_multiplier": 0.6,
+      "margin_delta_points": -4.0,
+      "note": "Applied to FY3 only. 60% of planned revenue with four points off gross margin."
+    }
+  },
+  "capital": {
+    "raise_usd": 150000,
+    "instrument_plan": "Priced equity or convertible note; do not take debt against unsold inventory in year one",
+    "use_of_funds": [
+      {
+        "line": "First two container cycles (working capital, pepper + treatment + freight)",
+        "usd": 62000
+      },
+      {
+        "line": "Compliance stack: FSSAI, Spices Board CRES, IEC, lab panel for 6 lots",
+        "usd": 18000
+      },
+      {
+        "line": "Brand, packaging design, and site build",
+        "usd": 14000
+      },
+      {
+        "line": "Trade shows (Anuga, Gulfood, Specialty Food Association) and samples",
+        "usd": 22000
+      },
+      {
+        "line": "Paid acquisition test in 2 markets with a hard cut after 90 days",
+        "usd": 24000
+      },
+      {
+        "line": "Operating buffer and contingency",
+        "usd": 10000
+      }
+    ],
+    "use_of_funds_total_usd": 150000,
+    "milestones": [
+      "Month 3: first container shipped with a full destination test panel for the EU and US",
+      "Month 6: 25 B2B micro-lot accounts and 300 D2C orders",
+      "Month 12: repeat-order rate above 25% D2C, two multi-lot B2B accounts",
+      "Month 18: gross margin sustained above 35% across two consecutive quarters",
+      "Month 24: EBITDA within USD 5,000 of breakeven"
+    ]
+  },
+  "risks": [
+    {
+      "risk": "Ethylene oxide contamination in incoming lots",
+      "severity": "critical",
+      "why": "EtO is banned for food use in the EU; the EU measures EtO plus 2-chloroethanol at a default limit around 0.02-0.1 mg/kg. A positive result destroys the shipment.",
+      "control": "Contract clause with every supplier: no EtO fumigation. Test every lot before it leaves India. Steam treatment only. Reject-on-positive with cost recovery."
+    },
+    {
+      "risk": "Aflatoxin and ochratoxin A above EU limit",
+      "severity": "high",
+      "why": "EU limits for pepper: aflatoxin B1 5.0 ug/kg, total aflatoxins 10.0 ug/kg, ochratoxin A 15 ug/kg.",
+      "control": "Moisture spec max 12% at intake, covered drying, per-lot mycotoxin panel, reject lots from suppliers with two failures in a season."
+    },
+    {
+      "risk": "Salmonella detection",
+      "severity": "high",
+      "why": "EU microbiological criteria require absence in 25 g; RASFF flags spices routinely.",
+      "control": "Validated steam treatment, post-treatment re-test, sealed liners, no re-bagging in open air."
+    },
+    {
+      "risk": "Origin fraud \u2014 cheaper foreign pepper re-bagged as Indian",
+      "severity": "high",
+      "why": "This is the exact problem the company exists to solve, and the market's default behaviour.",
+      "control": "Lot-level chain of custody, named grower clusters, isotope and trace-element screening on a sampling basis, published lot numbers."
+    },
+    {
+      "risk": "Crop and price volatility",
+      "severity": "medium",
+      "why": "The 2024/25 crop fell to ~48,000 t; India net-imported. Prices at Kochi moved through Rs 670-685/kg in mid-2025.",
+      "control": "Forward contracts with two grower clusters, inventory never above 90 days, price-adjust B2B quotes every 30 days, no fixed-price retail commitments longer than 6 months."
+    },
+    {
+      "risk": "D2C acquisition cost creep",
+      "severity": "medium",
+      "why": "Specialty food CAC is easy to overspend on in the first year.",
+      "control": "Hard 90-day cut rule on any channel above USD 18 CAC; shift budget to B2B where repeat is contractual."
+    },
+    {
+      "risk": "Single-origin supply concentration",
+      "severity": "medium",
+      "why": "One bad monsoon in one district can remove a grade entirely.",
+      "control": "Two sourcing districts minimum, plus a standing second source for MG-1 outside the premium line."
+    }
+  ],
+  "compliance": {
+    "india_export_stack": [
+      {
+        "item": "IEC (Import Export Code)",
+        "authority": "DGFT",
+        "why": "Mandatory for any export"
+      },
+      {
+        "item": "GST registration",
+        "authority": "GSTN",
+        "why": "Mandatory and IEC-linked"
+      },
+      {
+        "item": "FSSAI licence",
+        "authority": "FSSAI",
+        "why": "Mandatory for any food business incl. export"
+      },
+      {
+        "item": "CRES (Certificate of Registration as Exporter of Spices)",
+        "authority": "Spices Board of India",
+        "why": "No scheduled spice may be exported without it; treated as RCMC under FTP 2023"
+      },
+      {
+        "item": "Phytosanitary certificate",
+        "authority": "PQMS / PPQS",
+        "why": "Destination requirement for plant products"
+      },
+      {
+        "item": "Certificate of Origin",
+        "authority": "Chamber of commerce",
+        "why": "Needed for preferential claims and buyer files"
+      },
+      {
+        "item": "RoDTEP claim",
+        "authority": "Customs",
+        "why": "Refund of embedded taxes on exports; file per shipping bill"
+      }
+    ],
+    "destination_specs": {
+      "eu": {
+        "hs_code": "0904 11 00",
+        "mfn_duty": "0%",
+        "vat_note": "Destination VAT applies on customs value plus duty",
+        "limits": [
+          "Aflatoxin B1 max 5.0 ug/kg; total aflatoxins max 10.0 ug/kg (Reg (EU) 2023/915)",
+          "Ochratoxin A max 15 ug/kg for pepper",
+          "Salmonella absent in 25 g (Reg (EC) 2073/2005)",
+          "Ethylene oxide and 2-chloroethanol: measured as sum, at or near the limit of quantification \u2014 treat as zero tolerance",
+          "Lead max 0.6 mg/kg for fruit spices"
+        ],
+        "border_note": "Pepper of heading 0904 from India is subject to a pesticide-residue check frequency at EU border control posts; confirm current Annex I frequency before each campaign"
+      },
+      "us": {
+        "hts_code": "0904.11.00.20",
+        "general_duty": "Free",
+        "requirements": [
+          "FDA registration and prior notice for every shipment",
+          "Foreign Supplier Verification Program (FSVP) obligations sit on the US importer \u2014 we supply the hazard analysis and verification records to make them workable",
+          "No US tolerance exists for EtO residues on spices; a detectable residue is a serious problem, not a threshold to negotiate"
+        ]
+      },
+      "uk": {
+        "commodity_code": "0904 11 00",
+        "duty": "0%",
+        "note": "UK-EU and UK-India arrangements change; confirm origin rules before claiming preference"
+      }
+    },
+    "quality_specs": {
+      "moisture_pct_max": 12,
+      "total_ash_pct_max": 7,
+      "acid_insoluble_ash_pct_max": 1.5,
+      "bulk_density_g_per_l_min": 500,
+      "piperine_pct_range": "4.0-7.0 depending on grade",
+      "volatile_oil_ml_per_100g_min": 2.0,
+      "foreign_matter_pct_max": 0.5,
+      "packaging": "Food-grade liner inside multi-wall paper or kraft with valve; nitrogen flush optional"
+    },
+    "lot_gate": [
+      "Supplier declaration of no EtO fumigation, signed",
+      "Moisture and water activity measured at intake",
+      "Full panel: mycotoxins, microbiology, heavy metals, pesticide multi-residue, EtO",
+      "Grade verification by sieve and density",
+      "Only then does the lot receive a KL-YYYY-NNN lot number and enter sellable stock"
+    ]
+  },
+  "org": {
+    "build_principle": "Hire against a bottleneck that is already visible, never against an org chart.",
+    "roles": [
+      {
+        "role": "Founder \u2014 Sourcing & Quality",
+        "owns": "Grower relationships, lot intake, testing, rejections, Spices Board and FSSAI files",
+        "when": "Day 1"
+      },
+      {
+        "role": "Founder \u2014 Commercial",
+        "owns": "B2B accounts, pricing, export documentation, importer relationships",
+        "when": "Day 1"
+      },
+      {
+        "role": "Part-time QA & Admin",
+        "owns": "Lab coordination, shipping documents, bookkeeping",
+        "when": "Month 4"
+      },
+      {
+        "role": "Ops & QA Lead",
+        "owns": "Co-packer management, inventory, lot release authority",
+        "when": "Month 13"
+      },
+      {
+        "role": "Growth & Content",
+        "owns": "D2C funnel, email, trade show follow-up, content calendar",
+        "when": "Month 15"
+      },
+      {
+        "role": "Finance & Compliance",
+        "owns": "Cash cycle, RoDTEP claims, importer credit, audit prep",
+        "when": "Month 26"
+      }
+    ],
+    "first_five_hires": [
+      "Part-time QA & Admin (contract, 3 days/week)",
+      "Ops & QA Lead (full-time, month 13)",
+      "Growth & Content (full-time, month 15)",
+      "Co-packing supervisor (via partner, not headcount)",
+      "Finance & Compliance (contract CFO, month 26)"
+    ]
+  },
+  "agents": {
+    "note": "Mapped from the 68 ECC agents actually installed at .claude/agents/. These are the ones this company uses, and for what.",
+    "assignments": [
+      {
+        "agent": "chief-of-staff",
+        "used_for": "Inbound triage across buyer, supplier, and lab email; draft replies; follow-through"
+      },
+      {
+        "agent": "marketing-agent",
+        "used_for": "Launch copy, email sequences, trade-show one-pagers, campaign calendar"
+      },
+      {
+        "agent": "seo-specialist",
+        "used_for": "Product page structure, structured data for food products, Core Web Vitals"
+      },
+      {
+        "agent": "code-reviewer",
+        "used_for": "Review of the lot tracker, cost model, and any code that touches pricing"
+      },
+      {
+        "agent": "security-reviewer",
+        "used_for": "Supplier document handling, credentials, no-secrets-in-repo checks"
+      },
+      {
+        "agent": "doc-updater",
+        "used_for": "Keeping this dossier consistent when a number changes"
+      },
+      {
+        "agent": "planner",
+        "used_for": "Sequencing container cycles, trade shows, and cash events"
+      },
+      {
+        "agent": "performance-optimizer",
+        "used_for": "Site build speed and image weight for a mobile-first D2C storefront"
+      }
+    ],
+    "skills_exercised": [
+      "customs-trade-compliance",
+      "logistics-exception-management",
+      "quality-nonconformance",
+      "inventory-demand-planning",
+      "market-research",
+      "investor-materials",
+      "brand-voice",
+      "finance-billing-ops",
+      "seo"
+    ]
+  },
+  "brand_voice": {
+    "profile_source": "Derived from the ECC brand-voice skill's extraction dimensions, applied to a food-origin company rather than a software company.",
+    "do": [
+      "Name the grade, the lot, and the test result",
+      "Use numbers where a number exists",
+      "Say what we reject and why, not just what we accept",
+      "Short sentences; one idea each"
+    ],
+    "dont": [
+      "Never use 'exotic', 'authentic', 'premium quality', 'hand-picked by farmers' without a grade or a test behind it",
+      "No superlatives without a comparison",
+      "No claims about health benefits",
+      "No stock-photo-only storytelling"
+    ],
+    "sample_sentence": "Lot KL-2026-014. TGSEB grade, 5.2 mm sieve, 6.1% piperine, EtO not detected, Salmonella absent in 25 g. That is the whole pitch."
+  }
+}
