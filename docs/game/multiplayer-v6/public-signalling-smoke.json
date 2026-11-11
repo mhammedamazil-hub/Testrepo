@@ -1,0 +1,8 @@
+{
+  "scope": "Production build, two isolated Chromium contexts on the same machine, default public PeerJS signalling. Not cross-NAT, physical-device, uptime or performance certification.",
+  "url": "http://127.0.0.1:3002/multiplayer.html",
+  "checks": [],
+  "network_errors": [],
+  "passed": false,
+  "error": "Connection error (network). Public signalling is not guaranteed; restrictive NAT may need a TURN relay."
+}

@@ -6,7 +6,9 @@ export class AlpineInput {
   try{this.steeringMode=localStorage.getItem('alpine-steering')||'wheel';}catch{}
   if(!['wheel','arrows'].includes(this.steeringMode))this.steeringMode='wheel';document.body.dataset.steering=this.steeringMode;this.sources=new Map();this.pending=new Set();this.stick={x:0,y:0};this.pointers=new Map();this.touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
   document.body.classList.toggle('touch',this.touch);
+  document.addEventListener('focusin',e=>{if(e.target.closest?.('input,textarea,select,[contenteditable=true]'))this.clear();});
   addEventListener('keydown',e=>{
+   if(e.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
    if(keys[e.code]){e.preventDefault();this.press('key:'+e.code,keys[e.code]);}
    else if(!e.repeat){const action={KeyE:'interact',KeyR:'reset',Escape:'pause',KeyM:'mute',KeyF:'fullscreen',KeyG:'rays',KeyQ:'rear',KeyN:'night',KeyH:'headlights',KeyJ:'flight',KeyL:'land'}[e.code];if(action)this.command(action);}
   });

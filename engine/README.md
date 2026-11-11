@@ -1,6 +1,12 @@
-# Alpine: After Dark — Runtime 0.5
+# Alpine: After Dark / Grand Prix — Runtime 0.6
 
 A free browser driving/exploration prototype with an original custom framework. Three.js renders the world; Rapier WASM simulates the dynamic vehicle and walking collisions. Blender/bpy is the offline asset compiler, not the browser runtime. No paid GPU, Steam integration or manufacturer endorsement.
+
+## Multiplayer Grand Prix
+
+[Play online](https://mhammedamazil-hub.github.io/Testrepo/multiplayer.html) or use **ONLINE GRAND PRIX** in the solo launcher. Temporary guest rooms, shareable invitations, six car colours, 2–6 racers, a new 5.69 km circuit, checkpoints/laps/results, nitro, recovery, chat and Low/Balanced/High choices. Multiplayer has no flying.
+
+[Architecture, controls, setup and limitations](../docs/game/multiplayer-v6/README.md) · [validation evidence](../docs/game/multiplayer-v6/VALIDATION.md). Pages hosts the client, external PeerJS handles discovery, and the host browser owns race rules. No guaranteed public connectivity/TURN or authoritative physics anti-cheat. Start `npm run signal --prefix engine` alongside Vite for local multiplayer.
 
 ## Play / build
 

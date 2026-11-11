@@ -122,6 +122,7 @@ export class AlpinePhysics {
   const drag=.5*SPEC.airDensity*SPEC.dragArea*speed;
   const rolling=this.carGrounded?SPEC.rollingCoefficient*SPEC.mass*9.81/Math.max(1,speed):0;
   this.car.addForce({x:-v.x*(drag+rolling),y:-v.y*drag,z:-v.z*(drag+rolling)},true);
+  if(this.inVehicle&&this.carGrounded&&!this.flight.active&&Number.isFinite(input.groundBoost)&&input.groundBoost>0){const f=rotate(this.car.rotation(),{x:0,y:0,z:-1}),boost=Math.min(9500,input.groundBoost);this.car.addForce({x:f.x*boost,y:0,z:f.z*boost},true);}
   if(this.carGrounded&&!this.flight.active)this.car.addForce({x:0,y:-.5*SPEC.airDensity*SPEC.downforceArea*speed*speed,z:0},true);
   if(this.flight.active){const p=this.car.translation(),hit=this.world.castRay(new RAPIER.Ray({x:p.x,y:p.y+1,z:p.z},{x:0,y:-1,z:0}),250,true,undefined,undefined,undefined,this.car);const ground=hit?p.y+1-hit.timeOfImpact:0;this.flight.apply(this.car,dt,input,ground,this.carGrounded);if(!this.flight.active)this.autoHold=true;}
   else this.flight.apply(this.car,dt,input,0,this.carGrounded);

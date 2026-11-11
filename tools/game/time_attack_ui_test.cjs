@@ -33,7 +33,7 @@ const root=path.resolve(__dirname,'../..'),{chromium:pw}=require(path.join(root,
    }
    await page.evaluate(()=>{document.body.classList.remove('driving','flight');input.clear();});assert.ok(await page.locator('#joystick').isVisible());assert.equal(await page.locator('#gas-pedal').isVisible(),false);
    await page.evaluate(()=>{document.body.dataset.phase='menu';document.getElementById('menu').hidden=false;});
-   const lobby=await box('.lobby-sidebar'),vehicle=await box('.lobby-vehicle');assert.ok(lobby.y+lobby.height<=viewport.height&&vehicle.x+vehicle.width<=viewport.width);assert.ok(!(lobby.x<vehicle.x+vehicle.width&&lobby.x+lobby.width>vehicle.x&&lobby.y<vehicle.y+vehicle.height&&lobby.y+lobby.height>vehicle.y),'Lobby panels overlap');
+   const lobby=await box('.lobby-sidebar'),vehicle=await box('.lobby-vehicle');assert.ok(lobby.y+lobby.height<=viewport.height&&vehicle.x+vehicle.width<=viewport.width);assert.ok(!(lobby.x<vehicle.x+vehicle.width&&lobby.x+lobby.width>vehicle.x&&lobby.y<vehicle.y+vehicle.height&&lobby.y+lobby.height>vehicle.y),'Lobby panels overlap '+JSON.stringify({viewport,lobby,vehicle}));
    await context.close();
   }
   fs.writeFileSync(path.join(root,'docs/game/time-attack-v5/ui-input-validation.json'),JSON.stringify({scope:'Real Chromium DOM/CSS and actual AlpineInput event handlers. No WebGL or hardware performance claim.',checks,passed:true},null,2)+'\n');console.log('BEYOND_ROAD_UI_LAYOUT_AND_MULTITOUCH_PASS',checks.length);

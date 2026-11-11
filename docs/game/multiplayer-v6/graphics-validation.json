@@ -1,0 +1,52 @@
+{
+  "scope": "Actual single-host solo graphics previews at 16:9; software WebGL2. Verifies preset settings/assets and captures pixels, not multiplayer race completion or real-time/device FPS.",
+  "checks": [
+    {
+      "quality": "low",
+      "render": [
+        800,
+        450
+      ],
+      "shadows": false,
+      "sun_map": 512,
+      "grass": 0,
+      "trees": 350,
+      "car": "grand-prix/roadster-low.glb",
+      "photographic_pines": false,
+      "draw_calls": 89,
+      "triangles": 223136
+    },
+    {
+      "quality": "balanced",
+      "render": [
+        1280,
+        720
+      ],
+      "shadows": true,
+      "sun_map": 1024,
+      "grass": 1800,
+      "trees": 700,
+      "car": "grand-prix/roadster-low.glb",
+      "photographic_pines": false,
+      "draw_calls": 123,
+      "triangles": 296681
+    },
+    {
+      "quality": "high",
+      "render": [
+        1920,
+        1080
+      ],
+      "shadows": true,
+      "sun_map": 2048,
+      "grass": 4500,
+      "trees": 1100,
+      "car": "roadster/roadster.glb",
+      "photographic_pines": true,
+      "draw_calls": 131,
+      "triangles": 1557483
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

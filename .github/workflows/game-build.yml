@@ -10,6 +10,8 @@ on:
       - docs/game/circuit-v3/**
       - docs/game/beyond-road-v4/**
       - docs/game/time-attack-v5/**
+      - docs/game/multiplayer-v6/**
+      - tests/test_multiplayer_release.py
       - tests/test_short_hop.py
       - tests/test_beyond_road.py
       - tests/test_circuit_release.py
@@ -47,6 +49,7 @@ jobs:
           npm ci --prefix engine
           npm test --prefix engine
           node engine/tests/circuit-drive.js
+          node engine/tests/grand-prix-drive.js
           npm run build --prefix engine
       - name: Make the custom game the main site and retain its previous URL
         run: |
@@ -114,6 +117,10 @@ jobs:
           assert 'FINITE THRUSTER HOPS' in html and 'boost-control' in html and 'trial-best' in html
           assert 'steering-wheel' in html and 'gas-pedal' in html and 'brake-pedal' in html
           assert 'Alpine: After Dark' in read('alpine/')[0].decode()
-          print('CUSTOM_GAME_AND_SOCIAL_PREVIEW_HTTPS_PASS',base)
-          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Not a physical-phone/60 FPS certificate.\n')
+          online=read('multiplayer.html')[0].decode();assert 'guest-name' in online and 'start-race' in online and 'chat-message' in online
+          assert 'multiplayer.html' in html
+          low=read('world/grand-prix/roadster-low.glb')[0];assert low[:4]==b'glTF' and len(low)<4500000
+          online_image,mime=read('social/grand-prix-v6.jpg');assert mime=='image/jpeg' and online_image[:2]==b'\xff\xd8'
+          print('CUSTOM_GAME_MULTIPLAYER_CLIENT_AND_SOCIAL_HTTPS_PASS',base)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Multiplayer HTML and low-car asset are published. Public PeerJS signalling/cross-NAT reachability is not certified by this HTTP smoke check. Not a physical-phone/60 FPS certificate.\n')
           PY

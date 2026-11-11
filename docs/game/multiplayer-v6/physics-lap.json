@@ -1,0 +1,12 @@
+{
+  "scope": "Actual expanded-map terrain/road/guardrail Rapier dynamics and host checkpoint validator. Only test input pursuit, no position/velocity assignments after spawn. Not human gameplay or device FPS.",
+  "passed": true,
+  "route_metres": 5687.879935734132,
+  "ticks": 21442,
+  "simulated_seconds": 357.3666666666667,
+  "finish_seconds": 357.3676666667213,
+  "gates": 8,
+  "max_distance_m": 1.2086961914113508,
+  "min_contacts": 4,
+  "rejected_snapshots": 0
+}

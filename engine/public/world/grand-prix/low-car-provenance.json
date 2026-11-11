@@ -1,0 +1,10 @@
+{
+  "source": "../roadster/roadster.glb",
+  "source_sha256": "d9ecef7a8b761bfbaad2ad9a6a0c8812b1d510a72a67a92c402c28c35e34d4f7",
+  "output_sha256": "08c8627a11b29ae85cbcebcd294f0224e1725ac283343fec038da861aa494627",
+  "bytes": 3932628,
+  "triangles": 58697,
+  "method": "gltf-transform weld + meshoptimizer simplification ratio .10/error .02; original materials/UVs retained, texture images capped to 256px PNG. Same named wheel/caliper hierarchy. Low preset only.",
+  "license": "CC-BY-4.0",
+  "author": "metarex.4d"
+}
