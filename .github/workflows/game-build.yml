@@ -11,6 +11,7 @@ on:
       - docs/game/beyond-road-v4/**
       - docs/game/time-attack-v5/**
       - docs/game/multiplayer-v6/**
+      - docs/game/mountain-v7/**
       - tests/test_multiplayer_release.py
       - tests/test_short_hop.py
       - tests/test_beyond_road.py
@@ -61,6 +62,9 @@ jobs:
           shutil.copytree(source,site/'alpine')
           (site/'.nojekyll').touch()
           assert (site/'social/after-dark-time-attack-v5.jpg').is_file()
+          assert (site/'design.html').is_file()
+          assert (site/'world/mountain/alpine-massif.glb').is_file()
+          assert len(list((site/'design-reference').glob('*.jpg')))==10
           html=(site/'index.html').read_text()
           assert 'og:image' in html and 'Alpine: After Dark' in html
           shutil.make_archive('.exports/Alpine_After_Dark_Web','zip',source)
@@ -96,7 +100,7 @@ jobs:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           python - <<'PY'
-          import os,re,urllib.request,json
+          import os,re,urllib.request,json,hashlib
           base=os.environ['PAGES_URL'].rstrip('/')+'/'
           def read(name):
               url=base+name+('?release='+os.environ['GITHUB_SHA'])
@@ -121,6 +125,17 @@ jobs:
           assert 'multiplayer.html' in html
           low=read('world/grand-prix/roadster-low.glb')[0];assert low[:4]==b'glTF' and len(low)<4500000
           online_image,mime=read('social/grand-prix-v6.jpg');assert mime=='image/jpeg' and online_image[:2]==b'\xff\xd8'
-          print('CUSTOM_GAME_MULTIPLAYER_CLIENT_AND_SOCIAL_HTTPS_PASS',base)
-          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Multiplayer HTML and low-car asset are published. Public PeerJS signalling/cross-NAT reachability is not certified by this HTTP smoke check. Not a physical-phone/60 FPS certificate.\n')
+          workshop=read('design.html')[0].decode()
+          assert 'car-preview' in workshop and 'driver' in workshop and 'WORK IN PROGRESS' in workshop
+          workshop_bundle=re.search(r'<script[^>]+src="([^"]+)"',workshop).group(1)
+          assert len(read(workshop_bundle)[0])>1000
+          massif=read('world/mountain/alpine-massif.glb')[0];assert massif[:4]==b'glTF'
+          manifest=json.loads(read('world/mountain/manifest.json')[0])
+          assert hashlib.sha256(massif).hexdigest()==manifest['sha256'] and len(manifest['meshes'])==240
+          for reference in ['01-mountain-world','02-guest-live-car','03-room-lobby','04-desktop-race','05-mobile-race','06-track-map','07-race-results','08-settings','09-pause-connection','10-solo-home-garage']:
+              image,mime=read('design-reference/'+reference+'.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
+          assert 'practice-drive' in online and 'design.html' in online
+          assert 'car-preview' in read('alpine/design.html')[0].decode()
+          print('CUSTOM_GAME_WORKSHOP_MOUNTAIN_REFERENCES_AND_MULTIPLAYER_HTTPS_PASS',base)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Multiplayer HTML and low-car asset are published. Visual Workshop: '+base+'design.html is published with its JS bundle, ten concept images and hash-verified Blender mountain GLB. Terrain/UI remain work in progress, not photorealism approval. Public PeerJS signalling/cross-NAT reachability is not certified by this HTTP smoke check. Not a physical-phone/60 FPS certificate.\n')
           PY

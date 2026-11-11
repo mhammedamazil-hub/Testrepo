@@ -1,0 +1,95 @@
+{
+  "scope": "Actual separate Chromium browser contexts, real PeerJS signalling via local Vite proxy, real WebRTC data channels, Rapier and Three.js. Timer-driven simulation decoupled from software render captures; QA-only preserveDrawingBuffer and synchronous canvas image copy for reliable screenshots of background browser contexts. Low preset explicitly selected. Not public-service uptime, cross-NAT/TURN, sustained FPS or physical-device evidence.",
+  "checks": [
+    {
+      "name": "Host creates an actual ephemeral room with local signalling/WebRTC",
+      "passed": true
+    },
+    {
+      "name": "Two independent browser clients exchange a real roster",
+      "passed": true
+    },
+    {
+      "name": "Guest colour is synchronized to the host",
+      "passed": true
+    },
+    {
+      "name": "Guest cannot start the host race",
+      "passed": true
+    },
+    {
+      "name": "Shareable invitation contains the actual room code",
+      "passed": true
+    },
+    {
+      "name": "Typing chat never drives the car",
+      "passed": true
+    },
+    {
+      "name": "Live text chat crosses the peer connection",
+      "passed": true
+    },
+    {
+      "name": "Chat is plain text, never injected HTML",
+      "passed": true
+    },
+    {
+      "name": "Quick comments broadcast to the room",
+      "passed": true
+    },
+    {
+      "name": "Host starts one shared countdown with the chosen lap count",
+      "passed": true
+    },
+    {
+      "name": "Actual force-driven local movement is relayed to another browser",
+      "passed": true
+    },
+    {
+      "name": "A real remote coloured car is rendered",
+      "passed": true
+    },
+    {
+      "name": "Remote orientation follows the transmitted physics quaternion",
+      "passed": true
+    },
+    {
+      "name": "Flight cannot be armed in multiplayer",
+      "passed": true
+    },
+    {
+      "name": "Host owns finite nitro inventory and activation",
+      "passed": true
+    },
+    {
+      "name": "Return-to-road recovery is host-authorized and adds a time penalty",
+      "passed": true
+    },
+    {
+      "name": "An in-progress grid cannot be invaded by late arrivals",
+      "passed": true
+    },
+    {
+      "name": "Host result snapshots populate both podiums",
+      "passed": true
+    },
+    {
+      "name": "Only host can trigger a rematch",
+      "passed": true
+    },
+    {
+      "name": "Rematch returns everyone to a fresh unready lobby",
+      "passed": true
+    },
+    {
+      "name": "Host departure closes the guest session with a clear explanation",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime exceptions",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "completed": true
+}

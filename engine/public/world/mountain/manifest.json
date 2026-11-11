@@ -1,0 +1,1212 @@
+{
+  "author": "Original procedural environment, repository authoring script",
+  "tool": "Blender 4.3.0",
+  "units": "metres",
+  "map_collision": "Unchanged JS graded terrain/road/rails; this GLB is render-only",
+  "lod": "64 terrain tiles, 16 skyline sectors, each with three levels; tile boundary vertices locked. Camera-distance/frustum switches at runtime.",
+  "boundary_max_gap_metres": 5.000000000000114,
+  "bytes": 5731108,
+  "sha256": "ceb651cfc02a4fb2de9ac8d88b8a8d058ce40a185c26b34497086d46f2c770fe",
+  "meshes": [
+    {
+      "name": "Terrain_0_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_0_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_0_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_0_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_1_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_1_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_1_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_2_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_2_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_2_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_3_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_3_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_3_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_4_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_4_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_4_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_5_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_5_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_5_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_6_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_6_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_6_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_0_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_0_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_0_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_1_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_1_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_1_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_2_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_2_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_2_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_3_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_3_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_3_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_4_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_4_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_4_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_5_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_5_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_5_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_6_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_6_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_6_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Terrain_7_7_LOD0",
+      "triangles": 2048,
+      "vertices": 1089
+    },
+    {
+      "name": "Terrain_7_7_LOD1",
+      "triangles": 696,
+      "vertices": 413
+    },
+    {
+      "name": "Terrain_7_7_LOD2",
+      "triangles": 280,
+      "vertices": 205
+    },
+    {
+      "name": "Massif_0_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_0_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_0_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_1_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_1_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_1_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_2_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_2_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_2_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_3_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_3_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_3_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_4_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_4_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_4_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_5_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_5_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_5_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_6_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_6_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_6_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_7_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_7_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_7_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_8_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_8_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_8_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_9_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_9_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_9_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_10_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_10_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_10_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_11_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_11_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_11_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_12_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_12_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_12_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_13_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_13_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_13_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_14_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_14_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_14_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    },
+    {
+      "name": "Massif_15_LOD0",
+      "triangles": 1152,
+      "vertices": 625
+    },
+    {
+      "name": "Massif_15_LOD1",
+      "triangles": 288,
+      "vertices": 169
+    },
+    {
+      "name": "Massif_15_LOD2",
+      "triangles": 72,
+      "vertices": 49
+    }
+  ]
+}

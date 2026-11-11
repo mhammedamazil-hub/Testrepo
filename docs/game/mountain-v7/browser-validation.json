@@ -1,0 +1,109 @@
+{
+  "scope": "Software Chromium WebGL2, actual model/name/paint preview and Blender-authored mountain test drive. Per-view rendered geometry A/B, NOT device FPS or photorealism certification.",
+  "checks": [
+    "Actual Roadster paint and driver-name preview update live",
+    "Ten separately generated art/UI reference screens are linked",
+    "Local mountain test drive opens without external signalling",
+    "Five route viewpoints submit at least 10% fewer triangles than full-detail spatial cells",
+    "Culling and LOD never remove physics colliders or alter car transforms"
+  ],
+  "errors": [],
+  "passed": true,
+  "geometry": [
+    {
+      "routeIndex": 0,
+      "full": {
+        "calls": 183,
+        "triangles": 548151
+      },
+      "lod": {
+        "calls": 151,
+        "triangles": 253623
+      },
+      "stats": {
+        "cells": 235,
+        "visible": 76,
+        "culled": 159,
+        "near": 11,
+        "mid": 19,
+        "far": 46
+      }
+    },
+    {
+      "routeIndex": 128,
+      "full": {
+        "calls": 104,
+        "triangles": 355109
+      },
+      "lod": {
+        "calls": 94,
+        "triangles": 252557
+      },
+      "stats": {
+        "cells": 235,
+        "visible": 44,
+        "culled": 191,
+        "near": 11,
+        "mid": 21,
+        "far": 12
+      }
+    },
+    {
+      "routeIndex": 256,
+      "full": {
+        "calls": 188,
+        "triangles": 557129
+      },
+      "lod": {
+        "calls": 147,
+        "triangles": 249365
+      },
+      "stats": {
+        "cells": 235,
+        "visible": 80,
+        "culled": 155,
+        "near": 15,
+        "mid": 15,
+        "far": 50
+      }
+    },
+    {
+      "routeIndex": 512,
+      "full": {
+        "calls": 144,
+        "triangles": 444097
+      },
+      "lod": {
+        "calls": 121,
+        "triangles": 241753
+      },
+      "stats": {
+        "cells": 235,
+        "visible": 60,
+        "culled": 175,
+        "near": 14,
+        "mid": 16,
+        "far": 30
+      }
+    },
+    {
+      "routeIndex": 768,
+      "full": {
+        "calls": 81,
+        "triangles": 296589
+      },
+      "lod": {
+        "calls": 78,
+        "triangles": 253397
+      },
+      "stats": {
+        "cells": 235,
+        "visible": 31,
+        "culled": 204,
+        "near": 15,
+        "mid": 15,
+        "far": 1
+      }
+    }
+  ]
+}
