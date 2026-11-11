@@ -139,7 +139,7 @@ jobs:
           assert all(token in online for token in ['guest-preview','settings-panel','online-pause','mini-map-route'])
           for reference in ['01-mountain-world','02-guest-live-car','03-room-lobby','04-desktop-race','05-mobile-race','06-track-map','07-race-results','08-settings','09-pause-connection','10-solo-home-garage']:
               image,mime=read('design-reference/'+reference+'.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
-          assert 'practice-drive' in online and 'design.html' in online
+          assert 'practice-drive' in online and 'guest-preview' in online
           assert 'car-preview' in read('alpine/design.html')[0].decode()
           print('CUSTOM_GAME_WORKSHOP_MOUNTAIN_REFERENCES_AND_MULTIPLAYER_HTTPS_PASS',base)
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('## Play Alpine: After Dark\n\n'+base+'\n\nRoot and /alpine/ serve the custom game. Raw Open Graph metadata, JPEG crawler image, JS bundle and actual Roadster GLB verified. Multiplayer HTML and low-car asset are published. Visual Workshop: '+base+'design.html is published with its JS bundle, ten concept images and hash-verified Blender mountain GLB. Terrain/UI remain work in progress, not photorealism approval. Public PeerJS signalling/cross-NAT reachability is not certified by this HTTP smoke check. Not a physical-phone/60 FPS certificate.\n')
