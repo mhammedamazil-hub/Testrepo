@@ -1,37 +1,47 @@
 import * as T from 'three';
 
-// Original procedural limestone detail, not a photogrammetry claim. The existing
-// licensed ground photograph is retained on flat meadow surfaces. World-space
-// projection avoids stretched cliff UVs and visible large repeating squares.
-export function limestoneTexture(){
-  const size=256,data=new Uint8Array(size*size*4);let seed=917;
-  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
-    const strata=Math.sin(y*.21+Math.sin(x*.035)*1.7)*8+Math.sin(y*.77+x*.018)*4;
-    const v=155+strata+(seed>>>27)-16,i=(y*size+x)*4;
-    data.set([v+7,v+6,v,255],i);
-  }
-  const texture=new T.DataTexture(data,size,size);texture.colorSpace=T.SRGBColorSpace;texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.generateMipmaps=true;texture.minFilter=T.LinearMipmapLinearFilter;texture.needsUpdate=true;return texture;
-}
+/** World-space meadow / fractured limestone. Licensed rock colour/AO/height maps, adapted from the MIT demo asset;
+ * see world/mountain/material-provenance.json. Alpha stores rock height.
+ * Normal detail fades with distance; distant terrain has no micro-bump cost.
+ */
 export function mountainMaterial(ground,rock){
-  const mat=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.94});
-  mat.onBeforeCompile=shader=>{
+  rock.colorSpace=T.SRGBColorSpace;rock.wrapS=rock.wrapT=T.RepeatWrapping;rock.anisotropy=4;
+  const material=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.96});
+  material.onBeforeCompile=shader=>{
     shader.uniforms.meadowMap={value:ground};shader.uniforms.rockMap={value:rock};
-    shader.vertexShader='varying vec3 vMountainWorld; varying vec3 vMountainNormal;\n'+shader.vertexShader;
-    shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvMountainWorld=(modelMatrix*vec4(position,1.0)).xyz;vMountainNormal=normalize(mat3(modelMatrix)*normal);');
+    shader.vertexShader='varying vec3 vMountainWorld;varying vec3 vMountainNormal;\n'+shader.vertexShader;
+    shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+      vMountainWorld=(modelMatrix*vec4(position,1.0)).xyz;
+      vMountainNormal=normalize(mat3(modelMatrix)*normal);
+    `);
     shader.fragmentShader='uniform sampler2D meadowMap;uniform sampler2D rockMap;varying vec3 vMountainWorld;varying vec3 vMountainNormal;\n'+shader.fragmentShader;
-    shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>', `
-      vec3 weights=pow(abs(normalize(vMountainNormal)),vec3(4.0));weights/=max(dot(weights,vec3(1.0)),.001);
+    shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`
       vec3 p=vMountainWorld;
-      vec3 cliff=texture2D(rockMap,p.zy*.085).rgb*weights.x+texture2D(rockMap,p.xz*.085).rgb*weights.y+texture2D(rockMap,p.xy*.085).rgb*weights.z;
-      vec3 meadow=texture2D(meadowMap,p.xz*.11).rgb;
-      float slope=smoothstep(.10,.52,1.0-abs(normalize(vMountainNormal).y));
-      float altitude=smoothstep(350.0,650.0,p.y);
-      float macro=.88+.12*sin(p.x*.009+sin(p.z*.007)*2.0)*sin(p.z*.012);
-      float strata=.87+.13*sin(p.y*.037+sin(p.x*.009+p.z*.013)*4.0+sin(p.z*.04));
-      cliff*=strata;
-      diffuseColor.rgb*=mix(meadow*1.7,cliff*1.3,max(slope,altitude))*macro;
+      vec3 weights=pow(abs(normalize(vMountainNormal)),vec3(4.0));weights/=max(dot(weights,vec3(1.0)),.001);
+      vec4 rx=texture2D(rockMap,p.zy*.075),ry=texture2D(rockMap,p.xz*.075),rz=texture2D(rockMap,p.xy*.075);
+      vec4 rockDetail=rx*weights.x+ry*weights.y+rz*weights.z;
+      vec3 meadow=texture2D(meadowMap,p.xz*.12).rgb;
+      vec3 broadRock=texture2D(rockMap,p.xz*.006).rgb;
+      float slope=smoothstep(.08,.5,1.0-abs(normalize(vMountainNormal).y));
+      float cliffMask=max(slope,smoothstep(450.0,800.0,p.y));
+      float macro=.72+.5*dot(broadRock,vec3(.3333));
+      vec3 terrainColour=mix(meadow*1.8,rockDetail.rgb*1.65,cliffMask)*macro;
+      float snowLine=smoothstep(1050.0,1550.0,p.y+broadRock.r*180.0);
+      float snowShelf=1.0-smoothstep(.25,.8,1.0-abs(normalize(vMountainNormal).y));
+      terrainColour=mix(terrainColour,vec3(1.32,1.38,1.43),snowLine*snowShelf);
+      diffuseColor.rgb*=terrainColour;
+      float mountainBump=mix(dot(meadow,vec3(.3333))*.035,rockDetail.a*.32,cliffMask);
+      float mountainDetailFade=1.0-smoothstep(150.0,1000.0,distance(cameraPosition,p));
+    `);
+    shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
+      if(mountainDetailFade>.01){
+        vec3 q0=dFdx(-vViewPosition),q1=dFdy(-vViewPosition);
+        vec3 r1=cross(q1,normal),r2=cross(normal,q0);
+        float determinant=dot(q0,r1);
+        vec3 surfaceGradient=dFdx(mountainBump)*r1+dFdy(mountainBump)*r2;
+        normal=normalize(abs(determinant)*normal-sign(determinant)*surfaceGradient*mountainDetailFade);
+      }
     `);
   };
-  mat.customProgramCacheKey=()=> 'alpine-triplanar-v1';return mat;
+  material.customProgramCacheKey=()=> 'alpine-fractured-limestone-v3';return material;
 }

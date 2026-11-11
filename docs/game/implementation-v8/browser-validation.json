@@ -1,0 +1,27 @@
+{
+  "scope": "Actual approved UI implementation, real Roadster guest preview, real Rapier local test drive and software-WebGL terrain. Synthetic snapshots are explicitly used only for lobby/results UI coverage. Not photorealism or physical-device FPS certification.",
+  "checks": [
+    "Actual guest screen updates driver name and full Roadster paint",
+    "Settings save steering and reduced-motion preferences",
+    "Local test drive loads the actual new terrain without signalling",
+    "Desktop race hides touch pedals and keeps a working minimap",
+    "In-session graphics cannot silently disconnect or change the race",
+    "Real online menu releases controls but does not pause host rules",
+    "Map contains eight checkpoints and four nitro markers",
+    "Portrait touch race keeps wheel/pedals accessible",
+    "Opened chat accepts typing without driving",
+    "Local chat is plain text in the implemented chat panel",
+    "Implemented results list has racer names and times",
+    "No runtime or shader errors"
+  ],
+  "errors": [],
+  "passed": true,
+  "visibility": {
+    "cells": 365,
+    "visible": 121,
+    "culled": 244,
+    "near": 14,
+    "mid": 26,
+    "far": 81
+  }
+}

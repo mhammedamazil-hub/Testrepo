@@ -6,27 +6,27 @@ import {ribbon,nearestRoute} from '../track.js';
 import {batchVehicle} from '../vehicle-batch.js';
 import {freezeStatic} from '../static-scene.js';
 import {VisibilitySystem,partitionInstances,instanceGroup} from './visibility.js';
-import {mountainMaterial,limestoneTexture} from './mountain-material.js';
+import {mountainMaterial} from './mountain-material.js';
 import {bladeGeometry} from '../meadow.js';
 import {buildRoute,terrainData,terrainHeight,ROAD_WIDTH,MAP_SIZE,pickupIndices} from './map.js';
 const asset=name=>new URL('world/'+name,document.baseURI).href;
 function geometry(data){const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(data.positions||data.vertices,3));if(data.uvs)g.setAttribute('uv',new T.BufferAttribute(data.uvs,2));g.setIndex(new T.BufferAttribute(data.indices,1));g.computeVertexNormals();return g;}
 export class RaceWorld{
  constructor(scene,renderer,physics,preset){this.scene=scene;this.renderer=renderer;this.physics=physics;this.preset=preset;this.route=buildRoute();this.remotes=new Map();this.time=0;this.visibility=new VisibilitySystem();}
- async load(colour){const loader=new GLTFLoader(),textures=new T.TextureLoader();const [car,sky,ground,pine,mountain,impostor]=await Promise.all([loader.loadAsync(asset(this.preset.car)),textures.loadAsync(asset('sky.jpg')),textures.loadAsync(asset('library/ground_diff.jpg')),loader.loadAsync(asset('library/pine.glb')),loader.loadAsync(asset('mountain/alpine-massif.glb')),textures.loadAsync(asset('spruce_impostor.png'))]);this.pineTemplate=pine?.scene;this.impostor=impostor;impostor.colorSpace=T.SRGBColorSpace;
+ async load(colour){const loader=new GLTFLoader(),textures=new T.TextureLoader();const [car,sky,ground,pine,mountain,impostor,rock]=await Promise.all([loader.loadAsync(asset(this.preset.car)),textures.loadAsync(asset('sky.jpg')),textures.loadAsync(asset('library/ground_diff.jpg')),loader.loadAsync(asset('library/pine.glb')),loader.loadAsync(asset('mountain/alpine-massif.glb')),textures.loadAsync(asset('spruce_impostor.png')),textures.loadAsync(asset('mountain/limestone-pbr.png'))]);this.pineTemplate=pine?.scene;this.impostor=impostor;impostor.colorSpace=T.SRGBColorSpace;
   this.template=car.scene;sky.mapping=T.EquirectangularReflectionMapping;sky.colorSpace=T.SRGBColorSpace;this.scene.background=sky;this.scene.backgroundRotation.y=-Math.PI/2;const pmrem=new T.PMREMGenerator(this.renderer);this.environment=pmrem.fromEquirectangular(sky).texture;pmrem.dispose();this.scene.environment=this.environment;this.scene.environmentIntensity=.8;
   this.scene.fog=new T.FogExp2(0xb5c4cc,.00014);this.scene.add(new T.HemisphereLight(0xd8edff,0x4a5b37,1.0));this.sun=new T.DirectionalLight(0xffe4bd,2.3);this.sun.position.set(300,600,120);this.sun.castShadow=this.preset.shadows;this.sun.shadow.mapSize.setScalar(this.preset.sunMap);Object.assign(this.sun.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:1000});this.sun.shadow.bias=-.0003;this.sun.shadow.normalBias=.08;this.scene.add(this.sun,this.sun.target);
   ground.colorSpace=T.SRGBColorSpace;ground.wrapS=ground.wrapT=T.RepeatWrapping;ground.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());
   const terrain=terrainData(this.route);this.physics.addTrimesh(terrain.vertices,terrain.indices,'ground');
-  const material=mountainMaterial(ground,limestoneTexture()),tiles=new Map();
+  const material=mountainMaterial(ground,rock),tiles=new Map();
   mountain.scene.updateMatrixWorld(true);mountain.scene.traverse(mesh=>{if(!mesh.isMesh)return;const match=mesh.name.match(/^(Terrain_\d+_\d+|Massif_\d+)_LOD([012])$/);if(!match)return;const g=mesh.geometry.clone().applyMatrix4(mesh.matrixWorld),field=new T.Mesh(g,material);field.name=mesh.name;field.receiveShadow=match[1].startsWith('Terrain');field.frustumCulled=true;this.scene.add(field);freezeStatic(field);if(!tiles.has(match[1]))tiles.set(match[1],[]);tiles.get(match[1])[Number(match[2])]=field;});
   for(const [name,levels] of tiles)this.visibility.add(levels,name.startsWith('Terrain')?[160,600,10000]:[500,1400,10000],{kind:'terrain'});
-  const road=ribbon(this.route,ROAD_WIDTH),asphalt=this.asphalt(),surface=new T.Mesh(geometry(road),new T.MeshStandardMaterial({map:asphalt,roughness:.92,color:0xc0c6ca}));surface.receiveShadow=true;this.scene.add(surface);freezeStatic(surface);this.physics.addTrimesh(road.positions,road.indices,'road');
+  const road=ribbon(this.route,ROAD_WIDTH),asphalt=this.asphalt(),surface=new T.Mesh(geometry(road),new T.MeshStandardMaterial({map:asphalt,roughness:.92,color:0xa6aaab}));surface.receiveShadow=true;this.scene.add(surface);freezeStatic(surface);this.physics.addTrimesh(road.positions,road.indices,'road');
   const paint=new T.MeshStandardMaterial({color:0xe7eee6,roughness:.85}),kerb=new T.MeshStandardMaterial({vertexColors:true,roughness:.9});
   for(const side of [-1,1]){const stripe=new T.Mesh(geometry(ribbon(this.route,.12,side*6.7,.024)),paint);this.scene.add(stripe);freezeStatic(stripe);const original=geometry(ribbon(this.route,.8,side*7.45,.025)),geo=original.toNonIndexed();original.dispose();const colors=new Float32Array(geo.attributes.position.count*3);for(let i=0;i<geo.attributes.position.count;i++)new T.Color(Math.floor(i/12)%2?0xe7e6d8:0xb93638).toArray(colors,i*3);geo.setAttribute('color',new T.BufferAttribute(colors,3));const m=new T.Mesh(geo,kerb);m.receiveShadow=true;this.scene.add(m);freezeStatic(m);}
   this.trackside();this.vegetation();this.addPickups();this.local=this.makeCar(colour);this.scene.add(this.local.root);this.minimap=this.route.filter((_,i)=>i%8===0);
  }
- asphalt(){const data=new Uint8Array(128*128*4);let seed=73;for(let i=0;i<128*128;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const c=66+(seed>>>27);data.set([c,c+2,c+4,255],i*4);}const texture=new T.DataTexture(data,128,128);texture.colorSpace=T.SRGBColorSpace;texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(2,3);texture.needsUpdate=true;return texture;}
+ asphalt(){const data=new Uint8Array(128*128*4);let seed=73;for(let i=0;i<128*128;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const c=43+(seed>>>29);data.set([c,c+2,c+4,255],i*4);}const texture=new T.DataTexture(data,128,128);texture.colorSpace=T.SRGBColorSpace;texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(5,2);texture.needsUpdate=true;return texture;}
  makeCar(colour){const root=this.template.clone(true),owned=new Set();root.traverse(m=>{if(!m.isMesh)return;m.castShadow=this.preset.shadows;m.receiveShadow=this.preset.shadows;if(!Array.isArray(m.material)&&/car_main_paint/i.test(m.material.name)){m.material=m.material.clone();m.material.color.set(colour);m.material.metalness=.55;m.material.roughness=.28;owned.add(m.material);}});const batch=batchVehicle(root,this.renderer),wheels=ROADSTER.wheels.map(w=>{const spin=root.getObjectByName('Roadster_Spin_'+w.name),caliper=root.getObjectByName('Roadster_Caliper_'+w.name);return {spin,caliper,base:spin?.quaternion.clone(),caliperBase:caliper?.quaternion.clone()};});return {root,batch,wheels,owned,position:new T.Vector3(),rotation:new T.Quaternion()};}
  trackside(){const route=this.route,dummy=new T.Object3D(),rail=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshStandardMaterial({color:0x6a7d82,metalness:.4,roughness:.7}),256),post=new T.InstancedMesh(new T.BoxGeometry(.18,.9,.18),new T.MeshStandardMaterial({color:0xbcc5be}),256);let k=0;
   for(let i=0;i<route.length;i+=8){const a=route[i],b=route[(i+8)%route.length],dx=b[0]-a[0],dz=b[2]-a[2],length=Math.hypot(dx,dz),yaw=Math.atan2(dx,dz);for(const side of [-1,1]){const x=(a[0]+b[0])/2-dz/length*11*side,z=(a[2]+b[2])/2+dx/length*11*side,y=(a[1]+b[1])/2+.65;dummy.position.set(x,y,z);dummy.rotation.set(0,yaw,0);dummy.scale.set(.2,.55,length+.1);dummy.updateMatrix();rail.setMatrixAt(k,dummy.matrix);dummy.scale.set(1,1,1);dummy.updateMatrix();post.setMatrixAt(k,dummy.matrix);this.physics.world.createCollider(RAPIER.ColliderDesc.cuboid(.12,.6,length/2+.05).setTranslation(x,y,z).setRotation({x:0,y:Math.sin(yaw/2),z:0,w:Math.cos(yaw/2)}).setFriction(.2));k++;}}
@@ -38,19 +38,19 @@ export class RaceWorld{
  }
  vegetation(){
   let seed=901;const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},dummy=new T.Object3D(),matrices=[];
-  for(let tries=0;matrices.length<this.preset.trees&&tries<15000;tries++){
-   const x=(rand()-.5)*2100,z=(rand()-.5)*2100,near=nearestRoute(this.route,{x,z});if(near.distance<18)continue;
-   const scale=.8+rand()*.8;dummy.position.set(x,terrainHeight(x,z,this.route),z);dummy.rotation.set(0,rand()*Math.PI*2,0);dummy.scale.setScalar(scale);dummy.updateMatrix();matrices.push(dummy.matrix.clone());
+  for(let tries=0;matrices.length<this.preset.trees&&tries<this.preset.trees*8;tries++){
+   const x=(rand()-.5)*2250,z=(rand()-.5)*2250;if(rand()>.64+.25*Math.sin(x*.009)*Math.cos(z*.008))continue;const near=nearestRoute(this.route,{x,z});if(near.distance<18)continue;
+   const scale=.7+rand()*1.2;dummy.position.set(x,terrainHeight(x,z,this.route),z);dummy.rotation.set(0,rand()*Math.PI*2,0);dummy.scale.setScalar(scale);dummy.updateMatrix();matrices.push(dummy.matrix.clone());
   }
   this.pineTemplate.updateMatrixWorld(true);const box=new T.Box3().setFromObject(this.pineTemplate),height=box.max.y-box.min.y,center=new T.Vector3();box.getCenter(center);const parts=[];
   this.pineTemplate.traverse(source=>{if(!source.isMesh)return;const g=source.geometry.clone().applyMatrix4(source.matrixWorld);g.translate(-center.x,-box.min.y,-center.z);g.scale(10/height,10/height,10/height);const material=source.material.clone();material.transparent=false;material.alphaTest=.3;material.side=T.DoubleSide;parts.push({geometry:g,material});});
   const card=new T.PlaneGeometry(7,10);card.translate(0,5,0);const card2=card.clone().rotateY(Math.PI/2);
   const leaf=new T.MeshStandardMaterial({map:this.impostor,alphaTest:.4,side:T.DoubleSide,roughness:1,color:0xa4b6a4});
   const silhouette=new T.MeshBasicMaterial({map:this.impostor,alphaTest:.4,side:T.DoubleSide,color:0x7c9690,fog:true});
-  for(const group of partitionInstances(matrices,300)){
+  for(const group of partitionInstances(matrices,180)){
    const levels=[instanceGroup(parts,group),instanceGroup([{geometry:card,material:leaf},{geometry:card2,material:leaf}],group),instanceGroup([{geometry:card,material:silhouette},{geometry:card2,material:silhouette}],group)];
    for(const level of levels){this.scene.add(level);freezeStatic(level);}
-   this.visibility.add(levels,[this.preset.label==='High'?190:120,600,this.preset.label==='Low'?1100:1900],{kind:'trees'});
+   this.visibility.add(levels,[this.preset.label==='High'?130:90,600,this.preset.label==='Low'?1100:1900],{kind:'trees'});
   }
   this.grass=[];if(!this.preset.grass)return;const plants=new Map();
   for(let i=0;i<this.preset.grass;i++){const index=Math.floor(rand()*this.route.length),p=this.route[index],n=this.route[(index+1)%this.route.length],dx=n[0]-p[0],dz=n[2]-p[2],len=Math.hypot(dx,dz),side=rand()<.5?-1:1,distance=9+rand()*10,x=p[0]-dz/len*distance*side,z=p[2]+dx/len*distance*side,key=Math.floor(x/100)+','+Math.floor(z/100);if(!plants.has(key))plants.set(key,[]);plants.get(key).push([x,terrainHeight(x,z,this.route),z]);}

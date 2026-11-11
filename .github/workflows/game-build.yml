@@ -12,6 +12,7 @@ on:
       - docs/game/time-attack-v5/**
       - docs/game/multiplayer-v6/**
       - docs/game/mountain-v7/**
+      - docs/game/implementation-v8/**
       - tests/test_multiplayer_release.py
       - tests/test_short_hop.py
       - tests/test_beyond_road.py
@@ -132,6 +133,10 @@ jobs:
           massif=read('world/mountain/alpine-massif.glb')[0];assert massif[:4]==b'glTF'
           manifest=json.loads(read('world/mountain/manifest.json')[0])
           assert hashlib.sha256(massif).hexdigest()==manifest['sha256'] and len(manifest['meshes'])==240
+          rock=read('world/mountain/limestone-pbr.png')[0];assert rock[:8]==b'\x89PNG\r\n\x1a\n'
+          provenance=json.loads(read('world/mountain/material-provenance.json')[0])
+          assert provenance['license']=='MIT' and hashlib.sha256(rock).hexdigest()==provenance['output_sha256']
+          assert all(token in online for token in ['guest-preview','settings-panel','online-pause','mini-map-route'])
           for reference in ['01-mountain-world','02-guest-live-car','03-room-lobby','04-desktop-race','05-mobile-race','06-track-map','07-race-results','08-settings','09-pause-connection','10-solo-home-garage']:
               image,mime=read('design-reference/'+reference+'.jpg');assert mime=='image/jpeg' and image[:2]==b'\xff\xd8'
           assert 'practice-drive' in online and 'design.html' in online

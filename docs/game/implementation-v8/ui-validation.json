@@ -1,0 +1,78 @@
+{
+  "scope": "Real Chromium DOM/CSS at four viewports, six-racer standings, both steering modes and keyboard/chat input isolation. Preview module stubbed only for layout isolation; actual preview/rendering covered by implementation_browser_test. No WebGL or device FPS claim.",
+  "checks": [
+    {
+      "viewport": {
+        "width": 360,
+        "height": 780
+      },
+      "mode": "wheel",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 780
+      },
+      "mode": "arrows",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "wheel",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "arrows",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "wheel",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "mode": "arrows",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 1100,
+        "height": 700
+      },
+      "mode": "wheel",
+      "layout": true,
+      "typing_does_not_drive": true
+    },
+    {
+      "viewport": {
+        "width": 1100,
+        "height": 700
+      },
+      "mode": "arrows",
+      "layout": true,
+      "typing_does_not_drive": true
+    }
+  ],
+  "passed": true
+}

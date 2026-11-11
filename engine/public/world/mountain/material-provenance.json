@@ -1,0 +1,14 @@
+{
+  "source": "https://github.com/godotengine/godot-demo-projects/tree/b761b4cd5718a7118f2c95eb55f181d0a5f004f1/3d/material_testers/test_materials",
+  "revision": "b761b4cd5718a7118f2c95eb55f181d0a5f004f1",
+  "license": "MIT",
+  "copyright": "Godot Engine contributors; Juan Linietsky and Ariel Manzur (see bundled notice)",
+  "scope": "Only PBR texture data reused. This game remains custom Three.js/Rapier; no Godot code or engine integration. No scan/photogrammetry claim.",
+  "adaptation": "Albedo multiplied by .65+.35*AO, resized to 1024px; depth packed into alpha for derivative-based detail normals. Used on Blender-authored render-only massifs.",
+  "sources": {
+    "rock_albedo.jpg": "4d23b115c2efb07224114417445baa841642c4b39e285736677167f77affabfe",
+    "rock_ao.jpg": "edea1a111bb01da360b07dcbaa9e1fa6477d8ea98e31a18db44849a0d3c0af6a",
+    "rock_depth.jpg": "a0c607cf7c08b91ffab4451b29bbb511100bbb9766c1054c0a28435afb2d918d"
+  },
+  "output_sha256": "ebe16e73b3f115246e2d5fa53dab818778c5203fd610e6a0e1a4b86cc09ad80e"
+}

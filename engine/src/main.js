@@ -11,6 +11,7 @@ import {FlightChallenge,flightCourse,HOP} from './flight.js';
 import {TimeTrial} from './race.js';
 import {updateText,updateHTML} from './ui-value.js';
 import './style.css';
+import './solo-theme.css';
 const elements=new Map();const $=id=>{if(!elements.has(id))elements.set(id,document.getElementById(id));return elements.get(id);};
 
 /** Small, original scene/game framework; Three renders, Rapier solves collision. */
