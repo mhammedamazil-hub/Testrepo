@@ -78,8 +78,8 @@ const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, 
 const foot = (t) => box(t.toUpperCase(), [72, 506, 500, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
 const num = (n) => box(String(n).padStart(2, '0'), [888, 506, 30, 12], { size: 7, color: C.smoke, font: 'Consolas' });
 const slideNew = (name) => cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) });
-const ink = () => cmd('shape.insert', { preset: 'rectangle', rect: [0, 0, 960, 540], fill: `#${C.ink}` });
-const rule = (y) => cmd('shape.insert', { preset: 'line', rect: [72, y, 816, 0], fill: '#26272B' });
+const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
+const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
 const pic = (p, rect) => (schema['insert.picture'] === undefined ? null
   : cmd('insert.picture', { path: p, rect }));
 
@@ -104,7 +104,7 @@ slides.push({
 slides.push({
   name: 'problem',
   cmds: [
-    slideNew('Cover'),
+    slideNew('The problem'),
     ink(), kick('01 · the problem', 72, 72),
     head('A page is a photograph', 72, 104, 760, 38, 46),
     head('of a place.', 72, 146, 760, 38, 46),
@@ -123,7 +123,7 @@ const offers = [
 slides.push({
   name: 'work',
   cmds: [
-    slideNew('Cover'),
+    slideNew('What we build'),
     ink(), kick('the work', 72, 72),
     head('Three rooms, three trades.', 72, 104, 816, 34, 44),
     rule(170),
@@ -150,7 +150,7 @@ const method = [
 slides.push({
   name: 'method',
   cmds: [
-    slideNew('Cover'),
+    slideNew('Method'),
     ink(), kick('method', 72, 72),
     head('Blockout · Forge · Budget · Wire · Harden', 72, 104, 816, 32, 42),
     bodyT('Five stages, each with an artefact you can open and a number it has to hit. If a scene cannot hold the budget, it does not ship.', 72, 158, 700, 30, 10.5),
@@ -180,6 +180,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
   slides.push({
     name: `case-${n}`,
     cmds: [
+      slideNew(title),
       ink(),
       pic(`${R}/${img}`, [520, 0, 440, 540]),
       kick(k, 72, 72), head(title, 72, 104, 420, 34, 44),
@@ -200,7 +201,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
 slides.push({
   name: 'engineering',
   cmds: [
-    slideNew('Cover'),
+    slideNew('Engineering'),
     ink(), kick('engineering', 72, 72),
     head('Beauty that survives', 72, 104, 600, 36, 44),
     head('a mid-range phone.', 72, 144, 600, 36, 44),
@@ -222,7 +223,7 @@ slides.push({
 slides.push({
   name: 'studio',
   cmds: [
-    slideNew('Cover'),
+    slideNew('The studio'),
     ink(), kick('the studio', 72, 72),
     head('Blender hands,', 72, 104, 480, 36, 44),
     head('browser discipline.', 72, 144, 480, 36, 44),
@@ -244,7 +245,7 @@ const tiers = [
 slides.push({
   name: 'rates',
   cmds: [
-    slideNew('Cover'),
+    slideNew('Rates'),
     ink(), kick('rates', 72, 72),
     head('Fixed scope. Fixed number.', 72, 104, 816, 34, 44),
     bodyT('Every tier includes a written load budget, a Lighthouse gate in CI, source handover and a WebGL fallback.', 72, 158, 700, 24, 10.5),
@@ -265,7 +266,7 @@ slides.push({
 slides.push({
   name: 'provenance',
   cmds: [
-    slideNew('Cover'),
+    slideNew('Provenance'),
     ink(), kick('how it holds together', 72, 72),
     head('One set,', 72, 104, 480, 36, 44),
     head('many pictures.', 72, 144, 480, 36, 44),
@@ -280,7 +281,7 @@ slides.push({
 slides.push({
   name: 'next',
   cmds: [
-    slideNew('Cover'),
+    slideNew('Next step'),
     ink(), kick('next step', 72, 72),
     head('Send the product.', 72, 140, 700, 44, 54),
     head("We'll send the room.", 72, 194, 700, 44, 54),
@@ -290,6 +291,22 @@ slides.push({
     foot('kiln · interactive architecture'), num(12),
   ],
 });
+
+/* ── preset discovery ─────────────────────────────────────────────────────── */
+// shape.insert takes a preset name from a fixed list, and the list is not stable
+// across releases. Ask the CLI before drawing anything.
+let RECT = 'rect';
+try {
+  const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
+  const names = [...out.matchAll(/"([a-zA-Z0-9 _-]+)"/g)].map((m) => m[1]);
+  console.log('shape presets seen:', names.slice(0, 40).join(', '));
+  const pick = names.find((n) => /^(rect|rectangle|square|box)$/i.test(n))
+    || names.find((n) => /rect|square|box/i.test(n));
+  if (pick) RECT = pick;
+} catch (e) {
+  console.warn('preset discovery failed, using', RECT, String(e.stderr || e.message).slice(0, 300));
+}
+console.log('using preset:', RECT);
 
 /* ── build ────────────────────────────────────────────────────────────────── */
 function run(args, label) {
