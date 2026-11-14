@@ -1,89 +1,25 @@
 schema lookup failed, passing parameters through: Unexpected token 'i', "file.new — "... is not valid JSON
---- describe shape.insert ---
-shape.insert: Shapes, in Insert ▸ Illustrations.
-
-Parameters:
-  preset          rect|roundRect|ellipse|triangle|rightArrow|star5|… (see shape.presets)
-  rect            [x,y,w,h] pt
-  text, optional  string
-
-Run it with: deckcraft-cli run --cmd 'shape.insert={…}'
-
-shape presets seen: id, index, category, Lines, label, Line, name, line, category, Lines, label, Arrow, name, straightConnector1, category, Lines, label, name, bentConnector3, category, Lines, label, name, curvedConnector3, category, Lines, label, name, bentConnector2, category, Lines, label, name, lineInv, category, Rectangles, label, Rectangle, name, rect
-using preset: Rectangle
-  ✗ cover: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ problem: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ work: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ method: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ case-5: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ case-6: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ case-7: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ engineering: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ studio: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ rates: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ provenance: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ next: deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`
-  ✗ convert: deckcraft-cli: nothing to export (no slides in range)
+preset enum: rect roundRect ellipse triangle rightArrow star5
+using preset: rect
+  ✓ cover (8 commands)
+  ✓ problem (9 commands)
+  ✓ work (16 commands)
+  ✓ method (22 commands)
+  ✓ case-5 (13 commands)
+  ✓ case-6 (13 commands)
+  ✓ case-7 (13 commands)
+  ✓ engineering (16 commands)
+  ✓ studio (11 commands)
+  ✓ rates (19 commands)
+  ✓ provenance (9 commands)
+  ✓ next (10 commands)
 deckcraft report: {
  "dropped": {},
- "skippedSlides": [
-  "cover",
-  "problem",
-  "work",
-  "method",
-  "case-5",
-  "case-6",
-  "case-7",
-  "engineering",
-  "studio",
-  "rates",
-  "provenance",
-  "next"
- ],
- "failures": {
-  "cover": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "problem": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "work": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "method": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "case-5": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "case-6": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "case-7": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "engineering": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "studio": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "rates": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "provenance": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "next": [
-   "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-  ],
-  "convert": [
-   "deckcraft-cli: nothing to export (no slides in range)"
-  ]
- },
+ "skippedSlides": [],
+ "failures": {},
  "commands": 159,
  "slides": 12,
  "hasDeck": true,
- "hasPdf": false
+ "hasPdf": true
 }
-EXIT=2
+EXIT=0
