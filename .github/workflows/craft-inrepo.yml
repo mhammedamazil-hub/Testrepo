@@ -1,0 +1,33 @@
+name: craft-inrepo
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  small:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Put the small CLIs in the repo itself
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exec 2>&1
+          set -uo pipefail
+          REL=craft-apps-x86_64
+          mkdir -p craft-apps/bin
+          cd craft-apps/bin
+          # pull the two smallest CLI payloads straight from our own release assets
+          gh release download "$REL" -R "$GITHUB_REPOSITORY" -p 'soundcraft-*.gz' -p 'gridcraft-*.gz' -D . --clobber
+          ls -l
+          sha256sum -c <(gh release download "$REL" -R "$GITHUB_REPOSITORY" -p 'soundcraft-*.sha256' -p 'gridcraft-*.sha256' -D /tmp --clobber >/dev/null && cat /tmp/soundcraft-*.sha256 /tmp/gridcraft-*.sha256) || true
+          for f in *.gz; do gunzip -c "$f" > "/tmp/${f%.gz}"; chmod +x "/tmp/${f%.gz}"; echo "--- ${f%.gz}"; "/tmp/${f%.gz}" --version 2>&1 | head -3; done
+      - name: Commit them
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name craft-bundle; git config user.email actions@users.noreply.github.com
+          git pull --rebase || true
+          du -sh craft-apps/bin
+          git add craft-apps/bin && git commit -m "craft-apps: add the two smallest headless CLIs to the repo (soundcraft, gridcraft)" || true
+          git push || true
