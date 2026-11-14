@@ -1,42 +1,144 @@
-# PdfCraft 0.21.1 headless merge and inspect
+# PdfCraft 0.21.1 headless: info, combine, extract, render, text
 ```
-$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli --version
-pdfcraft-cli 0.21.1
-Discord: https://discord.gg/artcraft  (help and feedback)
-Web:     https://getartcraft.com/apps/pdfcraft
-Source:  https://github.com/storytold/pdfcraft
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli info /home/runner/work/Testrepo/Testrepo/craft-demo/gridcraft-ledger.pdf
+{
+  "acroform_fields": 0,
+  "annotations": 0,
+  "attachments": 0,
+  "author": null,
+  "bookmarks": 0,
+  "creator": "GridCraft",
+  "custom_properties": 0,
+  "encrypted": false,
+  "fields": 0,
+  "file": "/home/runner/work/Testrepo/Testrepo/craft-demo/gridcraft-ledger.pdf",
+  "file_size": 2005,
+  "first_page_pt": [
+    612.0,
+    792.0
+  ],
+  "javascript": false,
+  "layers": 0,
+  "links": 0,
+  "output_intents": [],
+  "page_labels": [
+    "1"
+  ],
+  "pages": 1,
+  "pdf_pages": 1,
+  "pdf_version": "1.7",
+  "pdfa": null,
+  "pdfua": null,
+  "producer": "GridCraft PDF",
+  "repairs": [],
+  "tagged": false,
+  "title": "ledger.xlsx",
+  "transitions": 0,
+  "warnings": [],
+  "xfa": null,
+  "xfa_layout": null
+}
 [exit 0]
-$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli --help
-pdfcraft-cli info   <file.pdf> [--password PW]            document summary as JSON
-                                                          (includes any declared PDF/A or PDF/UA level)
-pdfcraft-cli render <file.pdf> --page N [--dpi 96] --out x.png   (.png, .jpg, .tif or .pam)
-pdfcraft-cli text   <file.pdf> [--page N]                  extracted text (pages separated by form feeds)
-pdfcraft-cli edit   <in.pdf> --out out.pdf [--rotate 1,3:90] [--delete 2,4] [--move 5:1]
-                      [--insert-blank 1] [--title T] [--author A] [--full]
-                      (options run in order; page numbers refer to the document after the earlier options)
-pdfcraft-cli combine <a.pdf> <b.pdf> … --out combined.pdf
-pdfcraft-cli extract <in.pdf> --pages 1,3,5-8 --out out.pdf    (pages and ranges, in the order given)
-pdfcraft-cli split   <in.pdf> (--every N | --before 3,7) [--out-dir DIR]
-pdfcraft-cli check  <files or dirs…> [--timeout 20] [--dpi 36] [--json out.json]
-pdfcraft-cli audit  <file.pdf> [--password PW]            find faux redactions (fails when found)
-pdfcraft-cli batch <files or dirs...> --steps convert,ocr,optimize --out-dir DIR
-                      [--recursive] [--root DIR] [--stop-on-error]
-                      [--ppi 150] [--quality 60] [--dpi 300] [--language en] [--ocr-all-pages]
-pdfcraft-cli tools                                       automation tools and their JSON Schemas
-pdfcraft-cli run    <tool> [key=value …] [--root DIR] [--out image.png]
-pdfcraft-cli run    --script steps.json [--root DIR] [--report]
-                      [{"tool": "doc_open", "args": {…}}, …]; --report prints one JSON document for the run
-pdfcraft-cli mcp    [--root DIR] [--compact] [--automation-read-root DIR] [--automation-write-root DIR]
-                                                           MCP server on stdin/stdout (opt-in)
-                                                           --compact lists a core set of tools plus tool_search and tool_call
-                                                           --automation-read-root / --automation-write-root confine the files the
-                                                           agent's tools read (open, combine, import, fonts, certificates…) and
-                                                           write (save, export, extract, split, reports…) to DIR, links followed;
-                                                           a root left out grants none of its access. --root, when also given,
-                                                           applies as well
-pdfcraft-cli ui     --control FILE <method> [key=value …] [--out shot.png]
-                                                           drive a running app started with --control FILE
-help and feedback: https://discord.gg/artcraft
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli info /home/runner/work/Testrepo/Testrepo/craft-suite/figcraft-card.pdf
+{
+  "acroform_fields": 0,
+  "annotations": 0,
+  "attachments": 0,
+  "author": null,
+  "bookmarks": 0,
+  "creator": "FigCraft",
+  "custom_properties": 0,
+  "encrypted": false,
+  "fields": 0,
+  "file": "/home/runner/work/Testrepo/Testrepo/craft-suite/figcraft-card.pdf",
+  "file_size": 7535,
+  "first_page_pt": [
+    480.0,
+    300.0
+  ],
+  "javascript": false,
+  "layers": 0,
+  "links": 0,
+  "output_intents": [],
+  "page_labels": [
+    "1"
+  ],
+  "pages": 1,
+  "pdf_pages": 1,
+  "pdf_version": "1.7",
+  "pdfa": null,
+  "pdfua": null,
+  "producer": "FigCraft",
+  "repairs": [],
+  "tagged": false,
+  "title": "card",
+  "transitions": 0,
+  "warnings": [],
+  "xfa": null,
+  "xfa_layout": null
+}
 [exit 0]
-$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli info /home/runner/work/Testrepo/Testrepo/craft-suite/figcraft-card.pdf --json
-pdfcraft-cli: info: unknown option --json
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli combine /home/runner/work/Testrepo/Testrepo/craft-demo/gridcraft-ledger.pdf /home/runner/work/Testrepo/Testrepo/craft-suite/figcraft-card.pdf --out /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf
+[exit 0]
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli info /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf
+{
+  "acroform_fields": 0,
+  "annotations": 0,
+  "attachments": 0,
+  "author": null,
+  "bookmarks": 2,
+  "creator": null,
+  "custom_properties": 0,
+  "encrypted": false,
+  "fields": 0,
+  "file": "/home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf",
+  "file_size": 7577,
+  "first_page_pt": [
+    612.0,
+    792.0
+  ],
+  "javascript": false,
+  "layers": 0,
+  "links": 0,
+  "output_intents": [],
+  "page_labels": [
+    "1",
+    "2"
+  ],
+  "pages": 2,
+  "pdf_pages": 2,
+  "pdf_version": "1.7",
+  "pdfa": null,
+  "pdfua": null,
+  "producer": null,
+  "repairs": [],
+  "tagged": false,
+  "title": null,
+  "transitions": 0,
+  "warnings": [],
+  "xfa": null,
+  "xfa_layout": null
+}
+[exit 0]
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli extract /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf --pages 2 --out /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-page2.pdf
+[exit 0]
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli render /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-page2.pdf --page 1 --dpi 96 --out /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-page2.png
+rendered page 1 at 96 dpi: 640×400 px in 1 ms
+[exit 0]
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli text /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-page2.pdf
+FIGCRAFT
+[exit 0]
+$ /tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli audit /home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf
+{"count":0,"file":"/home/runner/work/Testrepo/Testrepo/craft-suite/pdfcraft-combined.pdf","findings":[]}
+[exit 0]
+```
+total 348
+-rw-r--r-- 1 runner runner   3752 Nov 14 07:24 REPORT-pdfcraft.md
+-rw-r--r-- 1 runner runner   3086 Nov 14 07:24 REPORT.md
+-rw-r--r-- 1 runner runner   7535 Nov 14 07:24 figcraft-card.pdf
+-rw-r--r-- 1 runner runner  14285 Nov 14 07:24 figcraft-card.png
+-rw-r--r-- 1 runner runner   7577 Nov 14 07:24 pdfcraft-combined.pdf
+-rw-r--r-- 1 runner runner   6129 Nov 14 07:24 pdfcraft-page2.pdf
+-rw-r--r-- 1 runner runner  16348 Nov 14 07:24 pdfcraft-page2.png
+-rw-r--r-- 1 runner runner 264704 Nov 14 07:24 soundcraft-tone-48k.wav
+-rw-r--r-- 1 runner runner  24145 Nov 14 07:24 soundcraft-tone.flac
