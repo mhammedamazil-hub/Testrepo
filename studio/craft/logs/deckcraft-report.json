@@ -1,0 +1,21 @@
+{
+  "dropped": {},
+  "skippedSlides": [
+    "cover",
+    "problem",
+    "work",
+    "method",
+    "case-5",
+    "case-6",
+    "case-7",
+    "engineering",
+    "studio",
+    "rates",
+    "provenance",
+    "next"
+  ],
+  "commands": 147,
+  "slides": 12,
+  "hasDeck": false,
+  "hasPdf": false
+}
