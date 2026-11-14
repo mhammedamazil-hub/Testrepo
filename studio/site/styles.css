@@ -407,6 +407,32 @@ textarea { resize: vertical; min-height: 76px; }
   .docs li + li { border-left: 0; }
 }
 
+/* ---------------- craft artefacts ---------------- */
+.craft {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; margin-top: clamp(34px, 5vw, 56px);
+  background: var(--rule-soft);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.craft-item {
+  display: block; background: var(--ink); padding: 26px clamp(18px, 2vw, 30px) 30px;
+  text-decoration: none; transition: background .3s var(--ease);
+}
+.craft-item:hover { background: var(--ink-2); }
+.craft-meta {
+  display: block; font: 400 10px/1.6 var(--mono); letter-spacing: .14em;
+  text-transform: uppercase; color: var(--smoke);
+}
+.craft-item h3 {
+  font-family: var(--display); font-weight: 400; font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.1; margin: 16px 0 8px;
+}
+.craft-item p { color: var(--kiln); font-size: 14px; line-height: 1.55; margin: 0; }
+@media (max-width: 1000px) {
+  .craft { grid-template-columns: 1fr; }
+}
+
 /* ---------------- responsive ---------------- */
 @media (max-width: 1000px) {
   .hero-grid, .split, .contact-grid { grid-template-columns: 1fr; }
