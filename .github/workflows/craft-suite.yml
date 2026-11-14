@@ -1,0 +1,64 @@
+name: craft-suite
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Full headless suite (one runner, no GUI)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exec 2>&1
+          OUT="$GITHUB_WORKSPACE/craft-suite"; mkdir -p "$OUT"
+          LOG="$OUT/REPORT.md"
+          echo "# Headless Crafting App suite — real files, no GUI, no DISPLAY" > "$LOG"
+          echo "runner: $(uname -srm) · $(nproc) vCPU" >> "$LOG"
+          run () { { echo ""; echo "\$ $*"; } >> "$LOG"; timeout 250 "$@" >> "$LOG" 2>&1; echo "[exit $?]" >> "$LOG"; return 0; }
+          grab () { cd /tmp; rm -rf "$2"; mkdir "$2"; cd "$2"; gh release download "$1" -R "storytold/$3" -p '*linux-x86_64.tar.gz' -D . >> "$LOG" 2>&1; for f in *.tar.gz; do echo "asset: $f" >> "$LOG"; tar xzf "$f" >> "$LOG" 2>&1; done; }
+
+          # ---------------- SoundCraft ----------------
+          grab v0.20.1 sc soundcraft
+          SC=$(find /tmp/sc -maxdepth 4 -name soundcraft-cli -type f -perm -u+x | head -1)
+          python3 - <<'PYEOF'
+          import math, struct, wave
+          sr=44100; w=wave.open('/tmp/sc/tone.wav','wb'); w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr)
+          w.writeframes(b''.join(struct.pack('<h', int(11000*math.sin(2*math.pi*440*i/sr))) for i in range(sr*2))); w.close()
+          print('2.0 s 440 Hz mono wav written')
+          PYEOF
+          run "$SC" --version
+          run "$SC" info /tmp/sc/tone.wav
+          run "$SC" convert /tmp/sc/tone.wav "$OUT/soundcraft-tone.flac"
+          run "$SC" convert /tmp/sc/tone.wav "$OUT/soundcraft-tone-48k.wav"
+          run "$SC" info "$OUT/soundcraft-tone.flac"
+
+          # ---------------- FigCraft ----------------
+          grab v0.18.1 fg figcraft
+          FC=$(find /tmp/fg -maxdepth 4 -name figcraft-cli -type f -perm -u+x | head -1)
+          printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300"><rect width="480" height="300" fill="#0b0e14"/><circle cx="240" cy="140" r="90" fill="none" stroke="#00e5f0" stroke-width="12"/><text x="240" y="155" font-size="40" fill="#e6e9ef" text-anchor="middle">FIGCRAFT</text></svg>' > /tmp/fg/card.svg
+          run "$FC" --version
+          run "$FC" info /tmp/fg/card.svg
+          run "$FC" convert /tmp/fg/card.svg "$OUT/figcraft-card.png"
+          run "$FC" convert /tmp/fg/card.svg "$OUT/figcraft-card.pdf"
+
+          # ---------------- PdfCraft ----------------
+          grab v0.21.1 pd pdfcraft
+          find /tmp/pd -maxdepth 4 -type f -perm -u+x ! -name '*.so*' >> "$LOG" 2>&1
+          PD=$(find /tmp/pd -maxdepth 4 -type f -name '*pdfcraft*' -perm -u+x ! -name '*.so*' | head -1)
+          echo "pdfcraft binary: $PD" >> "$LOG"
+          run "$PD" --version
+          run "$PD" info "$OUT/figcraft-card.pdf" --json
+          run "$PD" merge "$OUT/figcraft-card.pdf" "$OUT/../craft-demo/gridcraft-ledger.pdf" --out "$OUT/pdfcraft-merged.pdf"
+          run "$PD" info "$OUT/pdfcraft-merged.pdf" --json
+
+          ls -l "$OUT" >> "$LOG" 2>&1
+          file "$OUT"/* >> "$LOG" 2>&1
+      - name: Commit
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE"; git config user.name craft-suite; git config user.email actions@users.noreply.github.com
+          git pull --rebase || true
+          git add craft-suite && git commit -m "CI: headless suite outputs (sound/fig/pdf)" || true; git push || true
