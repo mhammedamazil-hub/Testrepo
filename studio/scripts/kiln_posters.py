@@ -237,8 +237,31 @@ def social():
         print("  ", out)
 
 
+def avatars():
+    """Profile avatar and cover banner — the mark, at the size each platform crops to."""
+    for tag, W, H in [("avatar-1024", 1024, 1024), ("avatar-512", 512, 512), ("cover-1500x500", 1500, 500)]:
+        im = Image.new("RGB", (W, H), INK)
+        d = ImageDraw.Draw(im)
+        if tag.startswith("avatar"):
+            # the mark alone, optically centred: at avatar size any wordmark is illegible
+            size = int(W * 0.46)
+            mark(im, (W - size) / 2, (H - size) / 2, size, PAPER)
+        else:
+            size = int(H * 0.40)
+            m = 78
+            mark(im, m, (H - size) / 2 - 10, size, PAPER)
+            tracked(d, (m + size + 34, H * 0.5 - size * 0.52 + size * 0.14), "KILN", font(SERIF, int(size * 0.92)), PAPER, 10)
+            tracked(d, (m + size + 36, H * 0.5 + size * 0.62 + size * 0.14), "INTERACTIVE ARCHITECTURE", font(MONO, 19), KILN, 3.4)
+            right(d, W - m, H * 0.5 + size * 0.62 + size * 0.14, "KILN.STUDIO", font(MONO, 19), SMOKE, 3.0)
+        grain(im, 3)
+        out = os.path.join(ROOT, "ads", "avatars", f"{tag}.png")
+        im.save(out, optimize=True)
+        print("  ", out)
+
+
 if __name__ == "__main__":
     print("kiln print set")
     manifesto()
     hiring()
     social()
+    avatars()
