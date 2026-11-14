@@ -1,5 +1,8 @@
 name: craft-pdf-final
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    paths: ["craft-trigger.txt"]
 permissions:
   contents: write
 jobs:
