@@ -297,6 +297,8 @@ slides.push({
 // across releases. Ask the CLI before drawing anything.
 let RECT = 'rect';
 try {
+  console.log('--- describe shape.insert ---');
+  try { console.log(craft(['describe', 'shape.insert'])); } catch (e) { console.log('describe failed'); }
   const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
   const names = [...out.matchAll(/"([a-zA-Z0-9 _-]+)"/g)].map((m) => m[1]);
   console.log('shape presets seen:', names.slice(0, 40).join(', '));
