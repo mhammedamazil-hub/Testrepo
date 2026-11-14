@@ -1,18 +1,12 @@
 ── DeckCraft
   PASS  deckcraft pdf · 12 pages
 ── DeckWriter (the deck that is sent)
-  FAIL  shipped deck · 12 pages (rc=1)
-        PASS --pages  expected 12  actual 12
-        FAIL --text-contains  expected "Rooms,"  actual not found
-        FAIL --text-contains  expected "not pages."  actual not found
-        FAIL --text-contains  expected "Meridian Towers"  actual not found
-        FAIL --text-contains  expected "Fixed scope. Fixed number."  actual not found
-        FAIL --text-contains  expected "studio@kiln.studio"  actual not found
-  INFO  shipped pptx 28K
+  PASS  shipped deck · 12 pages
+  INFO  shipped pptx 20M
 ── EffectCraft
   PASS  sting alpha · 1080², 6 s, has alpha
   PASS  sting mp4 · 1080², 6 s
   PASS  sting poster · 1080²
 ── FigCraft
 
-verify: 4 passed, 1 failed, 0 skipped
+verify: 5 passed, 0 failed, 0 skipped
