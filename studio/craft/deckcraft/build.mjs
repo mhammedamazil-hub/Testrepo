@@ -107,7 +107,11 @@ const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C
 // 960x540 pt slide: the footer sits at y=506 with a 12 pt box, so the number needs
 // to clear it, not sit inside it
 const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas' });
-const slideNew = (name) => cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) });
+// a slide first, then its ink: design.background is refused on an empty deck
+const slideNew = (name) => [
+  cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) }),
+  cmd('design.background', { color: `#${C.ink}` }),
+];
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
 const pic = (p, rect) => (schema['insert.picture'] === undefined ? null
@@ -120,7 +124,7 @@ const slides = [];
 slides.push({
   name: 'cover',
   cmds: [
-    slideNew('Cover'),
+    ...slideNew('Cover'),
     ink(),
     kick('KILN · INTERACTIVE ARCHITECTURE', 72, 72),
     head('Rooms,', 72, 286, 620, 62, 76),
@@ -134,7 +138,7 @@ slides.push({
 slides.push({
   name: 'problem',
   cmds: [
-    slideNew('The problem'),
+    ...slideNew('The problem'),
     ink(), kick('01 · the problem', 72, 72),
     head('A page is a photograph', 72, 104, 760, 38, 46),
     head('of a place.', 72, 146, 760, 38, 46),
@@ -153,7 +157,7 @@ const offers = [
 slides.push({
   name: 'work',
   cmds: [
-    slideNew('What we build'),
+    ...slideNew('What we build'),
     ink(), kick('the work', 72, 72),
     head('Three rooms, three trades.', 72, 104, 816, 34, 44),
     rule(170),
@@ -180,7 +184,7 @@ const method = [
 slides.push({
   name: 'method',
   cmds: [
-    slideNew('Method'),
+    ...slideNew('Method'),
     ink(), kick('method', 72, 72),
     head('Blockout · Forge · Budget · Wire · Harden', 72, 104, 816, 32, 42),
     bodyT('Five stages, each with an artefact you can open and a number it has to hit. If a scene cannot hold the budget, it does not ship.', 72, 158, 700, 30, 10.5),
@@ -210,7 +214,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
   slides.push({
     name: `case-${n}`,
     cmds: [
-      slideNew(title),
+      ...slideNew(title),
       ink(),
       pic(`${R}/${img}`, [520, 0, 440, 540]),
       kick(k, 72, 72), head(title, 72, 104, 420, 34, 44),
@@ -231,7 +235,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
 slides.push({
   name: 'engineering',
   cmds: [
-    slideNew('Engineering'),
+    ...slideNew('Engineering'),
     ink(), kick('engineering', 72, 72),
     head('Beauty that survives', 72, 104, 600, 36, 44),
     head('a mid-range phone.', 72, 144, 600, 36, 44),
@@ -253,7 +257,7 @@ slides.push({
 slides.push({
   name: 'studio',
   cmds: [
-    slideNew('The studio'),
+    ...slideNew('The studio'),
     ink(), kick('the studio', 72, 72),
     head('Blender hands,', 72, 104, 480, 36, 44),
     head('browser discipline.', 72, 144, 480, 36, 44),
@@ -275,7 +279,7 @@ const tiers = [
 slides.push({
   name: 'rates',
   cmds: [
-    slideNew('Rates'),
+    ...slideNew('Rates'),
     ink(), kick('rates', 72, 72),
     head('Fixed scope. Fixed number.', 72, 104, 816, 34, 44),
     bodyT('Every tier includes a written load budget, a Lighthouse gate in CI, source handover and a WebGL fallback.', 72, 158, 700, 24, 10.5),
@@ -296,7 +300,7 @@ slides.push({
 slides.push({
   name: 'provenance',
   cmds: [
-    slideNew('Provenance'),
+    ...slideNew('Provenance'),
     ink(), kick('how it holds together', 72, 72),
     head('One set,', 72, 104, 480, 36, 44),
     head('many pictures.', 72, 144, 480, 36, 44),
@@ -311,7 +315,7 @@ slides.push({
 slides.push({
   name: 'next',
   cmds: [
-    slideNew('Next step'),
+    ...slideNew('Next step'),
     ink(), kick('next step', 72, 72),
     head('Send the product.', 72, 140, 700, 44, 54),
     head("We'll send the room.", 72, 194, 700, 44, 54),
@@ -338,12 +342,10 @@ function run(args, label) {
 // start with a truly empty presentation (plain file.new still yields an empty slide)
 // a blank deck still carries the template's theme, whose accent paints every slide
 // blue. Set the background explicitly on each slide instead of trusting the theme.
-// The blank template's theme still paints accent colours on shapes; set the page
-// background explicitly so the deck sits on the studio's ink, not on blue.
-run(['run',
-  '--cmd', 'file.new={"blank":true,"size":[960,540]}',
-  '--cmd', 'design.background={"color":"#0B0C0E","all":true}',
-  '--save', PPTX], 'init');
+// The blank template's theme still paints its accent on every slide, so the ink is
+// set per slide: design.background needs a slide to exist, and it is refused on an
+// empty deck ("no slides").
+run(['run', '--cmd', 'file.new={"blank":true,"size":[960,540]}', '--save', PPTX], 'init');
 
 for (const s of slides) {
   const args = ['run', '--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
