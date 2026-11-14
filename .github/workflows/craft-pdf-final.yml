@@ -1,0 +1,35 @@
+name: craft-pdf-final
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: PdfCraft CLI: merge + inspect real PDFs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exec 2>&1
+          OUT="$GITHUB_WORKSPACE/craft-suite"; LOG="$OUT/REPORT-pdfcraft.md"
+          echo "# PdfCraft 0.21.1 — headless merge/inspect" > "$LOG"; echo '```' >> "$LOG"
+          cd /tmp; rm -rf pd; mkdir pd; cd pd
+          gh release download v0.21.1 -R storytold/pdfcraft -p '*linux-x86_64.tar.gz' -D . >> "$LOG" 2>&1
+          for f in *.tar.gz; do case "$f" in pdfcraft-cli-*) tar xzf "$f" >> "$LOG" 2>&1;; esac; done
+          PD=/tmp/pd/pdfcraft-cli-0.21.1-linux-x86_64/pdfcraft-cli
+          run () { echo "\$ $*" >> "$LOG"; timeout 200 "$@" >> "$LOG" 2>&1; echo "[exit $?]" >> "$LOG"; }
+          run "$PD" --version
+          run "$PD" --help
+          run "$PD" info "$OUT/figcraft-card.pdf" --json
+          run "$PD" info "$GITHUB_WORKSPACE/craft-demo/gridcraft-ledger.pdf" --json
+          run "$PD" merge "$OUT/figcraft-card.pdf" "$GITHUB_WORKSPACE/craft-demo/gridcraft-ledger.pdf" --out "$OUT/pdfcraft-merged.pdf"
+          run "$PD" info "$OUT/pdfcraft-merged.pdf" --json
+          echo '```' >> "$LOG"
+          ls -l "$OUT" >> "$LOG" 2>&1
+      - name: Commit
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE"; git config user.name craft-suite; git config user.email actions@users.noreply.github.com
+          git add craft-suite && git commit -m "CI: pdfcraft merge + inspect" || true; git push || true
