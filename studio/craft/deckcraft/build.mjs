@@ -77,6 +77,7 @@ const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { s
 const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, w, h], { size, color });
 const foot = (t) => box(t.toUpperCase(), [72, 506, 500, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
 const num = (n) => box(String(n).padStart(2, '0'), [888, 506, 30, 12], { size: 7, color: C.smoke, font: 'Consolas' });
+const slideNew = (name) => cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) });
 const ink = () => cmd('shape.insert', { preset: 'rectangle', rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: 'line', rect: [72, y, 816, 0], fill: '#26272B' });
 const pic = (p, rect) => (schema['insert.picture'] === undefined ? null
@@ -89,6 +90,7 @@ const slides = [];
 slides.push({
   name: 'cover',
   cmds: [
+    slideNew('Cover'),
     ink(),
     kick('KILN · INTERACTIVE ARCHITECTURE', 72, 72),
     head('Rooms,', 72, 286, 620, 62, 76),
@@ -102,6 +104,7 @@ slides.push({
 slides.push({
   name: 'problem',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('01 · the problem', 72, 72),
     head('A page is a photograph', 72, 104, 760, 38, 46),
     head('of a place.', 72, 146, 760, 38, 46),
@@ -120,6 +123,7 @@ const offers = [
 slides.push({
   name: 'work',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('the work', 72, 72),
     head('Three rooms, three trades.', 72, 104, 816, 34, 44),
     rule(170),
@@ -146,6 +150,7 @@ const method = [
 slides.push({
   name: 'method',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('method', 72, 72),
     head('Blockout · Forge · Budget · Wire · Harden', 72, 104, 816, 32, 42),
     bodyT('Five stages, each with an artefact you can open and a number it has to hit. If a scene cannot hold the budget, it does not ship.', 72, 158, 700, 30, 10.5),
@@ -195,6 +200,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
 slides.push({
   name: 'engineering',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('engineering', 72, 72),
     head('Beauty that survives', 72, 104, 600, 36, 44),
     head('a mid-range phone.', 72, 144, 600, 36, 44),
@@ -216,6 +222,7 @@ slides.push({
 slides.push({
   name: 'studio',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('the studio', 72, 72),
     head('Blender hands,', 72, 104, 480, 36, 44),
     head('browser discipline.', 72, 144, 480, 36, 44),
@@ -237,6 +244,7 @@ const tiers = [
 slides.push({
   name: 'rates',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('rates', 72, 72),
     head('Fixed scope. Fixed number.', 72, 104, 816, 34, 44),
     bodyT('Every tier includes a written load budget, a Lighthouse gate in CI, source handover and a WebGL fallback.', 72, 158, 700, 24, 10.5),
@@ -257,6 +265,7 @@ slides.push({
 slides.push({
   name: 'provenance',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('how it holds together', 72, 72),
     head('One set,', 72, 104, 480, 36, 44),
     head('many pictures.', 72, 144, 480, 36, 44),
@@ -271,6 +280,7 @@ slides.push({
 slides.push({
   name: 'next',
   cmds: [
+    slideNew('Cover'),
     ink(), kick('next step', 72, 72),
     head('Send the product.', 72, 140, 700, 44, 54),
     head("We'll send the room.", 72, 194, 700, 44, 54),
