@@ -1,26 +1,12 @@
 schema lookup failed, passing parameters through: Unexpected token 'i', "file.new — "... is not valid JSON
 preset enum: rect roundRect ellipse triangle rightArrow star5
 using preset: rect
-  ✓ cover (9 commands)
-  ✓ problem (10 commands)
-  ✓ work (20 commands)
-  ✓ method (24 commands)
-  ✓ case-5 (15 commands)
-  ✓ case-6 (15 commands)
-  ✓ case-7 (15 commands)
-  ✓ engineering (18 commands)
-  ✓ studio (13 commands)
-  ✓ rates (20 commands)
-  ✓ provenance (11 commands)
-  ✓ next (11 commands)
-deckcraft report: {
- "dropped": {},
- "skippedSlides": [],
- "failures": {},
- "commands": 181,
- "slides": 12,
- "hasDeck": true,
- "hasPdf": true,
- "scriptLines": 168
-}
-EXIT=0
+FATAL Error: Expected positive integer for height but received 0 of type number
+    at Object.invalidParameterError (/home/runner/work/Testrepo/Testrepo/node_modules/sharp/lib/is.js:135:10)
+    at Sharp.resize (/home/runner/work/Testrepo/Testrepo/node_modules/sharp/lib/resize.js:295:18)
+    at pic (file:///home/runner/work/Testrepo/Testrepo/studio/craft/deckcraft/build.mjs:141:8)
+    at file:///home/runner/work/Testrepo/Testrepo/studio/craft/deckcraft/build.mjs:228:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+EXIT=1
