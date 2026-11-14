@@ -103,10 +103,10 @@ const box = (text, rect, o = {}) => cmd('insert.textBox', {
 const head = (text, x, y, w, size, h = 60) => box(text, [x, y, w, h], { size, color: C.paper, font: 'Georgia' });
 const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { size: 8, color: C.ember, font: 'Consolas', track: 2 });
 const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, w, h], { size, color });
-const foot = (t) => box(t.toUpperCase(), [72, 506, 500, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
+const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
 // 960x540 pt slide: the footer sits at y=506 with a 12 pt box, so the number needs
 // to clear it, not sit inside it
-const num = (n) => box(String(n).padStart(2, '0'), [910, 516, 26, 12], { size: 7, color: C.smoke, font: 'Consolas' });
+const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas' });
 const slideNew = (name) => cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) });
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
@@ -125,7 +125,7 @@ slides.push({
     kick('KILN · INTERACTIVE ARCHITECTURE', 72, 72),
     head('Rooms,', 72, 286, 620, 62, 76),
     head('not pages.', 72, 350, 620, 62, 76),
-    bodyT('An interactive architecture studio. We model the space in Blender, light it with bpy automation and ship it in React — under two megabytes, sixty frames on a phone.', 72, 442, 430, 70),
+    bodyT('An interactive architecture studio. We model the space in Blender, light it with bpy automation and ship it in React — under two megabytes, sixty frames on a phone.', 72, 426, 430, 66),
     foot('studio@kiln.studio · kiln.studio · +44 20 7946 0812'), num(1),
   ],
 });
@@ -282,10 +282,10 @@ slides.push({
     ...tiers.flatMap(([k, price, term, what, hot], i) => {
       const x = 72 + i * 272;
       return [
-        kick(k, x, 212, 240),
-        head(price, x, 228, 248, 26, 34),
+        kick(k, x, 206, 240),
+        head(price, x, 224, 248, 26, 34),
         box(term.toUpperCase(), [x, 266, 240, 12], { size: 7, color: hot ? C.emberLit : C.smoke, font: 'Consolas', track: 1.4 }),
-        bodyT(what, x, 290, 240, 70, 9.5),
+        bodyT(what, x, 288, 240, 70, 9.5),
       ];
     }),
     foot('pricing'), num(10),
@@ -338,7 +338,12 @@ function run(args, label) {
 // start with a truly empty presentation (plain file.new still yields an empty slide)
 // a blank deck still carries the template's theme, whose accent paints every slide
 // blue. Set the background explicitly on each slide instead of trusting the theme.
-run(['run', '--cmd', 'file.new={"blank":true,"size":[960,540]}', '--save', PPTX], 'init');
+// The blank template's theme still paints accent colours on shapes; set the page
+// background explicitly so the deck sits on the studio's ink, not on blue.
+run(['run',
+  '--cmd', 'file.new={"blank":true,"size":[960,540]}',
+  '--cmd', 'design.background={"color":"#0B0C0E","all":true}',
+  '--save', PPTX], 'init');
 
 for (const s of slides) {
   const args = ['run', '--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
