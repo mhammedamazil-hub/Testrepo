@@ -108,14 +108,19 @@ const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C
 // to clear it, not sit inside it
 const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas' });
 // a slide first, then its ink: design.background is refused on an empty deck
+let SLIDE = 0;
 const slideNew = (name) => [
-  cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) }),
-  cmd('design.background', { color: `#${C.ink}` }),
+  cmd('slide.new', { layout: 'blank', at: SLIDE++, ...(name ? { title: name } : {}) }),
+  // colour, not hex-with-hash, and all:true — the theme paints every slide otherwise
+  cmd('design.background', { color: C.ink, all: true }),
 ];
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
-const pic = (p, rect) => (schema['insert.picture'] === undefined ? null
-  : cmd('insert.picture', { path: p, rect }));
+const pic = (p, rect) => {
+  // a missing file is silent in DeckCraft, so say it out loud
+  if (!fs.existsSync(p)) { console.log('  ! missing plate', p); return null; }
+  return cmd('insert.picture', { path: path.resolve(p), rect });
+};
 
 const R = 'studio/brand/renders';
 const slides = [];
