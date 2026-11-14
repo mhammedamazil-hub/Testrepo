@@ -1,0 +1,104 @@
+name: craft-bundle
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to attach the CLIs to
+        default: craft-apps-x86_64
+      upload_raw:
+        description: Also upload the uncompressed CLIs (adds ~1.3 GB)
+        default: "false"
+permissions:
+  contents: write
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish every Crafting App CLI as a release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exec 2>&1
+          set -uo pipefail
+          REL="${{ github.event.inputs.release_tag }}"; REL="${REL:-craft-apps-x86_64}"
+          RAW="${{ github.event.inputs.upload_raw }}"; RAW="${RAW:-false}"
+          WORK="$GITHUB_WORKSPACE/craft-apps"; mkdir -p "$WORK"; cd "$WORK"
+          gh release view "$REL" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create "$REL" -R "$GITHUB_REPOSITORY" \
+              --title "ArtCraft Crafting Apps — Linux x86_64 headless CLIs" \
+              --notes "Official Apache-2.0 \`*-cli\` binaries from storytold/* releases, republished as-is for headless use. Fetch with craft-apps/fetch.sh, or gunzip and chmod +x by hand. SHA256SUMS included."
+          echo "release: $REL" > manifest.md
+          echo "" >> manifest.md
+          echo "| app | tag | cli gz bytes | sha256 |" >> manifest.md
+          echo "|---|---|---|---|" >> manifest.md
+          for pair in \
+            "photocraft v0.23.1" "vectorcraft v0.24.1" "filmcraft v0.20.1" "lightcraft v0.21.1" \
+            "pdfcraft v0.21.1" "effectcraft v0.24.1" "designcraft v0.20.1" "figcraft v0.18.1" \
+            "wordcraft v0.18.1" "soundcraft v0.20.1" "deckcraft v0.18.1" "cadcraft v0.20.1" \
+            "gridcraft v0.19.1"
+          do
+            set -- $pair; app=$1; tag=$2
+            echo "=== $app $tag ==="
+            rm -rf /tmp/x; mkdir -p /tmp/x; cd /tmp/x
+            gh release download "$tag" -R "storytold/$app" -p '*linux-x86_64.tar.gz' -D . 2>/dev/null || { echo "download failed"; continue; }
+            for f in *.tar.gz; do case "$f" in *server*|*cli-*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*-cli' 2>/dev/null; done
+            if [ -z "$(find . -path '*/bin/*-cli' -type f | head -1)" ]; then
+              for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*-cli' 2>/dev/null; done
+            fi
+            cli=$(find . -path '*/bin/*-cli' -type f | head -1)
+            if [ -z "$cli" ]; then echo "no -cli binary in $app"; continue; fi
+            chmod +x "$cli"
+            base="${app}-${tag#v}-linux-x86_64-cli"
+            out="$WORK/$base"
+            gzip -9 -c "$cli" > "$out.gz"
+            "$cli" --version > "$out.version.txt" 2>&1 || true
+            "$cli" --help 2>&1 | head -40 > "$out.help.txt" || true
+            sha256sum "$out.gz" > "$out.gz.sha256"
+            echo "version: $(head -1 "$out.version.txt")"
+            cd "$WORK"
+            gh release upload "$REL" "$out.gz" "$out.gz.sha256" "$out.version.txt" "$out.help.txt" -R "$GITHUB_REPOSITORY" --clobber
+            if [ "$RAW" = "true" ]; then cp "$cli" "$WORK/$base.raw"; gh release upload "$REL" "$WORK/$base.raw" -R "$GITHUB_REPOSITORY" --clobber; rm -f "$WORK/$base.raw"; fi
+            echo "| $app | $tag | $(stat -c%s "$out.gz") | $(cut -d' ' -f1 "$out.gz.sha256") |" >> manifest.md
+            rm -f "$out.gz" "$out.gz.sha256"
+          done
+          sha256sum *.gz.sha256 >/dev/null 2>&1 || true
+          gh release view "$REL" -R "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | sort > manifest-assets.txt
+          echo "" >> manifest.md; echo "assets attached: $(wc -l < manifest-assets.txt)" >> manifest.md
+          cat manifest.md
+      - name: Write fetch script and manifest into the repo
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p craft-apps
+          cat > craft-apps/fetch.sh <<'EOF'
+          #!/usr/bin/env bash
+          # Fetch the Crafting App headless CLIs (Linux x86_64) from this repo's release assets.
+          #   ./craft-apps/fetch.sh            # all apps  -> ~/.local/opt/craft-apps/bin
+          #   ./craft-apps/fetch.sh photocraft # one app
+          set -euo pipefail
+          REL="${CRAFT_RELEASE:-craft-apps-x86_64}"
+          DEST="${CRAFT_DEST:-$HOME/.local/opt/craft-apps/bin}"
+          REPO="${CRAFT_REPO:-$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "${GITHUB_REPOSITORY:-owner/repo}")}"
+          APPS=("${@:-photocraft vectorcraft filmcraft lightcraft pdfcraft effectcraft designcraft figcraft wordcraft soundcraft deckcraft cadcraft gridcraft}")
+          mkdir -p "$DEST"; tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+          gh release download "$REL" -R "$REPO" --pattern '*.gz' -D "$tmp"
+          gh release download "$REL" -R "$REPO" --pattern '*.gz.sha256' -D "$tmp"
+          ( cd "$tmp" && sha256sum -c ./*.sha256 )
+          for app in $APPS; do
+            gz=$(ls "$tmp"/"$app"-*.gz 2>/dev/null | head -1) || { echo "skip $app"; continue; }
+            gunzip -c "$gz" > "$DEST/$app-cli"; chmod +x "$DEST/$app-cli"
+            echo "installed $DEST/$app-cli  ($("$DEST/$app-cli" --version 2>&1 | head -1))"
+          done
+          echo; echo "add to PATH:  export PATH=\"$DEST:\$PATH\""
+          EOF
+          chmod +x craft-apps/fetch.sh
+          cp craft-apps/manifest.md craft-apps/manifest.md 2>/dev/null || true
+          ls -l craft-apps
+      - name: Commit manifest and fetch script
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE"; git config user.name craft-bundle; git config user.email actions@users.noreply.github.com
+          git pull --rebase || true
+          git add craft-apps && git commit -m "craft-apps: release manifest + fetch.sh for the x86_64 headless CLIs" || true
+          git push || true
