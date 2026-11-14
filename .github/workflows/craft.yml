@@ -156,7 +156,21 @@ jobs:
             -size -4M -exec cp -v {} studio/site/assets/craft/ \;
           du -sh studio/site/assets/craft
 
+      # Logs and JSON reports are the only way to read a failed run from a sandbox
+      # that cannot reach the Actions log or artefact CDNs, so they are committed.
+      - name: Commit diagnostics
+        if: always()
+        run: |
+          git config user.name "kiln-craft"
+          git config user.email "studio@kiln.studio"
+          mkdir -p studio/craft/logs
+          cp -f studio/craft/out/*.log studio/craft/out/*.json studio/craft/logs/ 2>/dev/null || true
+          git add -f studio/craft/logs
+          git diff --cached --quiet || git commit -m "craft: diagnostics from CI run ${{ github.run_id }}"
+          git push || true
+
       - name: Commit
+        if: always()
         run: |
           git config user.name "kiln-craft"
           git config user.email "studio@kiln.studio"

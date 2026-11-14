@@ -14,6 +14,12 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+process.on('uncaughtException', (e) => {
+  console.error('FATAL', e && e.stack || e);
+  if (e && e.stderr) console.error('stderr:', String(e.stderr).slice(0, 4000));
+  process.exit(1);
+});
+
 const OUT = 'studio/craft/out';
 const PPTX = path.join(OUT, 'kiln-deckcraft.pptx');
 const PDF = path.join(OUT, 'kiln-deckcraft.pdf');
