@@ -1,0 +1,40 @@
+vectorcraft-cli — VectorCraft automation
+
+USAGE:
+  vectorcraft-cli --safe-mode SUBCOMMAND ...
+      Run any subcommand without plug-ins: none loads or runs, and plug-in commands report that
+      Safe Mode is on. Plug-ins stay installed. `--safe-mode mcp` serves a headless session and
+      does not take --connect.
+
+  vectorcraft-cli mcp [--connect ADDR | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]... [--allow-plugin-grants]
+      Run the MCP server on stdio. Default: connect to a running app at 127.0.0.1:7979
+      (vectorcraft --control 7979), falling back to a headless in-process session.
+      --automation-read-root / --automation-write-root confine the files the agent's commands read
+      (open, place, relink, library loads…) and write (save, export, package, library saves…) to
+      DIR, links followed; each may be given more than once, a path inside any of its folders being
+      allowed, and a kind left out grants none of its access. They imply --headless: a running app
+      enforces its own (vectorcraft --control PORT --automation-read-root DIR …).
+      --allow-plugin-grants lets plugin.install's grant and allowHeavy take effect in this session,
+      so whoever sends the commands can give a plug-in the permissions it lists, and a heavy budget,
+      with nobody approving them. Without it they are refused, and a plug-in that lists permissions
+      installs only when its hash is already recorded in grants.json, by a person's approval in the
+      desktop app or by a grant accepted under this flag. A grant accepted under this flag stays
+      recorded and counts as approved in later sessions. It implies --headless. It can't be used
+      with --automation-read-root or --automation-write-root: a server confined to folders has no
+      plug-in store, so it reads no grants.json, and a plug-in that lists permissions or asks for a
+      heavy budget does not install there. With VECTORCRAFT_NO_PREFS set there is no store either,
+      and a grant accepted under this flag lasts for that session only.
+
+  vectorcraft-cli run [--in FILE] [--cmd ID [--params JSON] | --commands FILE|-]... [--export FILE]... [--scale N] [--ppi N] [--allow-plugin-grants]
+      Headless batch: open FILE (any readable format) or start a new document, run commands in
+      order, export each FILE in the format its extension picks (see Writable formats; a .ait FILE
+      is a template, written as file.saveAsTemplate writes it). Raster exports use the document's
+      raster effects resolution unless --scale (pixels per point) or --ppi (pixels per inch, wins
+      over --scale) is given; other formats leave them out. Prints one JSON result per step.
+      --commands reads steps from FILE, or from standard input for -, where it stands among the
+      --cmd and --export steps: a JSON array of {"command": ID, "params": {...}} (or "id" for
+      "command"), or one such object per line (JSON Lines), at most 64 MiB and 100000 steps.
+      Errors name the step, counting from 0 as "$N" references do.
+      --allow-plugin-grants lets plugin.install's grant and allowHeavy take effect in this run, as
+      for mcp.
+

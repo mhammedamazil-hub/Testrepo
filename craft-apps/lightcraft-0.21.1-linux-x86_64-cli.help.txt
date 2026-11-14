@@ -1,0 +1,40 @@
+lightcraft-cli — headless LightCraft (photo library + raw developer)
+
+USAGE:
+  lightcraft-cli run [OPTIONS] COMMAND [key=value | '{json}']… [COMMAND …]…
+      Run one or more commands (ids from `commands`, or control-protocol methods such as
+      engine.commands / ui.inspect / ui.screenshot) and print one JSON line per command:
+      {"command", "ok", "result" | "error", "ms"}. A word without `=` starts the next
+      command; values are JSON when they parse (1, true, [1,2], {…}), else strings. Exit status
+      is non-zero when a command fails. Example:
+        lightcraft-cli run --import ~/Photos/a.jpg develop.set control=light.exposure value=0.7 \
+            develop.auto app.export path=/tmp/a.jpg longEdge=1600
+      Options:
+        --demo            headless, the procedural demo library
+        --library DIR     headless, open (or create) a LightCraft library; edits are saved
+        --import PATH     headless, import a file or folder first (repeatable)
+        --connect [ADDR]  drive the running app (`lightcraft --control 7980`; default 127.0.0.1:7980)
+        --script FILE|-   also run JSON lines {"command": id, "params": {…}} (or {"method": …})
+        --keep-going      continue after a failed command
+  lightcraft-cli mcp [OPTIONS] [FILES/FOLDERS…]
+      MCP server (JSON-RPC 2.0 over stdio). Headless by default: an in-process session with the
+      given files imported. Options:
+        --connect [ADDR]  drive a running app instead (`lightcraft --control 7980`; default 127.0.0.1:7980)
+        --demo            headless: start with the procedurally generated demo library
+        --library DIR     headless: open (or create) a persistent LightCraft library; edits are saved
+        --compact         list only the helper tools (every command stays reachable via run_command)
+  lightcraft-cli render <IN> -o <OUT> [OPTIONS]
+      Develop one file and export it (.jpg, .png, .tif, .webp, .avif, .jxl, .psd or .dng by extension) with the
+      same encoder as the app's Export dialog. Options:
+        --set CONTROL=VALUE  set a develop slider, repeatable (e.g. --set light.exposure=0.5)
+        --settings FILE      merge a partial develop-settings JSON file, or apply the one preset of a
+                             .lcpreset (preset.export) or XMP preset
+        --preset ID          apply a preset (see `commands`/presets.list)
+        --size N             long edge in pixels (default: full size, cropped)
+        --quality Q          JPEG/AVIF/JPEG XL quality 1..100 (default 92)
+        --opt KEY=VALUE      any export option of `app.export`, repeatable (VALUE is JSON or a
+                             string), e.g. --opt colorSpace=displayP3 --opt bitDepth=16
+                             --opt percent=50 --opt shortEdge=1080 --opt ppi=300
+                             --opt format=original (copy + XMP sidecar) --opt metadata=none
+                             --opt addToPhotos=true --opt photosAlbum=NAME (macOS: then add
+                             the file to Apple Photos, into that album)
