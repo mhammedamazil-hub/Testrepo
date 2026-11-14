@@ -106,11 +106,13 @@ back.position.set(0, 1.4, -6.4);
 room.add(back);
 
 /* ---------- lights ---------- */
-scene.add(new THREE.HemisphereLight(0xfff2e4, 0x070a10, 0.62));
+scene.add(new THREE.HemisphereLight(0xfff2e4, 0x0b1018, 0.85));
 const key = new THREE.DirectionalLight(0xfff6ec, 2.6);
 key.position.set(-5, 8, 6);
 key.castShadow = true;
 key.shadow.mapSize.set(1024, 1024);
+key.shadow.radius = 3;
+key.shadow.bias = -0.0015;
 key.shadow.camera.near = 1;
 key.shadow.camera.far = 30;
 scene.add(key);
@@ -124,9 +126,9 @@ scene.add(cool);
 
 /* ---------- orbit controls (compact, no addons) ---------- */
 const orbit = {
-  theta: 0.16, phi: 1.1, radius: 8.4,
-  thetaT: 0.16, phiT: 1.1, radiusT: 8.4,
-  minPhi: 0.45, maxPhi: 1.52, minR: 4.4, maxR: 15,
+  theta: 0.26, phi: 1.16, radius: 9.8,
+  thetaT: 0.26, phiT: 1.16, radiusT: 9.8,
+  minPhi: 0.45, maxPhi: 1.52, minR: 5.2, maxR: 16,
 };
 let dragging = false, lastX = 0, lastY = 0, idleSpin = true;
 
@@ -206,13 +208,13 @@ function tick(now) {
   orbit.radius += (orbit.radiusT - orbit.radius) * 0.07;
 
   const sp = Math.sin(orbit.phi);
-  const shift = innerWidth > 900 ? 1.15 : 0; // clear the overlay panel
+  const shift = innerWidth > 900 ? 1.45 : 0; // clear the overlay panel
   camera.position.set(
     Math.sin(orbit.theta) * sp * orbit.radius + shift,
     Math.cos(orbit.phi) * orbit.radius * 0.86 + 0.6,
     Math.cos(orbit.theta) * sp * orbit.radius
   );
-  camera.lookAt(shift * 0.82, 0.35, 0);
+  camera.lookAt(shift * 0.86, 0.5, 0);
 
   hero.rotation.y = t * 0.35;
   hero.rotation.x = Math.sin(t * 0.4) * 0.16;
