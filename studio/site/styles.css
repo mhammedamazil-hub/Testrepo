@@ -240,6 +240,9 @@ section { position: relative; z-index: 2; }
 }
 .plate { margin: 0; }
 .plate a { text-decoration: none; display: block; }
+/* grid children must be allowed to shrink, or a wide image blows out the page */
+.work-grid > *, .hero-grid > *, .split > *, .contact-grid > * { min-width: 0; }
+.plate img, .hero-figure img { max-width: 100%; height: auto; }
 .plate img {
   width: 100%; aspect-ratio: 4 / 5; object-fit: cover;
   transition: transform .7s cubic-bezier(.2,.7,.3,1), filter .5s;
