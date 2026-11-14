@@ -33,6 +33,10 @@ jobs:
           python3 -m http.server 4173 --bind 127.0.0.1 &
           sleep 2
           curl -sfI http://127.0.0.1:4173/ | head -1
+      - name: Diagnostics
+        run: |
+          curl -s http://127.0.0.1:4173/ | head -20
+          echo '--- css rules containing max-width ---'
       - name: Capture
         run: |
           node - <<'JS'
@@ -46,6 +50,16 @@ jobs:
               await page.goto(url, { waitUntil: 'networkidle' });
               await page.waitForTimeout(opts.wait || 2500);
               await page.screenshot({ path: file, fullPage: !!opts.full });
+              const diag = await page.evaluate(() => {
+                const w = document.documentElement.scrollWidth;
+                const bad = [...document.querySelectorAll('*')]
+                  .map((el) => ({ el, r: el.getBoundingClientRect() }))
+                  .filter(({ r }) => r.right > window.innerWidth + 2 || r.left < -2)
+                  .slice(0, 8)
+                  .map(({ el, r }) => `${el.tagName}.${el.className || ''} L${Math.round(r.left)} R${Math.round(r.right)} W${Math.round(r.width)}`);
+                return { scrollWidth: w, viewport: window.innerWidth, offenders: bad };
+              });
+              console.log('DIAG', file, JSON.stringify(diag, null, 1));
               const stats = await page.evaluate(() => {
                 const h = window.__lumenforge;
                 return h ? { frames: h.frames(), calls: h.renderer.info.render.calls, tris: h.renderer.info.render.triangles } : null;
