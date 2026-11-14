@@ -19,13 +19,15 @@ const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 14
 
 /* ---------- materials ---------- */
 const finishes = {
-  bone: { color: 0xefe7d8, metalness: 0.03, roughness: 0.78, emissive: 0x000000 },
+  bone: { color: 0xf6f4ef, metalness: 0.03, roughness: 0.78, emissive: 0x000000 },
   terra: { color: 0xc2552c, metalness: 0.04, roughness: 0.62, emissive: 0x140500 },
   sage: { color: 0x6f7a5e, metalness: 0.05, roughness: 0.66, emissive: 0x030502 },
   steel: { color: 0x9c9a93, metalness: 0.86, roughness: 0.24, emissive: 0x000000 },
 };
 
-const plaster = new THREE.MeshStandardMaterial({ color: 0xefe7d8, roughness: 0.82, metalness: 0.02 });
+// the plates are paper-white plaster under a warm key; a warm-albedo material plus a
+// warm light doubles the cast and reads tan, which is the mistake this fixes
+const plaster = new THREE.MeshStandardMaterial({ color: 0xf6f4ef, roughness: 0.84, metalness: 0.02 });
 const boneMat = new THREE.MeshStandardMaterial({ roughness: 0.52, metalness: 0.05 });
 const floorMat = new THREE.MeshStandardMaterial({ color: 0x0d0e11, roughness: 0.34, metalness: 0.22 });
 
@@ -97,7 +99,7 @@ room.add(ball);
 scene.add(new THREE.HemisphereLight(0xfff2e4, 0x101216, 0.5));
 
 // key from front-left, as in the plates: the faces toward camera must be lit
-const key = new THREE.DirectionalLight(0xffd9b0, 1.55);
+const key = new THREE.DirectionalLight(0xfff1de, 1.7);
 key.position.set(-7.0, 7.5, 5.5);
 key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048);
@@ -120,8 +122,8 @@ scene.add(fill);
 
 /* ---------- orbit ---------- */
 const orbit = {
-  theta: 0.20, phi: 1.24, radius: 12.6,
-  thetaT: 0.20, phiT: 1.24, radiusT: 12.6,
+  theta: 0.46, phi: 1.30, radius: 12.2,
+  thetaT: 0.46, phiT: 1.30, radiusT: 12.2,
   minPhi: 0.5, maxPhi: 1.5, minR: 6.5, maxR: 20,
 };
 let dragging = false, lastX = 0, lastY = 0, idle = true;
@@ -206,7 +208,7 @@ function tick(now) {
     Math.cos(orbit.phi) * orbit.radius * 0.9 + 0.9,
     Math.cos(orbit.theta) * sp * orbit.radius
   );
-  camera.lookAt(shift * 0.78, 1.35, -1.1);
+  camera.lookAt(shift * 0.80, 1.45, -1.3);
 
   vessel.rotation.y = t * 0.12;
   rim.intensity = 17 + Math.sin(t * 1.7) * 1.4;
