@@ -142,6 +142,7 @@ public class DeckWriter {
                      int tracking, String flags, String content) {
     int id = shapeId++;
     boolean bold = flags.contains("B"), italic = flags.contains("I");
+    // 'N' = do not wrap (labels, single-line counters); default is wrapping
     StringBuilder ps = new StringBuilder();
     String[] paras = content.split("\\\\n");
     for (String para : paras) {
@@ -159,11 +160,12 @@ public class DeckWriter {
       }
       ps.append("<a:endParaRPr lang='en-GB' sz='").append(sz100).append("'/></a:p>");
     }
+    String wrap = flags.contains("N") ? "none" : "square";
     return "<p:sp><p:nvSpPr><p:cNvPr id='" + id + "' name='tx" + id + "'/>" +
       "<p:cNvSpPr txBox='1'><a:spLocks noGrp='1'/></p:cNvSpPr><p:nvPr/></p:nvSpPr>" +
       "<p:spPr>" + xfrm(x, y, w, h) + "<a:prstGeom prst='rect'><a:avLst/></a:prstGeom>" +
       "<a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>" +
-      "<p:txBody><a:bodyPr wrap='none' lIns='0' tIns='0' rIns='0' bIns='0' anchor='t' anchorCtr='0'/>" +
+      "<p:txBody><a:bodyPr wrap='" + wrap + "' lIns='0' tIns='0' rIns='0' bIns='0' anchor='t' anchorCtr='0'/>" +
       "<a:lstStyle/>" + ps + "</p:txBody></p:sp>";
   }
 

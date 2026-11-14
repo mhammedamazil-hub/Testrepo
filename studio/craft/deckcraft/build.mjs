@@ -100,16 +100,17 @@ const box = (text, rect, o = {}) => {
   const colour = o.color || C.body;
   const font = o.font || 'Arial';
   const track = o.track ? Math.round(o.track * size * 0.01) : 0; // 1/100 pt
-  rec(`text ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${size} ${colour} ${font} ${track} ${o.bold ? 'B' : '-'} | ${text}`);
+  const flags = `${o.bold ? 'B' : '-'}${o.nowrap ? 'N' : ''}`;
+  rec(`text ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${size} ${colour} ${font} ${track} ${flags} | ${text}`);
   return cmd('insert.textBox', { text, rect, fontSize: size, color: colour, font, bold: !!o.bold, ...(o.track ? { charSpacing: o.track } : {}) });
 };
 const head = (text, x, y, w, size, h = 60) => box(text, [x, y, w, h], { size, color: C.paper, font: 'Georgia' });
-const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { size: 8, color: C.ember, font: 'Consolas', track: 2 });
+const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { size: 8, color: C.ember, font: 'Consolas', track: 2, nowrap: true });
 const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, w, h], { size, color });
-const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
+const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5, nowrap: true });
 // 960x540 pt slide: the footer sits at y=506 with a 12 pt box, so the number needs
 // to clear it, not sit inside it
-const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas' });
+const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas', nowrap: true });
 // a slide first, then its ink: design.background is refused on an empty deck
 let SLIDE = 0;
 // colour, not hex-with-hash, and all:true — the theme paints every slide otherwise.
@@ -237,7 +238,7 @@ for (const [k, title, copy, img, n, stats] of cases) {
         const y = 330 + i * 50;
         return [
           head(v, 72, y, 120, 24, 34),
-          box(label.toUpperCase(), [200, y + 10, 220, 14], { size: 7, color: C.kiln, font: 'Consolas', track: 1.5 }),
+          box(label.toUpperCase(), [200, y + 10, 240, 14], { size: 7, color: C.kiln, font: 'Consolas', track: 1.5, nowrap: true }),
         ];
       }),
       foot('rendered in Blender · shipped in React'), num(n),
@@ -255,13 +256,13 @@ slides.push({
     head('a mid-range phone.', 72, 144, 600, 36, 44),
     bodyT('Every build is measured on a Moto G, not a MacBook. The numbers below are the gate, not the aspiration.', 72, 208, 440, 50, 10.5),
     head('<2.0 MB', 72, 288, 200, 28, 36),
-    box('FIRST LOAD, COMPRESSED', [72, 324, 280, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4 }),
+    box('FIRST LOAD, COMPRESSED', [72, 324, 280, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4, nowrap: true }),
     head('60 fps', 344, 288, 200, 28, 36),
-    box('SUSTAINED, MID-TIER GPU', [344, 324, 280, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4 }),
+    box('SUSTAINED, MID-TIER GPU', [344, 324, 300, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4, nowrap: true }),
     head('≤8', 72, 380, 200, 28, 36),
-    box('DRAW CALLS IN THE HERO SCENE', [72, 416, 280, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4 }),
+    box('DRAW CALLS IN THE HERO SCENE', [72, 416, 300, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4, nowrap: true }),
     head('95+', 344, 380, 200, 28, 36),
-    box('LIGHTHOUSE, MOBILE', [344, 416, 280, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4 }),
+    box('LIGHTHOUSE, MOBILE', [344, 416, 300, 12], { size: 7, color: C.kiln, font: 'Consolas', track: 1.4, nowrap: true }),
     pic(`${R}/detail-2400x1350.png`, [560, 288, 328, 185]),
     foot('the budget'), num(8),
   ].filter(Boolean),
@@ -302,7 +303,7 @@ slides.push({
       return [
         kick(k, x, 206, 240),
         head(price, x, 224, 248, 26, 34),
-        box(term.toUpperCase(), [x, 266, 240, 12], { size: 7, color: hot ? C.emberLit : C.smoke, font: 'Consolas', track: 1.4 }),
+        box(term.toUpperCase(), [x, 266, 240, 12], { size: 7, color: hot ? C.emberLit : C.smoke, font: 'Consolas', track: 1.4, nowrap: true }),
         bodyT(what, x, 288, 240, 70, 9.5),
       ];
     }),
