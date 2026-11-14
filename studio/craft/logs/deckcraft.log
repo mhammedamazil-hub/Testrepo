@@ -1,0 +1,8 @@
+schema lookup failed, passing parameters through: Unexpected token 'w', "[w,h] pt, b"... is not valid JSON
+FATAL ReferenceError: Cannot access 'RECT' before initialization
+    at ink (file:///home/runner/work/Testrepo/Testrepo/studio/craft/deckcraft/build.mjs:81:49)
+    at file:///home/runner/work/Testrepo/Testrepo/studio/craft/deckcraft/build.mjs:94:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+EXIT=1

@@ -27,14 +27,14 @@
 + npx pi-craft effectcraft exec --project studio/craft/out/kiln-sting.ecproj info
 + npx pi-craft effectcraft exec --project studio/craft/out/kiln-sting.ecproj render --out studio/craft/out/kiln-sting-alpha.mov --format prores --prores 4444 --channels rgba
 KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting-alpha.mov (1080×1080, 144 frames, Custom)
-2026-11-14T16:13:35.198Z WARN  [?] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
-done: KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting-alpha.mov in 3.80s
+2026-11-14T16:15:09.370Z WARN  [?] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
+done: KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting-alpha.mov in 3.75s
 + npx pi-craft effectcraft exec --project studio/craft/out/kiln-sting.ecproj render --out studio/craft/out/kiln-sting.mp4 --format h264
 KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting.mp4 (1080×1080, 144 frames, H.264 - Match Render Settings - 15 Mbps)
-2026-11-14T16:13:39.463Z WARN  [?] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
-done: KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting.mp4 in 3.20s
+2026-11-14T16:15:13.589Z WARN  [?] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
+done: KILN Sting → /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-sting.mp4 in 3.16s
 + npx pi-craft effectcraft exec --project studio/craft/out/kiln-sting.ecproj render-frame --time 3.0 --out studio/craft/out/kiln-sting-poster.png
-2026-11-14T16:13:43.094Z WARN  [main] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
-rendered 1080x1080 at 3.000s in 17.4 ms -> studio/craft/out/kiln-sting-poster.png
+2026-11-14T16:15:17.216Z WARN  [main] tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled
+rendered 1080x1080 at 3.000s in 17.5 ms -> studio/craft/out/kiln-sting-poster.png
 + echo 'effectcraft: done'
 effectcraft: done
