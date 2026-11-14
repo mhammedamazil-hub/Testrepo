@@ -16,16 +16,16 @@
   ],
   "failures": {
     "cover": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "problem": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "work": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "method": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "case-5": [
       "deckcraft-cli: command `shape.insert` is not available right now: no slides"
@@ -37,25 +37,25 @@
       "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "engineering": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "studio": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "rates": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "provenance": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "next": [
-      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `rectangle`"
     ],
     "convert": [
       "deckcraft-cli: nothing to export (no slides in range)"
     ]
   },
-  "commands": 147,
+  "commands": 156,
   "slides": 12,
   "hasDeck": true,
   "hasPdf": false
