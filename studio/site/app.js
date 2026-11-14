@@ -82,7 +82,7 @@ function boot() {
   for (let i = 0; i < 14; i++) {
     const m = new THREE.Mesh(chipGeo, chipMats[i % 3]);
     const a = (i / 14) * Math.PI * 2;
-    m.position.set(Math.cos(a) * (3.6 + (i % 4) * 0.5), -1.2 + (i % 5) * 0.62, Math.sin(a) * 2.4 - 0.6);
+    m.position.set(Math.cos(a) * (2.2 + (i % 4) * 0.38) + 0.6, -1.1 + (i % 5) * 0.6, Math.sin(a) * 2.0 - 1.4);
     m.rotation.set(i, i * 1.7, i * 0.4);
     m.userData = { spin: 0.25 + (i % 5) * 0.12, baseY: m.position.y, phase: i };
     chips.add(m);
@@ -144,9 +144,9 @@ function boot() {
     camera.aspect = w / h;
     camera.fov = w < 760 ? 56 : 42;
     // desktop: art lives in the right half, type in the left. mobile: centred, lower.
-    stage.position.x = w > 900 ? 2.35 : 0;
-    stage.position.y = w > 900 ? 0.15 : -0.5;
-    stage.scale.setScalar(w > 900 ? 1 : 0.86);
+    stage.position.x = w > 900 ? 3.5 : 0;
+    stage.position.y = w > 900 ? -0.35 : -0.5;
+    stage.scale.setScalar(w > 900 ? 0.9 : 0.8);
     camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize);

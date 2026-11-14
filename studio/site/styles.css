@@ -86,14 +86,14 @@ main, header.nav, footer.foot { position: relative; z-index: 3; }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.75); } }
 
 h1 {
-  font: 700 clamp(40px, 7vw, 82px)/0.98 'Space Grotesk';
+  font: 700 clamp(38px, 5.5vw, 72px)/1.0 'Space Grotesk';
   letter-spacing: -.03em; margin: 0 0 26px;
 }
 .forge {
   background: linear-gradient(100deg, #FFB07A 0%, var(--forge) 45%, #FF3D00 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.lede { max-width: 620px; color: var(--muted); font-size: clamp(16px, 1.6vw, 19px); }
+.lede { max-width: 520px; color: var(--muted); font-size: clamp(16px, 1.6vw, 19px); }
 .lede strong { color: var(--bone); font-weight: 500; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 34px 0 0; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; margin: 64px 0 0; padding: 0; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
