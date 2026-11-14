@@ -73,17 +73,37 @@ for (let i = 0; i < 3; i++) {
   shards.push(m);
 }
 
-/* arch props, to imply a space rather than an empty screen */
-const archMat = new THREE.MeshStandardMaterial({ color: 0x0e121a, metalness: 0.6, roughness: 0.5 });
-[[-4.2, 0], [4.2, 0]].forEach(([x, z]) => {
-  const col = new THREE.Mesh(new THREE.BoxGeometry(0.7, 4.6, 0.7), archMat);
-  col.position.set(x, 0.7, z - 1.5);
-  col.castShadow = true;
-  room.add(col);
-  const cap = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.16, 1.1), new THREE.MeshStandardMaterial({ color: 0xff6b2c, emissive: 0x2c0a00, metalness: 0.3, roughness: 0.4 }));
-  cap.position.set(x, 3.06, z - 1.5);
-  room.add(cap);
-});
+/* ---------- the portal: two piers + a lintel, framing the hero object ---------- */
+const pierMat = new THREE.MeshStandardMaterial({ color: 0x11151d, metalness: 0.55, roughness: 0.52 });
+const trimMat = new THREE.MeshStandardMaterial({ color: 0xff6b2c, metalness: 0.3, roughness: 0.42, emissive: 0x2c0a00 });
+
+const PORTAL = { x: 3.5, z: -3.6, h: 4.4 };
+for (const sx of [-1, 1]) {
+  const pier = new THREE.Mesh(new THREE.BoxGeometry(0.46, PORTAL.h, 0.46), pierMat);
+  pier.position.set(sx * PORTAL.x, -1.6 + PORTAL.h / 2, PORTAL.z);
+  pier.castShadow = true;
+  room.add(pier);
+
+  // thin forged seam up each pier, the same detail language as the hero mark
+  const seam = new THREE.Mesh(new THREE.BoxGeometry(0.05, PORTAL.h - 0.5, 0.05), trimMat);
+  seam.position.set(sx * (PORTAL.x - 0.24), -1.6 + PORTAL.h / 2, PORTAL.z + 0.24);
+  room.add(seam);
+}
+const lintel = new THREE.Mesh(new THREE.BoxGeometry(PORTAL.x * 2 + 0.46, 0.36, 0.5), pierMat);
+lintel.position.set(0, -1.6 + PORTAL.h, PORTAL.z);
+lintel.castShadow = true;
+room.add(lintel);
+const lintelSeam = new THREE.Mesh(new THREE.BoxGeometry(PORTAL.x * 2 - 0.2, 0.04, 0.52), trimMat);
+lintelSeam.position.set(0, -1.6 + PORTAL.h - 0.16, PORTAL.z);
+room.add(lintelSeam);
+
+// a back wall keeps the room from reading as black void
+const back = new THREE.Mesh(
+  new THREE.PlaneGeometry(18, 9),
+  new THREE.MeshStandardMaterial({ color: 0x080a10, roughness: 0.9, metalness: 0.1 })
+);
+back.position.set(0, 1.4, -6.4);
+room.add(back);
 
 /* ---------- lights ---------- */
 scene.add(new THREE.HemisphereLight(0xfff2e4, 0x070a10, 0.62));
@@ -104,8 +124,8 @@ scene.add(cool);
 
 /* ---------- orbit controls (compact, no addons) ---------- */
 const orbit = {
-  theta: 0.72, phi: 1.12, radius: 8.6,
-  thetaT: 0.72, phiT: 1.12, radiusT: 8.6,
+  theta: 0.55, phi: 1.14, radius: 7.6,
+  thetaT: 0.55, phiT: 1.14, radiusT: 7.6,
   minPhi: 0.45, maxPhi: 1.52, minR: 4.4, maxR: 15,
 };
 let dragging = false, lastX = 0, lastY = 0, idleSpin = true;
