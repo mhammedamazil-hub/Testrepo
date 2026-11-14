@@ -1,0 +1,186 @@
+name: craft-assets
+
+# The agent sandbox has no egress to the Craft release CDN, so pi-craft cannot
+# provision FigCraft / DeckCraft / EffectCraft there. This runner can. It downloads
+# the real CLIs, builds the assets from the scripts committed in studio/, verifies
+# them with `pi-craft verify`, and commits the outputs back to the repository.
+#
+# Nothing here is a stub: if the binaries fail to provision the job fails.
+#
+# Trigger: push to studio/craft/** or dispatch manually. Publishes to
+# studio/site/assets/craft/ and studio/craft/out/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'Space-separated apps to provision'
+        default: 'figcraft deckcraft effectcraft'
+  push:
+    paths:
+      - 'studio/craft/**'
+      - '.github/workflows/craft.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: craft-assets
+  cancel-in-progress: true
+
+jobs:
+  craft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pi-craft
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm i @blackbelt-technology/pi-dashboard-craft-apps@0.11.0 --no-audit --no-fund
+          npx pi-craft status --json
+
+      # ffprobe/pdftoppm back `pi-craft verify`; without them every media assertion
+      # exits 3 and the checks silently become skips.
+      - name: Media probes
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg poppler-utils
+          ffprobe -version | head -1
+          pdftoppm -v 2>&1 | head -1
+
+      - name: Provision the craft CLIs
+        id: provision
+        run: |
+          set -euo pipefail
+          # GITHUB_TOKEN lifts the anonymous REST limit that "latest" resolution needs
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          apps="${{ github.event.inputs.apps || 'figcraft deckcraft effectcraft' }}"
+          for a in $apps; do
+            echo "::group::pi-craft $a ensure"
+            npx pi-craft "$a" ensure | tee "/tmp/$a.json"
+            echo "::endgroup::"
+          done
+          npx pi-craft status --json > /tmp/status.json || true
+          cat /tmp/status.json
+
+      # Not fatal: if a version probe is spelled differently in this release, the
+      # build steps below are the real test. This step just puts the versions in
+      # the log.
+      - name: Probe the binaries
+        continue-on-error: true
+        run: |
+          for a in figcraft deckcraft effectcraft; do
+            echo "::group::$a"
+            npx pi-craft "$a" exec --version || npx pi-craft "$a" exec version || true
+            echo "::endgroup::"
+          done
+
+      # ── the actual builds. Each reads a script in studio/craft/ and writes an
+      #    artefact. The scripts are the source of truth and are committed.
+      - name: Build — FigCraft screens
+        run: |
+          set -euo pipefail
+          ls studio/craft/figcraft
+          for s in studio/craft/figcraft/*.jsonl; do
+            name=$(basename "$s" .jsonl)
+            echo "::group::figcraft $name"
+            npx pi-craft figcraft exec run "$s" --out "studio/craft/out/figcraft-$name.figcraft"
+            npx pi-craft figcraft exec info "studio/craft/out/figcraft-$name.figcraft" --json | tee "/tmp/$name.info.json"
+            # OUT with no image extension is a *directory*: one file per frame,
+            # named after the frame. Both frames of this design live in one doc.
+            npx pi-craft figcraft exec export "studio/craft/out/figcraft-$name.figcraft" \
+              -o "studio/craft/out/figcraft-$name" --format png --scale 2
+            echo "::endgroup::"
+          done
+          ls -la studio/craft/out
+
+      - name: Build — DeckCraft
+        run: |
+          node studio/craft/deckcraft/build.mjs
+          ls -la studio/craft/out
+
+      - name: Render deck slides to png
+        run: |
+          npx pi-craft deckcraft exec render studio/craft/out/kiln-deckcraft.pptx --all studio/craft/out/deck-slides --scale 1
+          ls studio/craft/out/deck-slides | head
+
+      - name: Build — EffectCraft
+        run: |
+          set -euo pipefail
+          bash studio/craft/effectcraft/kiln-sting.sh
+          ls -la studio/craft/out
+
+      - name: Verify the artefacts
+        run: bash studio/craft/verify.sh
+
+      # A ProRes 4444 overlay is tens of megabytes and does not belong in git history.
+      # Everything over ~5 MB goes to the run's artefacts instead, where it can be
+      # downloaded and handed to an editor.
+      - name: Upload heavy artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: craft-heavy
+          path: |
+            studio/craft/out/kiln-sting-alpha.mov
+            studio/craft/out/kiln-deckcraft.pptx
+            studio/craft/out/*.ecproj
+            studio/craft/out/*.figcraft
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish into the site
+        run: |
+          set -euo pipefail
+          mkdir -p studio/site/assets/craft
+          # web-weight files only; sources and masters stay in craft/out or the artefacts
+          find studio/craft/out -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webm' -o -name '*.mp4' -o -name '*.pdf' \) \
+            -size -4M -exec cp -v {} studio/site/assets/craft/ \;
+          du -sh studio/site/assets/craft
+
+      - name: Commit
+        run: |
+          git config user.name "kiln-craft"
+          git config user.email "studio@kiln.studio"
+          # commit only what git should carry: the deck pdf, the mp4, the poster,
+          # the rendered slides and frames, and the JSON reports
+          git add studio/craft/out/kiln-deckcraft.pdf \
+                  studio/craft/out/kiln-sting.mp4 \
+                  studio/craft/out/kiln-sting-poster.png \
+                  studio/craft/out/deck-slides \
+                  studio/craft/out/figcraft-*.png \
+                  studio/craft/out/*.json \
+                  studio/site/assets/craft
+          git diff --cached --quiet && { echo "nothing changed"; exit 0; }
+          git commit -F - <<'MSG'
+          craft: build FigCraft / DeckCraft / EffectCraft artefacts in CI
+
+          Generated by .github/workflows/craft.yml from the scripts in studio/craft/.
+          The agent sandbox cannot reach the release CDN, so the real CLIs run here
+          and the outputs are committed back.
+          MSG
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "# craft-assets"
+            echo
+            echo '```'
+            cat /tmp/status.json 2>/dev/null || echo "no status"
+            echo '```'
+            echo
+            echo "## artefacts"
+            echo '```'
+            find studio/craft/out studio/site/assets/craft -type f -printf '%10s  %p\n' 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

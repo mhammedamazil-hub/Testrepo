@@ -5,3 +5,9 @@ __pycache__/
 
 # generated BIFF/PDF proofs that duplicate the committed originals
 studio/portfolio/plates/
+
+# craft-cli intermediates: the masters are CI artefacts, not repo content
+studio/craft/out/*.mov
+studio/craft/out/*.pptx
+studio/craft/out/*.ecproj
+studio/craft/out/*.figcraft
