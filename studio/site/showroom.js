@@ -94,10 +94,11 @@ ball.castShadow = true;
 room.add(ball);
 
 /* ---------- light rig (mirrors the Cycles setup) ---------- */
-scene.add(new THREE.HemisphereLight(0xfff2e4, 0x0a0c10, 0.42));
+scene.add(new THREE.HemisphereLight(0xfff2e4, 0x101216, 0.85));
 
-const key = new THREE.DirectionalLight(0xffd9b0, 3.1);
-key.position.set(-6.2, 6.0, -5.0);
+// key from front-left, as in the plates: the faces toward camera must be lit
+const key = new THREE.DirectionalLight(0xffd9b0, 2.5);
+key.position.set(-7.0, 7.5, 5.5);
 key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048);
 key.shadow.camera.near = 1;
@@ -109,12 +110,12 @@ key.shadow.camera.bottom = -12;
 key.shadow.bias = -0.0012;
 scene.add(key);
 
-const rim = new THREE.PointLight(0xff7a33, 34, 22, 2);
-rim.position.set(1.5, 1.5, -5.6);
+const rim = new THREE.PointLight(0xff7a33, 26, 16, 2);
+rim.position.set(1.5, 1.35, -5.9);
 scene.add(rim);
 
-const fill = new THREE.DirectionalLight(0xcfd6e0, 0.5);
-fill.position.set(6.4, 3.0, -6.4);
+const fill = new THREE.DirectionalLight(0xcfd6e0, 0.75);
+fill.position.set(7.4, 3.4, 2.2);
 scene.add(fill);
 
 /* ---------- orbit ---------- */
@@ -208,7 +209,7 @@ function tick(now) {
   camera.lookAt(shift * 0.78, 1.35, -1.1);
 
   vessel.rotation.y = t * 0.12;
-  rim.intensity = 32 + Math.sin(t * 1.7) * 2.4;
+  rim.intensity = 24 + Math.sin(t * 1.7) * 1.8;
 
   renderer.render(scene, camera);
 
