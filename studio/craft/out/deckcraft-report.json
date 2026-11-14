@@ -1,62 +1,9 @@
 {
   "dropped": {},
-  "skippedSlides": [
-    "cover",
-    "problem",
-    "work",
-    "method",
-    "case-5",
-    "case-6",
-    "case-7",
-    "engineering",
-    "studio",
-    "rates",
-    "provenance",
-    "next"
-  ],
-  "failures": {
-    "cover": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "problem": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "work": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "method": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "case-5": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "case-6": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "case-7": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "engineering": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "studio": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "rates": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "provenance": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "next": [
-      "deckcraft-cli: invalid parameters for `shape.insert`: unknown preset `Rectangle`"
-    ],
-    "convert": [
-      "deckcraft-cli: nothing to export (no slides in range)"
-    ]
-  },
+  "skippedSlides": [],
+  "failures": {},
   "commands": 159,
   "slides": 12,
   "hasDeck": true,
-  "hasPdf": false
+  "hasPdf": true
 }
