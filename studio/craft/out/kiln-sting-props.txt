@@ -1,7 +1,7 @@
 layer 80 "Rule" (Shape) at 0.0 s
   contents/group/blend                         enum     0
   contents/group/contents/rect/direction       enum     0
-  contents/group/contents/rect/size            vec2     [360.0,3.0]
+  contents/group/contents/rect/size            vec2     [0.0,3.0]  [4 keys]
   contents/group/contents/rect/position        vec2     [0.0,0.0]
   contents/group/contents/rect/roundness       scalar   0.0
   contents/group/contents/rect/perCorner       bool     false
@@ -14,7 +14,7 @@ layer 80 "Rule" (Shape) at 0.0 s
   contents/group/contents/fill/rule            enum     0 (Non-Zero Winding)
   contents/group/contents/fill/color           color    [0.8470588326454163,0.3294117748737335,0.16470588743686676,1.0]
   contents/group/contents/fill/opacity         scalar   100.0
-  contents/group/transform/anchor              vec2     [0.0,0.0]
+  contents/group/transform/anchor              vec2     [0.0,0.0]  [1 keys]
   contents/group/transform/position            vec2     [0.0,0.0]
   contents/group/transform/scale               vec2     [100.0,100.0]
   contents/group/transform/skew                scalar   0.0
@@ -28,7 +28,7 @@ layer 80 "Rule" (Shape) at 0.0 s
   transform/rotationX                          scalar   0.0
   transform/rotationY                          scalar   0.0
   transform/rotation                           scalar   0.0
-  transform/opacity                            scalar   0.0  [4 keys]
+  transform/opacity                            scalar   100.0
   materialOptions/castsShadows                 enum     0 (Off)
   materialOptions/lightTransmission            scalar   0.0
   materialOptions/acceptsShadows               enum     1 (On)
