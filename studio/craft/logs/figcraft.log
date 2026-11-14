@@ -37,8 +37,43 @@ frame.create*  Create frame
     {preset? (name from FRAME_PRESETS), x?, y?, width?, height?, parent?, index?, name?, props?, select? (default true)} (a preset without x/y lands to the right of the page's frames)
 text.create*  Text
     {text | characters, x, y, parent?, index?, name? (default: the first line), width? (fixed width wraps), props? (fontSize, fontFamily, …), select? (default true)}
-### site
-{"command":"shape.rectangle","error":"invalid parameters for `node.create`: step 16: 16 can't contain layers","ok":false,"rolledBack":true,"step":16}
-error: step 16 (shape.rectangle) failed: invalid parameters for `node.create`: step 16: 16 can't contain layers
-the script's document changes were rolled back
-run produced no document
+### site-desktop
+{"command":"frame.create","ok":true,"result":{"id":2},"step":0}
+{"command":"shape.rectangle","ok":true,"result":{"id":3},"step":1}
+{"command":"text.create","ok":true,"result":{"id":4},"step":2}
+{"command":"text.create","ok":true,"result":{"id":5},"step":3}
+{"command":"text.create","ok":true,"result":{"id":6},"step":4}
+{"command":"text.create","ok":true,"result":{"id":7},"step":5}
+{"command":"shape.rectangle","ok":true,"result":{"id":8},"step":6}
+{"command":"text.create","ok":true,"result":{"id":9},"step":7}
+{"command":"text.create","ok":true,"result":{"id":10},"step":8}
+{"command":"text.create","ok":true,"result":{"id":11},"step":9}
+{"command":"text.create","ok":true,"result":{"id":12},"step":10}
+{"command":"text.create","ok":true,"result":{"id":13},"step":11}
+{"command":"text.create","ok":true,"result":{"id":14},"step":12}
+{"command":"shape.rectangle","ok":true,"result":{"id":15},"step":13}
+{"command":"text.create","ok":true,"result":{"id":16},"step":14}
+wrote studio/craft/out/figcraft-site-desktop.figcraft
+studio/craft/out/figcraft-site-desktop.figcraft — figcraft-site-desktop (16 nodes, 0 styles, 0 variables, 0 images)
+page 1 "Page 1": 15 nodes, 1 top-level
+  2 FRAME "Home-Desktop" 1440.0×900.0
+missing font "Instrument Serif": 3 text layers (drawn in a fallback font)
+missing font "Inter Tight": 5 text layers (drawn in a fallback font)
+missing font "JetBrains Mono": 3 text layers (drawn in a fallback font)
+studio/craft/out/figcraft-site-desktop/Home-Desktop.png
+### site-mobile
+{"command":"frame.create","ok":true,"result":{"id":2},"step":0}
+{"command":"shape.rectangle","ok":true,"result":{"id":3},"step":1}
+{"command":"text.create","ok":true,"result":{"id":4},"step":2}
+{"command":"shape.rectangle","ok":true,"result":{"id":5},"step":3}
+{"command":"text.create","ok":true,"result":{"id":6},"step":4}
+{"command":"text.create","ok":true,"result":{"id":7},"step":5}
+{"command":"text.create","ok":true,"result":{"id":8},"step":6}
+{"command":"text.create","ok":true,"result":{"id":9},"step":7}
+wrote studio/craft/out/figcraft-site-mobile.figcraft
+studio/craft/out/figcraft-site-mobile.figcraft — figcraft-site-mobile (9 nodes, 0 styles, 0 variables, 0 images)
+page 1 "Page 1": 8 nodes, 1 top-level
+  2 FRAME "Home-Mobile" 390.0×844.0
+missing font "Instrument Serif": 3 text layers (drawn in a fallback font)
+missing font "Inter Tight": 2 text layers (drawn in a fallback font)
+studio/craft/out/figcraft-site-mobile/Home-Mobile.png
