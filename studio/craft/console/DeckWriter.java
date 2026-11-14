@@ -90,7 +90,8 @@ public class DeckWriter {
           body.append(text(
             (int) Math.round(Double.parseDouble(p[0])), (int) Math.round(Double.parseDouble(p[1])),
             (int) Math.round(Double.parseDouble(p[2])), (int) Math.round(Double.parseDouble(p[3])),
-            (int) Math.round(1000 * Double.parseDouble(p[4])),  // pt -> hundredths
+            // ooxml sz is hundredths of a point: 8 pt is sz="800"
+            (int) Math.round(100 * Double.parseDouble(p[4])),
             p[5], font, tracking, flags, content));
           break;
         }
@@ -192,12 +193,17 @@ public class DeckWriter {
         put(zip, "ppt/slides/slide" + (i + 1) + ".xml", slide(bodies.get(i)));
         put(zip, "ppt/slides/_rels/slide" + (i + 1) + ".xml.rels", slideRels(i));
       }
-      // media, de-duplicated by path
+      // media, de-duplicated by path. The bytes have to be written, not just the
+      // entry created: an empty zip entry renders as a crossed placeholder box.
       Set<String> seen = new HashSet<>();
       for (List<String[]> per : media) {
         for (String[] m : per) {
-          String path = m[1];
-          if (seen.add(path)) zip.putNextEntry(new ZipEntry("ppt/media/" + mediaName(path)));
+          String src = m[1];
+          if (seen.add(src)) {
+            zip.putNextEntry(new ZipEntry("ppt/media/" + mediaName(src)));
+            zip.write(java.nio.file.Files.readAllBytes(new File(src).toPath()));
+            zip.closeEntry();
+          }
         }
       }
       zip.close();
