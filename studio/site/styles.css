@@ -369,7 +369,7 @@ textarea { resize: vertical; min-height: 76px; }
 /* ---------------- documents ---------------- */
 .docs {
   list-style: none; margin: clamp(34px, 5vw, 60px) 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 0;
   border-top: 1px solid var(--rule);
 }

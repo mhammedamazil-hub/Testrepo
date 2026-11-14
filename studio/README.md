@@ -32,7 +32,7 @@ ads/video/           identity sting: mp4, webm, gif, poster
 ads/avatars/         profile avatars + cover banner
 portfolio/           KILN-portfolio.pdf (9 pp, A4 landscape)
 deck/                KILN-pitch-deck.pdf (12 slides, 16:9)
-docs/                KILN-one-pager.pdf, offers, pricing model, launch plan
+docs/                KILN-one-pager.pdf · KILN-brand-guidelines.pdf, offers, pricing model, launch plan
 copy/                brand book + launch copy
 site/                static site: index + showroom, self-contained, no CDN
 site/shots/          real-browser screenshots, captured in CI

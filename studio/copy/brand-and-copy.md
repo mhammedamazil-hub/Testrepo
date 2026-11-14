@@ -175,5 +175,6 @@ Products are *tiers of heat* — Spark → Forge → Foundry. Consistent, memora
 | Identity film | `ads/video/kiln-sting-1080.mp4` / `.webm`, `kiln-sting-poster.png`, `kiln-loop-720.gif` |
 | Portfolio (9 pp) | `portfolio/KILN-portfolio.pdf` |
 | Pitch deck (12 slides, 16:9) | `deck/KILN-pitch-deck.pdf` |
+| Brand guidelines (10 pp, A4 landscape) | `docs/KILN-brand-guidelines.pdf` |
 | One-pager | `docs/KILN-one-pager.pdf` |
 | Website + showroom | `site/index.html`, `site/showroom.html` |
