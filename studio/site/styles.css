@@ -87,7 +87,7 @@ a { color: inherit; }
 h1, h2, h3 { font-family: var(--display); font-weight: 400; letter-spacing: -.012em; }
 
 h1 {
-  font-size: clamp(52px, 8.4vw, 126px);
+  font-size: clamp(46px, 7.2vw, 104px);
   line-height: .94;
   margin: 0 0 28px;
   text-wrap: balance;
@@ -165,15 +165,16 @@ h2 {
 /* ---------------- hero ---------------- */
 .hero {
   position: relative;
-  padding: clamp(56px, 9vw, 118px) 0 0;
+  /* padding-block only — the shorthand was resetting .wrap's side gutters */
+  padding-block: clamp(48px, 6.5vw, 84px) 0;
 }
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.02fr .98fr;
-  align-items: end;
+  grid-template-columns: 1.06fr .94fr;
+  align-items: center;
   gap: clamp(24px, 4vw, 56px);
 }
-.hero-copy { padding-bottom: clamp(30px, 5vw, 70px); }
+.hero-copy { padding-bottom: 0; }
 .hero-copy h1 { margin-bottom: 30px; }
 .hero-copy .lede { margin-bottom: 34px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
@@ -181,8 +182,9 @@ h2 {
 .hero-figure { position: relative; }
 .hero-figure img {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: 50% 42%;
   filter: saturate(.94) contrast(1.02);
 }
 .hero-figure figcaption {
@@ -220,7 +222,7 @@ h2 {
 
 /* ---------------- sections ---------------- */
 section { position: relative; z-index: 2; }
-.band { padding: clamp(64px, 9vw, 132px) 0; }
+.band { padding-block: clamp(64px, 9vw, 132px); }
 .band + .band { border-top: 1px solid var(--rule-soft); }
 
 .split {
