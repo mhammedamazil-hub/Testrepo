@@ -1,73 +1,70 @@
 # KILN — studio assets
 
-Everything for the KILN brand, launch campaign, pitch deck, portfolio and website, generated from source scripts in this folder. Nothing here is stock or hand-drawn in a GUI: the 3D art is ray-cast frame-by-frame by `scripts/renderer.js`, the type is set in SVG, and the deliverables are encoded in Node.
+Everything in this folder is generated from a script in `scripts/`. There is no stock
+imagery, no hand-drawn mark and no mock-up: the plates are Cycles renders driven by `bpy`, the
+type is set in the three licensed-for-web faces below, and the PDFs and deck are encoded from
+the same geometry.
 
-**Brand:** KILN — *websites you can walk through.*
-Ink `#06070B` · panel `#0C0F17` · bone `#EDE7DA` · forge `#FF6B2C` · arc `#22E8C8` · violet `#7C5CFF` · muted `#8A93A6`
-Type: Space Grotesk (display), Inter (body), JetBrains Mono (labels).
+**KILN** — *Rooms, not pages.* An interactive architecture studio.
+
+Ink `#0B0C0E` · paper `#F2EDE4` · ember `#D8542A` · ember-lit `#EE7541` · kiln `#8A8578` · smoke `#55544F`
+Instrument Serif (display) · Inter Tight (text) · JetBrains Mono (labels).
+
+## The mark
+
+A section through a kiln wall: a 1000-unit block with a 300-unit opening cut through it, radius
+equal to half the opening, springing 120 units above centre, legs running past the foot. It is
+the same arch the studio renders and the same arch the studio sells, which is why the identity
+does not need a second idea.
+
+`brand/logo/kiln-construction.svg` is the sheet: grid, clear space, colour rules, minimum size
+and a 128/64/32/16 scale test. The mark is never outlined, glowed or bevelled.
 
 ## Tree
 
 ```
-brand/logo/          mark, mono mark, icon, wordmark, lockups (SVG)
-brand/exports/       PNG exports + favicons
-ads/keyart/          hero key art 1600x2000
-ads/set/             social ad set 1:1, 9:16, 16:9
-ads/posters/         manifesto, case-study, hiring posters (1200x1600)
-ads/video/           motion ad masters: webm, mp4, gif, poster
+brand/logo/          mark (ink/paper/ember), wordmark, lockups, construction sheet
+brand/exports/       PNG exports, favicons, app icon
+brand/renders/       Cycles plates: hero, key art, square, detail, three case studies
+ads/posters/         manifesto + hiring posters (1200x1600)
+ads/set/             social set 1:1, 4:5, 16:9
+ads/video/           identity sting: mp4, webm, gif, poster
 ads/avatars/         profile avatars + cover banner
-portfolio/           three case-study plates 1800x1200
-portfolio/plates/    caption-free 3D plates used by the deck + PDF
-portfolio/KILN-portfolio.pdf   8-page A4 landscape portfolio
-docs/KILN-one-pager.pdf        single-page leave-behind
-deck/                KILN-pitch-deck.pptx (11 slides, 16:9)
-site/                static site: index + showroom (three.js), self-contained
-site/shots/          real-browser screenshots, captured in CI (Playwright)
-docs/                offers, pricing model, one-pager, 90-day launch plan
-copy/                brand book + launch copy (ads, email, social, social kit)
-fonts/               subset TTFs for the PDF (converted from the site woff2)
-scripts/             all generators
+portfolio/           KILN-portfolio.pdf (9 pp, A4 landscape)
+deck/                KILN-pitch-deck.pptx (12 slides, 16:9)
+docs/                KILN-one-pager.pdf, offers, pricing model, launch plan
+copy/                brand book + launch copy
+site/                static site: index + showroom, self-contained, no CDN
+site/shots/          real-browser screenshots, captured in CI
+fonts/               TTFs for the PDF and print generators
+scripts/             every generator (see scripts/README.md)
 ```
-
-## Scripts
-
-Node 22, dependencies from npm (installed to a scratch `node_modules`, referenced via `NODE_PATH`):
-
-```
-NODE_PATH=/tmp/build/node_modules node scripts/brand.js       # logo, marks, favicons
-NODE_PATH=/tmp/build/node_modules node scripts/ads.js         # key art, ad set, posters, case plates
-NODE_PATH=/tmp/build/node_modules node scripts/plates.js      # caption-free plates for deck/PDF
-NODE_PATH=/tmp/build/node_modules node scripts/creative.js all # poster + looping GIF + WebM ad
-python3 scripts/encode-mp4.py                                 # H.264 1080 delivery cut
-NODE_PATH=/tmp/build/node_modules node scripts/deck.js        # pitch deck .pptx
-NODE_PATH=/tmp/build/node_modules node scripts/portfolio.js   # 8-page portfolio PDF
-NODE_PATH=/tmp/build/node_modules node scripts/onepager.js    # A4 one-pager PDF
-```
-
-Deps: `sharp`, `gifenc`, `webm-writer`, `pptxgenjs`, `pdf-lib` + `@pdf-lib/fontkit`; `av` (PyAV) for the MP4 remux.
-
-Notes worth keeping:
-
-- `scripts/renderer.js` is a small CPU rasteriser (boxes, tori, spheres, points, grid, fog, rim light, vignette) writing raw RGB. `render(w, h, ss)` supersamples 2×.
-- The motion ad is 120 frames at 20 fps; captions are SVG composites with a bottom scrim, plus a hold-and-fade end lockup.
-- The PDF sets its own type (Space Grotesk / Inter / JetBrains Mono embedded and subset with fontkit), so PDF art uses the clean plates, never the captioned ad art.
-- `webm-writer` is browser-only; `scripts/creative.js` shims `window.atob` and feeds it a fake canvas that returns a WebP data URL from sharp.
 
 ## The site
 
-`site/` is fully static and offline-safe — three.js 0.160 is vendored, fonts are local woff2, no CDN calls.
+`site/` is fully static and offline-safe: three.js is vendored, fonts are local woff2, and the
+only external reference anywhere is a `mailto:`.
 
-- `index.html` — hero (live WebGL forge), three case studies with WebP `<picture>`, "the spot" video section, five-step process, three tiers, mailto contact form.
-- `showroom.html` — live product showroom: orbit / pinch / wheel camera, four finish swatches, FPS + draw-call + triangle readout.
-- Serve locally: `python3 -m http.server 4173 --bind 0.0.0.0` from `site/`.
+- `index.html` — hero, facts bar, three case plates, the identity film, five-step method,
+  three tiers, contact.
+- `showroom.html` — live scene: orbit / pinch / dolly, four finishes, draw-call and frame-rate
+  readout. The geometry mirrors the Cycles house set, so the claim on the homepage can be
+  checked by the visitor.
+- `motion.js` — headline line reveals, scroll reveals with a 4-second failsafe, hero parallax,
+  nav condense, film playback. One easing curve (`cubic-bezier(.16,1,.3,1)`), 3 KB, and inert
+  under `prefers-reduced-motion`.
+
+Serve locally: `python3 -m http.server 4173 --bind 0.0.0.0` from `site/`.
 
 ## Verification
 
 No browser can be downloaded in the agent sandbox, so `.github/workflows/site-shots.yml` serves
-`studio/site`, screenshots it with Playwright at 1440 and 390 wide plus the showroom, logs the live
-three.js render stats (frames / draw calls / triangles) and commits the PNGs to `site/shots/`.
-Re-run it after any `site/` change: `gh workflow run site-shots.yml`.
+`studio/site`, screenshots it with Playwright at 1440 and 390 wide plus the showroom, walks the
+page so scroll reveals fire, logs layout overflow and the live three.js stats, and commits the
+PNGs to `site/shots/`. Re-run after any `site/` change: `gh workflow run site-shots.yml`.
 
-## Contacts / facts used consistently everywhere
+## Facts used consistently everywhere
 
-`forge@kiln.studio` · kiln.studio · Spark $4,800 · Forge $12,500 · Foundry $3,900/mo · < 2.0 MB first load · 60 fps · Lighthouse 95+ · ≤ 8 draw calls.
+`studio@kiln.studio` · +44 20 7946 0812 · kiln.studio
+Spar $4,800 / 2 weeks · Kiln $12,500 / 3–5 weeks · Firing $3,900 per month
+< 2.0 MB first load · 60 fps on a mid-range phone · ≤ 8 draw calls · Lighthouse 95+ gated in CI
