@@ -108,6 +108,28 @@ jobs:
           done
           ls -la studio/craft/out
 
+      # DeckCraft's parameter surface differs from its skill docs in places; keep the
+      # CLI's own answer in the repo instead of guessing.
+      - name: DeckCraft schema
+        if: always()
+        run: |
+          mkdir -p studio/craft/logs
+          {
+            for id in slide.new shape.insert insert.textBox insert.picture design.theme design.size file.new slide.background; do
+              echo "### $id"
+              npx pi-craft deckcraft exec describe "$id" 2>&1 || true
+              echo
+            done
+            echo "### commands picture"
+            npx pi-craft deckcraft exec commands picture 2>&1 | head -40 || true
+            echo "### commands theme"
+            npx pi-craft deckcraft exec commands theme 2>&1 | head -40 || true
+            echo "### commands background"
+            npx pi-craft deckcraft exec commands background 2>&1 | head -40 || true
+          } > studio/craft/logs/deckcraft-schema.txt
+          head -40 studio/craft/logs/deckcraft-schema.txt
+          exit 0
+
       - name: Build — DeckCraft
         if: always()
         run: |
