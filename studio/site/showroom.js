@@ -7,7 +7,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 renderer.setSize(innerWidth, innerHeight, false);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.06;
+renderer.toneMappingExposure = 0.92;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -94,10 +94,10 @@ ball.castShadow = true;
 room.add(ball);
 
 /* ---------- light rig (mirrors the Cycles setup) ---------- */
-scene.add(new THREE.HemisphereLight(0xfff2e4, 0x101216, 0.85));
+scene.add(new THREE.HemisphereLight(0xfff2e4, 0x101216, 0.5));
 
 // key from front-left, as in the plates: the faces toward camera must be lit
-const key = new THREE.DirectionalLight(0xffd9b0, 2.5);
+const key = new THREE.DirectionalLight(0xffd9b0, 1.55);
 key.position.set(-7.0, 7.5, 5.5);
 key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048);
@@ -110,11 +110,11 @@ key.shadow.camera.bottom = -12;
 key.shadow.bias = -0.0012;
 scene.add(key);
 
-const rim = new THREE.PointLight(0xff7a33, 26, 16, 2);
+const rim = new THREE.PointLight(0xff7a33, 18, 14, 2);
 rim.position.set(1.5, 1.35, -5.9);
 scene.add(rim);
 
-const fill = new THREE.DirectionalLight(0xcfd6e0, 0.75);
+const fill = new THREE.DirectionalLight(0xcfd6e0, 0.6);
 fill.position.set(7.4, 3.4, 2.2);
 scene.add(fill);
 
@@ -209,7 +209,7 @@ function tick(now) {
   camera.lookAt(shift * 0.78, 1.35, -1.1);
 
   vessel.rotation.y = t * 0.12;
-  rim.intensity = 24 + Math.sin(t * 1.7) * 1.8;
+  rim.intensity = 17 + Math.sin(t * 1.7) * 1.4;
 
   renderer.render(scene, camera);
 
