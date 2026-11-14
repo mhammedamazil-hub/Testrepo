@@ -9,16 +9,7 @@
 {"command":"text.create","params":{"text":"Rooms,","x":48,"y":560,"parent":2,"props":{"name":"H1","fontSize":104,"fontFamily":"Instrument Serif","fill":"#F2EDE4"}}}
 {"command":"text.create","params":{"text":"not pages.","x":48,"y":668,"parent":2,"props":{"name":"H1b","fontSize":104,"fontFamily":"Instrument Serif","fill":"#EE7541"}}}
 {"command":"text.create","params":{"text":"An interactive architecture studio. We model the space in Blender, light it with bpy","x":48,"y":800,"parent":2,"props":{"fontSize":15,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
-{"command":"text.create","params":{"text":"and ship it in React — under two megabytes, sixty frames on a phone.","x":48,"y":822,"parent":2,"props":{"fontSize":15,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
-{"command":"text.create","params":{"text":"SCROLL TO ENTER · 02 7946 0812","x":48,"y":866,"parent":2,"props":{"fontSize":9,"fontFamily":"JetBrains Mono","fill":"#55544F"}}}
+{"command":"text.create","params":{"text":"and ship it in React \u2014 under two megabytes, sixty frames on a phone.","x":48,"y":822,"parent":2,"props":{"fontSize":15,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
+{"command":"text.create","params":{"text":"SCROLL TO ENTER \u00b7 02 7946 0812","x":48,"y":866,"parent":2,"props":{"fontSize":9,"fontFamily":"JetBrains Mono","fill":"#55544F"}}}
 {"command":"shape.rectangle","params":{"x":930,"y":120,"width":460,"height":620,"parent":2,"props":{"name":"HeroPlate","fill":"#15161A"}}}
-{"command":"text.create","params":{"text":"CYCLES · 512 SAMPLES","x":950,"y":748,"parent":2,"props":{"fontSize":8,"fontFamily":"JetBrains Mono","fill":"#55544F"}}}
-
-{"command":"frame.create","params":{"x":1560,"y":0,"width":390,"height":844,"name":"Home-Mobile"}}
-{"command":"shape.rectangle","params":{"x":0,"y":0,"width":390,"height":844,"parent":16,"props":{"name":"Field","fill":"#0B0C0E"}}}
-{"command":"text.create","params":{"text":"KILN","x":24,"y":24,"parent":16,"props":{"fontSize":15,"fontFamily":"Instrument Serif","fill":"#F2EDE4"}}}
-{"command":"shape.rectangle","params":{"x":330,"y":24,"width":36,"height":14,"parent":16,"props":{"name":"Menu","fill":"#F2EDE4"}}}
-{"command":"text.create","params":{"text":"Rooms,","x":24,"y":500,"parent":16,"props":{"fontSize":58,"fontFamily":"Instrument Serif","fill":"#F2EDE4"}}}
-{"command":"text.create","params":{"text":"not pages.","x":24,"y":558,"parent":16,"props":{"fontSize":58,"fontFamily":"Instrument Serif","fill":"#EE7541"}}}
-{"command":"text.create","params":{"text":"Interactive architecture for","x":24,"y":690,"parent":16,"props":{"fontSize":14,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
-{"command":"text.create","params":{"text":"products that need a room.","x":24,"y":710,"parent":16,"props":{"fontSize":14,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
+{"command":"text.create","params":{"text":"CYCLES \u00b7 512 SAMPLES","x":950,"y":748,"parent":2,"props":{"fontSize":8,"fontFamily":"JetBrains Mono","fill":"#55544F"}}}

@@ -23,7 +23,7 @@ process.on('uncaughtException', (e) => {
 const OUT = 'studio/craft/out';
 const PPTX = path.join(OUT, 'kiln-deckcraft.pptx');
 const PDF = path.join(OUT, 'kiln-deckcraft.pdf');
-const report = { dropped: {}, skippedSlides: [], commands: 0 };
+const report = { dropped: {}, skippedSlides: [], failures: {}, commands: 0 };
 
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -287,8 +287,9 @@ function run(args, label) {
     craft(args);
     return true;
   } catch (e) {
-    const detail = String(e.stderr || e.message || '').split('\n').filter(Boolean).slice(-3).join(' | ');
+    const detail = String(e.stderr || e.message || '').split('\n').filter(Boolean).slice(0, 6).join(' | ');
     console.error(`  ✗ ${label}: ${detail}`);
+    (report.failures[label] ||= []).push(detail);
     return false;
   }
 }
@@ -300,6 +301,8 @@ for (const s of slides) {
   const args = ['--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
   report.commands += s.cmds.length;
   if (!run(args, s.name)) {
+    report.failures[s.name] ||= [];
+    if (report.failures[s.name].length === 0) report.failures[s.name].push('see log');
     report.skippedSlides.push(s.name);
     // rebuild the reference file if the failed run corrupted it
     if (!fs.existsSync(PPTX)) run(['--cmd', 'file.new={"blank":true}', '--save', PPTX], 're-init');

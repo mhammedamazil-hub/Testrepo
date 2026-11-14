@@ -24,8 +24,8 @@ rm -f "$EC" "$OUT/kiln-sting-alpha.mov" "$OUT/kiln-sting.mp4" "$OUT/kiln-sting-p
 # project and demo items end up in the render.
 npx pi-craft effectcraft exec --empty --save-as "$EC" run \
   comp.new '{"name":"KILN Sting","width":1080,"height":1080,"frameRate":24,"duration":6,"background":"#0B0C0E"}' \
-  layer.newText '{"text":"KILN","name":"Wordmark","size":150,"position":[540,560],"color":"#F2EDE4","font":"Georgia"}' \
-  layer.newText '{"text":"INTERACTIVE ARCHITECTURE","name":"Descriptor","size":22,"position":[540,690],"color":"#8A8578","font":"Consolas"}' \
+  layer.newText '{"text":"KILN","name":"Wordmark","size":150,"position":[540,560],"fill":"#F2EDE4","font":"Georgia"}' \
+  layer.newText '{"text":"INTERACTIVE ARCHITECTURE","name":"Descriptor","size":22,"position":[540,690],"fill":"#8A8578","font":"Consolas"}' \
   layer.newShape '{"type":"rectangle","name":"Rule","size":[0,2],"position":[300,640],"fill":"#D8542A"}' \
   prop.addKey '{"layer":"Wordmark","path":"transform/opacity","time":0,"value":0}' \
   prop.addKey '{"layer":"Wordmark","path":"transform/opacity","time":1.0,"value":100}' \

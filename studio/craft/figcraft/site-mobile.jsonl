@@ -1,0 +1,8 @@
+{"command":"frame.create","params":{"x":1560,"y":0,"width":390,"height":844,"name":"Home-Mobile"}}
+{"command":"shape.rectangle","params":{"x":0,"y":0,"width":390,"height":844,"parent":2,"props":{"name":"Field","fill":"#0B0C0E"}}}
+{"command":"text.create","params":{"text":"KILN","x":24,"y":24,"parent":2,"props":{"fontSize":15,"fontFamily":"Instrument Serif","fill":"#F2EDE4"}}}
+{"command":"shape.rectangle","params":{"x":330,"y":24,"width":36,"height":14,"parent":2,"props":{"name":"Menu","fill":"#F2EDE4"}}}
+{"command":"text.create","params":{"text":"Rooms,","x":24,"y":500,"parent":2,"props":{"fontSize":58,"fontFamily":"Instrument Serif","fill":"#F2EDE4"}}}
+{"command":"text.create","params":{"text":"not pages.","x":24,"y":558,"parent":2,"props":{"fontSize":58,"fontFamily":"Instrument Serif","fill":"#EE7541"}}}
+{"command":"text.create","params":{"text":"Interactive architecture for","x":24,"y":690,"parent":2,"props":{"fontSize":14,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
+{"command":"text.create","params":{"text":"products that need a room.","x":24,"y":710,"parent":2,"props":{"fontSize":14,"fontFamily":"Inter Tight","fill":"#8A8578"}}}
