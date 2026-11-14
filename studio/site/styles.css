@@ -120,7 +120,8 @@ h2 {
   border-bottom: 1px solid var(--rule-soft);
 }
 .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
-.brand img { width: 26px; height: 26px; border-radius: 7px; }
+/* the mark is a section through a wall, not an app tile: no radius */
+.brand img { width: 24px; height: 24px; border-radius: 0; }
 .brand span {
   font-family: var(--display);
   font-size: 22px;
@@ -375,7 +376,11 @@ textarea { resize: vertical; min-height: 76px; }
   .gear { display: none; }
 }
 @media (max-width: 620px) {
+  .nav { gap: 14px; padding-block: 14px; }
   .nav nav { display: none; }
+  /* the header CTA is redundant on a phone: the hero button is one thumb away */
+  .nav > .btn { display: none; }
+  .brand { margin-right: auto; }
   .work-grid { grid-template-columns: 1fr; }
   .facts { grid-template-columns: 1fr 1fr; }
   .facts div:nth-child(2) { border-right: 0; }

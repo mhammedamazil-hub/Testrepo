@@ -63,33 +63,33 @@ function archWall(width, height, depth, openW, openH) {
 }
 
 const kiln = new THREE.Mesh(archWall(5.4, 4.0, 0.5, 1.7, 1.5), plaster);
-kiln.position.set(1.7, 0, 3.1);
-kiln.rotation.y = THREE.MathUtils.degToRad(-16);
+kiln.position.set(1.25, 0, -3.5);
+kiln.rotation.y = THREE.MathUtils.degToRad(-13);
 kiln.castShadow = true;
 kiln.receiveShadow = true;
 room.add(kiln);
 
 const stele = new THREE.Mesh(new THREE.BoxGeometry(1.05, 3.9, 1.05), plaster);
-stele.position.set(-0.95, 1.95, 0.1);
-stele.rotation.y = THREE.MathUtils.degToRad(9);
+stele.position.set(-2.35, 1.95, -1.75);
+stele.rotation.y = THREE.MathUtils.degToRad(11);
 stele.castShadow = true;
 stele.receiveShadow = true;
 room.add(stele);
 
 const bench = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.58, 1.35), plaster);
-bench.position.set(1.35, 0.29, -0.75);
-bench.rotation.y = THREE.MathUtils.degToRad(-6);
+bench.position.set(0.35, 0.29, -0.55);
+bench.rotation.y = THREE.MathUtils.degToRad(-7);
 bench.castShadow = true;
 bench.receiveShadow = true;
 room.add(bench);
 
 const vessel = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.05, 96, 1), boneMat);
-vessel.position.set(1.28, 1.11, -0.72);
+vessel.position.set(0.28, 1.11, -0.5);
 vessel.castShadow = true;
 room.add(vessel);
 
 const ball = new THREE.Mesh(new THREE.SphereGeometry(0.17, 48, 32), boneMat);
-ball.position.set(-1.42, 0.17, -0.62);
+ball.position.set(-1.62, 0.17, 0.55);
 ball.castShadow = true;
 room.add(ball);
 
@@ -109,8 +109,8 @@ key.shadow.camera.bottom = -12;
 key.shadow.bias = -0.0012;
 scene.add(key);
 
-const rim = new THREE.PointLight(0xff7a33, 22, 18, 2);
-rim.position.set(1.2, 2.6, 4.2);
+const rim = new THREE.PointLight(0xff7a33, 34, 22, 2);
+rim.position.set(1.5, 1.5, -5.6);
 scene.add(rim);
 
 const fill = new THREE.DirectionalLight(0xcfd6e0, 0.5);
@@ -119,8 +119,8 @@ scene.add(fill);
 
 /* ---------- orbit ---------- */
 const orbit = {
-  theta: 0.34, phi: 1.16, radius: 11.4,
-  thetaT: 0.34, phiT: 1.16, radiusT: 11.4,
+  theta: 0.20, phi: 1.24, radius: 12.6,
+  thetaT: 0.20, phiT: 1.24, radiusT: 12.6,
   minPhi: 0.5, maxPhi: 1.5, minR: 6.5, maxR: 20,
 };
 let dragging = false, lastX = 0, lastY = 0, idle = true;
@@ -199,16 +199,16 @@ function tick(now) {
 
   const sp = Math.sin(orbit.phi);
   // on desktop, bias the frame right so the panel does not sit on the subject
-  const shift = innerWidth > 900 ? 1.6 : 0;
+  const shift = innerWidth > 900 ? 1.55 : 0;
   camera.position.set(
     Math.sin(orbit.theta) * sp * orbit.radius + shift,
     Math.cos(orbit.phi) * orbit.radius * 0.9 + 0.9,
     Math.cos(orbit.theta) * sp * orbit.radius
   );
-  camera.lookAt(shift * 0.72, 1.15, 0.4);
+  camera.lookAt(shift * 0.78, 1.35, -1.1);
 
   vessel.rotation.y = t * 0.12;
-  rim.intensity = 20 + Math.sin(t * 1.7) * 2.2;
+  rim.intensity = 32 + Math.sin(t * 1.7) * 2.4;
 
   renderer.render(scene, camera);
 
