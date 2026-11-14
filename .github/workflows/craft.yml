@@ -111,7 +111,7 @@ jobs:
       - name: Build — DeckCraft
         if: always()
         run: |
-          mkdir -p studio/craft/out
+          mkdir -p studio/craft/out studio/craft/logs
           # capture at the shell level: if node dies before its own redirect, we still
           # have the output
           { node studio/craft/deckcraft/build.mjs; echo "EXIT=$?"; } > /tmp/deck.log 2>&1
@@ -121,7 +121,9 @@ jobs:
 
       - name: Render deck slides to png
         if: always()
+        continue-on-error: true
         run: |
+          [ -f studio/craft/out/kiln-deckcraft.pptx ] || { echo "no deck to render"; exit 0; }
           npx pi-craft deckcraft exec render studio/craft/out/kiln-deckcraft.pptx --all studio/craft/out/deck-slides --scale 1
           ls studio/craft/out/deck-slides | head
 
