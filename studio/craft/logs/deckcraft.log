@@ -20,6 +20,7 @@ deckcraft report: {
  "commands": 181,
  "slides": 12,
  "hasDeck": true,
- "hasPdf": true
+ "hasPdf": true,
+ "scriptLines": 168
 }
 EXIT=0
