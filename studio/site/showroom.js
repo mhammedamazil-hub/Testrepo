@@ -77,7 +77,7 @@ for (let i = 0; i < 3; i++) {
 const pierMat = new THREE.MeshStandardMaterial({ color: 0x11151d, metalness: 0.55, roughness: 0.52 });
 const trimMat = new THREE.MeshStandardMaterial({ color: 0xff6b2c, metalness: 0.3, roughness: 0.42, emissive: 0x2c0a00 });
 
-const PORTAL = { x: 3.5, z: -3.6, h: 4.4 };
+const PORTAL = { x: 2.85, z: -3.4, h: 3.7 };
 for (const sx of [-1, 1]) {
   const pier = new THREE.Mesh(new THREE.BoxGeometry(0.46, PORTAL.h, 0.46), pierMat);
   pier.position.set(sx * PORTAL.x, -1.6 + PORTAL.h / 2, PORTAL.z);
@@ -124,8 +124,8 @@ scene.add(cool);
 
 /* ---------- orbit controls (compact, no addons) ---------- */
 const orbit = {
-  theta: 0.55, phi: 1.14, radius: 7.6,
-  thetaT: 0.55, phiT: 1.14, radiusT: 7.6,
+  theta: 0.16, phi: 1.1, radius: 8.4,
+  thetaT: 0.16, phiT: 1.1, radiusT: 8.4,
   minPhi: 0.45, maxPhi: 1.52, minR: 4.4, maxR: 15,
 };
 let dragging = false, lastX = 0, lastY = 0, idleSpin = true;
@@ -199,19 +199,20 @@ function tick(now) {
   last = now;
   const t = (now - t0) / 1000;
 
-  if (idleSpin && !dragging) orbit.thetaT += dt * 0.11;
+  if (idleSpin && !dragging) orbit.thetaT += dt * 0.06;
 
   orbit.theta += (orbit.thetaT - orbit.theta) * 0.07;
   orbit.phi += (orbit.phiT - orbit.phi) * 0.07;
   orbit.radius += (orbit.radiusT - orbit.radius) * 0.07;
 
   const sp = Math.sin(orbit.phi);
+  const shift = innerWidth > 900 ? 1.15 : 0; // clear the overlay panel
   camera.position.set(
-    Math.sin(orbit.theta) * sp * orbit.radius,
+    Math.sin(orbit.theta) * sp * orbit.radius + shift,
     Math.cos(orbit.phi) * orbit.radius * 0.86 + 0.6,
     Math.cos(orbit.theta) * sp * orbit.radius
   );
-  camera.lookAt(0, 0.2, 0);
+  camera.lookAt(shift * 0.82, 0.35, 0);
 
   hero.rotation.y = t * 0.35;
   hero.rotation.x = Math.sin(t * 0.4) * 0.16;
