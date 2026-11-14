@@ -3,21 +3,21 @@ preset enum: rect roundRect ellipse triangle rightArrow star5
 using preset: rect
   ✓ cover (9 commands)
   ✓ problem (10 commands)
-  ✓ work (17 commands)
-  ✓ method (23 commands)
-  ✓ case-5 (14 commands)
-  ✓ case-6 (14 commands)
-  ✓ case-7 (14 commands)
-  ✓ engineering (17 commands)
-  ✓ studio (12 commands)
+  ✓ work (20 commands)
+  ✓ method (24 commands)
+  ✓ case-5 (15 commands)
+  ✓ case-6 (15 commands)
+  ✓ case-7 (15 commands)
+  ✓ engineering (18 commands)
+  ✓ studio (13 commands)
   ✓ rates (20 commands)
-  ✓ provenance (10 commands)
+  ✓ provenance (11 commands)
   ✓ next (11 commands)
 deckcraft report: {
  "dropped": {},
  "skippedSlides": [],
  "failures": {},
- "commands": 171,
+ "commands": 181,
  "slides": 12,
  "hasDeck": true,
  "hasPdf": true
