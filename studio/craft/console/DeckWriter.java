@@ -88,8 +88,8 @@ public class DeckWriter {
           int tracking = Integer.parseInt(p[p.length - 2]);
           String font = String.join(" ", Arrays.copyOfRange(p, 6, p.length - 2));
           body.append(text(
-            Integer.parseInt(p[0]), Integer.parseInt(p[1]),
-            Integer.parseInt(p[2]), Integer.parseInt(p[3]),
+            (int) Math.round(Double.parseDouble(p[0])), (int) Math.round(Double.parseDouble(p[1])),
+            (int) Math.round(Double.parseDouble(p[2])), (int) Math.round(Double.parseDouble(p[3])),
             (int) Math.round(1000 * Double.parseDouble(p[4])),  // pt -> hundredths
             p[5], font, tracking, flags, content));
           break;
@@ -100,8 +100,8 @@ public class DeckWriter {
             rest.trim().indexOf(p[4]));
           int id = relId++;
           media.get(media.size() - 1).add(new String[]{String.valueOf(id), path});
-          body.append(picture(Integer.parseInt(p[0]), Integer.parseInt(p[1]),
-            Integer.parseInt(p[2]), Integer.parseInt(p[3]), id));
+          body.append(picture((int) Math.round(Double.parseDouble(p[0])), (int) Math.round(Double.parseDouble(p[1])),
+            (int) Math.round(Double.parseDouble(p[2])), (int) Math.round(Double.parseDouble(p[3])), id));
           break;
         }
         default: throw new IllegalArgumentException("unknown directive: " + cmd);
