@@ -141,6 +141,8 @@ const resizes = [];
 const pic = (p, rect) => {
   // a missing file is silent in DeckCraft, so say it out loud
   if (!fs.existsSync(p)) { console.log('  ! missing plate', p); return null; }
+  // the method slide places a deliberately degenerate 0.1 pt band; skip those
+  if (!(rect[2] > 4 && rect[3] > 4)) return cmd('insert.picture', { path: path.resolve(p), rect });
   const key = `${p}@${rect[2]}x${rect[3]}`;
   if (!sized.has(key)) {
     const out = path.join(OUT, 'plates', `${path.basename(p, '.png')}-${rect[2]}x${rect[3]}.jpg`);
@@ -233,7 +235,6 @@ slides.push({
         bodyT(copy, 270, y, 630, 44, 9.5),
       ];
     }),
-    pic(`${R}/hero-2400x1600.png`, [72, 470, 816, 0.1]),
     foot('how it is made'), num(4),
   ].filter(Boolean),
 });
