@@ -90,7 +90,7 @@ public class DeckWriter {
           body.append(text(
             Integer.parseInt(p[0]), Integer.parseInt(p[1]),
             Integer.parseInt(p[2]), Integer.parseInt(p[3]),
-            1000 * Integer.parseInt(p[4]),       // pt -> hundredths, the OOXML unit
+            (int) Math.round(1000 * Double.parseDouble(p[4])),  // pt -> hundredths
             p[5], font, tracking, flags, content));
           break;
         }
