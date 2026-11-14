@@ -20,15 +20,15 @@ slide
 bg 0B0C0E
 text 72 72 400 14 8 D8542A Consolas 0 -N | THE WORK
 text 72 104 816 44 34 F2EDE4 Georgia 0 - | Three rooms, three trades.
-pic 72 196 248 186 studio/brand/renders/work-atelier.png
+pic 72 196 248 186 studio/craft/out/plates/work-atelier-248x186.jpg
 text 72 398 220 14 8 D8542A Consolas 0 -N | COMMERCE
 text 72 414 248 40 18 F2EDE4 Georgia 0 - | A gallery you can shop
 text 72 458 230 40 9.5 A9A398 Arial 0 - | Every piece is a real object: turn it, place it, buy it.
-pic 344 196 248 186 studio/brand/renders/work-meridian.png
+pic 344 196 248 186 studio/craft/out/plates/work-meridian-248x186.jpg
 text 344 398 220 14 8 D8542A Consolas 0 -N | PROPERTY
 text 344 414 248 40 18 F2EDE4 Georgia 0 - | Every unit walkable
 text 344 458 230 40 9.5 A9A398 Arial 0 - | Sun studies baked in Blender, forty-eight apartments on one link.
-pic 616 196 248 186 studio/brand/renders/work-kinetic.png
+pic 616 196 248 186 studio/craft/out/plates/work-kinetic-248x186.jpg
 text 616 398 220 14 8 D8542A Consolas 0 -N | LAUNCH
 text 616 414 248 40 18 F2EDE4 Georgia 0 - | A moment, not a page
 text 616 458 230 40 9.5 A9A398 Arial 0 - | A scroll-driven reveal that turns a spec sheet into something people forward.
@@ -54,12 +54,11 @@ text 270 370 630 44 9.5 A9A398 Arial 0 - | React Three Fiber scenes, scroll time
 text 72 422 30 14 8 D8542A Consolas 0 - | 05
 text 110 420 160 20 14 F2EDE4 Georgia 0 - | Harden
 text 270 422 630 44 9.5 A9A398 Arial 0 - | GPU tiers, WebGL fallbacks, SEO-safe HTML and a Lighthouse gate in continuous integration.
-pic 72 470 816 0.1 studio/brand/renders/hero-2400x1600.png
 text 72 508 360 12 7 55544F Consolas 0 -N | HOW IT IS MADE
 text 912 508 32 12 7 55544F Consolas 0 -N | 04
 slide
 bg 0B0C0E
-pic 520 0 440 540 studio/brand/renders/work-atelier.png
+pic 520 0 440 540 studio/craft/out/plates/work-atelier-440x540.jpg
 text 72 72 400 14 8 D8542A Consolas 0 -N | CASE 01 · COMMERCE
 text 72 104 420 44 34 F2EDE4 Georgia 0 - | Atelier Nova
 text 72 170 410 90 10.5 A9A398 Arial 0 - | A gallery where every piece is a real object you turn, place and buy. Product photography replaced by a room you can walk into.
@@ -73,7 +72,7 @@ text 72 508 360 12 7 55544F Consolas 0 -N | RENDERED IN BLENDER · SHIPPED IN RE
 text 912 508 32 12 7 55544F Consolas 0 -N | 05
 slide
 bg 0B0C0E
-pic 520 0 440 540 studio/brand/renders/work-meridian.png
+pic 520 0 440 540 studio/craft/out/plates/work-meridian-440x540.jpg
 text 72 72 400 14 8 D8542A Consolas 0 -N | CASE 02 · PROPERTY
 text 72 104 420 44 34 F2EDE4 Georgia 0 - | Meridian Towers
 text 72 170 410 90 10.5 A9A398 Arial 0 - | Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap, so a phone draws the floor plan in one pass.
@@ -87,7 +86,7 @@ text 72 508 360 12 7 55544F Consolas 0 -N | RENDERED IN BLENDER · SHIPPED IN RE
 text 912 508 32 12 7 55544F Consolas 0 -N | 06
 slide
 bg 0B0C0E
-pic 520 0 440 540 studio/brand/renders/work-kinetic.png
+pic 520 0 440 540 studio/craft/out/plates/work-kinetic-440x540.jpg
 text 72 72 400 14 8 D8542A Consolas 0 -N | CASE 03 · LAUNCH
 text 72 104 420 44 34 F2EDE4 Georgia 0 - | Kinetic Labs
 text 72 170 410 90 10.5 A9A398 Arial 0 - | A scroll-driven reveal that turns a spec sheet into something people forward. The launch film is rendered from the same geometry, so the ad and the site are the same object.
@@ -113,7 +112,7 @@ text 72 380 200 36 28 F2EDE4 Georgia 0 - | ≤8
 text 72 416 300 12 7 8A8578 Consolas 0 -N | DRAW CALLS IN THE HERO SCENE
 text 344 380 200 36 28 F2EDE4 Georgia 0 - | 95+
 text 344 416 300 12 7 8A8578 Consolas 0 -N | LIGHTHOUSE, MOBILE
-pic 560 288 328 185 studio/brand/renders/detail-2400x1350.png
+pic 560 288 328 185 studio/craft/out/plates/detail-2400x1350-328x185.jpg
 text 72 508 360 12 7 55544F Consolas 0 -N | THE BUDGET
 text 912 508 32 12 7 55544F Consolas 0 -N | 08
 slide
@@ -125,7 +124,7 @@ text 72 208 410 100 10.5 A9A398 Arial 0 - | KILN is three people on purpose: an 
 text 72 322 320 18 10.5 A9A398 Arial 0 - | Blender · bpy · Cycles
 text 72 348 320 18 10.5 A9A398 Arial 0 - | Three.js · React Three Fiber · gLTF
 text 72 374 320 18 10.5 A9A398 Arial 0 - | Draco · KTX2 · Playwright
-pic 540 250 348 348 studio/brand/renders/square-1600x1600.png
+pic 540 250 348 348 studio/craft/out/plates/square-1600x1600-348x348.jpg
 text 72 508 360 12 7 55544F Consolas 0 -N | THREE PEOPLE, ONE PIPELINE
 text 912 508 32 12 7 55544F Consolas 0 -N | 09
 slide
@@ -154,7 +153,7 @@ text 72 104 480 44 36 F2EDE4 Georgia 0 - | One set,
 text 72 144 480 44 36 F2EDE4 Georgia 0 - | many pictures.
 text 72 208 410 110 10.5 A9A398 Arial 0 - | Every KILN build starts as a real Blender scene. That single decision pays three times: the site is built correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.
 text 72 336 410 30 10.5 F2EDE4 Arial 0 - | No stock imagery. No mock-ups. No lorem ipsum in the delivered build.
-pic 540 0 420 540 studio/brand/renders/keyart-1600x2000.png
+pic 540 0 420 540 studio/craft/out/plates/keyart-1600x2000-420x540.jpg
 text 72 508 360 12 7 55544F Consolas 0 -N | PROVENANCE
 text 912 508 32 12 7 55544F Consolas 0 -N | 11
 slide
