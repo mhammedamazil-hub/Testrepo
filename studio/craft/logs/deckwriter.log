@@ -1,5 +1,1 @@
-Exception in thread "main" java.lang.NumberFormatException: For input string: "0.1"
-	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
-	at java.base/java.lang.Integer.parseInt(Integer.java:565)
-	at java.base/java.lang.Integer.parseInt(Integer.java:662)
-	at DeckWriter.main(DeckWriter.java:104)
+deckwriter: studio/craft/out/kiln-deck.pptx  12 slides
