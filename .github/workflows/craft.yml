@@ -111,7 +111,12 @@ jobs:
       - name: Build — DeckCraft
         if: always()
         run: |
-          node studio/craft/deckcraft/build.mjs
+          mkdir -p studio/craft/out
+          # capture at the shell level: if node dies before its own redirect, we still
+          # have the output
+          { node studio/craft/deckcraft/build.mjs; echo "EXIT=$?"; } > /tmp/deck.log 2>&1
+          cp /tmp/deck.log studio/craft/logs/deckcraft.log
+          tail -90 /tmp/deck.log
           ls -la studio/craft/out
 
       - name: Render deck slides to png
