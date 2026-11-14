@@ -1,17 +1,8 @@
 {
   "dropped": {},
-  "skippedSlides": [
-    "cover"
-  ],
-  "failures": {
-    "init": [
-      "deckcraft-cli: command `design.background` is not available right now: no slides"
-    ],
-    "cover": [
-      "deckcraft-cli: studio/craft/out/kiln-deckcraft.pptx: No such file or directory (os error 2)"
-    ]
-  },
-  "commands": 159,
+  "skippedSlides": [],
+  "failures": {},
+  "commands": 171,
   "slides": 12,
   "hasDeck": true,
   "hasPdf": true

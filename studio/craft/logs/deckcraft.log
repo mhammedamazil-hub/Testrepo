@@ -1,35 +1,25 @@
 schema lookup failed, passing parameters through: Unexpected token 'i', "file.new — "... is not valid JSON
 preset enum: rect roundRect ellipse triangle rightArrow star5
 using preset: rect
-  ✗ init: deckcraft-cli: command `design.background` is not available right now: no slides
-  ✗ cover: deckcraft-cli: studio/craft/out/kiln-deckcraft.pptx: No such file or directory (os error 2)
-  ✓ problem (9 commands)
-  ✓ work (16 commands)
-  ✓ method (22 commands)
-  ✓ case-5 (13 commands)
-  ✓ case-6 (13 commands)
-  ✓ case-7 (13 commands)
-  ✓ engineering (16 commands)
-  ✓ studio (11 commands)
-  ✓ rates (19 commands)
-  ✓ provenance (9 commands)
-  ✓ next (10 commands)
+  ✓ cover (9 commands)
+  ✓ problem (10 commands)
+  ✓ work (17 commands)
+  ✓ method (23 commands)
+  ✓ case-5 (14 commands)
+  ✓ case-6 (14 commands)
+  ✓ case-7 (14 commands)
+  ✓ engineering (17 commands)
+  ✓ studio (12 commands)
+  ✓ rates (20 commands)
+  ✓ provenance (10 commands)
+  ✓ next (11 commands)
 deckcraft report: {
  "dropped": {},
- "skippedSlides": [
-  "cover"
- ],
- "failures": {
-  "init": [
-   "deckcraft-cli: command `design.background` is not available right now: no slides"
-  ],
-  "cover": [
-   "deckcraft-cli: studio/craft/out/kiln-deckcraft.pptx: No such file or directory (os error 2)"
-  ]
- },
- "commands": 159,
+ "skippedSlides": [],
+ "failures": {},
+ "commands": 171,
  "slides": 12,
  "hasDeck": true,
  "hasPdf": true
 }
-EXIT=2
+EXIT=0
