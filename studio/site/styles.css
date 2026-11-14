@@ -397,19 +397,25 @@ textarea { resize: vertical; min-height: 76px; }
 }
 [data-reveal].in { opacity: 1; transform: none; }
 
-/* headline lines are uncovered, not faded */
-[data-split] .w { overflow: hidden; }
-[data-split] .w > * ,
-[data-split] .w {
-  transition: transform .86s var(--ease), opacity .6s linear;
+/* headline lines are uncovered, not faded: each declared line sits in a mask and
+   slides up from below it. The mask is padded so descenders are not clipped. */
+[data-split] .l { display: block; }
+[data-split] .mask {
+  display: block;
+  overflow: hidden;
+  padding-block: .08em .1em;
+  margin-block: -.08em -.1em;
 }
-[data-split] .w { transform: translate3d(0, 108%, 0); opacity: .001; }
-[data-split].in .w { transform: none; opacity: 1; }
-[data-split].in .w:nth-child(3n) { transition-delay: .06s; }
-[data-split].in .w:nth-child(3n + 2) { transition-delay: .12s; }
-[data-split] .w.brk { transform: none; opacity: 1; }
+[data-split] .l {
+  transform: translate3d(0, 112%, 0);
+  transition: transform .92s var(--ease);
+  will-change: transform;
+}
+[data-split].in .l { transform: none; }
+[data-split].in .mask:nth-child(2) .l { transition-delay: .085s; }
+[data-split].in .mask:nth-child(3) .l { transition-delay: .17s; }
 
-.no-motion [data-split] .w { transform: none; opacity: 1; }
+.no-motion [data-split] .l { transform: none; }
 
 /* the hero plate drifts a fraction slower than the copy */
 .hero-figure img { will-change: transform; transition: transform .1s linear; }

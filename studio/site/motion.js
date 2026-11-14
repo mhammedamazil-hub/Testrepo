@@ -14,51 +14,23 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasIO = 'IntersectionObserver' in window;
 
-  /* ── line splitting ─────────────────────────────────────────────────────
-     Headlines are split into masked lines at load so each one can be uncovered
-     rather than faded. The markup keeps its <br> and <em>; splitting happens on
-     the rendered line boxes, so a line break in the sentence is respected. */
-  function splitLines(el) {
-    if (el.dataset.split === 'done') return [];
-    const nodes = [...el.childNodes];
-    // Wrap each inline run in a span we can measure, preserving <em>/<strong>.
-    const runs = [];
-    nodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent;
-        if (!text.trim()) return;
-        text.split(/(\s+)/).forEach((word) => {
-          if (!word.trim()) return;
-          const w = document.createElement('span');
-          w.className = 'w';
-          w.textContent = word;
-          runs.push(w);
-        });
-        if (node.nextSibling && node.nextSibling.nodeName === 'BR') return;
-      } else if (node.nodeName === 'BR') {
-        const br = document.createElement('span');
-        br.className = 'w brk';
-        br.style.display = 'block';
-        br.style.height = '0';
-        runs.push(br);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const text = node.textContent.trim();
-        if (!text) return;
-        text.split(/\s+/).forEach((word) => {
-          const w = document.createElement('span');
-          w.className = 'w';
-          const inner = document.createElement(node.nodeName.toLowerCase() === 'em' ? 'em' : 'span');
-          inner.textContent = word;
-          w.appendChild(inner);
-          runs.push(w);
-        });
-      }
+  /* ── line reveals ───────────────────────────────────────────────────────
+     Headlines declare their lines in markup (`<span class="l">`), because a
+     splitter that measures line boxes will break on a serif with tight leading
+     and will silently swallow word spaces. Each declared line is wrapped in a
+     mask and uncovered from below; the words inside never move. */
+  function prepare() {
+    document.documentElement.style.setProperty('--ease', EASE);
+    document.querySelectorAll('[data-split]').forEach((h) => {
+      h.querySelectorAll(':scope > .l').forEach((line) => {
+        if (line.dataset.masked) return;
+        line.dataset.masked = '1';
+        const mask = document.createElement('span');
+        mask.className = 'mask';
+        line.parentNode.insertBefore(mask, line);
+        mask.appendChild(line);
+      });
     });
-
-    el.textContent = '';
-    el.dataset.split = 'done';
-    runs.forEach((r) => el.appendChild(r));
-    return [...el.querySelectorAll('.w')];
   }
 
   /* ── reveal ─────────────────────────────────────────────────────────────
@@ -66,19 +38,6 @@
      inside its parent, so a row of three plates arrives as a cadence rather
      than in unison. */
   const revealables = [...document.querySelectorAll('[data-reveal]')];
-
-  function prepare() {
-    document.documentElement.style.setProperty('--ease', EASE);
-    document.querySelectorAll('[data-split]').forEach((h) => {
-      const words = splitLines(h);
-      words.forEach((w) => {
-        w.style.display = 'inline-block';
-        w.style.overflow = 'hidden';
-        w.style.verticalAlign = 'bottom';
-      });
-      h.style.setProperty('--n', words.length);
-    });
-  }
 
   function play(el, i = 0) {
     el.style.transitionDelay = `${Math.min(i * 70, 280)}ms`;
