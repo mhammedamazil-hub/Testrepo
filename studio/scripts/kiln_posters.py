@@ -237,6 +237,25 @@ def social():
         print("  ", out)
 
 
+def keyart():
+    """The social/key art card: the keyart plate, cropped 4:5, with the lockup set on it."""
+    W, H = 1600, 2000
+    im = crop("keyart-1600x2000.png", W, H, pos=(0.5, 0.5))
+    scrim(im, (0, 0, W, H), INK, [(0.0, 0.55), (0.30, 0.05), (0.58, 0.55), (1.0, 0.94)])
+    d = ImageDraw.Draw(im)
+    m = 96
+    mark(im, m, m, 34, PAPER)
+    tracked(d, (m + 50, m + 2), "KILN", font(SERIF, 30), PAPER, 9)
+    d.text((m, int(H * 0.60)), "Rooms,", font=font(SERIF, 118), fill=PAPER)
+    d.text((m, int(H * 0.60) + 112), "not pages.", font=font(SERIF, 118), fill=EMBER_LIT)
+    tracked(d, (m, int(H * 0.60) + 262), "INTERACTIVE ARCHITECTURE", font(MONO, 22), KILN, 4.2)
+    grain(im, 3)
+    out = os.path.join(ROOT, "ads", "keyart", "hero-1600x2000.png")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    im.save(out, optimize=True)
+    print("  ", out)
+
+
 def avatars():
     """Profile avatar and cover banner — the mark, at the size each platform crops to."""
     for tag, W, H in [("avatar-1024", 1024, 1024), ("avatar-512", 512, 512), ("cover-1500x500", 1500, 500)]:
@@ -264,4 +283,5 @@ if __name__ == "__main__":
     manifesto()
     hiring()
     social()
+    keyart()
     avatars()
