@@ -1,0 +1,90 @@
+### slide.new
+slide.new: New Slide, in Home ▸ Slides, shortcut Cmd+Shift+N.
+
+Parameters:
+  layout, optional  layout name or kind (title, titleAndContent, sectionHeader, twoContent, comparison, titleOnly, blank, contentWithCaption, pictureWithCaption)
+  at, optional      index
+  title, optional   text
+  body, optional    text
+
+Run it with: deckcraft-cli run --cmd slide.new
+
+### shape.insert
+shape.insert: Shapes, in Insert ▸ Illustrations.
+
+Parameters:
+  preset          rect|roundRect|ellipse|triangle|rightArrow|star5|… (see shape.presets)
+  rect            [x,y,w,h] pt
+  text, optional  string
+
+Run it with: deckcraft-cli run --cmd 'shape.insert={…}'
+
+### insert.textBox
+insert.textBox: Text Box, in Insert ▸ Text.
+
+Parameters:
+  rect, optional  [x,y,w,h]
+  text, optional  string
+
+Run it with: deckcraft-cli run --cmd insert.textBox
+
+### insert.picture
+insert.picture: Picture from File…, in Insert ▸ Images ▸ Pictures.
+
+Parameters:
+  path, optional
+  or data         base64
+  name, optional
+  rect, optional  [x,y,w,h]
+
+Run it with: deckcraft-cli run --cmd 'insert.picture={…}'
+
+### design.theme
+design.theme: Themes, in Design ▸ Themes.
+
+Parameters:
+  name
+Note: see design.themes
+
+Run it with: deckcraft-cli run --cmd 'design.theme={…}'
+
+### design.size
+deckcraft-cli: unknown command `design.size`
+
+### file.new
+file.new: New Presentation, in File, shortcut Cmd+N.
+
+Parameters:
+  theme, optional     name
+  template, optional  starter name
+  size, optional      [w,h] pt
+  blank, optional     bool
+
+Run it with: deckcraft-cli run --cmd file.new
+
+### slide.background
+deckcraft-cli: unknown command `slide.background`
+
+### commands picture
+insert.picture — Picture from File…: {path? | data: base64, name?, rect?: [x,y,w,h]}
+smartArt.picture — Insert Picture in SmartArt: {id?, index, data?: base64 | path?: string | reset?: bool} (the node's picture placeholder in picture layouts)
+picture.crop — Crop: {left?: fraction 0..1, top?: fraction 0..1, right?: fraction 0..1, bottom?: fraction 0..1, ids?}
+picture.adjust — Corrections: {brightness?: -1..1, contrast?: -1..1, saturation?: 0..4, grayscale?: bool, transparency?: 0..1, reset?: bool, ids?}
+picture.reset — Reset Picture: {ids?} (discards the picture's formatting: adjustments, artistic effect, crop, transparency, picture-style effects and outline; the frame shape from Change Shape or Crop to Shape, the size and the position stay)
+picture.change — Change Picture: {path? | data: base64, name?, ids?}
+picture.removeBackground — Remove Background: {tolerance?: 0..100 (how different a colour may be from the edge's, default 20), ids?}
+picture.style — Picture Styles: {style: simpleFrameWhite|dropShadowRectangle|softEdgeOval|… | none (see picture.styles), ids?}
+picture.styles — Picture Style Gallery → [{id, label}]
+picture.recolor — Recolor: {preset: none|grayscale|sepia|washout|bw25|bw50|bw75|accent1Dark…accent6Dark|accent1Light…accent6Light|tx2Dark|tx2Light (see picture.recolors), ids?}
+picture.recolors — Recolor Gallery → [{id, label}]
+picture.transparentColor — Set Transparent Color: {color: #RRGGBB | at: [x, y] | none: true, ids?} (pixels of that colour become transparent; `at` takes the colour of the picture's own pixel under that slide point, as a click does in PowerPoint)
+picture.artisticEffect — Artistic Effects: {effect: none|artisticBlur|artisticPencilGrayscale|artisticLineDrawing|artisticFilmGrain|artisticCutout|artisticGlowEdges|artisticPhotocopy, ids?}
+picture.compress — Compress Pictures: {ppi?: 330|220|150|96 (default 220), deleteCropped?: bool (default true), all?: bool (every picture in the presentation; default the selected pictures), ids?} → {pictures, before, after}
+### commands theme
+design.theme — Themes: {name} (see design.themes)
+design.browseTheme — Browse for Themes…: {path} | {name, data: base64} — apply a .pptx or .potx's slide master and layouts (slides move to the matching layouts), or a .thmx's theme
+design.themes — Theme Gallery → themes, colour schemes, font schemes and effect schemes
+### commands background
+picture.removeBackground — Remove Background: {tolerance?: 0..100 (how different a colour may be from the edge's, default 20), ids?}
+design.background — Format Background: {color? | gradient? | picture?: base64 | pattern? | style?: 1..12 | reset?, all?: bool, index?, transparency?: 0..1, pictureProps?: {tile?, offsetX?, offsetY?: pt, scaleX?, scaleY?: 0.01..10, align?, mirror?, stretch?: [l,t,r,b], rotateWithShape?}, copy?: bool}
+design.hideBackgroundGraphics — Hide Background Graphics: {hide?: bool}
