@@ -1,0 +1,88 @@
+name: craft-demo
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Provision real headless CLIs and actually produce files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          OUT="$GITHUB_WORKSPACE/craft-demo"; mkdir -p "$OUT"
+          LOG="$GITHUB_WORKSPACE/craft-demo/REPORT.md"
+          { echo "# Headless Crafting App demo (produced by CI, no GUI, no DISPLAY)"; echo;
+            echo "runner: $(uname -srm) · $(nproc) vCPU · $(free -m | awk '/Mem:/{print $2" MB"}')"; } > "$LOG"
+
+          sec () { echo >> "$LOG"; echo "## $*" >> "$LOG"; echo '```' >> "$LOG"; }
+          endsec () { echo '```' >> "$LOG"; }
+          run () { echo "\$ $*" >> "$LOG"; timeout 300 "$@" >> "$LOG" 2>&1; echo "[exit $?]" >> "$LOG"; }
+
+          # ---------- PhotoCraft ----------
+          sec "PhotoCraft 0.23.1 — provision"
+          cd /tmp && rm -rf pc && mkdir pc && cd pc
+          run gh release download v0.23.1 -R storytold/photocraft -p '*linux-x86_64.tar.gz' -D .
+          tar xzf ./*.tar.gz
+          PC=/tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli
+          endsec
+          run "$PC" --version
+          run "$PC" commands
+
+          # make a test image without any GUI tool: python PIL is not installed, so build a PPM
+          python3 - <<'PYEOF'
+          w,h=320,200
+          px=bytearray()
+          for y in range(h):
+              for x in range(w):
+                  px += bytes(((x*255)//w, (y*255)//h, 200 if (x//20+y//20)%2 else 40))
+          open('/tmp/pc/test.ppm','wb').write(b'P6\n%d %d\n255\n'%(w,h)+bytes(px))
+          print('wrote test.ppm', len(px)+15, 'bytes')
+          PYEOF
+          sec "PhotoCraft — real document work"
+          run "$PC" info /tmp/pc/test.ppm
+          run "$PC" convert /tmp/pc/test.ppm /tmp/pc/out.png
+          run "$PC" convert /tmp/pc/out.png "$OUT/photocraft-out.webp"
+          run "$PC" convert /tmp/pc/out.png /tmp/pc/out.psd
+          run "$PC" info /tmp/pc/out.psd
+          run "$PC" convert /tmp/pc/out.psd "$OUT/photocraft-roundtrip.png"
+          cp /tmp/pc/test.ppm "$OUT/" 2>/dev/null || true
+          endsec
+          echo >> "$LOG"; echo "produced:" >> "$LOG"; echo '```' >> "$LOG"
+          ls -l "$OUT" >> "$LOG"; file "$OUT"/* >> "$LOG" 2>&1
+          echo '```' >> "$LOG"
+
+          # ---------- GridCraft ----------
+          sec "GridCraft 0.19.1 — provision"
+          cd /tmp && rm -rf gc && mkdir gc && cd gc
+          run gh release download v0.19.1 -R storytold/gridcraft -p '*linux-x86_64.tar.gz' -D .
+          tar xzf ./*.tar.gz
+          GC=/tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli
+          endsec
+          run "$GC" version
+          run "$GC" functions --search SUM
+          sec "GridCraft — formula engine + real XLSX"
+          run "$GC" eval '=SUM(1,2,3,4,5)' --json
+          run "$GC" eval '=ROUND(2.675,2)' --json
+          run "$GC" eval '=IFERROR(1/0,"guarded")' --json
+          run "$GC" run --sample ledger --cmd 'set={"range":"A1:D3","values":[["item","qty","price","total"],["bolt",12,0.5,"=B2*C2"],["nut",7,0.25,"=B3*C3"]]}' --cmd 'set={"range":"A5","values":[["grand total"]]}' --cmd 'set={"range":"B5","values":[["=SUM(D2:D3)"]]}' --out "$OUT/gridcraft-ledger.xlsx" --print A1:D5
+          run "$GC" cat "$OUT/gridcraft-ledger.xlsx" --csv
+          run "$GC" convert "$OUT/gridcraft-ledger.xlsx" "$OUT/gridcraft-ledger.csv"
+          run "$GC" convert "$OUT/gridcraft-ledger.xlsx" "$OUT/gridcraft-ledger.pdf"
+          run "$GC" check "$OUT/gridcraft-ledger.xlsx" --json
+          endsec
+          echo >> "$LOG"; echo "produced:" >> "$LOG"; echo '```' >> "$LOG"
+          ls -l "$OUT" >> "$LOG"; file "$OUT"/* >> "$LOG" 2>&1
+          echo '```' >> "$LOG"
+
+      - name: Commit produced files
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name craft-demo
+          git config user.email actions@users.noreply.github.com
+          git add craft-demo && git commit -m "CI: real headless Crafting App outputs (PhotoCraft + GridCraft)" || true
+          git push || true
