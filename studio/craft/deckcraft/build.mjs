@@ -295,17 +295,17 @@ function run(args, label) {
 }
 
 // start with a truly empty presentation (plain file.new still yields an empty slide)
-run(['--cmd', 'file.new={"blank":true}', '--save', PPTX], 'init');
+run(['run', '--cmd', 'file.new={"blank":true}', '--save', PPTX], 'init');
 
 for (const s of slides) {
-  const args = ['--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
+  const args = ['run', '--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
   report.commands += s.cmds.length;
   if (!run(args, s.name)) {
     report.failures[s.name] ||= [];
     if (report.failures[s.name].length === 0) report.failures[s.name].push('see log');
     report.skippedSlides.push(s.name);
     // rebuild the reference file if the failed run corrupted it
-    if (!fs.existsSync(PPTX)) run(['--cmd', 'file.new={"blank":true}', '--save', PPTX], 're-init');
+    if (!fs.existsSync(PPTX)) run(['run', '--cmd', 'file.new={"blank":true}', '--save', PPTX], 're-init');
   } else {
     console.log(`  ✓ ${s.name} (${s.cmds.length} commands)`);
   }

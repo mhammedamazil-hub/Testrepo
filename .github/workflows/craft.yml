@@ -115,6 +115,7 @@ jobs:
           ls -la studio/craft/out
 
       - name: Render deck slides to png
+        if: always()
         run: |
           npx pi-craft deckcraft exec render studio/craft/out/kiln-deckcraft.pptx --all studio/craft/out/deck-slides --scale 1
           ls studio/craft/out/deck-slides | head
@@ -148,6 +149,7 @@ jobs:
           retention-days: 14
 
       - name: Publish into the site
+        if: always()
         run: |
           set -euo pipefail
           mkdir -p studio/site/assets/craft
@@ -176,13 +178,8 @@ jobs:
           git config user.email "studio@kiln.studio"
           # commit only what git should carry: the deck pdf, the mp4, the poster,
           # the rendered slides and frames, and the JSON reports
-          git add studio/craft/out/kiln-deckcraft.pdf \
-                  studio/craft/out/kiln-sting.mp4 \
-                  studio/craft/out/kiln-sting-poster.png \
-                  studio/craft/out/deck-slides \
-                  studio/craft/out/figcraft-*.png \
-                  studio/craft/out/*.json \
-                  studio/site/assets/craft
+          # -A, not an explicit list: one missing path makes the whole `git add` fail
+          git add -A studio/craft/out studio/site/assets/craft
           git diff --cached --quiet && { echo "nothing changed"; exit 0; }
           git commit -F - <<'MSG'
           craft: build FigCraft / DeckCraft / EffectCraft artefacts in CI
