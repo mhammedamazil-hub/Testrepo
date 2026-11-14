@@ -104,7 +104,9 @@ const head = (text, x, y, w, size, h = 60) => box(text, [x, y, w, h], { size, co
 const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { size: 8, color: C.ember, font: 'Consolas', track: 2 });
 const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, w, h], { size, color });
 const foot = (t) => box(t.toUpperCase(), [72, 506, 500, 12], { size: 7, color: C.smoke, font: 'Consolas', track: 1.5 });
-const num = (n) => box(String(n).padStart(2, '0'), [888, 506, 30, 12], { size: 7, color: C.smoke, font: 'Consolas' });
+// 960x540 pt slide: the footer sits at y=506 with a 12 pt box, so the number needs
+// to clear it, not sit inside it
+const num = (n) => box(String(n).padStart(2, '0'), [910, 516, 26, 12], { size: 7, color: C.smoke, font: 'Consolas' });
 const slideNew = (name) => cmd('slide.new', { layout: 'blank', ...(name ? { title: name } : {}) });
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
@@ -334,7 +336,9 @@ function run(args, label) {
 }
 
 // start with a truly empty presentation (plain file.new still yields an empty slide)
-run(['run', '--cmd', 'file.new={"blank":true}', '--save', PPTX], 'init');
+// a blank deck still carries the template's theme, whose accent paints every slide
+// blue. Set the background explicitly on each slide instead of trusting the theme.
+run(['run', '--cmd', 'file.new={"blank":true,"size":[960,540]}', '--save', PPTX], 'init');
 
 for (const s of slides) {
   const args = ['run', '--in', PPTX, '--save', PPTX, ...s.cmds.flatMap((c) => ['--cmd', c])];
