@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="490" viewBox="0 0 2400 490">
+    <g transform="translate(0,113.35033986546728)">
+      
+    <g transform="translate(0,0) scale(0.2636496601345327)">
+      <path fill="#0B0C0E" fill-rule="evenodd"
+        d="M 0 0 H 1000 V 1000 H 0 Z M 350 1000 L 350 380 A 150 150 0 0 1 650 380 L 650 1000 Z"/>
+      <path fill="#F2EDE4" d="M 350 1000 L 350 380 A 150 150 0 0 1 650 380 L 650 1000 Z"/>
+    </g>
+    </g>
+    <text x="408.65697320852576" y="377" font-family="Instrument Serif" font-size="366.1800835201843"
+      letter-spacing="21.97080501121106" fill="#0B0C0E">KILN</text>
+    <rect x="1229.0468323271468" y="81.71238064932334" width="9.227738104708646"
+      height="353.2905445802739" fill="#D8542A"/>
+    <text x="1317.3694684722152" y="271.5401359461869" font-family="Inter Tight"
+      font-size="64.59416673296052" letter-spacing="9.043183342614473" fill="#0B0C0E">INTERACTIVE ARCHITECTURE</text>
+    <text x="1317.3694684722152" y="387.5459864053813" font-family="JetBrains Mono"
+      font-size="48.775187124888554" letter-spacing="4.877518712488856" fill="#6E6A60">BLENDER · BPY · THREE.JS</text></svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+    <g transform="translate(0,0) scale(1)">
+      <path fill="#F2EDE4" fill-rule="evenodd"
+        d="M 0 0 H 1000 V 1000 H 0 Z M 350 1000 L 350 380 A 150 150 0 0 1 650 380 L 650 1000 Z"/>
+      <path fill="#0B0C0E" d="M 350 1000 L 350 380 A 150 150 0 0 1 650 380 L 650 1000 Z"/>
+    </g></svg>

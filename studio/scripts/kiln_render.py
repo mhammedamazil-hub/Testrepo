@@ -40,7 +40,10 @@ def reset():
     sc.render.film_transparent = False
     sc.render.image_settings.file_format = "PNG"
     sc.view_settings.view_transform = "AgX"
-    sc.view_settings.look = "AgX - Medium High Contrast"
+    try:
+        sc.view_settings.look = "AgX - Medium High Contrast"
+    except TypeError:
+        pass
     return sc
 
 

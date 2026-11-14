@@ -1,32 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" ><defs>
-    <clipPath id="rr"><rect width="64" height="64" rx="14.4" ry="14.4"/></clipPath>
-    <radialGradient id="plate" cx=".3" cy=".2" r="1">
-      <stop offset="0" stop-color="#181C26"/><stop offset=".6" stop-color="#0A0C12"/><stop offset="1" stop-color="#05060A"/>
-    </radialGradient>
-  </defs>
-  <g clip-path="url(#rr)">
-    <rect width="64" height="64" fill="url(#plate)"/>
-    <g transform="translate(32,32) scale(0.94) translate(-32,-32)">
-      
-  <defs>
-    <linearGradient id="mTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#EDE7DA"/><stop offset="1" stop-color="#BFB7A6"/></linearGradient>
-    <linearGradient id="mRight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB07A"/><stop offset=".6" stop-color="#FF6B2C"/><stop offset="1" stop-color="#C9340A"/></linearGradient>
-    <linearGradient id="mLeft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A2A20"/><stop offset=".6" stop-color="#1B1512"/><stop offset="1" stop-color="#100C0A"/></linearGradient>
-    <radialGradient id="mGlow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#FFD9A8" stop-opacity=".95"/>
-      <stop offset=".35" stop-color="#FF6B2C" stop-opacity=".55"/>
-      <stop offset="1" stop-color="#FF6B2C" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <circle cx="38.971960272842104" cy="28.783157894736846" r="21.76" fill="url(#mGlow)" opacity=".55"/>
-  <polygon points="24.71,23.92 45.13,35.71 45.13,44.13 24.71,32.34" fill="url(#mLeft)"/>
-  <polygon points="52.42,31.49 45.13,35.71 45.13,44.13 52.42,39.92" fill="url(#mRight)"/>
-  <polygon points="32.00,19.71 52.42,31.49 45.13,35.71 24.71,23.92" fill="url(#mTop)"/>
-  <polygon points="24.71,4.72 32.00,8.93 32.00,28.13 24.71,23.92" fill="url(#mLeft)"/>
-  <polygon points="39.29,4.72 32.00,8.93 32.00,28.13 39.29,23.92" fill="url(#mRight)"/>
-  <polygon points="32.00,0.51 39.29,4.72 32.00,8.93 24.71,4.72" fill="url(#mTop)"/>
-  <circle cx="48.77354458947368" cy="33.6" r="0.832" fill="#FFF3E2"/>
-  <circle cx="35.646422736842105" cy="6.821052631578954" r="0.448" fill="#22E8C8" opacity=".9"/>
-  
-    </g>
-  </g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <rect width="64" height="64" fill="#0B0C0E"/>
+    <path fill="#F2EDE4" d="M 12.16 64 L 12.16 26.88
+      A 19.84 19.84 0 0 1 51.84 26.88 L 51.84 64 Z"/></svg>

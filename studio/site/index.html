@@ -42,13 +42,13 @@
     <div class="hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Interactive architecture · est. 2026</p>
-        <h1>Rooms,<br /><em>not pages.</em></h1>
+        <h1 data-split>Rooms,<br /><em>not pages.</em></h1>
         <p class="lede">
           We build the space your product lives in — modelled, lit and rendered in Blender with
           <strong>bpy</strong>, then rebuilt for the browser in Three.js and React. It loads in
           under two megabytes and holds sixty frames on a phone.
         </p>
-        <div class="hero-actions">
+        <div class="hero-actions" data-reveal>
           <a class="btn" href="#contact">Start a commission</a>
           <a class="btn btn-line" href="showroom.html">Enter the showroom</a>
         </div>
@@ -57,13 +57,13 @@
       <figure class="hero-figure">
         <img src="assets/hero-1200.jpg" alt="A plaster arch, a terracotta vessel and a lit plinth — the KILN house set" width="1200" height="1600" fetchpriority="high" />
         <figcaption>
-          <span>Plate 01 — House set, kiln mouth</span>
+          <span>Plate 01 — House set, the kiln mouth</span>
           <span>Cycles · 35 mm</span>
         </figcaption>
       </figure>
     </div>
 
-    <dl class="facts">
+    <dl class="facts" data-reveal>
       <div><dt>First load</dt><dd>&lt; 2.0 <span>MB</span></dd></div>
       <div><dt>Frame budget</dt><dd>60 <span>fps</span></dd></div>
       <div><dt>Build time</dt><dd>3–5 <span>weeks</span></dd></div>
@@ -76,7 +76,7 @@
     <div class="split split-wide">
       <div>
         <p class="eyebrow">Selected work</p>
-        <h2>Three rooms,<br />three trades.</h2>
+        <h2 data-split>Three rooms,<br />three trades.</h2>
       </div>
       <div>
         <p class="lede">
@@ -87,7 +87,7 @@
     </div>
 
     <div class="work-grid">
-      <figure class="plate">
+      <figure class="plate" data-reveal>
         <a href="showroom.html">
           <img src="assets/work-atelier.jpg" alt="Atelier Nova — a 3D flagship store" width="1200" height="1500" loading="lazy" />
           <figcaption>
@@ -99,7 +99,7 @@
         </a>
       </figure>
 
-      <figure class="plate">
+      <figure class="plate" data-reveal>
         <a href="showroom.html">
           <img src="assets/work-meridian.jpg" alt="Meridian Towers — walkable apartments" width="1200" height="1500" loading="lazy" />
           <figcaption>
@@ -111,7 +111,7 @@
         </a>
       </figure>
 
-      <figure class="plate">
+      <figure class="plate" data-reveal>
         <a href="showroom.html">
           <img src="assets/work-kinetic.jpg" alt="Kinetic Labs — a scroll-driven launch" width="1200" height="1500" loading="lazy" />
           <figcaption>
@@ -125,35 +125,68 @@
     </div>
   </section>
 
+
+  <!-- ───────────────────────────── film -->
+  <section id="film" class="wrap band">
+    <div class="split split-narrow">
+      <div>
+        <p class="eyebrow">The sting</p>
+        <h2>Six seconds<br /><em>of the same room.</em></h2>
+      </div>
+      <div>
+        <p class="lede">
+          Nothing here was drawn for the film. The arch, the plaster and the vessel are the
+          geometry from plate 01, lit by the same three lights and cut on the studio's own
+          easing curve. It is the brand, filmed instead of described.
+        </p>
+      </div>
+    </div>
+
+    <figure class="film">
+      <video
+        class="film-video"
+        src="assets/video/kiln-sting.mp4"
+        poster="assets/video/kiln-sting-poster.jpg"
+        width="1080" height="1080"
+        muted playsinline loop preload="none"
+        aria-label="KILN identity film: the kiln door opens onto a rendered room"
+      ></video>
+      <figcaption>
+        <span>Sting 01 — the door opens</span>
+        <span>1080 × 1080 · 24 fps · 6 s · silent</span>
+      </figcaption>
+    </figure>
+  </section>
+
   <!-- ───────────────────────────── method -->
   <section id="method" class="wrap band">
     <div class="split">
       <div>
         <p class="eyebrow">Method</p>
-        <h2>From blockout<br />to browser.</h2>
+        <h2 data-split>From blockout<br />to browser.</h2>
         <p class="lede">
           Five stages, each with an artefact you can open and a number it has to hit.
           If a scene can't hold the budget, it doesn't ship.
         </p>
       </div>
       <ol class="steps">
-        <li>
+        <li data-reveal>
           <span class="n">01</span>
           <div><h4>Blockout</h4><p>Camera path, scale and light direction are locked in Blender before a single texture exists.</p></div>
         </li>
-        <li>
+        <li data-reveal>
           <span class="n">02</span>
           <div><h4>Forge</h4><p>bpy scripts build the hero geometry, bake lighting to lightmaps and export glTF with LOD chains.</p></div>
         </li>
-        <li>
+        <li data-reveal>
           <span class="n">03</span>
           <div><h4>Budget</h4><p>Draco and KTX2 compression against a first-load ceiling you sign off before modelling starts.</p></div>
         </li>
-        <li>
+        <li data-reveal>
           <span class="n">04</span>
           <div><h4>Wire</h4><p>React Three Fiber scenes, scroll timelines and a CMS so your team can edit copy without a deploy.</p></div>
         </li>
-        <li>
+        <li data-reveal>
           <span class="n">05</span>
           <div><h4>Harden</h4><p>GPU tiers, WebGL fallbacks, SEO-safe HTML underneath and a Lighthouse gate in continuous integration.</p></div>
         </li>
@@ -164,10 +197,10 @@
   <!-- ───────────────────────────── rates -->
   <section id="rates" class="wrap band">
     <p class="eyebrow">Rates</p>
-    <h2>Fixed scope.<br />Fixed number.</h2>
+    <h2 data-split>Fixed scope.<br />Fixed number.</h2>
 
     <div class="tiers">
-      <article class="tier">
+      <article class="tier" data-reveal>
         <p class="tag quiet">Entry</p>
         <h3>Spar</h3>
         <p class="price"><sup>$</sup>4,800</p>
@@ -181,7 +214,7 @@
         <a class="btn btn-line btn-sm" href="#contact">Book Spar</a>
       </article>
 
-      <article class="tier">
+      <article class="tier" data-reveal>
         <p class="tag">Most commissioned</p>
         <h3>Kiln</h3>
         <p class="price"><sup>$</sup>12,500</p>
@@ -196,7 +229,7 @@
         <a class="btn btn-sm" href="#contact">Book Kiln</a>
       </article>
 
-      <article class="tier">
+      <article class="tier" data-reveal>
         <p class="tag quiet">Retainer</p>
         <h3>Firing</h3>
         <p class="price"><sup>$</sup>3,900<sup>/mo</sup></p>
@@ -217,7 +250,7 @@
     <div class="contact-grid">
       <div>
         <p class="eyebrow">Next step</p>
-        <h2>Send the product.<br /><em>We'll send the room.</em></h2>
+        <h2 data-split>Send the product.<br /><em>We'll send the room.</em></h2>
         <p class="lede">
           Tell us what you sell and who walks in. Within two working days you get a fixed price,
           a camera path and a load budget — no discovery invoice, no retainer to start.
@@ -228,7 +261,7 @@
         </p>
       </div>
 
-      <form action="mailto:studio@kiln.studio" method="post" enctype="text/plain">
+      <form data-reveal action="mailto:studio@kiln.studio" method="post" enctype="text/plain">
         <label>Name<input name="name" autocomplete="name" required /></label>
         <label>Email<input name="email" type="email" autocomplete="email" required /></label>
         <label>What are we building?<textarea name="brief" rows="3" placeholder="A 3D store for forty ceramic pieces, launching in March…"></textarea></label>
@@ -245,6 +278,8 @@
     <span><a href="mailto:studio@kiln.studio">studio@kiln.studio</a></span>
   </div>
 </footer>
+
+<script src="motion.js" defer></script>
 
 </body>
 </html>

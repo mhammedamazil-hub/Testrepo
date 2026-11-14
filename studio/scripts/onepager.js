@@ -1,17 +1,19 @@
-// LUMENFORGE — one-pager PDF (A4 portrait) for email attachments & print
+// KILN — one-pager (A4 portrait). Email attachment + print leave-behind.
+// Same three faces, same grid, same ember rule as the site. Nothing here is decorative.
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
-const { ROOT, C } = require('./lib');
+const { ROOT } = require('./lib');
 
-const W = 595, H = 842;
-const FONT = {
-  bold: 'space-grotesk-700-normal.ttf',
-  sans: 'space-grotesk-400-normal.ttf',
-  body: 'inter-400-normal.ttf',
-  mono: 'jetbrains-mono-400-normal.ttf',
+const W = 595.28;
+const H = 841.89;
+const M = 44;
+
+const C = {
+  ink: '#0B0C0E', paper: '#F2EDE4', ember: '#D8542A', emberLit: '#EE7541',
+  kiln: '#8A8578', smoke: '#55544F', body: '#C4BEB1', rule: '#26272B',
 };
 
 const hex = (h) => {
@@ -21,110 +23,149 @@ const hex = (h) => {
 
 async function main() {
   const pdf = await PDFDocument.create();
-  pdf.setTitle('LUMENFORGE — one-pager');
-  pdf.setAuthor('LUMENFORGE');
-  pdf.setSubject('Interactive 3D websites — Blender (bpy), Three.js, React');
+  pdf.setTitle('KILN — one-pager');
+  pdf.setAuthor('KILN');
+  pdf.setSubject('Interactive architecture: Blender-rendered rooms shipped as React sites');
   pdf.registerFontkit(fontkit);
-  const f = (file) => pdf.embedFont(fs.readFileSync(path.join(ROOT, 'fonts', file)), { subset: true });
-  const bold = await f(FONT.bold);
-  const body = await f(FONT.body);
-  const mono = await f(FONT.mono);
+
+  const F = (f) => pdf.embedFont(fs.readFileSync(path.join(ROOT, 'fonts', f)), { subset: true });
+  const serif = await F('instrument-serif.ttf');
+  const sans = await F('inter-tight-400.ttf');
+  const sansM = await F('inter-tight-500.ttf');
+  const mono = await F('jetbrains-mono.ttf');
 
   const p = pdf.addPage([W, H]);
   p.drawRectangle({ x: 0, y: 0, width: W, height: H, color: hex(C.ink) });
 
-  // header band: clean plate crop, no baked type
-  const plate = await sharp(path.join(ROOT, 'portfolio/plates/cover.png'))
-    .resize({ width: W, height: 236, fit: 'cover', position: 'right' })
-    .modulate({ brightness: 1.12 })
-    .png()
-    .toBuffer();
-  const img = await pdf.embedPng(plate);
-  p.drawImage(img, { x: 0, y: H - 236, width: W, height: 236 });
-  for (const [y, h, o] of [[H - 236, 236, 0.15], [H - 130, 130, 0.4]]) {
-    p.drawRectangle({ x: 0, y, width: W, height: h, color: hex(C.ink), opacity: o });
-  }
-  const mark = await pdf.embedPng(await sharp(path.join(ROOT, 'brand/exports/logo-mark-512.png')).resize(256).png().toBuffer());
+  // top plate: the house set, cropped wide, with an ink scrim into the headline
+  const band = await sharp(path.join(ROOT, 'brand/renders/hero-2400x1600.png'))
+    .resize({ width: Math.round(W * 2), height: 720, fit: 'cover', position: 'centre' })
+    .png().toBuffer();
+  p.drawImage(await pdf.embedPng(band), { x: 0, y: H - 236, width: W, height: 236 });
+  // a real gradient, not stacked rectangles: one pass, no banding, no seam
+  const scrim = await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W)}" height="236">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.ink}" stop-opacity="0.62"/>
+      <stop offset="0.34" stop-color="${C.ink}" stop-opacity="0.34"/>
+      <stop offset="0.72" stop-color="${C.ink}" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="${C.ink}" stop-opacity="1"/>
+    </linearGradient></defs>
+    <rect width="${Math.round(W)}" height="236" fill="url(#g)"/></svg>`)).png().toBuffer();
+  p.drawImage(await pdf.embedPng(scrim), { x: 0, y: H - 236, width: W, height: 236 });
 
-  const text = (t, x, y, size, font, color, opts = {}) =>
-    p.drawText(t, { x, y, size, font, color: hex(color), lineHeight: size * 1.45, ...opts });
-  const kicker = (t, x, y, color = C.arc) => text(t.toUpperCase(), x, y, 7.5, mono, color, { characterSpacing: 1.8 });
+  const mark = await pdf.embedPng(await sharp(path.join(ROOT, 'brand/exports/mark-512.png')).resize(120).png().toBuffer());
+  p.drawImage(mark, { x: M, y: H - 62, width: 22, height: 22 });
+  p.drawText('KILN', { x: M + 32, y: H - 58, size: 13, font: serif, color: hex(C.paper), characterSpacing: 1.8 });
+  p.drawText('INTERACTIVE ARCHITECTURE', {
+    x: M + 32, y: H - 72, size: 5.2, font: mono, color: hex(C.kiln), characterSpacing: 1.4,
+  });
 
-  p.drawImage(mark, { x: 44, y: H - 74, width: 30, height: 30 });
-  text('LUMENFORGE', 80, H - 64, 16, bold, C.bone, { characterSpacing: 1.6 });
-  kicker('interactive 3d studio', 80, H - 78);
+  // headline block, sitting just under the plate
+  let y = H - 300;
+  p.drawText('Rooms,', { x: M, y, size: 40, font: serif, color: hex(C.paper) });
+  p.drawText('not pages.', { x: M, y: y - 40, size: 40, font: serif, color: hex(C.emberLit) });
+  y -= 62;
+  p.drawRectangle({ x: M, y, width: 54, height: 1.6, color: hex(C.ember) });
+  y -= 16;
+  const lede = 'We model your space in Blender, light it with bpy, and ship it as a React site that\nloads in under two megabytes and holds sixty frames on a phone. Not a video.\nNot a slideshow. A place you can walk around.';
+  p.drawText(lede, { x: M, y, size: 8.4, font: sans, color: hex(C.body), lineHeight: 13 });
 
-  let y = H - 288;
-  text('Websites you can', 44, y, 30, bold, C.bone);
-  y -= 34;
-  text('walk through.', 44, y, 30, bold, C.forge);
-
-  y -= 30;
-  text(
-    'We model your product in Blender, bake the geometry with bpy, and ship it as a',
-    44, y, 8.6, body, C.muted
-  );
-  text('Three.js + React site that loads under two seconds on a mid-range phone.', 44, y - 13, 8.6, body, C.muted);
-  text('Not a video. Not a slideshow. A place.', 44, y - 26, 8.6, body, C.muted);
-
-  // three columns: problem / offer / proof (fixed baseline so nothing drifts)
-  const colW = 158;
-  const colsKickerY = 408;
-  p.drawLine({ start: { x: 44, y: colsKickerY + 14 }, end: { x: W - 44, y: colsKickerY + 14 }, thickness: 0.6, color: hex('#1B2130') });
-  const cy = colsKickerY;
+  // three columns with a shared baseline
+  const colTop = y - 52;
+  p.drawLine({ start: { x: M, y: colTop + 10 }, end: { x: W - M, y: colTop + 10 }, thickness: 0.5, color: hex(C.rule) });
+  const colW = (W - M * 2 - 2 * 16) / 3;
   const cols = [
-    ['the problem', ['Customers judge size, material', 'and finish from a flat photo —', 'and guess wrong at the exact', 'moment they would have bought.', '', 'Video cannot be explored, and', 'most 3D sites are 40 MB', 'showreels that melt a phone.']],
-    ['what we build', ['3D commerce — every piece is an', 'object you rotate, place, buy.', '', '3D real estate — every unit', 'walkable, sun studies baked', 'in Blender.', '', 'Product launches — a scroll reveal', 'worth forwarding.']],
-    ['proof', ['Atelier Nova', '   +38% add-to-cart, 1.9 MB', '', 'Meridian Towers', '   3.1x longer sessions', '', 'Kinetic Labs', '   2.4M campaign views', '', '<= 8 draw calls · 60 fps']],
+    ['THE ARGUMENT', [
+      'Customers judge scale, material',
+      'and finish from a flat photograph —',
+      'and guess wrong at the exact',
+      'moment they would have bought.',
+      '',
+      'Video cannot be explored, and most',
+      '3D sites are forty-megabyte',
+      'showreels that melt a phone.',
+    ]],
+    ['WHAT WE BUILD', [
+      'Commerce — every piece is an',
+      'object you turn, place and buy.',
+      '',
+      'Property — every unit walkable,',
+      'sun studies baked in Blender.',
+      '',
+      'Launch — a reveal worth',
+      'forwarding, cut from the same scene.',
+    ]],
+    ['PROOF', [
+      'Atelier Nova',
+      '  +38% add-to-cart, 1.9 MB',
+      '',
+      'Meridian Towers',
+      '  3.1× session length, 48 units',
+      '',
+      'Kinetic Labs',
+      '  2.4M campaign views',
+    ]],
   ];
   cols.forEach(([head, lines], i) => {
-    const x = 44 + i * (colW + 14);
-    kicker(head, x, cy);
+    const x = M + i * (colW + 16);
+    p.drawText(head, { x, y: colTop - 8, size: 5.6, font: mono, color: hex(C.ember), characterSpacing: 1.3 });
     lines.forEach((l, j) => {
       const clean = l.trim();
-      const isName = l === clean && /^[A-Z]/.test(clean) && !/^[A-Z ]+$/.test(clean) && clean.length < 22;
-      text(clean, x, cy - 18 - j * 11.4, 7.3, body, isName ? C.bone : C.muted);
+      const name = l === clean && /^[A-Z]/.test(clean) && clean.length < 22 && !/^[A-Z ']+$/.test(clean);
+      p.drawText(clean, {
+        x, y: colTop - 24 - j * 10.4, size: 7.1, font: name ? sansM : sans,
+        color: hex(name ? C.paper : C.body),
+      });
     });
   });
 
-  // pricing strip — anchored, not cumulative, so nothing can collide
-  const tierKickerY = 268;
-  p.drawLine({ start: { x: 44, y: tierKickerY + 12 }, end: { x: W - 44, y: tierKickerY + 12 }, thickness: 0.6, color: hex('#1B2130') });
-  kicker('fixed scope, fixed number', 44, tierKickerY - 4);
+  // rates strip
+  const tierTop = 290;
+  p.drawLine({ start: { x: M, y: tierTop + 12 }, end: { x: W - M, y: tierTop + 12 }, thickness: 0.5, color: hex(C.rule) });
+  p.drawText('FIXED SCOPE, FIXED NUMBER', { x: M, y: tierTop, size: 5.6, font: mono, color: hex(C.ember), characterSpacing: 1.3 });
   const tiers = [
-    ['SPARK', '$4,800', '2 weeks', '1 walkthrough scene + 3 stills'],
-    ['FORGE', '$12,500', '3-5 weeks', 'up to 5 rooms, CMS, launch kit'],
-    ['FOUNDRY', '$3,900/mo', 'rolling', '2 scenes per sprint + monitoring'],
+    ['SPAR', '$4,800', '2 weeks', 'One walkthrough scene, three stills'],
+    ['KILN', '$12,500', '3–5 weeks', 'Up to five rooms, CMS, launch kit'],
+    ['FIRING', '$3,900/mo', 'rolling', 'Two scenes per sprint, monitoring'],
   ];
-  const cardTop = tierKickerY - 26;
   tiers.forEach(([n, price, when, what], i) => {
-    const x = 44 + i * (colW + 14);
+    const x = M + i * (colW + 16);
+    const feat = i === 1;
     p.drawRectangle({
-      x, y: cardTop - 62, width: colW, height: 78,
-      color: hex(i === 1 ? '#140E0B' : C.panel),
-      borderColor: hex(i === 1 ? C.forge : '#1B2130'), borderWidth: i === 1 ? 1 : 0.5,
+      x, y: tierTop - 74, width: colW, height: 70,
+      color: hex(feat ? '#14100E' : '#101114'),
+      borderColor: hex(feat ? C.ember : C.rule), borderWidth: feat ? 0.9 : 0.5,
     });
-    text(n, x + 10, cardTop - 10, 7, mono, i === 1 ? C.forge : C.arc, { characterSpacing: 1.4 });
-    text(price, x + 10, cardTop - 32, 15, bold, C.bone);
-    text(when, x + 10, cardTop - 45, 6.8, mono, C.muted);
-    text(what, x + 10, cardTop - 56, 6.8, body, C.muted, { maxWidth: colW - 20 });
+    p.drawText(n, { x: x + 9, y: tierTop - 22, size: 5.4, font: mono, color: hex(feat ? C.emberLit : C.kiln), characterSpacing: 1.2 });
+    p.drawText(price, { x: x + 9, y: tierTop - 42, size: 13, font: serif, color: hex(C.paper) });
+    p.drawText(when, { x: x + 9, y: tierTop - 52, size: 5.6, font: mono, color: hex(C.smoke) });
+    p.drawText(what, { x: x + 9, y: tierTop - 64, size: 6.2, font: sans, color: hex(C.body), maxWidth: colW - 18 });
   });
 
-  // process strip
-  const procY = 136;
-  kicker('the forge', 44, procY);
-  text('Blockout  ·  Forge  ·  Budget  ·  Wire  ·  Harden', 44, procY - 20, 11, bold, C.bone);
+  // method, as a single tracked line
+  p.drawText('THE METHOD', { x: M, y: 214, size: 5.6, font: mono, color: hex(C.kiln), characterSpacing: 1.3 });
+  p.drawText('Blockout  ·  Forge  ·  Budget  ·  Wire  ·  Harden', {
+    x: M, y: 196, size: 11, font: serif, color: hex(C.paper),
+  });
+  p.drawText('Each stage has an artefact you can open and a number it has to hit.', {
+    x: M, y: 180, size: 7, font: sans, color: hex(C.body),
+  });
 
-  // footer band
-  p.drawLine({ start: { x: 44, y: 96 }, end: { x: W - 44, y: 96 }, thickness: 0.6, color: hex('#1B2130') });
-  text('Send us your product. We send back a room.', 44, 72, 10.5, bold, C.bone);
-  const email = 'forge@lumenforge.studio';
-  const emailW = bold.widthOfTextAtSize(email, 9.5);
-  text(email, W - 44 - emailW, 72, 9.5, bold, C.arc);
-  text('fixed price, camera path and load budget within 48 hours  ·  lumenforge.studio  ·  live showroom at /showroom', 44, 50, 6.6, mono, '#5F6878');
-  text('Blender · bpy · Three.js · React Three Fiber · GSAP · Draco · KTX2', 44, 32, 6.4, mono, '#4C5566');
+  // footer
+  p.drawLine({ start: { x: M, y: 118 }, end: { x: W - M, y: 118 }, thickness: 0.5, color: hex(C.rule) });
+  p.drawText('Send the product. We send the room.', { x: M, y: 96, size: 9.4, font: sansM, color: hex(C.paper) });
+  const email = 'studio@kiln.studio';
+  p.drawText(email, {
+    x: W - M - sansM.widthOfTextAtSize(email, 8.6), y: 96, size: 8.6, font: sansM, color: hex(C.emberLit),
+  });
+  p.drawText('fixed price, camera path and load budget within two working days  ·  kiln.studio  ·  showroom at /showroom', {
+    x: M, y: 74, size: 5.6, font: mono, color: hex(C.smoke),
+  });
+  p.drawText('Blender  ·  bpy  ·  Cycles  ·  Three.js  ·  React Three Fiber  ·  Draco  ·  KTX2', {
+    x: M, y: 56, size: 5.4, font: mono, color: hex('#4C4B47'),
+  });
 
-  const out = path.join(ROOT, 'docs', 'LUMENFORGE-one-pager.pdf');
+  const out = path.join(ROOT, 'docs', 'KILN-one-pager.pdf');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, await pdf.save());
   console.log('one-pager:', out, (fs.statSync(out).size / 1024).toFixed(0) + ' KB');

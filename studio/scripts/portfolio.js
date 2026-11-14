@@ -1,230 +1,240 @@
-// LUMENFORGE — portfolio PDF (A4 landscape) built from the brand + case-study plates
+// KILN — portfolio (A4 landscape, 9 pages).
+//
+// Type is the identity's own: Instrument Serif for display, Inter Tight for text,
+// JetBrains Mono for labels — embedded, subset, same tracking as the site.
+// Every image is a Cycles plate; nothing here is drawn in JS.
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
-const { ROOT, C } = require('./lib');
+const { ROOT } = require('./lib');
 
-const FONT_DIR = path.join(ROOT, 'fonts');
-const F = {
-  sans: 'space-grotesk-400-normal.ttf',
-  bold: 'space-grotesk-700-normal.ttf',
-  body: 'inter-400-normal.ttf',
-  mono: 'jetbrains-mono-400-normal.ttf',
+const FD = path.join(ROOT, 'fonts');
+const RN = path.join(ROOT, 'brand', 'renders');
+
+const C = {
+  ink: '#0B0C0E',
+  paper: '#F2EDE4',
+  ember: '#D8542A',
+  emberLit: '#EE7541',
+  kiln: '#8A8578',
+  smoke: '#55544F',
+  body: '#C4BEB1',
+  rule: '#2A2B2F',
 };
 
-const A4L = [842, 595];
-
-const hexToRgb = (h) => {
+const hex = (h) => {
   const s = h.replace('#', '');
   return rgb(parseInt(s.slice(0, 2), 16) / 255, parseInt(s.slice(2, 4), 16) / 255, parseInt(s.slice(4, 6), 16) / 255);
 };
 
-async function png(rel) {
-  return sharp(path.join(ROOT, rel)).png().toBuffer();
+const W = 842;
+const H = 595;
+const M = 58;
+
+async function cover(rel, w, h, pos = 'centre') {
+  return sharp(path.join(RN, rel)).resize({ width: Math.round(w), height: Math.round(h), fit: 'cover', position: pos }).png().toBuffer();
 }
 
-// Full-bleed page art: art pinned right on ink, with a soft left-to-right scrim so
-// PDF typography reads cleanly while the render stays uncropped where it matters.
-async function panel(rel, W, H, { artW = 0.74, fade = 0.52, base = C.ink } = {}) {
-  W = Math.round(W); H = Math.round(H);
-  const aw = Math.round(W * artW);
-  const art = await sharp(path.join(ROOT, rel)).resize({ width: aw, height: H, fit: 'cover', position: 'right' }).png().toBuffer();
-  const scrim = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="${base}" stop-opacity="1"/>
-      <stop offset="${fade * 0.55}" stop-color="${base}" stop-opacity="0.94"/>
-      <stop offset="${fade}" stop-color="${base}" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="${base}" stop-opacity="0"/>
-    </linearGradient></defs>
-    <rect width="${W}" height="${H}" fill="url(#g)"/></svg>`);
-  return sharp({ create: { width: W, height: H, channels: 3, background: base } })
-    .composite([
-      { input: art, left: W - aw, top: 0 },
-      { input: scrim, left: 0, top: 0 },
-    ])
-    .png()
-    .toBuffer();
-}
-
-async function coverFit(rel, w, h) {
-  return sharp(path.join(ROOT, rel)).resize({ width: Math.round(w), height: Math.round(h), fit: 'cover', position: 'centre' }).png().toBuffer();
-}
-
-// Crop into the artwork only — skips the baked caption column on the left so the
-// PDF can set its own type without printing the same words twice.
-async function artCrop(rel, w, h, { lf = 0.40, tf = 0.06, wf = 0.60, hf = 1 } = {}) {
-  const src = sharp(path.join(ROOT, rel));
-  const { width: W, height: H } = await src.clone().metadata();
-  const left = Math.round(W * lf);
-  const top = Math.round(H * tf);
-  const cw = Math.min(Math.round(W * wf), W - left);
-  const ch = Math.min(Math.round(H * hf), H - top);
-  return sharp(path.join(ROOT, rel))
-    .extract({ left, top, width: cw, height: ch })
-    .resize({ width: Math.round(w), height: Math.round(h), fit: 'cover', position: 'centre' })
+// Plate pinned to one side with a directional scrim so type stays legible without
+// flattening the render. `fade` is where the scrim becomes fully transparent.
+async function panel(rel, w, h, { side = 'right', frac = 0.62, fade = 0.55, base = C.ink, pos = 'centre' } = {}) {
+  w = Math.round(w); h = Math.round(h);
+  const aw = Math.round(w * frac);
+  const art = await cover(rel, aw, h, pos);
+  const x = side === 'right' ? w - aw : 0;
+  const dir = side === 'right' ? [0, 1] : [1, 0];
+  const stops =
+    side === 'right'
+      ? `<stop offset="0" stop-color="${base}" stop-opacity="1"/><stop offset="${fade * 0.6}" stop-color="${base}" stop-opacity="0.92"/><stop offset="${fade}" stop-color="${base}" stop-opacity="0.28"/><stop offset="1" stop-color="${base}" stop-opacity="0"/>`
+      : `<stop offset="0" stop-color="${base}" stop-opacity="0"/><stop offset="${1 - fade}" stop-color="${base}" stop-opacity="0.28"/><stop offset="${1 - fade * 0.6}" stop-color="${base}" stop-opacity="0.92"/><stop offset="1" stop-color="${base}" stop-opacity="1"/>`;
+  const scrim = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+    <defs><linearGradient id="g" x1="${dir[0]}" y1="0" x2="${dir[1]}" y2="0">${stops}</linearGradient></defs>
+    <rect width="${w}" height="${h}" fill="url(#g)"/></svg>`);
+  return sharp({ create: { width: w, height: h, channels: 3, background: base } })
+    .composite([{ input: art, left: x, top: 0 }, { input: scrim, left: 0, top: 0 }])
     .png()
     .toBuffer();
 }
 
 async function main() {
   const pdf = await PDFDocument.create();
-  pdf.setTitle('LUMENFORGE — interactive 3D studio portfolio');
-  pdf.setAuthor('LUMENFORGE');
-  pdf.setSubject('3D commerce, real-estate and product websites built with Blender, Three.js and React');
-
+  pdf.setTitle('KILN — portfolio');
+  pdf.setAuthor('KILN');
+  pdf.setSubject('Interactive architecture: Blender-rendered rooms shipped as React sites');
+  pdf.setCreator('KILN studio');
   pdf.registerFontkit(fontkit);
-  const helv = await pdf.embedFont(fs.readFileSync(path.join(FONT_DIR, F.body)), { subset: true });
-  const helvBold = await pdf.embedFont(fs.readFileSync(path.join(FONT_DIR, F.bold)), { subset: true });
-  const courier = await pdf.embedFont(fs.readFileSync(path.join(FONT_DIR, F.mono)), { subset: true });
 
-  const mark = await pdf.embedPng(await png('brand/exports/logo-mark-1024.png'));
-  const markMono = await pdf.embedPng(await png('brand/exports/logo-mark-mono-512.png'));
+  const F = (file) => pdf.embedFont(fs.readFileSync(path.join(FD, file)), { subset: true });
+  const serif = await F('instrument-serif.ttf');
+  const sans = await F('inter-tight-400.ttf');
+  const sansM = await F('inter-tight-500.ttf');
+  const mono = await F('jetbrains-mono.ttf');
 
-  const page = () => pdf.addPage(A4L);
-  const bg = (p, color) => {
-    p.drawRectangle({ x: 0, y: 0, width: A4L[0], height: A4L[1], color: hexToRgb(color) });
+  const page = () => {
+    const p = pdf.addPage([W, H]);
+    p.drawRectangle({ x: 0, y: 0, width: W, height: H, color: hex(C.ink) });
+    return p;
   };
-  const kicker = (p, t, x, y, color = C.arc) =>
-    p.drawText(t.toUpperCase(), { x, y, size: 8, font: courier, color: hexToRgb(color), characterSpacing: 2 });
-  const title = (p, t, x, y, size = 34, color = C.bone, font = helvBold) =>
-    p.drawText(t, { x, y, size, font, color: hexToRgb(color) });
-  const body = (p, t, x, y, size = 10.5, color = C.muted, width = 320) =>
-    p.drawText(t, { x, y, size, font: helv, color: hexToRgb(color), lineHeight: size * 1.55, maxWidth: width });
-  const rule = (p, x, y, w, color = '#1B2130') =>
-    p.drawLine({ start: { x, y }, end: { x: x + w, y }, thickness: 0.7, color: hexToRgb(color) });
 
-  /* ---- 1. cover ---- */
+  // drawText with the PDF's origin at bottom-left; `y` here is distance from the TOP
+  const T = (p, t, x, yTop, size, font, color, opts = {}) =>
+    p.drawText(t, { x, y: H - yTop, size, font, color: hex(color), ...opts });
+  const kicker = (p, t, x, yTop, color = C.ember) =>
+    T(p, t.toUpperCase(), x, yTop, 7.4, mono, color, { characterSpacing: 2.1 });
+  const body = (p, t, x, yTop, w, size = 9.4, color = C.body, lh = 1.62) =>
+    T(p, t, x, yTop, size, sans, color, { maxWidth: w, lineHeight: size * lh });
+  const disp = (p, t, x, yTop, size, color = C.paper) =>
+    T(p, t, x, yTop, size, serif, color, { lineHeight: size * 0.98 });
+  const rule = (p, x, yTop, w, color = C.rule) =>
+    p.drawLine({ start: { x, y: H - yTop }, end: { x: x + w, y: H - yTop }, thickness: 0.6, color: hex(color) });
+
+  const mark = await pdf.embedPng(await sharp(path.join(ROOT, 'brand/exports/mark-512.png')).resize(160).png().toBuffer());
+
+  /* ── 01 cover ── */
   let p = page();
-  bg(p, C.ink);
-  const hero = await pdf.embedPng(await panel('portfolio/plates/cover.png', 842, 595, { artW: 0.92, fade: 0.68 }));
-  p.drawImage(hero, { x: 0, y: 0, width: 842, height: 595 });
-  p.drawImage(mark, { x: 56, y: 470, width: 58, height: 58 });
-  title(p, 'LUMENFORGE', 56, 400, 40);
-  kicker(p, 'websites you can walk through', 58, 380);
-  rule(p, 56, 358, 420);
-  body(p, 'An interactive 3D studio. We model in Blender,\nbake with bpy, and ship Three.js + React sites\nthat load under 2 MB and hold 60 fps on a\nmid-range phone.', 56, 336, 10.5, C.muted, 300);
-  kicker(p, 'portfolio 2026 · forge@lumenforge.studio', 56, 60, '#5F6878');
+  p.drawImage(await pdf.embedPng(await panel('keyart-1600x2000.png', W, H, { frac: 0.56, fade: 0.5 })), { x: 0, y: 0, width: W, height: H });
+  p.drawImage(mark, { x: M, y: H - M - 26, width: 26, height: 26 });
+  T(p, 'KILN', M + 38, M + 8, 15, serif, C.paper, { characterSpacing: 2.4 });
+  kicker(p, 'portfolio · 2026', M, H - M);
+  disp(p, 'Rooms,', M, 300, 54);
+  disp(p, 'not pages.', M, 348, 54, C.emberLit);
+  rule(p, M, 372, 210, '#3A3A3E');
+  body(p, 'An interactive architecture studio. We model the space in Blender, light it in bpy and ship it in React — under two megabytes, sixty frames, on a phone.', M, 392, 300, 9.2);
+  T(p, 'studio@kiln.studio', M, H - 44, 8, mono, C.kiln, { characterSpacing: 1 });
 
-  /* ---- 2. position ---- */
+  /* ── 02 the argument ── */
   p = page();
-  bg(p, C.ink);
-  kicker(p, 'position', 56, 520);
-  title(p, 'The web is still flat.', 56, 470, 34);
-  title(p, 'Flat is expensive.', 56, 432, 34, C.forge);
-  rule(p, 56, 400, 730);
+  kicker(p, 'the argument', M, M + 6);
+  disp(p, 'A page is a photograph', M, 116, 34);
+  disp(p, 'of a place.', M, 154, 34, C.emberLit);
+  rule(p, M, 196, 726);
   const cols = [
-    ['Visitors cannot imagine scale', 'Static shots force customers to guess size, material and finish. Guessing is where carts die.'],
-    ['Video is a dead end', 'A 4 MB hero video looks expensive, costs LCP and cannot be explored. A billboard, not a room.'],
-    ['WebGL got a bad name', 'Most 3D sites are 40 MB showreels from studios that never had to ship on an Android.'],
+    ['Scale', 'A 1.9 m sofa and a 1.4 m sofa photograph identically. Customers guess — and they guess wrong at the exact moment they would have bought.'],
+    ['Material', 'Plaster, terracotta, stone: the difference is not colour, it is how the surface takes light. A flat image flattens that away.'],
+    ['Light', 'North light at 4 pm is a buying argument for a room. A photograph cannot let anybody move the sun.'],
   ];
   cols.forEach(([h, t], i) => {
-    const x = 56 + i * 248;
-    kicker(p, `0${i + 1}`, x, 356, C.forge);
-    title(p, h, x, 330, 12, C.bone, helvBold);
-    body(p, t, x, 300, 9.5, C.muted, 220);
+    const x = M + i * 246;
+    kicker(p, `0${i + 1}`, x, 232, C.ember);
+    T(p, h, x, 258, 12, sansM, C.paper);
+    body(p, t, x, 274, 222, 8.8);
   });
-  kicker(p, 'beauty that survives a mid-range phone', 56, 64, C.arc);
-  p.drawText('first load < 2.0 MB     60 fps      lighthouse 95+     <= 8 draw calls', {
-    x: 56, y: 44, size: 10, font: courier, color: hexToRgb(C.bone), characterSpacing: 0.6,
-  });
+  p.drawImage(await pdf.embedPng(await cover('detail-2400x1350.png', 726, 190, 'centre')), { x: M, y: 40, width: 726, height: 190 });
+  T(p, 'Cycles render, 512 samples, no post.', M + 10, 208, 6.8, mono, C.kiln, { characterSpacing: 1.2 });
 
-  /* ---- 3-5. case studies ---- */
+  /* ── 03–05 case studies ── */
   const cases = [
-    ['case 01 · 3d commerce', 'Atelier Nova', 'A flagship store where every piece is a real object you can rotate, place and buy.',
-      ['1.9 MB first load', '+38% add-to-cart', 'bpy asset pipeline', 'Three.js + R3F'], 'nova'],
-    ['case 02 · 3d real estate', 'Meridian Towers', '48 unit interiors and sun studies computed in Blender, walkable on a phone.',
-      ['3.1x longer sessions', 'KTX2 + Draco', 'sun study in bpy', 'WebGL 2 fallback'], 'meridian'],
-    ['case 03 · product launch', 'Kinetic Labs', 'A scroll-driven reveal that turns a spec sheet into a launch moment.',
-      ['2.4M campaign views', 'GLTF + Draco', 'GSAP + R3F', 'launch ad kit'], 'kinetic'],
+    {
+      k: 'case 01 · commerce', n: 'Atelier Nova',
+      d: 'A flagship where every piece is a real object: turn it, place it in the room, buy it. Product photography replaced by a place.',
+      stats: [['+38%', 'add-to-cart'], ['1.9 MB', 'first load'], ['7', 'draw calls']],
+      plate: 'work-atelier.png', pos: 'centre',
+    },
+    {
+      k: 'case 02 · property', n: 'Meridian Towers',
+      d: 'Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap, so a phone draws the floor plate in one pass.',
+      stats: [['3.1×', 'session length'], ['48', 'units walkable'], ['0', 'render farm']],
+      plate: 'work-meridian.png', pos: 'centre',
+    },
+    {
+      k: 'case 03 · launch', n: 'Kinetic Labs',
+      d: 'A scroll-driven reveal built from one turned form. The launch film is rendered from the same geometry, so the ad and the site are the same object.',
+      stats: [['2.4M', 'campaign views'], ['1', 'asset set'], ['6 wks', 'to launch']],
+      plate: 'work-kinetic.png', pos: 'centre',
+    },
   ];
-  for (const [k, n, d, tags, img] of cases) {
+
+  for (const c of cases) {
     p = page();
-    bg(p, C.ink);
-    const plate = await pdf.embedPng(await panel(`portfolio/plates/${img}.png`, 842, 595, { artW: 0.9, fade: 0.56 }));
-    p.drawImage(plate, { x: 0, y: 0, width: 842, height: 595 });
-    kicker(p, k, 56, 236);
-    title(p, n, 56, 186, 32);
-    body(p, d, 56, 152, 10.5, C.muted, 430);
-    tags.forEach((t, i) => {
-      const x = 56 + i * 150;
-      p.drawRectangle({ x, y: 92, width: 142, height: 22, borderColor: hexToRgb(i % 2 ? C.forge : C.arc), borderWidth: 0.6, color: hexToRgb(C.ink) });
-      p.drawText(t.toUpperCase(), { x: x + 8, y: 99, size: 6.6, font: courier, color: hexToRgb(i % 2 ? C.forge : C.arc), characterSpacing: 0.8 });
+    p.drawImage(await pdf.embedPng(await panel(c.plate, W, H, { frac: 0.66, fade: 0.52, pos: c.pos })), { x: 0, y: 0, width: W, height: H });
+    kicker(p, c.k, M, M + 6);
+    disp(p, c.n, M, 122, 36);
+    body(p, c.d, M, 168, 296, 9.2);
+    c.stats.forEach(([n, l], i) => {
+      const y = 300 + i * 46;
+      T(p, n, M, y, 19, serif, C.emberLit);
+      T(p, l.toUpperCase(), M + 78, y - 2, 6.6, mono, C.kiln, { characterSpacing: 1.4 });
     });
-    kicker(p, 'lumenforge.studio', 690, 48, '#5F6878');
+    T(p, 'rendered in blender · shipped in react', M, H - 34, 6.8, mono, C.smoke, { characterSpacing: 1.2 });
   }
 
-  /* ---- 6. process ---- */
+  /* ── 06 method ── */
   p = page();
-  bg(p, C.ink);
-  kicker(p, 'the forge', 56, 520);
-  title(p, 'Blockout · Forge · Budget · Wire · Harden', 56, 480, 28);
-  rule(p, 56, 452, 730);
+  kicker(p, 'method', M, M + 6);
+  disp(p, 'Blockout · Forge · Budget · Wire · Harden', M, 106, 25);
+  rule(p, M, 130, 726);
   const steps = [
     ['Blockout', 'Camera path, scale and light locked before a texture exists.'],
-    ['Forge', 'bpy builds hero assets, bakes lightmaps, exports GLTF with LODs.'],
-    ['Budget', 'Draco + KTX2 against a signed-off first-load ceiling.'],
+    ['Forge', 'bpy scripts build the hero geometry, bake lightmaps, export glTF with LODs.'],
+    ['Budget', 'Draco and KTX2 measured against a first-load ceiling signed off up front.'],
     ['Wire', 'React Three Fiber scenes, scroll timelines, CMS bindings.'],
-    ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, Lighthouse gate in CI.'],
+    ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, a Lighthouse gate in CI.'],
   ];
   steps.forEach(([h, t], i) => {
-    const x = 56 + i * 148;
-    p.drawCircle({ x, y: 420, size: 5, color: hexToRgb(C.forge) });
-    kicker(p, `0${i + 1}`, x, 396, C.forge);
-    title(p, h, x, 372, 13, C.bone, helvBold);
-    body(p, t, x, 344, 8.6, C.muted, 132);
+    const x = M + i * 146;
+    p.drawRectangle({ x, y: H - 152, width: 14, height: 1.6, color: hex(C.ember) });
+    kicker(p, `0${i + 1}`, x, 174, C.ember);
+    T(p, h, x, 194, 11, sansM, C.paper);
+    body(p, t, x, 208, 132, 7.9, C.body, 1.5);
   });
-  const plate = await pdf.embedPng(await panel('portfolio/plates/process.png', 730, 240, { artW: 0.62, fade: 0.42 }));
-  p.drawImage(plate, { x: 56, y: 76, width: 730, height: 240 });
+  p.drawImage(await pdf.embedPng(await cover('hero-2400x1600.png', 726, 232, 'centre')), { x: M, y: 42, width: 726, height: 232 });
 
-  /* ---- 7. pricing ---- */
+  /* ── 07 rates ── */
   p = page();
-  bg(p, C.ink);
-  kicker(p, 'commercials', 56, 520);
-  title(p, 'Fixed scope, fixed number, fixed date.', 56, 480, 28);
+  kicker(p, 'rates', M, M + 6);
+  disp(p, 'Fixed scope. Fixed number.', M, 106, 26);
+  body(p, 'Every tier includes a written load budget, a Lighthouse gate in CI, source handover and WebGL fallbacks.', M, 124, 420, 8.8);
   const tiers = [
-    ['Spark', '$4,800', ['1 walkthrough scene', '3 art-directed stills', 'mobile + WebGL fallback', '2 weeks delivery']],
-    ['Forge', '$12,500', ['up to 5 rooms or products', 'bpy asset pipeline', 'scroll camera + CMS', 'launch campaign kit', '3-5 weeks delivery']],
-    ['Foundry', '$3,900 / mo', ['2 scenes per sprint', 'perf budget monitoring', 'asset library upkeep', 'rolling retainer']],
+    ['Spar', '$4,800', '2 weeks', ['1 walkthrough scene', '3 art-directed stills', 'mobile + WebGL fallback']],
+    ['Kiln', '$12,500', '3–5 weeks', ['up to 5 rooms or products', 'bpy asset pipeline', 'scroll camera + CMS', 'launch campaign kit']],
+    ['Firing', '$3,900 / mo', 'rolling', ['2 scenes per sprint', 'perf budget monitoring', 'asset library upkeep']],
   ];
-  for (const [i, [n, price, items]] of tiers.entries()) {
-    const x = 56 + i * 248;
+  p.drawImage(await pdf.embedPng(await panel('square-1600x1600.png', W, H, { frac: 0.42, fade: 0.44, side: 'right' })), { x: 0, y: 0, width: W, height: H });
+  tiers.forEach(([n, price, when, items], i) => {
+    const x = M + i * 164;
     const featured = i === 1;
     p.drawRectangle({
-      x, y: 150, width: 232, height: 290,
-      color: hexToRgb(featured ? '#140E0B' : C.panel),
-      borderColor: hexToRgb(featured ? C.forge : '#1B2130'), borderWidth: featured ? 1.2 : 0.7,
+      x, y: H - 500, width: 154, height: 252,
+      color: hex(featured ? '#14100E' : '#101114'),
+      borderColor: hex(featured ? C.ember : C.rule), borderWidth: featured ? 1 : 0.6,
     });
-    kicker(p, n, x + 20, 412, featured ? C.forge : C.arc);
-    title(p, price, x + 20, 366, 24);
-    rule(p, x + 20, 348, 192);
-    items.forEach((it, j) => {
-      p.drawText('—', { x: x + 20, y: 326 - j * 20, size: 9, font: helv, color: hexToRgb(C.arc) });
-      p.drawText(it, { x: x + 34, y: 326 - j * 20, size: 9, font: helv, color: hexToRgb(C.muted) });
-    });
-  }
-  body(p, 'Every tier includes a written first-load budget, a Lighthouse gate in CI, source handover, and WebGL fallbacks for low-tier phones.', 56, 110, 10, C.muted, 730);
+    kicker(p, n, x + 15, 274, featured ? C.emberLit : C.kiln);
+    T(p, price, x + 15, 308, 19, serif, C.paper);
+    T(p, when, x + 15, 324, 7, mono, C.smoke, { characterSpacing: 0.8 });
+    rule(p, x + 15, 342, 122, '#26272B');
+    items.forEach((it, j) => T(p, it, x + 15, 362 + j * 16, 7.6, sans, C.body));
+  });
 
-  /* ---- 8. contact ---- */
+  /* ── 08 the studio ── */
   p = page();
-  bg(p, C.ink);
-  const tower = await pdf.embedPng(await panel('portfolio/plates/contact.png', 842, 595, { artW: 0.8, fade: 0.44 }));
-  p.drawImage(tower, { x: 0, y: 0, width: 842, height: 595 });
-  p.drawImage(markMono, { x: 56, y: 480, width: 34, height: 34 });
-  kicker(p, 'next step', 104, 492);
-  title(p, 'Send us your product.', 56, 380, 32);
-  title(p, 'We send back a room.', 56, 344, 32, C.forge);
-  body(p, 'Within 48 hours you get a fixed price, a camera path and a load budget. No retainer to start, no discovery invoice.', 56, 300, 11, C.muted, 420);
-  title(p, 'forge@lumenforge.studio', 56, 220, 16, C.arc, helvBold);
-  p.drawText('lumenforge.studio  ·  showroom: lumenforge.studio/showroom', { x: 56, y: 196, size: 9, font: courier, color: hexToRgb('#5F6878') });
-  rule(p, 56, 170, 420);
-  p.drawText('Blender · bpy · Three.js · React Three Fiber · GSAP · Draco · KTX2', { x: 56, y: 148, size: 8, font: courier, color: hexToRgb(C.muted) });
+  kicker(p, 'the studio', M, M + 6);
+  disp(p, 'Blender hands,', M, 112, 34);
+  disp(p, 'browser discipline.', M, 150, 34, C.emberLit);
+  body(p, 'KILN is three people on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build. One pipeline, no handoff to a render farm.', M, 200, 330, 9.4);
+  const stack = ['Blender', 'bpy', 'Cycles', 'Three.js', 'React Three Fiber', 'gsap', 'Draco', 'KTX2', 'Playwright'];
+  stack.forEach((t, i) => {
+    T(p, t, M + (i % 3) * 112, 300 + Math.floor(i / 3) * 20, 7, mono, C.kiln, { characterSpacing: 1.1 });
+  });
+  p.drawImage(await pdf.embedPng(await panel('hero-2400x1600.png', 380, H, { frac: 1.0, fade: 1, base: C.ink })), { x: W - 380, y: 0, width: 380, height: H });
+  p.drawRectangle({ x: W - 380, y: 0, width: 120, height: H, color: hex(C.ink), opacity: 0.9 });
 
-  const out = path.join(ROOT, 'portfolio', 'LUMENFORGE-portfolio.pdf');
+  /* ── 09 contact ── */
+  p = page();
+  p.drawImage(await pdf.embedPng(await panel('work-kinetic.png', W, H, { frac: 0.6, fade: 0.5 })), { x: 0, y: 0, width: W, height: H });
+  p.drawImage(mark, { x: M, y: H - M - 24, width: 24, height: 24 });
+  kicker(p, 'next step', M + 34, M + 4);
+  disp(p, 'Send the product.', M, 300, 38);
+  disp(p, 'We send the room.', M, 342, 38, C.emberLit);
+  body(p, 'Within two working days: a fixed price, a camera path and a load budget. No discovery invoice, no retainer to start.', M, 382, 300, 9.2);
+  T(p, 'studio@kiln.studio', M, 452, 13, sansM, C.emberLit, { characterSpacing: 0.4 });
+  T(p, 'kiln.studio  ·  +44 20 7946 0812  ·  showroom at /showroom', M, 470, 7, mono, C.kiln, { characterSpacing: 0.8 });
+
+  const out = path.join(ROOT, 'portfolio', 'KILN-portfolio.pdf');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, await pdf.save());
-  console.log('portfolio pdf:', out, (fs.statSync(out).size / 1024).toFixed(0) + ' KB', pdf.getPageCount(), 'pages');
+  console.log('portfolio:', out, (fs.statSync(out).size / 1024).toFixed(0) + ' KB', pdf.getPageCount(), 'pages');
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

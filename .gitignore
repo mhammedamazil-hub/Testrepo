@@ -1,0 +1,7 @@
+# build scratch
+node_modules/
+__pycache__/
+*.pyc
+
+# generated BIFF/PDF proofs that duplicate the committed originals
+studio/portfolio/plates/

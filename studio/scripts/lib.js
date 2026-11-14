@@ -1,4 +1,4 @@
-// LUMENFORGE — shared build helpers
+// KILN — shared build helpers
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -6,22 +6,27 @@ const sharp = require('sharp');
 const ROOT = path.resolve(__dirname, '..');
 const FONTS = '/tmp/build/node_modules/@fontsource';
 const FONT_FILES = {
-  grotesk: `${FONTS}/space-grotesk/files/space-grotesk-latin-500-normal.woff`,
-  grotesk400: `${FONTS}/space-grotesk/files/space-grotesk-latin-400-normal.woff`,
-  grotesk700: `${FONTS}/space-grotesk/files/space-grotesk-latin-700-normal.woff`,
-  inter: `${FONTS}/inter/files/inter-latin-400-normal.woff`,
-  inter700: `${FONTS}/inter/files/inter-latin-700-normal.woff`,
+  serif: `${FONTS}/instrument-serif/files/instrument-serif-latin-400-normal.woff`,
+  text: `${FONTS}/inter-tight/files/inter-tight-latin-400-normal.woff`,
+  text500: `${FONTS}/inter-tight/files/inter-tight-latin-500-normal.woff`,
   mono: `${FONTS}/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff`,
 };
 
+// KILN palette — warm ink, paper, ember. No cool greys, no cyan, no violet.
 const C = {
-  ink: '#06070B',
-  panel: '#0C0F17',
-  bone: '#EDE7DA',
-  forge: '#FF6B2C',
-  arc: '#22E8C8',
-  violet: '#7C5CFF',
-  muted: '#8A93A6',
+  ink: '#0B0C0E',
+  ink2: '#121316',
+  panel: '#141518',
+  paper: '#F2EDE4',
+  bone: '#F2EDE4',
+  ember: '#D8542A',
+  emberLit: '#EE7541',
+  forge: '#D8542A',   // legacy alias
+  kiln: '#8A8578',
+  arc: '#8A8578',     // legacy alias, now a warm neutral
+  muted: '#9A9488',
+  smoke: '#55544F',
+  rule: '#26272B',
 };
 
 const P = (...names) => names.map((n) => path.join(ROOT, n));
