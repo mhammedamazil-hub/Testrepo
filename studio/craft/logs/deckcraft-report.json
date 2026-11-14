@@ -15,68 +15,48 @@
     "next"
   ],
   "failures": {
-    "init": [
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
-    ],
     "cover": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
-    ],
-    "re-init": [
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names",
-      "deckcraft-cli: unknown subcommand `--cmd` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "problem": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "work": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "method": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "case-5": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "case-6": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "case-7": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "engineering": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "studio": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "rates": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "provenance": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "next": [
-      "deckcraft-cli: unknown subcommand `--in` | deckcraft-cli works on DeckCraft presentations (.deckcraft, .pptx) without a window. |   info               print a presentation's slides, layouts and theme as JSON |   render             draw slides as PNG images |   render-transition  draw frames of the transition into a slide as PNG images |   convert            save a presentation in the format OUT's extension names"
-    ],
-    "info": [
-      "deckcraft-cli: studio/craft/out/kiln-deckcraft.pptx: No such file or directory (os error 2)"
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
     ],
     "convert": [
-      "deckcraft-cli: studio/craft/out/kiln-deckcraft.pptx: No such file or directory (os error 2)"
+      "deckcraft-cli: nothing to export (no slides in range)"
     ]
   },
   "commands": 147,
   "slides": 12,
-  "hasDeck": false,
+  "hasDeck": true,
   "hasPdf": false
 }
