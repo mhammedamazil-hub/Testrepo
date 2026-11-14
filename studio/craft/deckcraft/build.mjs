@@ -35,7 +35,8 @@ const craft = (args) => execFileSync('npx', ['pi-craft', 'deckcraft', 'exec', ..
 let schema = {};
 try {
   const raw = craft(['commands']).trim();
-  const arr = JSON.parse(raw.slice(raw.indexOf('[')));
+  const at = raw.lastIndexOf('[\n');            // the JSON array, not the prose above it
+  const arr = JSON.parse(at >= 0 ? raw.slice(at) : raw);
   for (const c of arr) {
     const keys = new Set(Object.keys(c.params || c.parameters || {}));
     schema[c.id] = keys.size ? keys : null; // null = schema unknown, pass through
@@ -58,6 +59,24 @@ function cmd(id, params = {}) {
   }
   return `${id}=${JSON.stringify(params)}`;
 }
+
+/* ── preset discovery ─────────────────────────────────────────────────────── */
+// shape.insert takes a preset name from a fixed list, and the list is not stable
+// across releases. Ask the CLI before drawing anything.
+let RECT = 'rect';
+try {
+  console.log('--- describe shape.insert ---');
+  try { console.log(craft(['describe', 'shape.insert'])); } catch (e) { console.log('describe failed'); }
+  const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
+  const names = [...out.matchAll(/"([a-zA-Z0-9 _-]+)"/g)].map((m) => m[1]);
+  console.log('shape presets seen:', names.slice(0, 40).join(', '));
+  const pick = names.find((n) => /^(rect|rectangle|square|box)$/i.test(n))
+    || names.find((n) => /rect|square|box/i.test(n));
+  if (pick) RECT = pick;
+} catch (e) {
+  console.warn('preset discovery failed, using', RECT, String(e.stderr || e.message).slice(0, 300));
+}
+console.log('using preset:', RECT);
 
 const C = {
   ink: '0B0C0E', paper: 'F2EDE4', ember: 'D8542A', emberLit: 'EE7541',
@@ -291,24 +310,6 @@ slides.push({
     foot('kiln · interactive architecture'), num(12),
   ],
 });
-
-/* ── preset discovery ─────────────────────────────────────────────────────── */
-// shape.insert takes a preset name from a fixed list, and the list is not stable
-// across releases. Ask the CLI before drawing anything.
-let RECT = 'rect';
-try {
-  console.log('--- describe shape.insert ---');
-  try { console.log(craft(['describe', 'shape.insert'])); } catch (e) { console.log('describe failed'); }
-  const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
-  const names = [...out.matchAll(/"([a-zA-Z0-9 _-]+)"/g)].map((m) => m[1]);
-  console.log('shape presets seen:', names.slice(0, 40).join(', '));
-  const pick = names.find((n) => /^(rect|rectangle|square|box)$/i.test(n))
-    || names.find((n) => /rect|square|box/i.test(n));
-  if (pick) RECT = pick;
-} catch (e) {
-  console.warn('preset discovery failed, using', RECT, String(e.stderr || e.message).slice(0, 300));
-}
-console.log('using preset:', RECT);
 
 /* ── build ────────────────────────────────────────────────────────────────── */
 function run(args, label) {
