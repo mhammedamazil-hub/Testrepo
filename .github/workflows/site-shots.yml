@@ -46,12 +46,18 @@ jobs:
           (async () => {
             const browser = await chromium.launch();
             const shot = async (url, file, opts) => {
-              const page = await browser.newPage(opts.viewport);
+              // newPage takes { viewport }, not a bare { width, height }: nesting it
+              // wrong silently falls back to 1280x720, so every "mobile" shot is a
+              // desktop shot and the media queries never run.
+              const page = await browser.newPage({ viewport: opts.viewport, deviceScaleFactor: 1 });
               await page.goto(url, { waitUntil: 'networkidle' });
               await page.waitForTimeout(opts.wait || 2500);
               // full-page captures do not scroll, so scroll-driven reveals never fire.
               // walk the page first, then return to the top.
               if (opts.full) {
+                // a sticky nav paints at the scroll position in a full-page capture;
+                // park it so the composition is readable
+                await page.addStyleTag({ content: '.nav{position:absolute !important}' });
                 await page.evaluate(async () => {
                   const step = window.innerHeight * 0.8;
                   for (let y = 0; y < document.body.scrollHeight; y += step) {
