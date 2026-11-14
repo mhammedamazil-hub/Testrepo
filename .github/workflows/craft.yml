@@ -161,6 +161,13 @@ jobs:
           java studio/craft/console/DeckWriter.java "$SCRIPT" studio/craft/out/kiln-deck.pptx > studio/craft/logs/deckwriter.log 2>&1 || true
           cat studio/craft/logs/deckwriter.log | tail -30
           ls -la studio/craft/out/kiln-deck.pptx 2>/dev/null || echo "DeckWriter produced nothing"
+          # DeckCraft can read a .pptx, so it renders the written deck for review
+          if [ -f studio/craft/out/kiln-deck.pptx ]; then
+            rm -rf studio/craft/out/shipped-slides
+            npx pi-craft deckcraft exec render studio/craft/out/kiln-deck.pptx --all studio/craft/out/shipped-slides --scale 1 > studio/craft/logs/shipped-render.log 2>&1 || true
+            npx pi-craft deckcraft exec convert studio/craft/out/kiln-deck.pptx studio/craft/out/kiln-deck.pdf >> studio/craft/logs/shipped-render.log 2>&1 || true
+            tail -5 studio/craft/logs/shipped-render.log
+          fi
           exit 0
 
       - name: Render deck slides to png
@@ -219,7 +226,10 @@ jobs:
           # web-weight files only; sources and masters stay in craft/out or the artefacts
           find studio/craft/out -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webm' -o -name '*.mp4' -o -name '*.pdf' \) \
             -size -4M -exec cp -v {} studio/site/assets/craft/ \;
-          [ -f studio/craft/out/kiln-deck.pptx ] && cp studio/craft/out/kiln-deck.pptx studio/site/assets/craft/kiln-deck.pptx || true
+          # the shipped deck: pdf for humans, pptx for editors
+          for f in kiln-deck.pdf kiln-deck.pptx; do
+            [ -f "studio/craft/out/$f" ] && cp "studio/craft/out/$f" "studio/site/assets/craft/$f" || true
+          done
           du -sh studio/site/assets/craft
 
       # Logs and JSON reports are the only way to read a failed run from a sandbox
@@ -245,7 +255,8 @@ jobs:
           # -A, not an explicit list: one missing path makes the whole `git add` fail
           # the shipped deck is generated after the craft builds, so force it in:
           # .gitignore excludes ci master .pptx files
-          git add -f studio/craft/out/kiln-deck.pptx studio/craft/out/kiln-deck.script.txt || true
+          git add -f studio/craft/out/kiln-deck.pptx studio/craft/out/kiln-deck.pdf studio/craft/out/kiln-deck.script.txt || true
+          git add -f studio/craft/out/shipped-slides || true
           git add -A studio/craft/out studio/site/assets/craft
           git diff --cached --quiet && { echo "nothing changed"; exit 0; }
           git commit -F - <<'MSG'

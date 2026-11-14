@@ -21,9 +21,18 @@ v() {
 }
 
 echo "── DeckCraft"
-[ -f "$OUT/kiln-deckcraft.pdf" ] && v "deck pdf · 12 pages" "$OUT/kiln-deckcraft.pdf" --pages 12 \
+[ -f "$OUT/kiln-deckcraft.pdf" ] && v "deckcraft pdf · 12 pages" "$OUT/kiln-deckcraft.pdf" --pages 12 \
   --text-contains "Rooms," --text-contains "Meridian Towers" --text-contains "Fixed scope. Fixed number."
-[ -f "$OUT/kiln-deckcraft.pptx" ] && echo "  INFO  deck pptx $(du -h "$OUT/kiln-deckcraft.pptx" | cut -f1)"
+
+echo "── DeckWriter (the deck that is sent)"
+if [ -f "$OUT/kiln-deck.pdf" ]; then
+  v "shipped deck · 12 pages" "$OUT/kiln-deck.pdf" --pages 12 \
+    --text-contains "Rooms," --text-contains "not pages." --text-contains "Meridian Towers" \
+    --text-contains "Fixed scope. Fixed number." --text-contains "studio@kiln.studio"
+else
+  echo "  INFO  no shipped deck pdf"
+fi
+[ -f "$OUT/kiln-deck.pptx" ] && echo "  INFO  shipped pptx $(du -h "$OUT/kiln-deck.pptx" | cut -f1)"
 
 echo "── EffectCraft"
 if [ -f "$OUT/kiln-sting-alpha.mov" ]; then
