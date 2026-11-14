@@ -219,6 +219,7 @@ jobs:
           # web-weight files only; sources and masters stay in craft/out or the artefacts
           find studio/craft/out -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webm' -o -name '*.mp4' -o -name '*.pdf' \) \
             -size -4M -exec cp -v {} studio/site/assets/craft/ \;
+          [ -f studio/craft/out/kiln-deck.pptx ] && cp studio/craft/out/kiln-deck.pptx studio/site/assets/craft/kiln-deck.pptx || true
           du -sh studio/site/assets/craft
 
       # Logs and JSON reports are the only way to read a failed run from a sandbox
@@ -242,6 +243,9 @@ jobs:
           # commit only what git should carry: the deck pdf, the mp4, the poster,
           # the rendered slides and frames, and the JSON reports
           # -A, not an explicit list: one missing path makes the whole `git add` fail
+          # the shipped deck is generated after the craft builds, so force it in:
+          # .gitignore excludes ci master .pptx files
+          git add -f studio/craft/out/kiln-deck.pptx studio/craft/out/kiln-deck.script.txt || true
           git add -A studio/craft/out studio/site/assets/craft
           git diff --cached --quiet && { echo "nothing changed"; exit 0; }
           git commit -F - <<'MSG'
