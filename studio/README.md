@@ -1,6 +1,6 @@
 # KILN — studio assets
 
-Everything in this folder is generated from a script in `scripts/`. There is no stock
+Everything in this folder is generated from a script in `scripts/` or `craft/`. There is no stock
 imagery, no hand-drawn mark and no mock-up: the plates are Cycles renders driven by `bpy`, the
 type is set in the three licensed-for-web faces below, and the PDFs and deck are encoded from
 the same geometry.
@@ -37,6 +37,7 @@ copy/                brand book + launch copy
 site/                static site: index + showroom, self-contained, no CDN
 site/shots/          real-browser screenshots, captured in CI
 fonts/               TTFs for the PDF and print generators
+craft/               FigCraft / DeckCraft / EffectCraft sources, run in CI (craft/README.md)
 scripts/             every generator (see scripts/README.md)
 ```
 
