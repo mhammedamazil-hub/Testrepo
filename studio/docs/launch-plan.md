@@ -1,4 +1,4 @@
-# LUMENFORGE — 90-day launch plan
+# KILN — 90-day launch plan
 
 The studio is a three-part machine: **one flagship demo** (the showroom) → **one repeatable offer** (Forge, $12,500) → **one recurring product** (Foundry, $3,900/mo). Everything in this repo exists to make those three things feel inevitable.
 
@@ -9,11 +9,11 @@ The studio is a three-part machine: **one flagship demo** (the showroom) → **o
 | Action | Artefact |
 | --- | --- |
 | Deploy `studio/site` to Vercel/Netlify/Cloudflare Pages (static, no build step) | `site/` |
-| Point `lumenforge.studio` at it, verify OG card renders | `site/assets/og-1200x630.jpg` |
+| Point `kiln.studio` at it, verify OG card renders | `site/assets/og-1200x630.jpg` |
 | Create the profiles with the avatar + banner | `ads/avatars/*` |
 | Publish the 7-post launch sequence | `copy/social-kit.md` |
-| Send the one-pager to 25 warm contacts | `docs/one-pager.md`, `portfolio/LUMENFORGE-portfolio.pdf` |
-| Post the 6-second ad organically (Reels + LinkedIn + X) | `ads/video/lumenforge-ad-1080.mp4` |
+| Send the one-pager to 25 warm contacts | `docs/one-pager.md`, `portfolio/KILN-portfolio.pdf` |
+| Post the 6-second ad organically (Reels + LinkedIn + X) | `ads/video/kiln-ad-1080.mp4` |
 
 **Gate:** site live, all four socials consistent, one demo link you can send without explaining anything.
 

@@ -1,4 +1,4 @@
-# LUMENFORGE — offer sheet
+# KILN — offer sheet
 
 **What we sell:** an interactive 3D website — a scene your customer can walk around, orbit and configure — built from a real Blender asset pipeline and shipped as a fast React site.
 
@@ -90,4 +90,4 @@ For teams shipping scenes continuously, or maintaining a growing 3D catalogue.
 
 ## Why the price holds
 
-The expensive part of 3D web is not modelling — it is **getting it under 2 MB without looking cheap**. LUMENFORGE owns that pipeline: procedural bpy exports, baked lighting instead of real-time shadows, KTX2 textures, LOD switching, and a hard draw-call ceiling. That's why a Forge build ships in weeks instead of quarters, and why the number doesn't move after kickoff.
+The expensive part of 3D web is not modelling — it is **getting it under 2 MB without looking cheap**. KILN owns that pipeline: procedural bpy exports, baked lighting instead of real-time shadows, KTX2 textures, LOD switching, and a hard draw-call ceiling. That's why a Forge build ships in weeks instead of quarters, and why the number doesn't move after kickoff.

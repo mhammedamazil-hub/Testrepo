@@ -1,8 +1,8 @@
-# LUMENFORGE — studio assets
+# KILN — studio assets
 
-Everything for the LUMENFORGE brand, launch campaign, pitch deck, portfolio and website, generated from source scripts in this folder. Nothing here is stock or hand-drawn in a GUI: the 3D art is ray-cast frame-by-frame by `scripts/renderer.js`, the type is set in SVG, and the deliverables are encoded in Node.
+Everything for the KILN brand, launch campaign, pitch deck, portfolio and website, generated from source scripts in this folder. Nothing here is stock or hand-drawn in a GUI: the 3D art is ray-cast frame-by-frame by `scripts/renderer.js`, the type is set in SVG, and the deliverables are encoded in Node.
 
-**Brand:** LUMENFORGE — *websites you can walk through.*
+**Brand:** KILN — *websites you can walk through.*
 Ink `#06070B` · panel `#0C0F17` · bone `#EDE7DA` · forge `#FF6B2C` · arc `#22E8C8` · violet `#7C5CFF` · muted `#8A93A6`
 Type: Space Grotesk (display), Inter (body), JetBrains Mono (labels).
 
@@ -18,9 +18,9 @@ ads/video/           motion ad masters: webm, mp4, gif, poster
 ads/avatars/         profile avatars + cover banner
 portfolio/           three case-study plates 1800x1200
 portfolio/plates/    caption-free 3D plates used by the deck + PDF
-portfolio/LUMENFORGE-portfolio.pdf   8-page A4 landscape portfolio
-docs/LUMENFORGE-one-pager.pdf        single-page leave-behind
-deck/                LUMENFORGE-pitch-deck.pptx (11 slides, 16:9)
+portfolio/KILN-portfolio.pdf   8-page A4 landscape portfolio
+docs/KILN-one-pager.pdf        single-page leave-behind
+deck/                KILN-pitch-deck.pptx (11 slides, 16:9)
 site/                static site: index + showroom (three.js), self-contained
 site/shots/          real-browser screenshots, captured in CI (Playwright)
 docs/                offers, pricing model, one-pager, 90-day launch plan
@@ -70,4 +70,4 @@ Re-run it after any `site/` change: `gh workflow run site-shots.yml`.
 
 ## Contacts / facts used consistently everywhere
 
-`forge@lumenforge.studio` · lumenforge.studio · Spark $4,800 · Forge $12,500 · Foundry $3,900/mo · < 2.0 MB first load · 60 fps · Lighthouse 95+ · ≤ 8 draw calls.
+`forge@kiln.studio` · kiln.studio · Spark $4,800 · Forge $12,500 · Foundry $3,900/mo · < 2.0 MB first load · 60 fps · Lighthouse 95+ · ≤ 8 draw calls.

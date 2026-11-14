@@ -1,4 +1,4 @@
-# LUMENFORGE — pricing model & unit economics
+# KILN — pricing model & unit economics
 
 The public price list is in `offers.md`. This file is the internal one: what a build actually costs, where the margin is, and which decisions protect it.
 
@@ -70,7 +70,7 @@ Target mix at month 12: **5 Foundry + 1 Forge + 1 Spark per quarter** ≈ $33k/m
 | --- | --- | --- |
 | Inbound / outbound | 40 conversations/mo | `copy/brand-and-copy.md` cold email |
 | Qualified | 12/mo | 48-hour fixed quote (price + camera path + load budget) |
-| Proposal | 6/mo | `deck/LUMENFORGE-pitch-deck.pptx`, `portfolio/LUMENFORGE-portfolio.pdf` |
+| Proposal | 6/mo | `deck/KILN-pitch-deck.pptx`, `portfolio/KILN-portfolio.pdf` |
 | Won | 1–2/mo | Forge or Spark, with an upgrade clause |
 
 - **No discovery invoice.** The quote is the discovery: we specify a camera path and a load budget from their existing product photos.

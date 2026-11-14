@@ -1,8 +1,8 @@
-# LUMENFORGE — social media kit
+# KILN — social media kit
 
 Everything below already exists in this repo. Copy/paste the caption, attach the named file, post.
 
-**Handle:** `@lumenforge.studio` · **Link:** lumenforge.studio · **Hashtags:** `#interactive3d #threejs #blender #bpy #webgl #3dcommerce #creativecoding #reactthreefiber`
+**Handle:** `@kiln.studio` · **Link:** kiln.studio · **Hashtags:** `#interactive3d #threejs #blender #bpy #webgl #3dcommerce #creativecoding #reactthreefiber`
 
 ---
 
@@ -25,14 +25,14 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 **Image:** `ads/posters/poster-manifesto-1200x1600.png`
 > The web was flat. We forged it solid.
 >
-> LUMENFORGE builds interactive 3D websites: modelled in Blender, baked with bpy, shipped in React. Under 2 MB. 60 fps on a phone that costs less than your monitor.
+> KILN builds interactive 3D websites: modelled in Blender, baked with bpy, shipped in React. Under 2 MB. 60 fps on a phone that costs less than your monitor.
 >
 > Not a video. Not a slideshow. A place.
 >
-> lumenforge.studio
+> kiln.studio
 
 ### Day 2 — the offer
-**Image:** `ads/set/lumenforge-square-1080x1080.png`
+**Image:** `ads/set/kiln-square-1080x1080.png`
 > Your site. Not a slide.
 >
 > Three ways in:
@@ -43,7 +43,7 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 > Fixed price. Fixed date. Written load budget. You keep the source.
 
 ### Day 3 — case study (carousel)
-**Images:** `portfolio/atelier-nova-1800x1200.png`, `portfolio/LUMENFORGE-portfolio.pdf` p.3
+**Images:** `portfolio/atelier-nova-1800x1200.png`, `portfolio/KILN-portfolio.pdf` p.3
 > Atelier Nova: a flagship store where every ceramic piece is a real object you can rotate, place and buy.
 >
 > → +38% add-to-cart
@@ -53,13 +53,13 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 > The 3D isn't decoration. It's the reason the cart converts.
 
 ### Day 4 — the motion ad
-**Video:** `ads/video/lumenforge-ad-1080.mp4` (or `lumenforge-loop-720.gif` for email)
+**Video:** `ads/video/kiln-ad-1080.mp4` (or `kiln-loop-720.gif` for email)
 > Six seconds. Four captions. One argument: the web doesn't have to be flat.
 >
 > Rendered from the same Blender scene the site walks through — that's why the launch video costs $2,400 and not $20,000.
 
 ### Day 5 — engineering flex
-**Image:** `ads/set/lumenforge-wide-1920x1080.png`
+**Image:** `ads/set/kiln-wide-1920x1080.png`
 > "3D websites are slow" is a skill issue.
 >
 > Our budget, in writing, before modelling starts:
@@ -82,9 +82,9 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 >
 > bpy automation · glTF budgets · shader restraint.
 > Remote. Paid per build. Portfolio over CV.
-> jobs@lumenforge.studio
+> jobs@kiln.studio
 >
-> (And if you're a brand that wants to be walked through instead of scrolled past: forge@lumenforge.studio)
+> (And if you're a brand that wants to be walked through instead of scrolled past: forge@kiln.studio)
 
 ---
 
@@ -92,8 +92,8 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 
 | Story | File | Caption overlay |
 | --- | --- | --- |
-| "Walk through your site" | `ads/set/lumenforge-story-1080x1920.png` | WALK / THROUGH / YOUR SITE. · Interactive 3D · under 2s · SWIPE UP |
-| Ad cut-down | `ads/video/lumenforge-ad-720.webm` (draw into a 9:16 canvas) | Use the 0–2 s card as the hook, then the end lockup |
+| "Walk through your site" | `ads/set/kiln-story-1080x1920.png` | WALK / THROUGH / YOUR SITE. · Interactive 3D · under 2s · SWIPE UP |
+| Ad cut-down | `ads/video/kiln-ad-720.webm` (draw into a 9:16 canvas) | Use the 0–2 s card as the hook, then the end lockup |
 
 **Reel script (15 s):** 0–2 s forge glow building → 2–5 s "Your customers can't feel a product through a photo." → 5–9 s orbit of the object, real-time → 9–12 s "1.9 MB. 60 fps. Shot on a mid-range phone." → 12–15 s lockup + "book a forge slot".
 
@@ -103,11 +103,11 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 
 | Placement | File | Headline | Primary text |
 | --- | --- | --- | --- |
-| Meta feed 1:1 | `lumenforge-square-1080x1080.png` | Your site. Not a slide. | Interactive 3D websites, under 2 MB. Built in Blender, shipped in React. |
-| Meta / IG Reels 9:16 | `lumenforge-story-1080x1920.png` | Walk through your site | 3D your customers can explore — not a video they watch. |
-| Meta video 1:1 | `lumenforge-ad-1080.mp4` | 6 seconds to prove it | Blender-authored, Three.js-powered, React-native performance. |
-| LinkedIn 16:9 | `lumenforge-wide-1920x1080.png` | Take the walkthrough | We forge walkable 3D sites. Fixed price, measured load budget. |
-| X / Twitter | `lumenforge-wide-1920x1080.png` | The web was flat. We forged it solid. | Interactive 3D sites, < 2 MB, Blender + Three.js. |
+| Meta feed 1:1 | `kiln-square-1080x1080.png` | Your site. Not a slide. | Interactive 3D websites, under 2 MB. Built in Blender, shipped in React. |
+| Meta / IG Reels 9:16 | `kiln-story-1080x1920.png` | Walk through your site | 3D your customers can explore — not a video they watch. |
+| Meta video 1:1 | `kiln-ad-1080.mp4` | 6 seconds to prove it | Blender-authored, Three.js-powered, React-native performance. |
+| LinkedIn 16:9 | `kiln-wide-1920x1080.png` | Take the walkthrough | We forge walkable 3D sites. Fixed price, measured load budget. |
+| X / Twitter | `kiln-wide-1920x1080.png` | The web was flat. We forged it solid. | Interactive 3D sites, < 2 MB, Blender + Three.js. |
 
 **Suggested budget split (first $2k):** 50% Meta feed video (broad, cheap impressions) · 30% IG Reels (best creative fit) · 20% LinkedIn (highest contract value per click). Kill any placement below 1.5% CTR after 3,000 impressions.
 
@@ -117,7 +117,7 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 
 > **Websites you can walk through.**
 > Most product pages ask your customer to imagine the object. We build the room instead: Blender-authored geometry, a Three.js walkthrough, React performance — under 2 MB, 60 fps on a mid-range phone. Three fixed-price ways in, starting at $4,800 for a single hero scene. Send us your product and we'll send back a room, a fixed price and a load budget within 48 hours.
-> → lumenforge.studio/showroom
+> → kiln.studio/showroom
 
 ---
 
@@ -126,5 +126,5 @@ Everything below already exists in this repo. Copy/paste the caption, attach the
 1. **One idea per post.** Either the argument, the proof, or the price — never all three.
 2. **Always show motion.** Static crops of 3D art underperform; loop the GIF or the MP4.
 3. **Numbers in the first line.** "+38% add-to-cart" beats "stunning 3D experience".
-4. **Never post without the lockup.** Bottom-left mark, bottom-right lumenforge.studio.
+4. **Never post without the lockup.** Bottom-left mark, bottom-right kiln.studio.
 5. **Repost the strongest case study monthly** with a new first line; the artwork has a long tail.
