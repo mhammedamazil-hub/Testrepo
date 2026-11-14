@@ -148,6 +148,20 @@ jobs:
           ls -la studio/craft/out
           exit 0
 
+      # DeckCraft composes the deck; DeckWriter writes the .pptx that gets sent, with
+      # real fonts and colours on every run (DeckCraft has no text-formatting command).
+      - name: Write the shipped deck (DeckWriter)
+        if: always()
+        run: |
+          set +e
+          mkdir -p studio/craft/out
+          SCRIPT=studio/craft/out/kiln-deck.script.txt
+          if [ ! -f "$SCRIPT" ]; then echo "no layout script produced"; exit 0; fi
+          head -5 "$SCRIPT"
+          java studio/craft/console/DeckWriter.java "$SCRIPT" studio/craft/out/kiln-deck.pptx 2>&1 | tail -20
+          ls -la studio/craft/out/kiln-deck.pptx 2>/dev/null || echo "DeckWriter produced nothing"
+          exit 0
+
       - name: Render deck slides to png
         if: always()
         continue-on-error: true
@@ -191,6 +205,8 @@ jobs:
             studio/craft/out/*.figcraft
             studio/craft/out/*.log
             studio/craft/out/*.json
+            studio/craft/out/kiln-deck.pptx
+            studio/craft/out/kiln-deck.script.txt
           if-no-files-found: warn
           retention-days: 14
 

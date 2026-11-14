@@ -92,14 +92,17 @@ const C = {
   kiln: '8A8578', smoke: '55544F', body: 'A9A398',
 };
 
-const box = (text, rect, o = {}) => cmd('insert.textBox', {
-  text, rect,
-  fontSize: o.size || 11,
-  color: o.color || C.body,
-  font: o.font || 'Arial',
-  bold: !!o.bold,
-  ...(o.track ? { charSpacing: o.track } : {}),
-});
+const SCRIPT = [];
+const rec = (line) => SCRIPT.push(line);
+
+const box = (text, rect, o = {}) => {
+  const size = o.size || 11;
+  const colour = o.color || C.body;
+  const font = o.font || 'Arial';
+  const track = o.track ? Math.round(o.track * size * 0.01) : 0; // 1/100 pt
+  rec(`text ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${size} ${colour} ${font} ${track} ${o.bold ? 'B' : '-'} | ${text}`);
+  return cmd('insert.textBox', { text, rect, fontSize: size, color: colour, font, bold: !!o.bold, ...(o.track ? { charSpacing: o.track } : {}) });
+};
 const head = (text, x, y, w, size, h = 60) => box(text, [x, y, w, h], { size, color: C.paper, font: 'Georgia' });
 const kick = (text, x, y, w = 400) => box(text.toUpperCase(), [x, y, w, 14], { size: 8, color: C.ember, font: 'Consolas', track: 2 });
 const bodyT = (text, x, y, w, h, size = 11, color = C.body) => box(text, [x, y, w, h], { size, color });
@@ -109,16 +112,22 @@ const foot = (t) => box(t.toUpperCase(), [72, 508, 360, 12], { size: 7, color: C
 const num = (n) => box(String(n).padStart(2, '0'), [912, 508, 32, 12], { size: 7, color: C.smoke, font: 'Consolas' });
 // a slide first, then its ink: design.background is refused on an empty deck
 let SLIDE = 0;
-const slideNew = (name) => [
-  cmd('slide.new', { layout: 'blank', at: SLIDE++, ...(name ? { title: name } : {}) }),
-  // colour, not hex-with-hash, and all:true — the theme paints every slide otherwise
-  cmd('design.background', { color: C.ink, all: true }),
-];
+// colour, not hex-with-hash, and all:true — the theme paints every slide otherwise.
+// design.background is refused on an empty deck, hence one slide first.
+const slideNew = (name) => {
+  rec('slide');
+  rec(`bg ${C.ink}`);
+  return [
+    cmd('slide.new', { layout: 'blank', at: SLIDE++, ...(name ? { title: name } : {}) }),
+    cmd('design.background', { color: C.ink, all: true }),
+  ];
+};
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
 const pic = (p, rect) => {
   // a missing file is silent in DeckCraft, so say it out loud
   if (!fs.existsSync(p)) { console.log('  ! missing plate', p); return null; }
+  rec(`pic ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${p}`);
   return cmd('insert.picture', { path: path.resolve(p), rect });
 };
 
@@ -373,6 +382,12 @@ for (const k of Object.keys(report.dropped)) report.dropped[k] = [...report.drop
 report.slides = slides.length;
 report.hasDeck = fs.existsSync(PPTX);
 report.hasPdf = fs.existsSync(PDF);
+// the same layout, as a script for DeckWriter (Java). DeckCraft cannot set type on a
+// box it has created, so the shipped .pptx is written by DeckWriter from these lines.
+fs.writeFileSync(path.join(OUT, 'kiln-deck.script.txt'),
+  ['size 960 540', ...SCRIPT].join('\n') + '\n');
+report.scriptLines = SCRIPT.length;
+
 fs.writeFileSync(path.join(OUT, 'deckcraft-report.json'), JSON.stringify(report, null, 2));
 console.log('deckcraft report:', JSON.stringify({ ...report, commands: report.commands }, null, 1));
 if (report.skippedSlides.length) process.exitCode = 2;
