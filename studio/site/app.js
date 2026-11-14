@@ -31,8 +31,13 @@ function boot() {
   });
   const darkMat = new THREE.MeshStandardMaterial({ color: 0x1b212b, roughness: 0.7, metalness: 0.35 });
 
+  // stage holds the mark + rings + chips so the whole composition can be
+  // pushed into the right half of the viewport, clear of the hero headline
+  const stage = new THREE.Group();
+  scene.add(stage);
+
   const group = new THREE.Group();
-  scene.add(group);
+  stage.add(group);
 
   const addBox = (w, h, d, x, y, z, mat) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(w * UNIT, h * UNIT, d * UNIT), mat);
@@ -58,7 +63,7 @@ function boot() {
   );
   ringA.rotation.set(1.32, 0.5, 0.12);
   ringA.position.set(-0.4, 0.15, 0);
-  scene.add(ringA);
+  stage.add(ringA);
 
   const ringB = new THREE.Mesh(
     new THREE.TorusGeometry(3.05, 0.006, 8, 220),
@@ -66,11 +71,11 @@ function boot() {
   );
   ringB.rotation.set(1.05, -0.6, 0.4);
   ringB.position.set(-0.4, 0.15, 0);
-  scene.add(ringB);
+  stage.add(ringB);
 
   /* ---- floating chips ---- */
   const chips = new THREE.Group();
-  scene.add(chips);
+  stage.add(chips);
   const chipGeo = new THREE.BoxGeometry(0.34, 0.34, 0.34);
   const chipMats = [boneMat, darkMat, forgeMat];
   const chipData = [];
@@ -138,6 +143,10 @@ function boot() {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.fov = w < 760 ? 56 : 42;
+    // desktop: art lives in the right half, type in the left. mobile: centred, lower.
+    stage.position.x = w > 900 ? 2.35 : 0;
+    stage.position.y = w > 900 ? 0.15 : -0.5;
+    stage.scale.setScalar(w > 900 ? 1 : 0.86);
     camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize);
@@ -157,7 +166,7 @@ function boot() {
     camera.position.x = 3.4 + target.x * 1.8;
     camera.position.y = 2.2 - target.y * 1.1 + scrollN * 1.4;
     camera.position.z = 9.4 - scrollN * 2.4;
-    camera.lookAt(-0.6, 0.1 + scrollN * 0.8, 0);
+    camera.lookAt(stage.position.x * 0.55 - 0.4, 0.1 + scrollN * 0.8, 0);
 
     group.rotation.y = 0.62 + t * 0.06 + target.x * 0.5;
     group.position.y = -1.55 + Math.sin(t * 0.7) * 0.06 + scrollN * 0.5;

@@ -75,6 +75,9 @@ main, header.nav, footer.foot { position: relative; z-index: 3; }
 
 /* ---------- hero ---------- */
 .hero { max-width: var(--max); margin: 0 auto; padding: clamp(60px, 13vh, 150px) 24px 90px; }
+/* keep the headline column clear of the 3D stage on wide screens */
+@media (min-width: 900px) { .hero > * { max-width: min(640px, 52vw); }  }
+@media (max-width: 899px) { .hero { padding-top: 34px; } }
 .kicker {
   font: 400 12px/1 'JetBrains Mono', monospace; letter-spacing: .28em; text-transform: uppercase;
   color: var(--arc); display: flex; align-items: center; gap: 10px; margin: 0 0 22px;
@@ -83,7 +86,7 @@ main, header.nav, footer.foot { position: relative; z-index: 3; }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.75); } }
 
 h1 {
-  font: 700 clamp(44px, 8.2vw, 96px)/0.98 'Space Grotesk';
+  font: 700 clamp(40px, 7vw, 82px)/0.98 'Space Grotesk';
   letter-spacing: -.03em; margin: 0 0 26px;
 }
 .forge {
