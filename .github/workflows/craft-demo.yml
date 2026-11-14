@@ -12,96 +12,68 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -uo pipefail
+          exec 2>&1
           OUT="$GITHUB_WORKSPACE/craft-demo"; mkdir -p "$OUT"
           LOG="$OUT/REPORT.md"
-          { echo "# Headless Crafting App demo — produced by CI (no GUI, no DISPLAY)"; echo;
-            echo "runner: $(uname -srm) · $(nproc) vCPU · $(free -m | awk '/Mem:/{print $2" MB"}')"; } > "$LOG"
-          sec () { echo >> "$LOG"; echo "## $*" >> "$LOG"; echo '```' >> "$LOG"; }
+          echo "# Headless Crafting App demo — produced by CI (no GUI, no DISPLAY)" > "$LOG"
+          echo "runner: $(uname -srm) · $(nproc) vCPU · $(free -m | awk '/Mem:/{print $2}') MB" >> "$LOG"
+          sec () { echo "" >> "$LOG"; echo "## $*" >> "$LOG"; echo '```' >> "$LOG"; }
           endsec () { echo '```' >> "$LOG"; }
-          run () { echo "\$ $*" >> "$LOG"; timeout 300 "$@" >> "$LOG" 2>&1; local rc=$?; echo "[exit $rc]" >> "$LOG"; return 0; }
-          fetch () { cd /tmp && rm -rf "$2" && mkdir -p "$2" && cd "$2" && gh release download "$1" -R "storytold/$3" -p '*linux-x86_64.tar.gz' -D . && tar xzf ./*.tar.gz; }
+          run () { echo "\$ $*" >> "$LOG"; timeout 300 "$@" >> "$LOG" 2>&1; echo "[exit $?]" >> "$LOG"; }
+          fetch () { cd /tmp; rm -rf "$2"; mkdir -p "$2"; cd "$2"; gh release download "$1" -R "storytold/$3" -p '*linux-x86_64.tar.gz' -D . --clobber >> "$LOG" 2>&1; tar xzf ./*.tar.gz >> "$LOG" 2>&1; echo "fetched $3 -> /tmp/$2" >> "$LOG"; }
 
-          # ---------- PhotoCraft ----------
-          sec "PhotoCraft 0.23.1 — provision + real edits"
-          fetch v0.23.1 pc photocraft
-          PC=/tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli
-          echo >> "$LOG"; echo '$ photocraft-cli --version' >> "$LOG"; run "$PC" --version
-          echo '$ photocraft-cli run --help' >> "$LOG"; run "$PC" run --help
-          python3 - <<'PYEOF'
-          w,h=480,300
-          px=bytearray()
-          for y in range(h):
-              for x in range(w):
-                  px += bytes(((x*255)//w,(y*255)//h,200 if (x//24+y//24)%2 else 40))
-          open('/tmp/pc/test.ppm','wb').write(b'P6\n%d %d\n255\n'%(w,h)+bytes(px))
-          print('wrote test.ppm')
-          PYEOF
-          run "$PC" info /tmp/pc/test.ppm
-          run "$PC" convert /tmp/pc/test.ppm /tmp/pc/step1.png
-          run "$PC" convert /tmp/pc/step1.png /tmp/pc/step2.psd
-          run "$PC" convert /tmp/pc/step2.psd "$OUT/photocraft-psd-roundtrip.png"
-          run "$PC" convert /tmp/pc/step1.png "$OUT/photocraft-out.webp"
-          run "$PC" convert /tmp/pc/step1.png "$OUT/photocraft-out.jpg"
-          endsec
-
-          # ---------- GridCraft ----------
-          sec "GridCraft 0.19.1 — provision + formula engine + real XLSX/PDF"
+          echo "== gridcraft =="
           fetch v0.19.1 gc gridcraft
           GC=/tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli
+          sec "GridCraft 0.19.1 — formula engine, CSV→XLSX→PDF"
+          printf 'item,qty,price,total\nbolt,12,0.50,=B2*C2\nnut,7,0.25,=B3*C3\n,,\n,,\ngrand total,,,=SUM(D2:D3)\n' > /tmp/gc/ledger.csv
           run "$GC" version
           run "$GC" eval '=SUM(1,2,3,4,5)'
-          run "$GC" eval '=ROUND(2.675,2)'
-          run "$GC" eval '=IFERROR(1/0,"guarded")'
           run "$GC" eval '=TEXT(1234.5,"#,##0.00")'
-          run "$GC" run --in /tmp/gc/book.xlsx --cmd 'set={"range":"A1:D3","values":[["item","qty","price","total"],["bolt",12,0.5,"=B2*C2"],["nut",7,0.25,"=B3*C3"]]}' --cmd 'set={"range":"A5","values":[["grand total"]]}' --cmd 'set={"range":"B5","values":[["=SUM(D2:D3)"]]}' --print A1:D5
-          run "$GC" run --in /tmp/gc/book.xlsx --out "$OUT/gridcraft-ledger.xlsx" --print A1:D5
-          run "$GC" cat "$OUT/gridcraft-ledger.xlsx" --csv
-          run "$GC" info "$OUT/gridcraft-ledger.xlsx" --json
-          run "$GC" check "$OUT/gridcraft-ledger.xlsx"
-          run "$GC" convert "$OUT/gridcraft-ledger.xlsx" "$OUT/gridcraft-ledger.csv"
-          run "$GC" convert "$OUT/gridcraft-ledger.xlsx" "$OUT/gridcraft-ledger.pdf"
+          run "$GC" convert /tmp/gc/ledger.csv /tmp/gc/ledger.xlsx
+          run "$GC" info /tmp/gc/ledger.xlsx --json
+          run "$GC" cat /tmp/gc/ledger.xlsx --csv
+          run "$GC" check /tmp/gc/ledger.xlsx
+          run "$GC" convert /tmp/gc/ledger.xlsx "$OUT/gridcraft-ledger.pdf"
+          cp /tmp/gc/ledger.xlsx "$OUT/gridcraft-ledger.xlsx" 2>/dev/null
+          run "$GC" cat "$OUT/gridcraft-ledger.xlsx" --range A1:D5 --formulas
           endsec
 
-          # ---------- VectorCraft ----------
-          sec "VectorCraft 0.24.1 — provision + SVG/PDF export"
+          echo "== vectorcraft =="
           fetch v0.24.1 vc vectorcraft
           VC=/tmp/vc/vectorcraft-0.24.1-linux-x86_64/bin/vectorcraft-cli
+          sec "VectorCraft 0.24.1 — SVG in, PNG/PDF/SVG out"
           run "$VC" --version
           run "$VC" --help
-          cat > /tmp/vc/badge.svg <<'SVG'
-          <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-            <rect width="640" height="360" fill="#0b0e14"/>
-            <circle cx="320" cy="170" r="90" fill="none" stroke="#00e5f0" stroke-width="10"/>
-            <text x="320" y="185" font-family="DejaVu Sans" font-size="42" fill="#e6e9ef" text-anchor="middle">CRAFT</text>
-          </svg>
-          SVG
+          printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480"><rect width="800" height="480" fill="#0b0e14"/><circle cx="400" cy="210" r="120" fill="none" stroke="#00e5f0" stroke-width="14"/><text x="400" y="230" font-family="DejaVu Sans" font-size="56" fill="#e6e9ef" text-anchor="middle">CRAFT</text><text x="400" y="400" font-family="DejaVu Sans" font-size="26" fill="#7f8aa3" text-anchor="middle">headless export</text></svg>' > /tmp/vc/badge.svg
           run "$VC" info /tmp/vc/badge.svg
           run "$VC" convert /tmp/vc/badge.svg "$OUT/vectorcraft-badge.png"
           run "$VC" convert /tmp/vc/badge.svg "$OUT/vectorcraft-badge.pdf"
+          run "$VC" convert /tmp/vc/badge.svg /tmp/vc/roundtrip.svg
           endsec
 
-          # ---------- PdfCraft ----------
-          sec "PdfCraft — provision + PDF operations"
-          tag=$(gh release list -R storytold/pdfcraft --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || gh api "repos/storytold/pdfcraft/releases?per_page=1" --jq '.[0].tagName')
-          echo "tag=$tag" >> "$LOG"
-          fetch "$tag" pd pdfcraft
-          PD=$(find /tmp/pd -maxdepth 3 -name 'pdfcraft-cli' -type f | head -1)
-          echo "binary=$PD" >> "$LOG"
+          echo "== pdfcraft =="
+          PTAG=$(gh api "repos/storytold/pdfcraft/releases?per_page=1" --jq '.[0].tag_name')
+          echo "pdfcraft tag: $PTAG" >> "$LOG"
+          fetch "$PTAG" pd pdfcraft
+          PD=$(find /tmp/pd -maxdepth 4 -type f -name 'pdfcraft-cli' | head -1)
+          echo "pdfcraft binary: $PD" >> "$LOG"
+          sec "PdfCraft — inspect, split, merge, render the PDF we just made"
           run "$PD" --version
           run "$PD" --help
-          if [ -f "$OUT/gridcraft-ledger.pdf" ]; then
-            run "$PD" info "$OUT/gridcraft-ledger.pdf"
-          fi
+          run "$PD" info "$OUT/gridcraft-ledger.pdf" --json
+          run "$PD" merge "$OUT/gridcraft-ledger.pdf" "$OUT/vectorcraft-badge.pdf" --out /tmp/pd/merged.pdf
+          cp /tmp/pd/merged.pdf "$OUT/pdfcraft-merged.pdf" 2>/dev/null
+          run "$PD" info "$OUT/pdfcraft-merged.pdf" --json
           endsec
 
           cd "$OUT"
-          { echo; echo "## Files actually produced on the runner"; echo '```'; ls -l; echo; file * ; echo '```'; } >> "$LOG"
+          { echo ""; echo "## Files actually produced on the runner"; echo '```'; ls -l; echo ""; file * ; echo '```'; } >> "$LOG"
       - name: Commit artifacts
         if: always()
         run: |
           cd "$GITHUB_WORKSPACE"
           git config user.name craft-demo
           git config user.email actions@users.noreply.github.com
-          git add craft-demo && git commit -m "CI: headless Crafting App artifacts" || true
+          git add craft-demo && git commit -m "CI: headless Crafting App artifacts (grid/vector/pdf)" || true
           git push || true
