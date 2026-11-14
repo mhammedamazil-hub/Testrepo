@@ -1,5 +1,11 @@
 ── DeckCraft
-  PASS  deck pdf · 12 pages
+  FAIL  deck pdf · 12 pages (rc=1)
+        [pi-craft] downloading v0.21.1 pdfcraft-cli-0.21.1-linux-x86_64.tar.gz (44 MB)
+        FAIL --pages  expected 12  actual 11
+        FAIL --text-contains  expected "Rooms,"  actual not found
+        PASS --text-contains  expected "Meridian Towers"  actual found
+        PASS --text-contains  expected "Fixed scope. Fixed number."  actual found
+        FAILED: /home/runner/work/Testrepo/Testrepo/studio/craft/out/kiln-deckcraft.pdf
   INFO  deck pptx 40K
 ── EffectCraft
   PASS  sting alpha · 1080², 6 s, has alpha
@@ -7,4 +13,4 @@
   PASS  sting poster · 1080²
 ── FigCraft
 
-verify: 4 passed, 0 failed, 0 skipped
+verify: 3 passed, 1 failed, 0 skipped
