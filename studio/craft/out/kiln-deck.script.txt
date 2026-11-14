@@ -1,0 +1,169 @@
+size 960 540
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | KILN · INTERACTIVE ARCHITECTURE
+text 72 286 620 76 62 F2EDE4 Georgia 0 - | Rooms,
+text 72 350 620 76 62 F2EDE4 Georgia 0 - | not pages.
+text 72 426 430 66 11 A9A398 Arial 0 - | An interactive architecture studio. We model the space in Blender, light it with bpy automation and ship it in React — under two megabytes, sixty frames on a phone.
+text 72 508 360 12 7 55544F Consolas 0 - | STUDIO@KILN.STUDIO · KILN.STUDIO · +44 20 7946 0812
+text 912 508 32 12 7 55544F Consolas 0 - | 01
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | 01 · THE PROBLEM
+text 72 104 760 46 38 F2EDE4 Georgia 0 - | A page is a photograph
+text 72 146 760 46 38 F2EDE4 Georgia 0 - | of a place.
+text 72 216 520 110 11 A9A398 Arial 0 - | Customers do not read a spec sheet. They want to know what the room feels like at four in the afternoon, whether the sofa fits, how the light lands on the plaster. Every product site we are asked to fix has the same failure: it describes the object and withholds the room.
+text 72 344 520 24 12 F2EDE4 Arial 0 - | We build the room first and photograph nothing.
+text 72 508 360 12 7 55544F Consolas 0 - | THE PROBLEM
+text 912 508 32 12 7 55544F Consolas 0 - | 02
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | THE WORK
+text 72 104 816 44 34 F2EDE4 Georgia 0 - | Three rooms, three trades.
+pic 72 196 248 186 studio/brand/renders/work-atelier.png
+text 72 398 220 14 8 D8542A Consolas 0 - | COMMERCE
+text 72 414 248 40 18 F2EDE4 Georgia 0 - | A gallery you can shop
+text 72 458 230 40 9.5 A9A398 Arial 0 - | Every piece is a real object: turn it, place it, buy it.
+pic 344 196 248 186 studio/brand/renders/work-meridian.png
+text 344 398 220 14 8 D8542A Consolas 0 - | PROPERTY
+text 344 414 248 40 18 F2EDE4 Georgia 0 - | Every unit walkable
+text 344 458 230 40 9.5 A9A398 Arial 0 - | Sun studies baked in Blender, forty-eight apartments on one link.
+pic 616 196 248 186 studio/brand/renders/work-kinetic.png
+text 616 398 220 14 8 D8542A Consolas 0 - | LAUNCH
+text 616 414 248 40 18 F2EDE4 Georgia 0 - | A moment, not a page
+text 616 458 230 40 9.5 A9A398 Arial 0 - | A scroll-driven reveal that turns a spec sheet into something people forward.
+text 72 508 360 12 7 55544F Consolas 0 - | WHAT WE BUILD
+text 912 508 32 12 7 55544F Consolas 0 - | 03
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | METHOD
+text 72 104 816 42 32 F2EDE4 Georgia 0 - | Blockout · Forge · Budget · Wire · Harden
+text 72 158 700 30 10.5 A9A398 Arial 0 - | Five stages, each with an artefact you can open and a number it has to hit. If a scene cannot hold the budget, it does not ship.
+text 72 214 30 14 8 D8542A Consolas 0 - | 01
+text 110 212 160 20 14 F2EDE4 Georgia 0 - | Blockout
+text 270 214 630 44 9.5 A9A398 Arial 0 - | Camera path, scale and light direction locked before a single texture exists.
+text 72 266 30 14 8 D8542A Consolas 0 - | 02
+text 110 264 160 20 14 F2EDE4 Georgia 0 - | Forge
+text 270 266 630 44 9.5 A9A398 Arial 0 - | bpy builds the hero geometry, bakes lighting to lightmaps and exports gLTF with LOD chains.
+text 72 318 30 14 8 D8542A Consolas 0 - | 03
+text 110 316 160 20 14 F2EDE4 Georgia 0 - | Budget
+text 270 318 630 44 9.5 A9A398 Arial 0 - | Draco and KTX2 compression against a first-load ceiling you sign off before modelling starts.
+text 72 370 30 14 8 D8542A Consolas 0 - | 04
+text 110 368 160 20 14 F2EDE4 Georgia 0 - | Wire
+text 270 370 630 44 9.5 A9A398 Arial 0 - | React Three Fiber scenes, scroll timelines and a CMS your team can edit without a deploy.
+text 72 422 30 14 8 D8542A Consolas 0 - | 05
+text 110 420 160 20 14 F2EDE4 Georgia 0 - | Harden
+text 270 422 630 44 9.5 A9A398 Arial 0 - | GPU tiers, WebGL fallbacks, SEO-safe HTML and a Lighthouse gate in continuous integration.
+pic 72 470 816 0.1 studio/brand/renders/hero-2400x1600.png
+text 72 508 360 12 7 55544F Consolas 0 - | HOW IT IS MADE
+text 912 508 32 12 7 55544F Consolas 0 - | 04
+slide
+bg 0B0C0E
+pic 520 0 440 540 studio/brand/renders/work-atelier.png
+text 72 72 400 14 8 D8542A Consolas 0 - | CASE 01 · COMMERCE
+text 72 104 420 44 34 F2EDE4 Georgia 0 - | Atelier Nova
+text 72 170 410 90 10.5 A9A398 Arial 0 - | A gallery where every piece is a real object you turn, place and buy. Product photography replaced by a room you can walk into.
+text 72 330 120 34 24 F2EDE4 Georgia 0 - | +38%
+text 200 340 220 14 7 8A8578 Consolas 0 - | ADD TO CART
+text 72 380 120 34 24 F2EDE4 Georgia 0 - | 1.9 MB
+text 200 390 220 14 7 8A8578 Consolas 0 - | FIRST LOAD
+text 72 430 120 34 24 F2EDE4 Georgia 0 - | 7
+text 200 440 220 14 7 8A8578 Consolas 0 - | DRAW CALLS
+text 72 508 360 12 7 55544F Consolas 0 - | RENDERED IN BLENDER · SHIPPED IN REACT
+text 912 508 32 12 7 55544F Consolas 0 - | 05
+slide
+bg 0B0C0E
+pic 520 0 440 540 studio/brand/renders/work-meridian.png
+text 72 72 400 14 8 D8542A Consolas 0 - | CASE 02 · PROPERTY
+text 72 104 420 44 34 F2EDE4 Georgia 0 - | Meridian Towers
+text 72 170 410 90 10.5 A9A398 Arial 0 - | Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap, so a phone draws the floor plan in one pass.
+text 72 330 120 34 24 F2EDE4 Georgia 0 - | 3.1×
+text 200 340 220 14 7 8A8578 Consolas 0 - | SESSION LENGTH
+text 72 380 120 34 24 F2EDE4 Georgia 0 - | 48
+text 200 390 220 14 7 8A8578 Consolas 0 - | UNITS WALKABLE
+text 72 430 120 34 24 F2EDE4 Georgia 0 - | 0
+text 200 440 220 14 7 8A8578 Consolas 0 - | RENDER FARM
+text 72 508 360 12 7 55544F Consolas 0 - | RENDERED IN BLENDER · SHIPPED IN REACT
+text 912 508 32 12 7 55544F Consolas 0 - | 06
+slide
+bg 0B0C0E
+pic 520 0 440 540 studio/brand/renders/work-kinetic.png
+text 72 72 400 14 8 D8542A Consolas 0 - | CASE 03 · LAUNCH
+text 72 104 420 44 34 F2EDE4 Georgia 0 - | Kinetic Labs
+text 72 170 410 90 10.5 A9A398 Arial 0 - | A scroll-driven reveal that turns a spec sheet into something people forward. The launch film is rendered from the same geometry, so the ad and the site are the same object.
+text 72 330 120 34 24 F2EDE4 Georgia 0 - | 2.4M
+text 200 340 220 14 7 8A8578 Consolas 0 - | LAUNCH FILM VIEWS
+text 72 380 120 34 24 F2EDE4 Georgia 0 - | 6
+text 200 390 220 14 7 8A8578 Consolas 0 - | WEEKS TO SHIP
+text 72 430 120 34 24 F2EDE4 Georgia 0 - | 1
+text 200 440 220 14 7 8A8578 Consolas 0 - | SOURCE OF TRUTH
+text 72 508 360 12 7 55544F Consolas 0 - | RENDERED IN BLENDER · SHIPPED IN REACT
+text 912 508 32 12 7 55544F Consolas 0 - | 07
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | ENGINEERING
+text 72 104 600 44 36 F2EDE4 Georgia 0 - | Beauty that survives
+text 72 144 600 44 36 F2EDE4 Georgia 0 - | a mid-range phone.
+text 72 208 440 50 10.5 A9A398 Arial 0 - | Every build is measured on a Moto G, not a MacBook. The numbers below are the gate, not the aspiration.
+text 72 288 200 36 28 F2EDE4 Georgia 0 - | <2.0 MB
+text 72 324 280 12 7 8A8578 Consolas 0 - | FIRST LOAD, COMPRESSED
+text 344 288 200 36 28 F2EDE4 Georgia 0 - | 60 fps
+text 344 324 280 12 7 8A8578 Consolas 0 - | SUSTAINED, MID-TIER GPU
+text 72 380 200 36 28 F2EDE4 Georgia 0 - | ≤8
+text 72 416 280 12 7 8A8578 Consolas 0 - | DRAW CALLS IN THE HERO SCENE
+text 344 380 200 36 28 F2EDE4 Georgia 0 - | 95+
+text 344 416 280 12 7 8A8578 Consolas 0 - | LIGHTHOUSE, MOBILE
+pic 560 288 328 185 studio/brand/renders/detail-2400x1350.png
+text 72 508 360 12 7 55544F Consolas 0 - | THE BUDGET
+text 912 508 32 12 7 55544F Consolas 0 - | 08
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | THE STUDIO
+text 72 104 480 44 36 F2EDE4 Georgia 0 - | Blender hands,
+text 72 144 480 44 36 F2EDE4 Georgia 0 - | browser discipline.
+text 72 208 410 100 10.5 A9A398 Arial 0 - | KILN is three people on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build. One pipeline, no hand-off to a render farm.
+text 72 322 320 18 10.5 A9A398 Arial 0 - | Blender · bpy · Cycles
+text 72 348 320 18 10.5 A9A398 Arial 0 - | Three.js · React Three Fiber · gLTF
+text 72 374 320 18 10.5 A9A398 Arial 0 - | Draco · KTX2 · Playwright
+pic 540 250 348 348 studio/brand/renders/square-1600x1600.png
+text 72 508 360 12 7 55544F Consolas 0 - | THREE PEOPLE, ONE PIPELINE
+text 912 508 32 12 7 55544F Consolas 0 - | 09
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | RATES
+text 72 104 816 44 34 F2EDE4 Georgia 0 - | Fixed scope. Fixed number.
+text 72 158 700 24 10.5 A9A398 Arial 0 - | Every tier includes a written load budget, a Lighthouse gate in CI, source handover and a WebGL fallback.
+text 72 206 240 14 8 D8542A Consolas 0 - | SPAR
+text 72 224 248 34 26 F2EDE4 Georgia 0 - | $4,800
+text 72 266 240 12 7 55544F Consolas 0 - | TWO WEEKS
+text 72 288 240 70 9.5 A9A398 Arial 0 - | One walkthrough scene · three art-directed stills · mobile and no-WebGL fallback · source handover
+text 344 206 240 14 8 D8542A Consolas 0 - | KILN · MOST COMMISSIONED
+text 344 224 248 34 26 F2EDE4 Georgia 0 - | $12,500
+text 344 266 240 12 7 EE7541 Consolas 0 - | THREE TO FIVE WEEKS
+text 344 288 240 70 9.5 A9A398 Arial 0 - | Up to five rooms or products · bpy asset pipeline and lightmaps · launch kit: stills, loop, cuts
+text 616 206 240 14 8 D8542A Consolas 0 - | FIRING
+text 616 224 248 34 26 F2EDE4 Georgia 0 - | $3,900 / mo
+text 616 266 240 12 7 55544F Consolas 0 - | ROLLING
+text 616 288 240 70 9.5 A9A398 Arial 0 - | Two new scenes per sprint · asset library upkeep · performance monitoring · monthly ad creative
+text 72 508 360 12 7 55544F Consolas 0 - | PRICING
+text 912 508 32 12 7 55544F Consolas 0 - | 10
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | HOW IT HOLDS TOGETHER
+text 72 104 480 44 36 F2EDE4 Georgia 0 - | One set,
+text 72 144 480 44 36 F2EDE4 Georgia 0 - | many pictures.
+text 72 208 410 110 10.5 A9A398 Arial 0 - | Every KILN build starts as a real Blender scene. That single decision pays three times: the site is built correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.
+text 72 336 410 30 10.5 F2EDE4 Arial 0 - | No stock imagery. No mock-ups. No lorem ipsum in the delivered build.
+pic 540 0 420 540 studio/brand/renders/keyart-1600x2000.png
+text 72 508 360 12 7 55544F Consolas 0 - | PROVENANCE
+text 912 508 32 12 7 55544F Consolas 0 - | 11
+slide
+bg 0B0C0E
+text 72 72 400 14 8 D8542A Consolas 0 - | NEXT STEP
+text 72 140 700 54 44 F2EDE4 Georgia 0 - | Send the product.
+text 72 194 700 54 44 F2EDE4 Georgia 0 - | We'll send the room.
+text 72 288 460 60 12 A9A398 Arial 0 - | Within two working days you get a fixed price, a camera path and a load budget — no discovery invoice, no retainer to start.
+text 72 392 400 30 20 F2EDE4 Georgia 0 - | studio@kiln.studio
+text 72 424 400 14 8 D8542A Consolas 0 - | +44 20 7946 0812 · KILN.STUDIO
+text 72 508 360 12 7 55544F Consolas 0 - | KILN · INTERACTIVE ARCHITECTURE
+text 912 508 32 12 7 55544F Consolas 0 - | 12
