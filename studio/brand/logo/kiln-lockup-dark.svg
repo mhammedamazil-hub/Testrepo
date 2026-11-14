@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="456" viewBox="0 0 2400 456">
+    <g transform="translate(108,228)">
+      <text x="0" y="52.440000000000005" font-family="Instrument Serif" font-size="235.20000000000002" letter-spacing="9.6" fill="#0B0C0E">KILN</text>
+      <rect x="732" y="-100.32000000000001" width="3.8400000000000003" height="200.64000000000001" fill="#D8542A"/>
+      <text x="792" y="-2.2800000000000002" font-family="Inter Tight" font-size="39.6" letter-spacing="5.28" fill="#0B0C0E">INTERACTIVE ARCHITECTURE</text>
+      <text x="792" y="25.080000000000002" font-family="JetBrains Mono" font-size="30" letter-spacing="4.8" fill="#6E6A60">blender · three.js · react</text>
+    </g></svg>

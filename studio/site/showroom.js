@@ -1,4 +1,5 @@
-// LUMENFORGE showroom — orbitable generated room with live material switching.
+// KILN showroom — a live rebuild of the Blender house set (plaster arch, plinth,
+// terracotta vessel) so visitors can walk the same room that was rendered in Cycles.
 import * as THREE from './vendor/three.module.min.js';
 
 const canvas = document.getElementById('room');
@@ -6,155 +7,143 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 renderer.setSize(innerWidth, innerHeight, false);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.02;
+renderer.toneMappingExposure = 1.06;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x06070b);
-scene.fog = new THREE.Fog(0x06070b, 14, 38);
+scene.background = new THREE.Color(0x0b0c0e);
+scene.fog = new THREE.Fog(0x0b0c0e, 16, 44);
 
-const camera = new THREE.PerspectiveCamera(46, innerWidth / innerHeight, 0.1, 120);
+const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 140);
+
+/* ---------- materials ---------- */
+const finishes = {
+  bone: { color: 0xefe7d8, metalness: 0.03, roughness: 0.78, emissive: 0x000000 },
+  terra: { color: 0xc2552c, metalness: 0.04, roughness: 0.62, emissive: 0x140500 },
+  sage: { color: 0x6f7a5e, metalness: 0.05, roughness: 0.66, emissive: 0x030502 },
+  steel: { color: 0x9c9a93, metalness: 0.86, roughness: 0.24, emissive: 0x000000 },
+};
+
+const plaster = new THREE.MeshStandardMaterial({ color: 0xefe7d8, roughness: 0.82, metalness: 0.02 });
+const boneMat = new THREE.MeshStandardMaterial({ roughness: 0.52, metalness: 0.05 });
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x0d0e11, roughness: 0.34, metalness: 0.22 });
 
 /* ---------- room ---------- */
 const room = new THREE.Group();
 scene.add(room);
 
-const FLOOR = 16;
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(FLOOR, FLOOR, 1, 1),
-  new THREE.MeshStandardMaterial({ color: 0x0a0c12, roughness: 0.72, metalness: 0.28 })
-);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(70, 70), floorMat);
 floor.rotation.x = -Math.PI / 2;
-floor.position.y = -1.6;
 floor.receiveShadow = true;
 room.add(floor);
 
-const grid = new THREE.GridHelper(FLOOR, 32, 0x1c6e60, 0x0f302c);
-grid.position.y = -1.595;
-grid.material.transparent = true;
-grid.material.opacity = 0.42;
-room.add(grid);
+/* the kiln mouth: an extruded arch-shaped wall, exactly like the render */
+function archWall(width, height, depth, openW, openH) {
+  const s = new THREE.Shape();
+  const x0 = -width / 2, x1 = width / 2;
+  s.moveTo(x0, 0);
+  s.lineTo(x1, 0);
+  s.lineTo(x1, height);
+  s.lineTo(x0, height);
+  s.lineTo(x0, 0);
 
-/* ---------- plinth + hero object ---------- */
-const plinth = new THREE.Mesh(
-  new THREE.CylinderGeometry(1.65, 1.85, 0.34, 64),
-  new THREE.MeshStandardMaterial({ color: 0x12161f, roughness: 0.5, metalness: 0.55 })
-);
-plinth.position.y = -1.44;
-plinth.castShadow = true;
-plinth.receiveShadow = true;
-room.add(plinth);
+  const hole = new THREE.Path();
+  const ox0 = -openW / 2, ox1 = openW / 2;
+  hole.moveTo(ox0, 0.02);
+  hole.lineTo(ox0, openH);
+  hole.absarc(0, openH, ox1, Math.PI, 0, true);
+  hole.lineTo(ox1, 0.02);
+  hole.lineTo(ox0, 0.02);
+  s.holes.push(hole);
 
-const finishes = {
-  bone: { color: 0xede7da, metalness: 0.14, roughness: 0.42, emissive: 0x000000 },
-  forge: { color: 0xff6b2c, metalness: 0.22, roughness: 0.3, emissive: 0x3a1200 },
-  arc: { color: 0x22e8c8, metalness: 0.3, roughness: 0.26, emissive: 0x003a33 },
-  steel: { color: 0x8a93a6, metalness: 0.92, roughness: 0.18, emissive: 0x000000 },
-};
-
-const heroMat = new THREE.MeshStandardMaterial({ ...finishes.bone });
-const hero = new THREE.Mesh(new THREE.TorusKnotGeometry(0.86, 0.28, 220, 32), heroMat);
-hero.position.y = 0.18;
-hero.castShadow = true;
-room.add(hero);
-
-/* three orbiting shards */
-const shardMats = [
-  new THREE.MeshStandardMaterial({ color: 0xff6b2c, metalness: 0.2, roughness: 0.35, emissive: 0x2a0c00 }),
-  new THREE.MeshStandardMaterial({ color: 0xede7da, metalness: 0.2, roughness: 0.4 }),
-  new THREE.MeshStandardMaterial({ color: 0x22e8c8, metalness: 0.35, roughness: 0.25, emissive: 0x003029 }),
-];
-const shards = [];
-for (let i = 0; i < 3; i++) {
-  const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.26, 0), shardMats[i]);
-  m.castShadow = true;
-  room.add(m);
-  shards.push(m);
+  const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 48 });
+  geo.translate(0, 0, -depth / 2);
+  return geo;
 }
 
-/* ---------- the portal: two piers + a lintel, framing the hero object ---------- */
-const pierMat = new THREE.MeshStandardMaterial({ color: 0x11151d, metalness: 0.55, roughness: 0.52 });
-const trimMat = new THREE.MeshStandardMaterial({ color: 0xff6b2c, metalness: 0.3, roughness: 0.42, emissive: 0x2c0a00 });
+const kiln = new THREE.Mesh(archWall(5.4, 4.0, 0.5, 1.7, 1.5), plaster);
+kiln.position.set(1.7, 0, 3.1);
+kiln.rotation.y = THREE.MathUtils.degToRad(-16);
+kiln.castShadow = true;
+kiln.receiveShadow = true;
+room.add(kiln);
 
-const PORTAL = { x: 2.85, z: -3.4, h: 3.7 };
-for (const sx of [-1, 1]) {
-  const pier = new THREE.Mesh(new THREE.BoxGeometry(0.46, PORTAL.h, 0.46), pierMat);
-  pier.position.set(sx * PORTAL.x, -1.6 + PORTAL.h / 2, PORTAL.z);
-  pier.castShadow = true;
-  room.add(pier);
+const stele = new THREE.Mesh(new THREE.BoxGeometry(1.05, 3.9, 1.05), plaster);
+stele.position.set(-0.95, 1.95, 0.1);
+stele.rotation.y = THREE.MathUtils.degToRad(9);
+stele.castShadow = true;
+stele.receiveShadow = true;
+room.add(stele);
 
-  // thin forged seam up each pier, the same detail language as the hero mark
-  const seam = new THREE.Mesh(new THREE.BoxGeometry(0.05, PORTAL.h - 0.5, 0.05), trimMat);
-  seam.position.set(sx * (PORTAL.x - 0.24), -1.6 + PORTAL.h / 2, PORTAL.z + 0.24);
-  room.add(seam);
-}
-const lintel = new THREE.Mesh(new THREE.BoxGeometry(PORTAL.x * 2 + 0.46, 0.36, 0.5), pierMat);
-lintel.position.set(0, -1.6 + PORTAL.h, PORTAL.z);
-lintel.castShadow = true;
-room.add(lintel);
-const lintelSeam = new THREE.Mesh(new THREE.BoxGeometry(PORTAL.x * 2 - 0.2, 0.04, 0.52), trimMat);
-lintelSeam.position.set(0, -1.6 + PORTAL.h - 0.16, PORTAL.z);
-room.add(lintelSeam);
+const bench = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.58, 1.35), plaster);
+bench.position.set(1.35, 0.29, -0.75);
+bench.rotation.y = THREE.MathUtils.degToRad(-6);
+bench.castShadow = true;
+bench.receiveShadow = true;
+room.add(bench);
 
-// a back wall keeps the room from reading as black void
-const back = new THREE.Mesh(
-  new THREE.PlaneGeometry(18, 9),
-  new THREE.MeshStandardMaterial({ color: 0x080a10, roughness: 0.9, metalness: 0.1 })
-);
-back.position.set(0, 1.4, -6.4);
-room.add(back);
+const vessel = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.05, 96, 1), boneMat);
+vessel.position.set(1.28, 1.11, -0.72);
+vessel.castShadow = true;
+room.add(vessel);
 
-/* ---------- lights ---------- */
-scene.add(new THREE.HemisphereLight(0xfff2e4, 0x0b1018, 0.85));
-const key = new THREE.DirectionalLight(0xfff6ec, 2.6);
-key.position.set(-5, 8, 6);
+const ball = new THREE.Mesh(new THREE.SphereGeometry(0.17, 48, 32), boneMat);
+ball.position.set(-1.42, 0.17, -0.62);
+ball.castShadow = true;
+room.add(ball);
+
+/* ---------- light rig (mirrors the Cycles setup) ---------- */
+scene.add(new THREE.HemisphereLight(0xfff2e4, 0x0a0c10, 0.42));
+
+const key = new THREE.DirectionalLight(0xffd9b0, 3.1);
+key.position.set(-6.2, 6.0, -5.0);
 key.castShadow = true;
-key.shadow.mapSize.set(1024, 1024);
-key.shadow.radius = 3;
-key.shadow.bias = -0.0015;
+key.shadow.mapSize.set(2048, 2048);
 key.shadow.camera.near = 1;
-key.shadow.camera.far = 30;
+key.shadow.camera.far = 40;
+key.shadow.camera.left = -12;
+key.shadow.camera.right = 12;
+key.shadow.camera.top = 12;
+key.shadow.camera.bottom = -12;
+key.shadow.bias = -0.0012;
 scene.add(key);
 
-const warm = new THREE.PointLight(0xff6b2c, 26, 20, 2);
-warm.position.set(3.6, -0.4, 2.8);
-scene.add(warm);
-const cool = new THREE.PointLight(0x22e8c8, 20, 20, 2);
-cool.position.set(-4.2, 0.6, -2.6);
-scene.add(cool);
+const rim = new THREE.PointLight(0xff7a33, 22, 18, 2);
+rim.position.set(1.2, 2.6, 4.2);
+scene.add(rim);
 
-/* ---------- orbit controls (compact, no addons) ---------- */
+const fill = new THREE.DirectionalLight(0xcfd6e0, 0.5);
+fill.position.set(6.4, 3.0, -6.4);
+scene.add(fill);
+
+/* ---------- orbit ---------- */
 const orbit = {
-  theta: 0.26, phi: 1.16, radius: 9.8,
-  thetaT: 0.26, phiT: 1.16, radiusT: 9.8,
-  minPhi: 0.45, maxPhi: 1.52, minR: 5.2, maxR: 16,
+  theta: 0.34, phi: 1.16, radius: 11.4,
+  thetaT: 0.34, phiT: 1.16, radiusT: 11.4,
+  minPhi: 0.5, maxPhi: 1.5, minR: 6.5, maxR: 20,
 };
-let dragging = false, lastX = 0, lastY = 0, idleSpin = true;
+let dragging = false, lastX = 0, lastY = 0, idle = true;
 
-function down(e) {
-  dragging = true; idleSpin = false;
+canvas.addEventListener('pointerdown', (e) => {
+  dragging = true; idle = false;
   lastX = e.clientX; lastY = e.clientY;
   canvas.setPointerCapture?.(e.pointerId);
-}
-function move(e) {
+});
+canvas.addEventListener('pointermove', (e) => {
   if (!dragging) return;
-  const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  orbit.thetaT -= (e.clientX - lastX) * 0.005;
+  orbit.phiT = Math.min(orbit.maxPhi, Math.max(orbit.minPhi, orbit.phiT - (e.clientY - lastY) * 0.004));
   lastX = e.clientX; lastY = e.clientY;
-  orbit.thetaT -= dx * 0.006;
-  orbit.phiT = Math.min(orbit.maxPhi, Math.max(orbit.minPhi, orbit.phiT - dy * 0.005));
-}
-function up() { dragging = false; }
-canvas.addEventListener('pointerdown', down);
-canvas.addEventListener('pointermove', move);
-addEventListener('pointerup', up);
+});
+addEventListener('pointerup', () => { dragging = false; });
+
 canvas.addEventListener('wheel', (e) => {
   e.preventDefault();
-  idleSpin = false;
-  orbit.radiusT = Math.min(orbit.maxR, Math.max(orbit.minR, orbit.radiusT + e.deltaY * 0.004));
+  idle = false;
+  orbit.radiusT = Math.min(orbit.maxR, Math.max(orbit.minR, orbit.radiusT + e.deltaY * 0.005));
 }, { passive: false });
 
-/* touch pinch */
 let pinch = 0;
 canvas.addEventListener('touchstart', (e) => {
   if (e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
@@ -166,79 +155,73 @@ canvas.addEventListener('touchmove', (e) => {
   pinch = d;
 }, { passive: true });
 
-/* ---------- UI ---------- */
+/* ---------- finish switching ---------- */
 const swButtons = [...document.querySelectorAll('.sw')];
-const callsEl = document.getElementById('calls');
-const fpsEl = document.getElementById('fps');
-const trisEl = document.getElementById('tris');
-
 swButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     swButtons.forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
     const f = finishes[btn.dataset.finish];
-    heroMat.color.setHex(f.color);
-    heroMat.metalness = f.metalness;
-    heroMat.roughness = f.roughness;
-    heroMat.emissive.setHex(f.emissive);
-    shardMats[2].color.setHex(f.color);
+    boneMat.color.setHex(f.color);
+    boneMat.metalness = f.metalness;
+    boneMat.roughness = f.roughness;
+    boneMat.emissive.setHex(f.emissive);
   });
 });
 
+/* ---------- loop ---------- */
+const callsEl = document.getElementById('calls');
+const fpsEl = document.getElementById('fps');
+const trisEl = document.getElementById('tris');
+
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
-  camera.fov = innerWidth < 760 ? 60 : 46;
+  camera.fov = innerWidth < 760 ? 54 : 38;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight, false);
 });
+camera.fov = innerWidth < 760 ? 54 : 38;
+camera.updateProjectionMatrix();
 
-/* ---------- loop ---------- */
 const t0 = performance.now();
-let frames = 0, fpsAcc = 0, last = t0;
+let frames = 0, acc = 0, last = t0;
 
 function tick(now) {
   const dt = Math.min((now - last) / 1000, 0.05);
   last = now;
   const t = (now - t0) / 1000;
 
-  if (idleSpin && !dragging) orbit.thetaT += dt * 0.06;
+  if (idle && !dragging) orbit.thetaT += dt * 0.045;
 
-  orbit.theta += (orbit.thetaT - orbit.theta) * 0.07;
-  orbit.phi += (orbit.phiT - orbit.phi) * 0.07;
-  orbit.radius += (orbit.radiusT - orbit.radius) * 0.07;
+  orbit.theta += (orbit.thetaT - orbit.theta) * 0.06;
+  orbit.phi += (orbit.phiT - orbit.phi) * 0.06;
+  orbit.radius += (orbit.radiusT - orbit.radius) * 0.06;
 
   const sp = Math.sin(orbit.phi);
-  const shift = innerWidth > 900 ? 1.45 : 0; // clear the overlay panel
+  // on desktop, bias the frame right so the panel does not sit on the subject
+  const shift = innerWidth > 900 ? 1.6 : 0;
   camera.position.set(
     Math.sin(orbit.theta) * sp * orbit.radius + shift,
-    Math.cos(orbit.phi) * orbit.radius * 0.86 + 0.6,
+    Math.cos(orbit.phi) * orbit.radius * 0.9 + 0.9,
     Math.cos(orbit.theta) * sp * orbit.radius
   );
-  camera.lookAt(shift * 0.86, 0.5, 0);
+  camera.lookAt(shift * 0.72, 1.15, 0.4);
 
-  hero.rotation.y = t * 0.35;
-  hero.rotation.x = Math.sin(t * 0.4) * 0.16;
-
-  shards.forEach((s, i) => {
-    const a = t * (0.5 + i * 0.22) + (i * Math.PI * 2) / 3;
-    const r = 2.0 + i * 0.34;
-    s.position.set(Math.cos(a) * r, 0.5 + Math.sin(a * 1.6 + i) * 0.55, Math.sin(a) * r);
-    s.rotation.set(a * 1.2, a, a * 0.7);
-  });
-
-  warm.intensity = 24 + Math.sin(t * 1.9) * 4;
-  cool.intensity = 18 + Math.cos(t * 1.3) * 4;
+  vessel.rotation.y = t * 0.12;
+  rim.intensity = 20 + Math.sin(t * 1.7) * 2.2;
 
   renderer.render(scene, camera);
 
-  frames++;
-  fpsAcc += dt;
-  if (fpsAcc > 0.5) {
-    fpsEl.textContent = Math.round(frames / fpsAcc);
+  frames++; acc += dt;
+  if (acc > 0.5) {
+    fpsEl.textContent = Math.round(frames / acc);
     callsEl.textContent = renderer.info.render.calls;
     trisEl.textContent = renderer.info.render.triangles.toLocaleString();
-    frames = 0; fpsAcc = 0;
+    frames = 0; acc = 0;
   }
   requestAnimationFrame(tick);
 }
+
+// expose for CI verification
+window.__kiln = { renderer, scene, camera, frames: () => frames };
 requestAnimationFrame(tick);

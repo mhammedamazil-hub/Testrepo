@@ -3,34 +3,49 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Showroom — LUMENFORGE</title>
-<meta name="description" content="An interactive 3D showroom demo: orbit a scene, switch materials, walk through the room." />
+<title>Showroom — KILN</title>
+<meta name="description" content="A live KILN showroom: orbit the room, change the finish, and read the real cost of the frame while you do it." />
+<meta name="theme-color" content="#0B0C0E" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="showroom.css" />
 </head>
 <body>
 <canvas id="room"></canvas>
-<div id="hud">
-  <a class="back" href="index.html">← LUMENFORGE</a>
+
+<header class="hud-top">
+  <a class="brand" href="index.html">
+    <img src="assets/kiln-icon-128.png" alt="" width="24" height="24" />
+    <span>KILN</span>
+  </a>
+  <a class="back" href="index.html">← Back to the studio</a>
+</header>
+
+<div class="hud-bottom">
   <div class="panel">
-    <p class="kicker">Showroom / demo scene</p>
+    <p class="eyebrow">Showroom — demo scene</p>
     <h1>Walk it.</h1>
-    <p>Drag to orbit. Scroll to dolly. Pick a finish and the room repaints in real time — the same
-       controls your customers would get.</p>
+    <p class="intro">
+      Drag to orbit, scroll to dolly. Change a finish and the room repaints in real time.
+      Everything here is generated geometry — no textures, no downloads.
+    </p>
+
     <div class="swatches" role="group" aria-label="Material finish">
-      <button class="sw active" data-finish="bone"><span style="--c:#EDE7DA"></span>Bone</button>
-      <button class="sw" data-finish="forge"><span style="--c:#FF6B2C"></span>Forge</button>
-      <button class="sw" data-finish="arc"><span style="--c:#22E8C8"></span>Arc</button>
-      <button class="sw" data-finish="steel"><span style="--c:#8A93A6"></span>Steel</button>
+      <button class="sw active" data-finish="bone"><span style="--c:#EFE7D8"></span>Plaster</button>
+      <button class="sw" data-finish="terra"><span style="--c:#C2552C"></span>Terracotta</button>
+      <button class="sw" data-finish="sage"><span style="--c:#6F7A5E"></span>Sage</button>
+      <button class="sw" data-finish="steel"><span style="--c:#9C9A93"></span>Steel</button>
     </div>
+
     <dl class="readout">
       <div><dt>Draw calls</dt><dd id="calls">–</dd></div>
-      <div><dt>FPS</dt><dd id="fps">–</dd></div>
+      <div><dt>Frame rate</dt><dd id="fps">–</dd></div>
       <div><dt>Triangles</dt><dd id="tris">–</dd></div>
     </dl>
-    <p class="fine">Everything on this page is generated geometry — no image textures, no external assets.</p>
+    <p class="fine">A Kiln build must hold 60 fps at ≤ 8 draw calls on this scene's budget.</p>
   </div>
 </div>
+
 <script type="module" src="showroom.js"></script>
 </body>
 </html>
