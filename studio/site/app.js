@@ -106,9 +106,13 @@ function boot() {
 
   /* ---- light ---- */
   scene.add(new THREE.HemisphereLight(0xfff2e4, 0x0a0e14, 0.55));
-  const key = new THREE.DirectionalLight(0xfff6ec, 2.4);
+  const key = new THREE.DirectionalLight(0xfff6ec, 2.0);
   key.position.set(-4, 6, 5);
   scene.add(key);
+  // fill from the camera side so the bone beam's front face never goes muddy
+  const fill = new THREE.DirectionalLight(0xffe9d8, 1.15);
+  fill.position.set(7, 3.2, 9);
+  scene.add(fill);
   const rimTeal = new THREE.PointLight(0x22e8c8, 14, 16, 2);
   rimTeal.position.set(4.2, -1.4, -3.2);
   scene.add(rimTeal);
