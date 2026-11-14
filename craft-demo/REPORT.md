@@ -1,1029 +1,96 @@
-# Headless Crafting App demo (produced by CI, no GUI, no DISPLAY)
+# Headless Crafting App demo — produced by CI (no GUI, no DISPLAY)
 
-runner: Linux 7.0.0-1016-aws x86_64 · 4 vCPU · 15700 MB
+runner: Linux 7.0.0-1019-azure x86_64 · 4 vCPU · 15983 MB
 
-## PhotoCraft 0.23.1 — provision
+## PhotoCraft 0.23.1 — provision + real edits
 ```
-$ gh release download v0.23.1 -R storytold/photocraft -p *linux-x86_64.tar.gz -D .
-[exit 0]
-```
+
+$ photocraft-cli --version
 $ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli --version
 photocraft-cli 0.23.1 (45066c482, 2026-11-12)
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli commands
-file.new                                     New…                             File
-file.close                                   Close                            File
-edit.undo                                    Undo                             Edit
-edit.redo                                    Redo                             Edit
-edit.fill                                    Fill…                            Edit
-edit.clear                                   Clear                            Edit
-select.all                                   All                              Select
-select.deselect                              Deselect                         Select
-select.inverse                               Inverse                          Select
-select.rect                                  Rectangular Selection            
-layer.new.layer                              Layer…                           Layer > New
-layer.new.group                              Group…                           Layer > New
-layer.groupLayers                            Group Layers                     Layer
-layer.duplicate                              Duplicate Layer…                 Layer
-layer.delete                                 Delete Layer                     Layer > Delete
-layer.select                                 Select Layer                     
-layer.setProps                               Layer Properties                 
-layer.arrange.bringForward                   Bring Forward                    Layer > Arrange
-layer.arrange.sendBackward                   Send Backward                    Layer > Arrange
-layer.arrange.bringToFront                   Bring to Front                   Layer > Arrange
-layer.arrange.sendToBack                     Send to Back                     Layer > Arrange
-layer.createClippingMask                     Create Clipping Mask             Layer
-layer.releaseClippingMask                    Release Clipping Mask            Layer
-layer.layerMask.revealAll                    Reveal All                       Layer > Layer Mask
-layer.layerMask.hideAll                      Hide All                         Layer > Layer Mask
-layer.layerMask.revealSelection              Reveal Selection                 Layer > Layer Mask
-layer.layerMask.delete                       Delete                           Layer > Layer Mask
-layer.layerMask.moveTo                       Move Layer Mask                  
-layer.mergeDown                              Merge Down                       Layer
-layer.mergeGroup                             Merge Group                      Layer
-layer.flattenImage                           Flatten Image                    Layer
-layer.newFillLayer.solidColor                Solid Color…                     Layer > New Fill Layer
-layer.newFillLayer.gradient                  Gradient…                        Layer > New Fill Layer
-layer.setAdjustment                          Adjustment Properties            
-layer.moveTo                                 Reorder Layer                    
-layer.translate                              Move Layer                       
-image.imageRotation.flipCanvasHorizontal     Flip Canvas Horizontal           Image > Image Rotation
-image.imageRotation.flipCanvasVertical       Flip Canvas Vertical             Image > Image Rotation
-image.imageRotation.180                      180°                             Image > Image Rotation
-image.imageRotation.90cw                     90° Clockwise                    Image > Image Rotation
-image.imageRotation.90ccw                    90° Counter Clockwise            Image > Image Rotation
-image.adjustments.desaturate                 Desaturate                       Image > Adjustments
-paint.stroke                                 Brush Stroke                     
-tools.setColors                              Set Colors                       
-tools.swapColors                             Switch Foreground and Background Colors 
-tools.defaultColors                          Default Foreground and Background Colors 
-session.inspect                              Inspect Session                  
-document.inspect                             Inspect Document                 
-document.activate                            Activate Document                
-document.move                                Move Document                    
-command.list                                 List Commands                    
-document.pixel                               Read Composite Pixel             
-layer.newAdjustmentLayer.brightnessContrast  Brightness/Contrast…             Layer > New Adjustment Layer
-image.adjustments.brightnessContrast         Brightness/Contrast…             Image > Adjustments
-layer.newAdjustmentLayer.levels              Levels…                          Layer > New Adjustment Layer
-image.adjustments.levels                     Levels…                          Image > Adjustments
-layer.newAdjustmentLayer.curves              Curves…                          Layer > New Adjustment Layer
-image.adjustments.curves                     Curves…                          Image > Adjustments
-layer.newAdjustmentLayer.exposure            Exposure…                        Layer > New Adjustment Layer
-image.adjustments.exposure                   Exposure…                        Image > Adjustments
-layer.newAdjustmentLayer.vibrance            Vibrance…                        Layer > New Adjustment Layer
-image.adjustments.vibrance                   Vibrance…                        Image > Adjustments
-layer.newAdjustmentLayer.hueSaturation       Hue/Saturation…                  Layer > New Adjustment Layer
-image.adjustments.hueSaturation              Hue/Saturation…                  Image > Adjustments
-layer.newAdjustmentLayer.colorBalance        Color Balance…                   Layer > New Adjustment Layer
-image.adjustments.colorBalance               Color Balance…                   Image > Adjustments
-layer.newAdjustmentLayer.blackWhite          Black & White…                   Layer > New Adjustment Layer
-image.adjustments.blackWhite                 Black & White…                   Image > Adjustments
-layer.newAdjustmentLayer.photoFilter         Photo Filter…                    Layer > New Adjustment Layer
-image.adjustments.photoFilter                Photo Filter…                    Image > Adjustments
-layer.newAdjustmentLayer.channelMixer        Channel Mixer…                   Layer > New Adjustment Layer
-image.adjustments.channelMixer               Channel Mixer…                   Image > Adjustments
-layer.newAdjustmentLayer.invert              Invert                           Layer > New Adjustment Layer
-image.adjustments.invert                     Invert                           Image > Adjustments
-layer.newAdjustmentLayer.posterize           Posterize…                       Layer > New Adjustment Layer
-image.adjustments.posterize                  Posterize…                       Image > Adjustments
-layer.newAdjustmentLayer.threshold           Threshold…                       Layer > New Adjustment Layer
-image.adjustments.threshold                  Threshold…                       Image > Adjustments
-layer.newAdjustmentLayer.gradientMap         Gradient Map…                    Layer > New Adjustment Layer
-image.adjustments.gradientMap                Gradient Map…                    Image > Adjustments
-layer.newAdjustmentLayer.selectiveColor      Selective Color…                 Layer > New Adjustment Layer
-image.adjustments.selectiveColor             Selective Color…                 Image > Adjustments
-layer.newAdjustmentLayer.colorLookup         Color Lookup…                    Layer > New Adjustment Layer
-image.adjustments.colorLookup                Color Lookup…                    Image > Adjustments
-layer.layerStyle.dropShadow                  Drop Shadow…                     Layer > Layer Style
-layer.layerStyle.innerShadow                 Inner Shadow…                    Layer > Layer Style
-layer.layerStyle.outerGlow                   Outer Glow…                      Layer > Layer Style
-layer.layerStyle.innerGlow                   Inner Glow…                      Layer > Layer Style
-layer.layerStyle.stroke                      Stroke…                          Layer > Layer Style
-layer.layerStyle.colorOverlay                Color Overlay…                   Layer > Layer Style
-layer.layerStyle.gradientOverlay             Gradient Overlay…                Layer > Layer Style
-layer.layerStyle.patternOverlay              Pattern Overlay…                 Layer > Layer Style
-layer.layerStyle.bevelEmboss                 Bevel & Emboss…                  Layer > Layer Style
-layer.layerStyle.satin                       Satin…                           Layer > Layer Style
-layer.layerStyle.replace                     Edit Layer Style                 
-layer.layerStyle.makeDefault                 Make Layer Style Default         
-layer.layerStyle.defaultFor                  Layer Style Default              
-layer.layerStyle.clear                       Clear Layer Style                Layer > Layer Style
-layer.layerStyle.contours.list               List User Contours               
-layer.layerStyle.contours.new                New Contour…                     
-layer.layerStyle.contours.delete             Delete Contour                   
-layer.layerStyle.contours.load               Load Contours…                   
-layer.layerStyle.contours.save               Save Contours…                   
-layer.list                                   List Layers                      
-filter.blur.gaussianBlur                     Gaussian Blur…                   Filter > Blur
-filter.blur.average                          Average                          Filter > Blur
-filter.blur.blur                             Blur                             Filter > Blur
-filter.blur.blurMore                         Blur More                        Filter > Blur
-filter.sharpen.sharpen                       Sharpen                          Filter > Sharpen
-filter.sharpen.sharpenMore                   Sharpen More                     Filter > Sharpen
-filter.sharpen.sharpenEdges                  Sharpen Edges                    Filter > Sharpen
-filter.noise.despeckle                       Despeckle                        Filter > Noise
-filter.blur.boxBlur                          Box Blur…                        Filter > Blur
-filter.blur.motionBlur                       Motion Blur…                     Filter > Blur
-filter.blur.radialBlur                       Radial Blur…                     Filter > Blur
-filter.blur.surfaceBlur                      Surface Blur…                    Filter > Blur
-filter.sharpen.unsharpMask                   Unsharp Mask…                    Filter > Sharpen
-filter.sharpen.smartSharpen                  Smart Sharpen…                   Filter > Sharpen
-filter.noise.addNoise                        Add Noise…                       Filter > Noise
-filter.noise.median                          Median…                          Filter > Noise
-filter.noise.dustAndScratches                Dust & Scratches…                Filter > Noise
-filter.pixelate.mosaic                       Mosaic…                          Filter > Pixelate
-filter.stylize.emboss                        Emboss…                          Filter > Stylize
-filter.stylize.findEdges                     Find Edges                       Filter > Stylize
-filter.stylize.solarize                      Solarize                         Filter > Stylize
-filter.distort.twirl                         Twirl…                           Filter > Distort
-filter.distort.pinch                         Pinch…                           Filter > Distort
-filter.distort.spherize                      Spherize…                        Filter > Distort
-filter.distort.wave                          Wave…                            Filter > Distort
-filter.distort.ripple                        Ripple…                          Filter > Distort
-filter.distort.polarCoordinates              Polar Coordinates…               Filter > Distort
-filter.other.highPass                        High Pass…                       Filter > Other
-filter.other.minimum                         Minimum…                         Filter > Other
-filter.other.maximum                         Maximum…                         Filter > Other
-filter.other.offset                          Offset…                          Filter > Other
-filter.lastFilter                            Last Filter                      Filter
-filter.pixelate.colorHalftone                Color Halftone…                  Filter > Pixelate
-filter.pixelate.crystallize                  Crystallize…                     Filter > Pixelate
-filter.pixelate.facet                        Facet                            Filter > Pixelate
-filter.pixelate.fragment                     Fragment                         Filter > Pixelate
-filter.pixelate.mezzotint                    Mezzotint…                       Filter > Pixelate
-filter.pixelate.pointillize                  Pointillize…                     Filter > Pixelate
-filter.stylize.diffuse                       Diffuse…                         Filter > Stylize
-filter.stylize.extrude                       Extrude…                         Filter > Stylize
-filter.stylize.oilPaint                      Oil Paint…                       Filter > Stylize
-filter.stylize.tiles                         Tiles…                           Filter > Stylize
-filter.stylize.traceContour                  Trace Contour…                   Filter > Stylize
-filter.stylize.wind                          Wind…                            Filter > Stylize
-filter.distort.displace                      Displace…                        Filter > Distort
-filter.distort.shear                         Shear…                           Filter > Distort
-filter.distort.zigZag                        ZigZag…                          Filter > Distort
-filter.render.clouds                         Clouds                           Filter > Render
-filter.render.differenceClouds               Difference Clouds                Filter > Render
-filter.render.fibers                         Fibers…                          Filter > Render
-filter.render.lensFlare                      Lens Flare…                      Filter > Render
-filter.render.lightingEffects                Lighting Effects…                Filter > Render
-filter.render.relight                        Relight…                         Filter > Render
-filter.noise.reduceNoise                     Reduce Noise…                    Filter > Noise
-filter.blur.smartBlur                        Smart Blur…                      Filter > Blur
-filter.blur.lensBlur                         Lens Blur…                       Filter > Blur
-filter.blur.shapeBlur                        Shape Blur…                      Filter > Blur
-filter.blurGallery.tiltShift                 Tilt-Shift…                      Filter > Blur Gallery
-filter.blurGallery.irisBlur                  Iris Blur…                       Filter > Blur Gallery
-filter.blurGallery.fieldBlur                 Field Blur…                      Filter > Blur Gallery
-filter.blurGallery.spinBlur                  Spin Blur…                       Filter > Blur Gallery
-filter.blurGallery.pathBlur                  Path Blur…                       Filter > Blur Gallery
-filter.other.custom                          Custom…                          Filter > Other
-filter.other.hsbHsl                          HSB/HSL                          Filter > Other
-filter.video.deInterlace                     De-Interlace…                    Filter > Video
-filter.video.ntscColors                      NTSC Colors                      Filter > Video
-filter.other.colorToAlpha                    Color to Alpha…                  Filter > Other
-filter.filterGallery                         Filter Gallery…                  Filter
-filter.gallery.coloredPencil                 Colored Pencil                   
-filter.gallery.cutout                        Cutout                           
-filter.gallery.dryBrush                      Dry Brush                        
-filter.gallery.filmGrain                     Film Grain                       
-filter.gallery.fresco                        Fresco                           
-filter.gallery.neonGlow                      Neon Glow                        
-filter.gallery.paintDaubs                    Paint Daubs                      
-filter.gallery.paletteKnife                  Palette Knife                    
-filter.gallery.plasticWrap                   Plastic Wrap                     
-filter.gallery.posterEdges                   Poster Edges                     
-filter.gallery.roughPastels                  Rough Pastels                    
-filter.gallery.smudgeStick                   Smudge Stick                     
-filter.gallery.sponge                        Sponge                           
-filter.gallery.underpainting                 Underpainting                    
-filter.gallery.watercolor                    Watercolor                       
-filter.gallery.accentedEdges                 Accented Edges                   
-filter.gallery.angledStrokes                 Angled Strokes                   
-filter.gallery.crosshatch                    Crosshatch                       
-filter.gallery.darkStrokes                   Dark Strokes                     
-filter.gallery.inkOutlines                   Ink Outlines                     
-filter.gallery.spatter                       Spatter                          
-filter.gallery.sprayedStrokes                Sprayed Strokes                  
-filter.gallery.sumiE                         Sumi-e                           
-filter.gallery.diffuseGlow                   Diffuse Glow                     
-filter.gallery.glass                         Glass                            
-filter.gallery.oceanRipple                   Ocean Ripple                     
-filter.gallery.basRelief                     Bas Relief                       
-filter.gallery.chalkCharcoal                 Chalk & Charcoal                 
-filter.gallery.charcoal                      Charcoal                         
-filter.gallery.chrome                        Chrome                           
-filter.gallery.conteCrayon                   Conté Crayon                     
-filter.gallery.graphicPen                    Graphic Pen                      
-filter.gallery.halftonePattern               Halftone Pattern                 
-filter.gallery.notePaper                     Note Paper                       
-filter.gallery.photocopy                     Photocopy                        
-filter.gallery.plaster                       Plaster                          
-filter.gallery.reticulation                  Reticulation                     
-filter.gallery.stamp                         Stamp                            
-filter.gallery.tornEdges                     Torn Edges                       
-filter.gallery.waterPaper                    Water Paper                      
-filter.gallery.glowingEdges                  Glowing Edges                    
-filter.gallery.craquelure                    Craquelure                       
-filter.gallery.grain                         Grain                            
-filter.gallery.mosaicTiles                   Mosaic Tiles                     
-filter.gallery.patchwork                     Patchwork                        
-filter.gallery.stainedGlass                  Stained Glass                    
-filter.gallery.texturizer                    Texturizer                       
-gradient.fill.create                         Gradient (Live)                  
-gradient.fill.set                            Edit Gradient Fill               
-gradient.fill.stop                           Edit Gradient Stop               
-gradient.fill.get                            Gradient Fill Settings           
-layer.fill.solidColor.set                    Solid Color…                     
-layer.fill.pattern.set                       Pattern Fill…                    
-type.create                                  New Type Layer                   Layer > New
-type.edit                                    Edit Type                        
-type.setStyle                                Set Type Style                   
-type.rasterize                               Rasterize Type                   Layer > Rasterize
-type.info                                    Type Layer Info                  
-type.fonts                                   List Fonts                       
-type.increaseSize                            Increase Type Size               
-type.decreaseSize                            Decrease Type Size               
-type.increaseSizeMore                        Increase Type Size by 10         
-type.decreaseSizeMore                        Decrease Type Size by 10         
-type.createSelection                         Type Mask                        
-edit.transform                               Free Transform                   
-select.float                                 Float Selection                  
-select.drop                                  Drop Floating Selection          
-shape.create                                 New Shape Layer                  Layer > New
-shape.edit                                   Edit Shape                       
-shape.info                                   Shape Layer Info                 
-shape.rasterize                              Rasterize Shape                  Layer > Rasterize
-path.list                                    List Paths                       
-path.info                                    Path Info                        
-path.set                                     Set Path                         
-path.delete                                  Delete Path                      
-path.transform                               Free Transform Path              
-path.clippingPath.set                        Clipping Path                    
-path.clippingPath.clear                      Clear Clipping Path              
-path.style.copyFill                          Copy Fill                        
-path.style.copyStroke                        Copy Complete Stroke             
-path.style.pasteFill                         Paste Fill                       
-path.style.pasteStroke                       Paste Complete Stroke            
-path.rename                                  Rename Path                      
-path.toSelection                             Make Selection from Path         
-path.addToSelection                          Add Path to Selection            
-path.subtractFromSelection                   Subtract Path from Selection     
-path.intersectWithSelection                  Intersect Path with Selection    
-path.toShape                                 Make Shape from Path             
-select.toWorkPath                            Make Work Path                   
-path.fill                                    Fill Path                        
-path.stroke                                  Stroke Path                      
-layer.vectorMask.add                         Add Vector Mask                  Layer > Vector Mask
-layer.vectorMask.fromPath                    Vector Mask from Current Path    Layer > Vector Mask
-layer.vectorMask.edit                        Edit Vector Mask                 
-layer.vectorMask.delete                      Delete Vector Mask               Layer > Vector Mask
-layer.rasterize.vectorMask                   Rasterize Vector Mask            
-layer.vectorMask.revealAll                   Vector Mask: Reveal All          
-layer.vectorMask.hideAll                     Vector Mask: Hide All            
-layer.vectorMask.currentPath                 Vector Mask: Current Path        
-layer.vectorMask.enabled                     Enable Vector Mask               
-layer.vectorMask.linked                      Link Vector Mask                 
-layer.rasterize.shape                        Rasterize Shape                  
-layer.combineShapes.unite                    Unite Shapes                     
-layer.combineShapes.subtractFrontShape       Subtract Front Shape             
-layer.combineShapes.intersectShapeAreas      Unite Shapes at Overlap          
-layer.combineShapes.excludeOverlappingShapes Subtract Shapes at Overlap       
-layer.combineShapes.mergeShapeComponents     Merge Shape Components           
-select.convertToShape                        Convert to Shape                 
-layer.vectorMask.info                        Vector Mask Info                 
-path.moveAnchors                             Drag Anchor Points               
-path.moveHandle                              Drag Direction Point             
-path.bendSegment                             Drag Segment                     
-path.convertPoint                            Convert Point                    
-path.addAnchor                               Add Anchor Point                 
-path.deleteAnchor                            Delete Anchor Point              
-path.mergeShapeComponents                    Merge Shape Components           
-path.setOperation                            Path Operation                   
-select.quick                                 Quick Selection                  
-select.object                                Object Selection                 
-select.subject                               Subject                          Select
-select.refineEdge                            Refine Edge                      
-select.focusArea                             Focus Area…                      Select
-layer.removeBackground                       Remove Background                
-paint.setSymmetry                            Set Painting Symmetry            
-paint.symmetryFromPath                       Make Symmetry Path               
-paint.symmetryDisable                        Disable Painting Symmetry        
-edit.cut                                     Cut                              Edit
-edit.copy                                    Copy                             Edit
-edit.copyMerged                              Copy Merged                      Edit
-edit.paste                                   Paste                            Edit
-file.newFromClipboard                        New from Clipboard               File
-edit.pasteSpecial.pasteInPlace               Paste in Place                   Edit > Paste Special
-layer.new.layerViaCopy                       Layer Via Copy                   Layer > New
-layer.new.layerViaCut                        Layer Via Cut                    Layer > New
-layer.mergeVisible                           Merge Visible                    Layer
-image.autoTone                               Auto Tone                        Image
-image.autoContrast                           Auto Contrast                    Image
-image.autoColor                              Auto Color                       Image
-edit.toggleLastState                         Toggle Last State                Edit
-edit.transform.again                         Again                            Edit > Transform
-edit.transform.againCopy                     Transform Again on a Copy        
-view.newGuide                                New Guide…                       View
-view.moveGuide                               Move Guide                       
-view.editGuide                               Edit Guide                       
-view.deleteGuide                             Delete Guide                     
-view.clearGuides                             Clear Guides                     View
-view.setRulerOrigin                          Set Ruler Origin                 
-view.resetRulerOrigin                        Reset Ruler Origin               
-layer.smartObjects.exportSvg                 Export SVG Contents              
-layer.smartObjects.updateVectorSource        Update Vector Contents           
-layer.smartObjects.updateSvg                 Update SVG Contents              
-edit.assignProfile                           Assign Profile…                  Edit
-edit.convertToProfile                        Convert to Profile…              Edit
-edit.colorSettings                           Color Settings…                  Edit
-color.profileMismatch                        Embedded Profile Mismatch        
-edit.profileInfo                             Profile Info                     
-view.proofSetup                              Proof Setup…                     
-view.proofColors                             Proof Colors                     View
-view.gamutWarning                            Gamut Warning                    View
-brush.mixer.sample                           Sample Mixer Brush               
-paint.pencil                                 Pencil                           
-paint.mixerBrush                             Mixer Brush                      
-brush.mixer.load                             Load Mixer Brush                 
-brush.mixer.clean                            Clean Mixer Brush                
-brush.mixer.autoLoad                         Mixer Brush Auto-Load            
-brush.mixer.autoClean                        Mixer Brush Auto-Clean           
-brush.mixer.sampleAllLayers                  Mixer Brush Sample All Layers    
-paint.mixerLoad                              Load Mixer Brush                 
-paint.colorReplacement                       Color Replacement Tool           
-brush.presets.list                           List Brush Presets               
-brush.presets.save                           Save Brush Preset                
-brush.presets.update                         Update Brush Preset              
-brush.presets.delete                         Delete Brush Preset              
-brush.presets.setCurrent                     Set Current Brush Preset         
-brush.defineFromSelection                    Define Brush Preset…             
-brush.get                                    Get Brush                        
-tools.setBrush                               Set Brush                        
-brush.presets.rename                         Rename Brush                     
-brush.presets.move                           Move Brush                       
-brush.presets.moveGroup                      Move Brush Group                 
-brush.presets.renameGroup                    Rename Brush Group               
-brush.presets.deleteGroup                    Delete Brush Group               
-paint.magicEraser                            Magic Eraser                     
-paint.backgroundEraser                       Background Eraser                
-brush.presets.importAbr                      Import Brushes…                  
-brush.presets.importImage                    Import Brush from Image…         
-gradient.presets.importGrd                   Import Gradients…                
-style.presets.importAsl                      Import Styles…                   
-style.presets.exportAsl                      Export Styles…                   
-actions.load                                 Load Actions…                    
-actions.save                                 Save Actions…                    
-actions.stopMessage                          Stop                             
-actions.menuItem                             Menu Item                        
-actions.photoshopStep                        Photoshop Step                   
-actions.insertMenuItem                       Insert Menu Item…                
-actions.insertPath                           Insert Path                      
-actions.allowToolRecording                   Allow Tool Recording             
-actions.recordAgain                          Record Again                     
-actions.duplicate                            Duplicate Action                 
-actions.insert                               Insert Step                      
-actions.dialog                               Toggle Step Dialog               
-actions.conditional                          Conditional                      
-actions.assignSet                            Move to Set                      
-actions.newSet                               New Set                          
-swatches.list                                Swatches                         
-swatches.add                                 New Swatch…                      
-swatches.delete                              Delete Swatch                    
-swatches.rename                              Rename Swatch…                   
-swatches.move                                Move Swatch                      
-swatches.newGroup                            New Swatch Group…                
-swatches.renameGroup                         Rename Swatch Group…             
-swatches.deleteGroup                         Delete Swatch Group              
-swatches.use                                 Use Swatch                       
-swatches.reset                               Reset Swatches                   
-swatches.import                              Import Swatches…                 
-swatches.export                              Export Swatches…                 
-paint.cloneStamp                             Clone Stamp                      
-paint.patternStamp                           Pattern Stamp                    
-paint.healingBrush                           Healing Brush                    
-paint.spotHealing                            Spot Healing Brush               
-paint.patch                                  Patch                            
-paint.contentAwareMove                       Content-Aware Move               
-paint.remove                                 Remove                           
-paint.dodge                                  Dodge                            
-paint.burn                                   Burn                             
-paint.sponge                                 Sponge                           
-paint.blur                                   Blur                             
-paint.sharpen                                Sharpen                          
-paint.smudge                                 Smudge                           
-paint.historyBrush                           History Brush                    
-paint.artHistoryBrush                        Art History Brush                
-paint.redEye                                 Red Eye                          
-image.imageSize                              Image Size…                      Image
-image.canvasSize                             Canvas Size…                     Image
-image.crop                                   Crop                             Image
-image.trim                                   Trim…                            Image
-image.mode.rgb                               RGB Color                        Image > Mode
-image.mode.grayscale                         Grayscale                        Image > Mode
-image.mode.cmyk                              CMYK Color                       Image > Mode
-image.mode.lab                               Lab Color                        Image > Mode
-image.mode.bits8                             8 Bits/Channel                   Image > Mode
-image.mode.bits16                            16 Bits/Channel                  Image > Mode
-image.mode.bits32                            32 Bits/Channel                  Image > Mode
-image.duplicate                              Duplicate…                       Image
-image.perspectiveCrop                        Perspective Crop                 
-select.magicWand                             Magic Wand                       
-select.colorRange                            Color Range…                     Select
-select.modify.border                         Border…                          Select > Modify
-select.modify.smooth                         Smooth…                          Select > Modify
-select.modify.expand                         Expand…                          Select > Modify
-select.modify.contract                       Contract…                        Select > Modify
-select.modify.feather                        Feather…                         Select > Modify
-select.grow                                  Grow                             Select
-select.similar                               Similar                          Select
-select.lasso                                 Lasso                            
-select.magneticLasso                         Magnetic Lasso                   
-select.sky                                   Sky                              Select
-select.isolateLayers                         Isolate Layers                   Select
-select.transformSelection                    Transform Selection              Select
-paint.bucket                                 Paint Bucket                     
-paint.gradient                               Gradient                         
-edit.stroke                                  Stroke…                          Edit
-edit.transform.rotate180                     Rotate 180°                      Edit > Transform
-edit.transform.rotate90Cw                    Rotate 90° Clockwise             Edit > Transform
-edit.transform.rotate90Ccw                   Rotate 90° Counter Clockwise     Edit > Transform
-edit.transform.flipHorizontal                Flip Horizontal                  Edit > Transform
-edit.transform.flipVertical                  Flip Vertical                    Edit > Transform
-edit.pasteSpecial.pasteInto                  Paste Into                       Edit > Paste Special
-edit.pasteSpecial.pasteOutside               Paste Outside                    Edit > Paste Special
-select.reselect                              Reselect                         Select
-image.adjustments.equalize                   Equalize                         Image > Adjustments
-image.revealAll                              Reveal All                       Image
-layer.new.layerFromBackground                Layer From Background…           Layer > New
-layer.layerStyle.copyLayerStyle              Copy Layer Style                 Layer > Layer Style
-layer.layerStyle.pasteLayerStyle             Paste Layer Style                Layer > Layer Style
-layer.layerStyle.hideAllEffects              Hide All Effects                 Layer > Layer Style
-layer.layerStyle.showAllEffects              Show All Effects                 
-layer.layerMask.enabled                      Disable Layer Mask               Layer > Layer Mask
-layer.layerMask.linked                       Unlink Layer Mask                Layer > Layer Mask
-layer.rasterize.layer                        Layer                            Layer > Rasterize
-layer.rasterize.allLayers                    All Layers                       Layer > Rasterize
-layer.rasterize.type                         Type                             Layer > Rasterize
-layer.rasterize.fillContent                  Fill Content                     Layer > Rasterize
-layer.rasterize.smartObject                  Smart Object                     Layer > Rasterize
-layer.delete.hiddenLayers                    Hidden Layers                    Layer > Delete
-file.scripts.deleteAllEmptyLayers            Delete All Empty Layers          File > Scripts
-layer.ungroupLayers                          Ungroup Layers                   Layer
-layer.hideLayers                             Hide Layers                      Layer
-layer.showLayers                             Show Layers                      
-layer.toggleLockTransparency                 Lock Transparent Pixels          
-layer.showOnly                               Show Only This Layer             
-layer.new.backgroundFromLayer                Background From Layer            Layer > New
-file.closeAll                                Close All                        File
-file.closeOthers                             Close Others                     File
-file.revealInFinder                          Reveal in Finder                 
-file.revert                                  Revert                           File
-file.saveACopy                               Save a Copy…                     File
-file.openAs                                  Open As…                         File
-file.openAsSmartObject                       Open as Smart Object…            File
-file.approveMemory                           Approve High Memory PSD Import   
-file.placeEmbedded                           Place Embedded…                  File
-file.placeLinked                             Place Linked…                    File
-file.fileInfo                                File Info…                       File
-file.automate.fitImage                       Fit Image…                       File > Automate
-file.automate.conditionalModeChange          Conditional Mode Change…         File > Automate
-file.automate.batch                          Batch…                           File > Automate
-file.scripts.imageProcessor                  Image Processor…                 File > Scripts
-file.scripts.loadFilesIntoStack              Load Files into Stack…           File > Scripts
-file.scripts.flattenAllLayerEffects          Flatten All Layer Effects        File > Scripts
-file.scripts.flattenAllMasks                 Flatten All Masks                File > Scripts
-file.export.layersToFiles                    Layers to Files…                 File > Export
-file.export.colorLookupTables                Color Lookup Tables…             File > Export
-view.newGuideLayout                          New Guide Layout…                View
-view.newGuidesFromShape                      New Guides From Shape            View
-view.clearCanvasGuides                       Clear Canvas Guides              View
-file.exrParts                                EXR Parts Info                   
-file.openExrParts                            Open EXR Parts…                  File
-type.antiAlias.none                          None                             Type > Anti-Alias
-type.antiAlias.sharp                         Sharp                            Type > Anti-Alias
-type.antiAlias.crisp                         Crisp                            Type > Anti-Alias
-type.antiAlias.strong                        Strong                           Type > Anti-Alias
-type.antiAlias.smooth                        Smooth                           Type > Anti-Alias
-type.antiAlias.windowsLcd                    Windows LCD                      Type > Anti-Alias
-type.antiAlias.windows                       Windows                          Type > Anti-Alias
-type.orientation.horizontal                  Horizontal                       Type > Orientation
-type.orientation.vertical                    Vertical                         Type > Orientation
-type.openType.standardLigatures              Standard Ligatures               Type > OpenType
-type.openType.contextualAlternates           Contextual Alternates            Type > OpenType
-type.openType.discretionaryLigatures         Discretionary Ligatures          Type > OpenType
-type.openType.swash                          Swash                            Type > OpenType
-type.openType.oldstyle                       Oldstyle                         Type > OpenType
-type.openType.stylisticAlternates            Stylistic Alternates             Type > OpenType
-type.openType.titlingAlternates              Titling Alternates               Type > OpenType
-type.openType.ornaments                      Ornaments                        Type > OpenType
-type.openType.ordinals                       Ordinals                         Type > OpenType
-type.openType.fractions                      Fractions                        Type > OpenType
-type.openType.numerals.default               Default                          Type > OpenType > Numerals
-type.openType.numerals.lining                Lining                           Type > OpenType > Numerals
-type.openType.numerals.oldstyle              Oldstyle                         Type > OpenType > Numerals
-type.openType.numerals.proportional          Proportional                     Type > OpenType > Numerals
-type.openType.numerals.tabular               Tabular                          Type > OpenType > Numerals
-type.openType.numerals.proportionalLining    Proportional Lining              Type > OpenType > Numerals
-type.openType.numerals.tabularLining         Tabular Lining                   Type > OpenType > Numerals
-type.openType.numerals.proportionalOldstyle  Proportional Oldstyle            Type > OpenType > Numerals
-type.openType.numerals.tabularOldstyle       Tabular Oldstyle                 Type > OpenType > Numerals
-type.createWorkPath                          Create Work Path                 Type
-type.convertToShape                          Convert to Shape                 Type
-type.rasterizeTypeLayer                      Rasterize Type Layer             Type
-type.convertToParagraphText                  Convert to Paragraph Text        Type
-type.convertToPointText                      Convert to Point Text            Type
-type.warpText                                Warp Text…                       Type
-type.attachToPath                            Type on a Path                   
-type.setPathPlacement                        Set Path Placement               
-type.detachFromPath                          Release Type from Path           
-type.updateAllTextLayers                     Update All Text Layers           Type
-type.replaceAllMissingFonts                  Replace All Missing Fonts        Type
-type.resolveMissingFonts                     Resolve Missing Fonts…           Type
-type.pasteLoremIpsum                         Paste Lorem Ipsum                Type
-type.saveDefaultTypeStyles                   Save Default Type Styles         Type
-type.loadDefaultTypeStyles                   Load Default Type Styles         Type
-type.openType.stylisticSets.set1             Set 1                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set2             Set 2                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set3             Set 3                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set4             Set 4                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set5             Set 5                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set6             Set 6                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set7             Set 7                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set8             Set 8                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set9             Set 9                            Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set10            Set 10                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set11            Set 11                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set12            Set 12                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set13            Set 13                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set14            Set 14                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set15            Set 15                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set16            Set 16                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set17            Set 17                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set18            Set 18                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set19            Set 19                           Type > OpenType > Stylistic Sets
-type.openType.stylisticSets.set20            Set 20                           Type > OpenType > Stylistic Sets
-type.fillPath                                Area Type                        
-type.characterStyle.new                      New Character Style              
-type.characterStyle.duplicate                Duplicate Style                  
-type.characterStyle.delete                   Delete Style                     
-type.characterStyle.rename                   Rename Style                     
-type.characterStyle.set                      Character Style Options          
-type.characterStyle.apply                    Apply Character Style            
-type.characterStyle.redefine                 Redefine Character Style         
-type.characterStyle.clearOverride            Clear Override                   
-type.characterStyle.list                     List Character Styles            
-type.paragraphStyle.new                      New Paragraph Style              
-type.paragraphStyle.duplicate                Duplicate Style                  
-type.paragraphStyle.delete                   Delete Style                     
-type.paragraphStyle.rename                   Rename Style                     
-type.paragraphStyle.set                      Paragraph Style Options          
-type.paragraphStyle.apply                    Apply Paragraph Style            
-type.paragraphStyle.redefine                 Redefine Paragraph Style         
-type.paragraphStyle.clearOverride            Clear Override                   
-type.paragraphStyle.list                     List Paragraph Styles            
-edit.checkSpelling                           Check Spelling…                  Edit
-type.insertText                              Insert Glyph                     
-type.hitTest                                 Hit-Test Type                    
-type.caret                                   Type Caret                       
-type.navigate                                Navigate Type                    
-layer.smartObjects.convertToSmartObject      Convert to Smart Object          Layer > Smart Objects
-filter.convertForSmartFilters                Convert for Smart Filters        Filter
-layer.smartObjects.newSmartObjectViaCopy     New Smart Object via Copy        Layer > Smart Objects
-layer.smartObjects.rasterize                 Rasterize                        Layer > Smart Objects
-layer.smartObjects.editContents              Edit Contents                    Layer > Smart Objects
-layer.smartObjects.resetTransform            Reset Transform                  Layer > Smart Objects
-layer.smartObjects.saveContents              Save Contents                    
-layer.smartObjects.replaceContents           Replace Contents…                Layer > Smart Objects
-layer.smartObjects.exportContents            Export Contents…                 Layer > Smart Objects
-layer.smartObjects.relinkToFile              Relink to File…                  Layer > Smart Objects
-layer.smartObjects.updateModifiedContent     Update Modified Content          Layer > Smart Objects
-layer.smartObjects.updateChanged             Update Changed Linked Content    
-layer.smartObjects.updateAllModifiedContent  Update All Modified Content      Layer > Smart Objects
-layer.smartObjects.convertToLayers           Convert to Layers                Layer > Smart Objects
-layer.smartObjects.convertToEmbedded         Embed Linked                     Layer > Smart Objects
-layer.smartObjects.embedAllLinked            Embed All Linked                 Layer > Smart Objects
-layer.smartObjects.convertToLinked           Convert to Linked…               Layer > Smart Objects
-layer.smartFilter.disableSmartFilters        Disable Smart Filters            Layer > Smart Filter
-layer.smartFilter.deleteFilterMask           Delete Filter Mask               Layer > Smart Filter
-layer.smartFilter.disableFilterMask          Disable Filter Mask              Layer > Smart Filter
-layer.smartFilter.blendingOptions            Blending Options…                Layer > Smart Filter
-layer.smartFilter.clearSmartFilters          Clear Smart Filters              Layer > Smart Filter
-layer.smartFilter.setVisible                 Show/Hide Smart Filter           
-layer.smartFilter.setParams                  Edit Smart Filter                
-layer.smartFilter.delete                     Delete Smart Filter              
-layer.smartFilter.move                       Move Smart Filter                
-layer.smartFilter.transfer                   Move or Copy Smart Filters       
-select.allLayers                             All Layers                       Select
-select.deselectLayers                        Deselect Layers                  Select
-select.findLayers                            Find Layers                      Select
-layer.selectLinkedLayers                     Select Linked Layers             Layer
-layer.align.topEdges                         Top Edges                        Layer > Align
-layer.align.verticalCenters                  Vertical Centers                 Layer > Align
-layer.align.bottomEdges                      Bottom Edges                     Layer > Align
-layer.align.leftEdges                        Left Edges                       Layer > Align
-layer.align.horizontalCenters                Horizontal Centers               Layer > Align
-layer.align.rightEdges                       Right Edges                      Layer > Align
-layer.distribute.topEdges                    Top Edges                        Layer > Distribute
-layer.distribute.verticalCenters             Vertical Centers                 Layer > Distribute
-layer.distribute.bottomEdges                 Bottom Edges                     Layer > Distribute
-layer.distribute.leftEdges                   Left Edges                       Layer > Distribute
-layer.distribute.horizontalCenters           Horizontal Centers               Layer > Distribute
-layer.distribute.rightEdges                  Right Edges                      Layer > Distribute
-layer.distribute.horizontally                Horizontally                     Layer > Distribute
-layer.distribute.vertically                  Vertically                       Layer > Distribute
-layer.linkLayers                             Link Layers                      Layer
-layer.mergeLayers                            Merge Layers                     Layer
-layer.new.groupFromLayers                    Group from Layers…               Layer > New
-layer.arrange.reverse                        Reverse                          Layer > Arrange
-layer.lockLayers                             Lock Layers…                     Layer
-layer.renameLayer                            Rename Layer                     Layer
-layer.copyToDocument                         Copy Layers to Document          
-prefs.get                                    Get Preferences                  
-prefs.set                                    Set Preferences                  
-prefs.reset                                  Reset Preferences                
-edit.preferences.general                     General…                         Edit > Preferences
-edit.preferences.interface                   Interface…                       Edit > Preferences
-edit.preferences.workspace                   Workspace…                       Edit > Preferences
-edit.preferences.tools                       Tools…                           Edit > Preferences
-edit.preferences.historyLog                  History Log…                     Edit > Preferences
-edit.preferences.fileHandling                File Handling…                   Edit > Preferences
-edit.preferences.export                      Export…                          Edit > Preferences
-edit.preferences.performance                 Performance…                     Edit > Preferences
-edit.preferences.scratchDisks                Scratch Disks…                   Edit > Preferences
-edit.preferences.cursors                     Cursors…                         Edit > Preferences
-edit.preferences.transparencyAndGamut        Transparency & Gamut…            Edit > Preferences
-edit.preferences.unitsAndRulers              Units & Rulers…                  Edit > Preferences
-edit.preferences.guidesGridAndSlices         Guides, Grid & Slices…           Edit > Preferences
-edit.preferences.plugIns                     Plugins…                         Edit > Preferences
-edit.preferences.type                        Type…                            Edit > Preferences
-edit.preferences.enhancedControls            Enhanced Controls…               Edit > Preferences
-edit.preferences.rawDefaults                 RAW Defaults…                    Edit > Preferences
-edit.preferences.integrations                Integrations…                    Edit > Preferences
-edit.keyboardShortcuts                       Keyboard Shortcuts…              Edit
-edit.menus                                   Menus…                           Edit
-edit.toolbar                                 Toolbar…                         Edit
-help.checkForUpdates                         Check for Updates…               Help
-updates.status                               Update Check Status              
-edit.fade                                    Fade…                            Edit
-edit.purge.undo                              Undo                             Edit > Purge
-edit.purge.clipboard                         Clipboard                        Edit > Purge
-edit.purge.histories                         Histories                        Edit > Purge
-edit.purge.videoCache                        Video Cache                      Edit > Purge
-edit.purge.all                               All                              Edit > Purge
-edit.contentAwareFill                        Content-Aware Fill…              Edit
-edit.deleteAndFillSelection                  Delete and Fill Selection        
-edit.contentAwareScale                       Content-Aware Scale              Edit
-edit.defineBrushPreset                       Define Brush Preset…             Edit
-edit.defineCustomShape                       Define Custom Shape…             Edit
-edit.findAndReplaceText                      Find and Replace Text…           Edit
-edit.presets.presetManager                   Preset Manager…                  Edit > Presets
-edit.presets.exportImportPresets             Export/Import Presets…           Edit > Presets
-edit.fillForeground                          Fill with Foreground Color       
-edit.fillBackground                          Fill with Background Color       
-edit.fillForegroundPreserve                  Fill with Foreground Color, Preserve Transparency 
-edit.fillBackgroundPreserve                  Fill with Background Color, Preserve Transparency 
-edit.fillHistory                             Fill from History                
-document.sampleColor                         Sample Color                     
-image.detectFaces                            Detect Faces                     
-view.colorSamplers.add                       Add Color Sampler                
-view.colorSamplers.move                      Move Color Sampler               
-view.colorSamplers.delete                    Delete Color Sampler             
-view.colorSamplers.clear                     Clear Color Samplers             
-view.colorSamplers.list                      Color Samplers                   
-tools.decreaseBrushSize                      Decrease Brush Size              
-tools.increaseBrushSize                      Increase Brush Size              
-tools.decreaseBrushHardness                  Decrease Brush Hardness          
-tools.increaseBrushHardness                  Increase Brush Hardness          
-tools.previousBrush                          Previous Brush                   
-tools.nextBrush                              Next Brush                       
-tools.firstBrush                             First Brush                      
-tools.lastBrush                              Last Brush                       
-tools.rotateBrush                            Rotate Brush Tip                 
-layer.stampVisible                           Stamp Visible                    
-layer.stampDown                              Stamp Down                       
-edit.autoAlignLayers                         Auto-Align Layers…               Edit
-edit.autoBlendLayers                         Auto-Blend Layers…               Edit
-file.automate.photomerge                     Photomerge…                      File > Automate
-file.automate.mergeToHdrPro                  Merge to HDR Pro…                File > Automate
-file.automate.cropAndStraightenPhotos        Crop and Straighten Photos       File > Automate
-filter.lensCorrection                        Lens Correction…                 Filter
-filter.adaptiveWideAngle                     Adaptive Wide Angle…             Filter
-filter.cameraRaw                             RAW Develop Filter…              Filter
-file.automate.lensCorrection                 Lens Correction…                 File > Automate
-filter.vanishingPoint                        Vanishing Point…                 Filter
-select.saveSelection                         Save Selection…                  Select
-select.loadSelection                         Load Selection…                  Select
-select.editInQuickMaskMode                   Edit in Quick Mask Mode          Select
-image.applyImage                             Apply Image…                     Image
-image.calculations                           Calculations…                    Image
-channel.new                                  New Channel…                     
-channel.newSpot                              New Spot Channel…                
-channel.duplicate                            Duplicate Channel…               
-channel.delete                               Delete Channel                   
-channel.rename                               Rename Channel                   
-channel.move                                 Reorder Channel                  
-channel.target                               Target Channel                   
-channel.setVisible                           Channel Visibility               
-channel.options                              Channel Options…                 
-channel.mergeSpot                            Merge Spot Channel               
-channel.split                                Split Channels                   
-channel.merge                                Merge Channels…                  
-channel.list                                 Channels                         
-channel.target.composite                     Target Composite Channel         
-channel.target.layerMask                     Target Layer Mask                
-select.loadLuminosity                        Load Luminosity                  
-channel.target.slot3                         Target Channel 3                 
-channel.target.slot4                         Target Channel 4                 
-channel.target.slot5                         Target Channel 5                 
-channel.target.slot6                         Target Channel 6                 
-channel.target.slot7                         Target Channel 7                 
-channel.target.slot8                         Target Channel 8                 
-channel.target.slot9                         Target Channel 9                 
-image.adjustments.shadowsHighlights          Shadows/Highlights…              Image > Adjustments
-image.adjustments.replaceColor               Replace Color…                   Image > Adjustments
-image.adjustments.matchColor                 Match Color…                     Image > Adjustments
-image.adjustments.hdrToning                  HDR Toning…                      Image > Adjustments
-image.adjustments.colorLookup.list           List Color Lookup Looks          
-layer.layerMask.apply                        Apply                            Layer > Layer Mask
-layer.layerMask.fromTransparency             From Transparency                Layer > Layer Mask
-layer.layerMask.hideSelection                Hide Selection                   Layer > Layer Mask
-layer.maskAllObjects                         Mask All Objects                 Layer
-layer.matting.defringe                       Defringe…                        Layer > Matting
-layer.matting.removeBlackMatte               Remove Black Matte               Layer > Matting
-layer.matting.removeWhiteMatte               Remove White Matte               Layer > Matting
-layer.matting.colorDecontaminate             Color Decontaminate…             Layer > Matting
-layer.smartObjects.stackMode.entropy         Entropy                          Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.kurtosis        Kurtosis                         Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.maximum         Maximum                          Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.mean            Mean                             Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.median          Median                           Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.minimum         Minimum                          Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.range           Range                            Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.skewness        Skewness                         Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.standardDeviation Standard Deviation               Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.summation       Summation                        Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.variance        Variance                         Layer > Smart Objects > Stack Mode
-layer.smartObjects.stackMode.none            None                             Layer > Smart Objects > Stack Mode
-layer.smartObjects.revealInFinder            Reveal in Finder                 Layer > Smart Objects
-layer.layerStyle.blendingOptions             Blending Options…                Layer > Layer Style
-layer.layerStyle.globalLight                 Global Light…                    Layer > Layer Style
-layer.layerStyle.createLayer                 Create Layer                     Layer > Layer Style
-layer.layerStyle.scaleEffects                Scale Effects…                   Layer > Layer Style
-layer.layerStyle.transferEffects             Move Layer Effects               
-layer.layerContentOptions                    Layer Content Options…           Layer
-layer.quickExportAsPng                       Quick Export as PNG              Layer
-layer.exportAs                               Export As…                       Layer
-layer.setLabelColor                          Layer Color                      
-layer.copyCSS                                Copy CSS                         Layer
-layer.xmpMetadata                            Layer XMP Metadata               
-image.rotation.arbitrary                     Arbitrary…                       Image > Image Rotation
-image.mode.indexedColor                      Indexed Color…                   Image > Mode
-image.mode.colorTable                        Color Table…                     Image > Mode
-image.mode.bitmap                            Bitmap…                          Image > Mode
-image.mode.duotone                           Duotone…                         Image > Mode
-image.mode.multichannel                      Multichannel                     Image > Mode
-edit.definePattern                           Define Pattern…                  Edit
-pattern.list                                 Patterns                         
-pattern.rename                               Rename Pattern                   
-pattern.delete                               Delete Pattern                   
-pattern.import                               Import Patterns…                 
-pattern.export                               Export Patterns…                 
-layer.newFillLayer.pattern                   Pattern…                         Layer > New Fill Layer
-brush.texturePattern                         Brush Texture Pattern            
-edit.transform.warp                          Warp                             Edit > Transform
-layer.smartObjects.warp                      Warp                             
-edit.transform.splitWarpCrosswise            Split Warp Crosswise             Edit > Transform
-edit.transform.splitWarpHorizontally         Split Warp Horizontally          Edit > Transform
-edit.transform.splitWarpVertically           Split Warp Vertically            Edit > Transform
-edit.transform.removeWarpSplit               Remove Warp Split                Edit > Transform
-edit.transform.warpGrid                      Warp Grid                        
-layerComp.new                                New Layer Comp…                  
-layerComp.update                             Update Layer Comp                
-layerComp.apply                              Apply Layer Comp                 
-layerComp.previous                           Apply Previous Layer Comp        
-layerComp.next                               Apply Next Layer Comp            
-layerComp.delete                             Delete Layer Comp                
-layerComp.reorder                            Reorder Layer Comp               
-layerComp.duplicate                          Duplicate Layer Comp             
-layerComp.rename                             Rename Layer Comp                
-layerComp.setComment                         Layer Comp Comment               
-layerComp.setOptions                         Layer Comp Options…              
-layerComp.restoreLastDocumentState           Restore Last Document State      
-layerComp.updateWarnings                     Layer Comp Warnings              
-layerComp.list                               List Layer Comps                 
-file.export.layerCompsToFiles                Layer Comps to Files…            File > Export
-layer.new.artboard                           Artboard…                        Layer > New
-layer.new.artboardFromGroup                  Artboard from Group…             Layer > New
-layer.new.artboardFromLayers                 Artboard from Layers…            Layer > New
-layer.artboard.set                           Edit Artboard                    
-view.clearSelectedArtboardGuides             Clear Selected Artboard Guides   View
-layer.artboard.addBeside                     Add Artboard Beside              
-file.export.artboardsToFiles                 Artboards to Files…              File > Export
-file.export.artboardsToPdf                   Artboards to PDF…                File > Export
-filter.liquify                               Liquify…                         Filter
-edit.puppetWarp                              Puppet Warp                      Edit
-layer.smartObjects.puppetWarp                Puppet Warp                      
-edit.perspectiveWarp                         Perspective Warp                 Edit
-layer.smartObjects.perspectiveWarp           Perspective Warp                 
-image.analysis.setMeasurementScale           Set Measurement Scale…           Image > Analysis
-image.analysis.selectDataPoints              Select Data Points…              Image > Analysis
-image.analysis.recordMeasurements            Record Measurements              Image > Analysis
-image.analysis.rulerTool                     Ruler Tool                       Image > Analysis
-image.analysis.countTool                     Count Tool                       Image > Analysis
-image.analysis.placeScaleMarker              Place Scale Marker…              Image > Analysis
-image.analysis.straightenLayer               Straighten Layer                 
-image.analysis.info                          Analysis Info                    
-count.add                                    Add Count                        
-count.remove                                 Remove Count                     
-count.move                                   Move Count                       
-count.clear                                  Clear Count                      
-count.newGroup                               New Count Group                  
-count.deleteGroup                            Delete Count Group               
-count.setGroup                               Count Group Options              
-measurementLog.list                          Measurement Log                  
-measurementLog.delete                        Delete Measurements              
-measurementLog.export                        Export Measurements…             
-notes.add                                    New Note                         
-notes.set                                    Edit Note                        
-notes.delete                                 Delete Note                      
-notes.list                                   Notes                            
-file.import.notes                            Notes…                           File > Import
-type.font.favorite                           Add to Favorites                 
-type.font.library                            Font Library                     
-history.undo                                 Undo                             
-history.redo                                 Redo                             
-history.deleteState                          Delete State                     
-history.newDocument                          New Document from State          
-history.newSnapshot                          New Snapshot                     
-history.selectSnapshot                       Select Snapshot                  
-history.renameSnapshot                       Rename Snapshot                  
-history.deleteSnapshot                       Delete Snapshot                  
-history.options                              History Options…                 
-history.stepForward                          Step Forward                     
-history.stepBackward                         Step Backward                    
-history.clear                                Clear History                    
-history.setSource                            Set History Brush Source         
-history.selectState                          Select History State             
-view.proofSetup.workingCyanPlate             Working Cyan Plate               View > Proof Setup
-view.proofSetup.workingMagentaPlate          Working Magenta Plate            View > Proof Setup
-view.proofSetup.workingYellowPlate           Working Yellow Plate             View > Proof Setup
-view.proofSetup.workingBlackPlate            Working Black Plate              View > Proof Setup
-view.proofSetup.workingCmyPlate              Working CMY Plates               View > Proof Setup
-view.proofSetup.legacyMacintoshRgb           Legacy Macintosh RGB (Gamma 1.8) View > Proof Setup
-view.proofSetup.colorBlindnessProtanopia     Color Blindness - Protanopia-type View > Proof Setup
-view.proofSetup.colorBlindnessDeuteranopia   Color Blindness - Deuteranopia-type View > Proof Setup
-view.thirtyTwoBitPreviewOptions              32-bit Preview Options…          View
-gradient.presets.list                        Gradient Presets                 
-gradient.presets.select                      Select Gradient                  
-gradient.presets.stop                        Edit Gradient Stop               
-gradient.presets.apply                       New Gradient Fill Layer from Preset 
-gradient.presets.new                         New Gradient Preset              
-gradient.presets.edit                        Edit Gradient Presets            
-gradient.presets.reset                       Restore Default Gradients        
-pattern.presets.list                         Pattern Presets                  
-pattern.presets.select                       Select Pattern                   
-pattern.presets.apply                        New Pattern Fill Layer from Preset 
-pattern.presets.new                          New Pattern Preset               
-pattern.presets.edit                         Edit Pattern Presets             
-style.presets.list                           Style Presets                    
-style.presets.apply                          Apply Style                      
-style.presets.new                            New Style…                       
-style.presets.edit                           Edit Style Presets               
-style.presets.reset                          Restore Default Styles           
-shape.presets.importCsh                      Import Shapes                    
-shape.presets.list                           Shape Presets                    
-shape.presets.place                          Place Custom Shape               
-shape.presets.new                            New Shape Preset                 
-shape.presets.edit                           Edit Shape Presets               
-shape.presets.reset                          Restore Default Shapes           
-tool.presets.list                            Tool Presets                     
-tool.presets.new                             New Tool Preset…                 
-tool.presets.select                          Select Tool Preset               
-tool.presets.edit                            Edit Tool Presets                
-tool.presets.reset                           Reset Tool Presets               
-cloneSource.list                             Clone Sources                    
-cloneSource.select                           Select Clone Source              
-cloneSource.set                              Set Clone Source                 
-cloneSource.resetTransform                   Reset Transform                  
-cloneSource.overlay                          Clone Source Overlay             
-document.presets.list                        List Document Presets            
-document.presets.get                         Get Document Preset              
-document.presets.save                        Save Document Preset             
-document.presets.delete                      Delete Document Preset           
-document.recent.list                         List Recent Document Settings    
-document.recent.add                          Add Recent Document Settings     
-file.export.presets.list                     List Export Presets              
-file.export.presets.get                      Get Export Preset                
-file.export.presets.save                     Save Export Preset               
-file.export.presets.delete                   Delete Export Preset             
-filter.render.flame                          Flame…                           Filter > Render
-filter.render.pictureFrame                   Picture Frame…                   Filter > Render
-filter.render.tree                           Tree…                            Filter > Render
-slice.new                                    Slice Tool                       
-slice.fromGuides                             Slices From Guides               
-slice.set                                    Slice Options…                   
-slice.promote                                Promote                          
-slice.delete                                 Delete Slice                     
-slice.divide                                 Divide Slice…                    
-slice.list                                   List Slices                      
-layer.newLayerBasedSlice                     New Layer Based Slice            Layer
-view.lockSlices                              Lock Slices                      View
-view.clearSlices                             Clear Slices                     View
-file.export.saveForWebLegacy                 Save for Web (Legacy)…           File > Export
-file.export.exportPreferences                Export Preferences…              File > Export
-file.export.quickExport                      Quick Export                     
-file.generate.imageAssets                    Image Assets                     File > Generate
-file.automate.contactSheetII                 Contact Sheet II…                File > Automate
-file.automate.createDroplet                  Create Droplet…                  File > Automate
-file.automate.runDroplet                     Run Droplet                      
-file.scripts.statistics                      Statistics…                      File > Scripts
-file.scripts.browse                          Browse…                          File > Scripts
-file.scripts.scriptEventsManager             Script Events Manager…           File > Scripts
-file.print                                   Print…                           File
-file.print.printers                          Printers                         
-file.print.page                              Printer Page                     
-file.printers                                Printers                         
-file.printOneCopy                            Print One Copy                   File
-file.package                                 Package…                         File
-file.export.pathsToIllustrator               Paths to Illustrator…            File > Export
-edit.installedProfiles                       Installed Profiles               
-layer.selectInRect                           Select Layers in Marquee         
-layer.pickAt                                 Auto-Select Layer                
-layer.selectAbove                            Select Layer Above               
-layer.selectBelow                            Select Layer Below               
-layer.selectTop                              Select Top Layer                 
-layer.selectBottom                           Select Bottom Layer              
-layer.addAboveToSelection                    Add Layer Above to Selection     
-layer.addBelowToSelection                    Add Layer Below to Selection     
-layer.new.frame                              New Frame                        
-layer.new.frameFromLayers                    Frame from Layers                Layer > New
-layer.frame.set                              Frame Properties                 
-layer.frame.info                             Frame Info                       
-layer.frame.convert                          Convert to Frame                 
-layer.frame.setContent                       Replace Frame Content            
-layer.frame.fit                              Fit Frame / Content              
-edit.presets.migratePresets                  Migrate Presets                  Edit > Presets
-image.trap                                   Trap…                            Image
-timeline.create                              Create Video Timeline            
-timeline.delete                              Delete Timeline                  
-timeline.setFrame                            Go to Frame                      
-timeline.nextFrame                           Next Frame                       
-timeline.previousFrame                       Previous Frame                   
-timeline.setProps                            Timeline Settings                
-timeline.info                                Timeline Info                    
-layer.videoLayers.newBlankVideoLayer         New Blank Video Layer            Layer > Video Layers
-layer.videoLayers.insertBlankFrame           Insert Blank Frame               Layer > Video Layers
-layer.videoLayers.duplicateFrame             Duplicate Frame                  Layer > Video Layers
-layer.videoLayers.deleteFrame                Delete Frame                     Layer > Video Layers
-layer.videoLayers.restoreFrame               Restore Frame                    Layer > Video Layers
-layer.videoLayers.restoreAllFrames           Restore All Frames               Layer > Video Layers
-layer.videoLayers.showAlteredVideo           Show Altered Video               Layer > Video Layers
-layer.videoLayers.rasterize                  Rasterize                        Layer > Video Layers
-layer.rasterize.video                        Video                            Layer > Rasterize
-layer.videoLayers.newVideoLayerFromFile      New Video Layer from File…       Layer > Video Layers
-layer.videoLayers.replaceFootage             Replace Footage…                 Layer > Video Layers
-layer.videoLayers.interpretFootage           Interpret Footage…               Layer > Video Layers
-layer.videoLayers.reloadFrame                Reload Frame                     Layer > Video Layers
-file.import.videoFramesToLayers              Video Frames to Layers…          File > Import
-file.export.renderVideo                      Render Video…                    File > Export
-jobs.list                                    List Background Jobs             
-jobs.cancel                                  Cancel Background Job            
-file.import.wiaSupport                       WIA Support…                     File > Import
-layer.rasterize.layerStyle                   Layer Style                      Layer > Rasterize
-image.variables.define                       Define…                          Image > Variables
-image.variables.dataSets                     Data Sets…                       Image > Variables
-image.applyDataSet                           Apply Data Set…                  Image
-file.import.variableDataSets                 Variable Data Sets…              File > Import
-file.export.dataSetsAsFiles                  Data Sets as Files…              File > Export
-variables.list                               List Variables                   
-plugin.list                                  List Plug-ins                    
-plugin.install                               Install Plug-in…                 Filter > Plug-ins
-plugin.remove                                Remove Plug-in                   
-plugin.reload                                Reload Plug-ins                  
-plugin.run                                   Run Plug-in                      
-layer.setExpanded                            Expand/Collapse Group            
-layer.setEffectsExpanded                     Expand/Collapse Effects          
-layer.setEffectsVisible                      Show/Hide Effects                
-view.layerMask                               View Layer Mask                  
-layer.toggleMaskOverlay                      Toggle Layer Mask Overlay        
-layer.layerMask.edit                         Edit Layer Mask                  
-actions.setHistory                           Set Actions History              
-actions.setPlayback                          Playback Options                 
-actions.move                                 Move Action or Step              
-actions.list                                 List Actions                     
-actions.get                                  Get Action                       
-actions.record                               Record Action                    
-actions.stop                                 Stop Recording                   
-actions.play                                 Play Action                      
-actions.delete                               Delete Action                    
-actions.toggle                               Toggle Action Steps              
-actions.rename                               Rename Action                    
-actions.setColor                             Set Action Color                 
-[exit 0]
+$ photocraft-cli run --help
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli run --help
+Open a file (or start a new document), run engine commands in order, save the result
 
-## PhotoCraft — real document work
-```
+Prints each command's JSON result. Give exactly one of <FILE> or --new, and at least one --cmd or --out. An --out that is the <FILE> is refused, as the result would replace the original; --in-place allows it.
+
+Usage: photocraft-cli run [OPTIONS] <FILE|--new <JSON>> <--cmd <ID>|--out <FILE>>
+
+Arguments:
+  [FILE]
+          The document to open
+
+Options:
+      --new <JSON>
+          Start from a new document with these JSON parameters instead of opening a file
+
+      --cmd <ID>
+          An engine command to run; repeat for several, run in order
+
+      --params <JSON>
+          JSON parameters for the --cmd before it (default {})
+
+      --out <FILE>
+          Save the result to this file
+
+      --in-place
+          Allow an --out that is the <FILE>, replacing the original
+
+      --approve-high-memory
+          Explicitly approve high-memory PSD/PSB imports within the hard memory budget
+
+      --gpu
+          Prefer GPU rendering, falling back to CPU when unavailable or unsupported
+
+      --no-gpu
+          Use CPU rendering, overriding PHOTOCRAFT_GPU
+
+      --format <EXT>
+          Output format, overriding the output's extension (png, jpg, tif, webp, …)
+
+      --quality <1-100>
+          JPEG or WebP quality, 1-100. A WebP written with a quality is lossy, without one lossless
+
+      --tiff-layers
+          Keep the layers in TIFF output (Photoshop layer data); TIFF output is flat without it
+
+      --tiff-compression <none|lzw|zip>
+          Compress TIFF output: none (the default), lzw or zip
+
+      --tiff-transparency <on|off>
+          TIFF Save Transparency: on keeps the transparency (ahead of any alpha or spot channels), off composites the image over white. Without it: kept unless the document has alpha or spot channels
+
+      --tiff-pyramid
+          Also write a TIFF image pyramid: half-size copies after the full image
+
+      --tga-bits <24|32>
+          A TGA's bits per pixel: 32 writes the alpha channel (or else the transparency) as its alpha, 24 none. Without it: 32 with an alpha channel or transparency, else 24
+
+      --dpx-bits <8|10|12|16>
+          A DPX's bits per sample. Without it: 8 for an 8-bit document, else 16
+
+      --dds-compression <none|bc1|bc2|bc3>
+          A DDS texture's compression: none (uncompressed, the default), bc1 (DXT1: alpha on or off), bc2 (DXT3) or bc3 (DXT5)
+
+      --dds-mipmaps
+          Also write a DDS texture's full mip chain
+
+      --jpeg-format <baseline|optimized|progressive>
+          A JPEG's scans, as JPEG Options picks them: baseline (the default), optimized (Huffman tables fitted to the image; RGB is written 4:2:0 and keeps the standard tables, so only Gray and CMYK shrink) or progressive
+
+      --pcraft-full-composite
+          Request the flattened document at its canvas size in .pcraft output as composite/full.png; it may be omitted. Check the manifest's full_composite member
+
+      --no-maximize-compatibility
+          A layered PSD/PSB stores Photoshop's white placeholder instead of the merged image (Maximize Compatibility off): a smaller file and a faster save, but readers that show only the merged image see white. Bitmap, Indexed Color and Duotone documents still write the real image
+
+      --metadata <none|all>
+          The document metadata a flat export embeds: all (the default) keeps the document's XMP packet and free-form text where the format holds them, as Save As does; none leaves them out, as Export As's Metadata: None. Nothing else changes: the ICC profile, EXIF and resolution are written as they are without it. PSD, PSB and .pcraft always keep the XMP
+
+  -h, --help
+          Print help (see a summary with '-h')
+[exit 0]
 $ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli info /tmp/pc/test.ppm
 {
   "activeLayer": 2,
@@ -1055,7 +122,7 @@ $ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli info /tmp/pc/test.pp
   "depth": 8,
   "file": "/tmp/pc/test.ppm",
   "hasSelection": false,
-  "height": 200,
+  "height": 300,
   "historySource": {
     "label": "Open",
     "state": 0
@@ -1070,8 +137,8 @@ $ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli info /tmp/pc/test.pp
       "bounds": [
         0,
         0,
-        320,
-        200
+        480,
+        300
       ],
       "clipped": false,
       "fill": 1.0,
@@ -1115,180 +182,38 @@ $ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli info /tmp/pc/test.pp
   "timeline": null,
   "variables": null,
   "warnings": [],
-  "width": 320
+  "width": 480
 }
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/test.ppm /tmp/pc/out.png
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/test.ppm /tmp/pc/step1.png
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/out.png /home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-out.webp
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/step1.png /tmp/pc/step2.psd
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/out.png /tmp/pc/out.psd
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/step2.psd /home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-psd-roundtrip.png
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli info /tmp/pc/out.psd
-{
-  "activeLayer": 2,
-  "channels": {
-    "alpha": [],
-    "colors": [
-      {
-        "name": "Red",
-        "visible": true
-      },
-      {
-        "name": "Green",
-        "visible": true
-      },
-      {
-        "name": "Blue",
-        "visible": true
-      }
-    ],
-    "composite": "RGB",
-    "compositeVisible": true,
-    "layerMaskView": null,
-    "quickMask": null,
-    "selectedColors": null,
-    "target": {
-      "kind": "composite"
-    }
-  },
-  "depth": 8,
-  "file": "/tmp/pc/out.psd",
-  "hasSelection": false,
-  "height": 200,
-  "historySource": {
-    "label": "Open",
-    "state": 0
-  },
-  "isolatedLayers": [],
-  "lastAppliedComp": null,
-  "layerComps": [],
-  "layerMaskView": null,
-  "layers": [
-    {
-      "blend": "Normal",
-      "bounds": [
-        0,
-        0,
-        320,
-        200
-      ],
-      "clipped": false,
-      "fill": 1.0,
-      "hasMask": false,
-      "hasVectorMask": false,
-      "hasXmp": false,
-      "id": 2,
-      "kind": "Pixel",
-      "labelColor": "none",
-      "linkGroup": null,
-      "name": "Background",
-      "opacity": 1.0,
-      "selected": true,
-      "vectorMaskEnabled": null,
-      "visible": true
-    }
-  ],
-  "measurement": {
-    "count": 0,
-    "countGroups": 0,
-    "ruler": null,
-    "scale": "1 pixels = 1.0000 pixels"
-  },
-  "mode": "Rgb",
-  "name": "out.psd",
-  "notes": [],
-  "path": "/tmp/pc/out.psd",
-  "quickMask": false,
-  "resolution": 72.0,
-  "selectedLayers": [
-    2
-  ],
-  "selectionBounds": null,
-  "snapshots": [
-    {
-      "id": 0,
-      "name": "out.psd"
-    }
-  ],
-  "symmetry": null,
-  "timeline": null,
-  "variables": null,
-  "warnings": [],
-  "width": 320
-}
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/step1.png /home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-out.webp
 [exit 0]
-$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/out.psd /home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-roundtrip.png
+$ /tmp/pc/photocraft-0.23.1-linux-x86_64/bin/photocraft-cli convert /tmp/pc/step1.png /home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-out.jpg
+warning: lossy compression
 [exit 0]
 ```
 
-produced:
-```
-total 288
--rw-r--r-- 1 runner runner  92702 Nov 14 07:06 REPORT.md
--rw-r--r-- 1 runner runner   1492 Nov 14 07:06 photocraft-out.webp
--rw-r--r-- 1 runner runner   1321 Nov 14 07:06 photocraft-roundtrip.png
--rw-r--r-- 1 runner runner 192015 Nov 14 07:06 test.ppm
-/home/runner/work/Testrepo/Testrepo/craft-demo/REPORT.md:                Unicode text, UTF-8 text
-/home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-out.webp:      RIFF (little-endian) data, Web/P image, ICC profile, 319+1x199+1
-/home/runner/work/Testrepo/Testrepo/craft-demo/photocraft-roundtrip.png: PNG image data, 320 x 200, 8-bit/color RGB, non-interlaced
-/home/runner/work/Testrepo/Testrepo/craft-demo/test.ppm:                 Netpbm image data, size = 320 x 200, rawbits, pixmap
-```
-
-## GridCraft 0.19.1 — provision
-```
-$ gh release download v0.19.1 -R storytold/gridcraft -p *linux-x86_64.tar.gz -D .
-[exit 0]
+## GridCraft 0.19.1 — provision + formula engine + real XLSX/PDF
 ```
 $ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli version
 gridcraft-cli 0.19.1
 [exit 0]
-$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli functions --search SUM
-DEVSQ(number1, [number2], ...)
-    Statistical: Sum of squared deviations from the mean.
-DSUM(database, field, criteria)
-    Database: Adds the numbers in a field of the records that meet the criteria.
-IMSUM(inumber1, [inumber2], ...)
-    Engineering: Sum of complex numbers.
-MULTINOMIAL(number1, [number2], ...)
-    MathTrig: Ratio of the factorial of a sum to the product of factorials.
-PERCENTOF(data_subset, data_all)
-    MathTrig: The sum of a subset as a fraction of the sum of all the values.
-PIVOTBY(row_fields, col_fields, values, function, [field_headers], [row_total_depth], [row_sort_order], [col_total_depth], [col_sort_order], [filter_array], [relative_to])
-    Lookup: Builds a summary table grouping values by row and column fields.
-SERIESSUM(x, n, m, coefficients)
-    MathTrig: Sum of a power series.
-SUM(number1, [number2], ...)
-    MathTrig: Adds all the numbers in the arguments.
-SUMIF(range, criteria, [sum_range])
-    MathTrig: Adds the cells that meet a condition.
-SUMIFS(sum_range, criteria_range1, criteria1, ...)
-    MathTrig: Adds the cells that meet every condition.
-SUMPRODUCT(array1, [array2], ...)
-    MathTrig: Multiplies matching elements of equally sized arrays and adds the products.
-SUMSQ(number1, [number2], ...)
-    MathTrig: Adds the squares of the numbers.
-SUMX2MY2(array_x, array_y)
-    MathTrig: Sums the differences of squares of matching elements.
-SUMX2PY2(array_x, array_y)
-    MathTrig: Sums the sums of squares of matching elements.
-SUMXMY2(array_x, array_y)
-    MathTrig: Sums the squared differences of matching elements.
-SYD(cost, salvage, life, per)
-    Financial: Sum-of-years'-digits depreciation for a period.
-16 functions
+$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =SUM(1,2,3,4,5)
+15
 [exit 0]
-
-## GridCraft — formula engine + real XLSX
-```
-$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =SUM(1,2,3,4,5) --json
-15.0
-[exit 0]
-$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =ROUND(2.675,2) --json
+$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =ROUND(2.675,2)
 2.68
 [exit 0]
-$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =IFERROR(1/0,"guarded") --json
-"guarded"
+$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =IFERROR(1/0,"guarded")
+guarded
 [exit 0]
-$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli run --sample ledger --cmd set={"range":"A1:D3","values":[["item","qty","price","total"],["bolt",12,0.5,"=B2*C2"],["nut",7,0.25,"=B3*C3"]]} --cmd set={"range":"A5","values":[["grand total"]]} --cmd set={"range":"B5","values":[["=SUM(D2:D3)"]]} --out /home/runner/work/Testrepo/Testrepo/craft-demo/gridcraft-ledger.xlsx --print A1:D5
-gridcraft-cli: invalid parameters for `file.new`: unknown sample `ledger`
+$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli eval =TEXT(1234.5,"#,##0.00")
+1,234.50
+[exit 0]
+$ /tmp/gc/gridcraft-0.19.1-linux-x86_64/bin/gridcraft-cli run --in /tmp/gc/book.xlsx --cmd set={"range":"A1:D3","values":[["item","qty","price","total"],["bolt",12,0.5,"=B2*C2"],["nut",7,0.25,"=B3*C3"]]} --cmd set={"range":"A5","values":[["grand total"]]} --cmd set={"range":"B5","values":[["=SUM(D2:D3)"]]} --print A1:D5
+gridcraft-cli: /tmp/gc/book.xlsx: No such file or directory (os error 2)
