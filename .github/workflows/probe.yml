@@ -1,0 +1,12 @@
+name: probe
+on: workflow_dispatch
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: try-fetch-release-asset
+        run: |
+          set -x
+          curl -sSL --retry 2 --max-time 60 -o m.json -w 'http=%{http_code} bytes=%{size_download}\n'             https://github.com/storytold/photocraft/releases/download/v0.23.1/photocraft-0.23.1-linux-x86_64.oci-manifest.json
+          ls -l m.json && head -c 200 m.json
