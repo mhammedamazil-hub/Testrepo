@@ -19,6 +19,7 @@ ads/avatars/         profile avatars + cover banner
 portfolio/           three case-study plates 1800x1200
 portfolio/plates/    caption-free 3D plates used by the deck + PDF
 portfolio/LUMENFORGE-portfolio.pdf   8-page A4 landscape portfolio
+docs/LUMENFORGE-one-pager.pdf        single-page leave-behind
 deck/                LUMENFORGE-pitch-deck.pptx (11 slides, 16:9)
 site/                static site: index + showroom (three.js), self-contained
 site/shots/          real-browser screenshots, captured in CI (Playwright)
@@ -40,6 +41,7 @@ NODE_PATH=/tmp/build/node_modules node scripts/creative.js all # poster + loopin
 python3 scripts/encode-mp4.py                                 # H.264 1080 delivery cut
 NODE_PATH=/tmp/build/node_modules node scripts/deck.js        # pitch deck .pptx
 NODE_PATH=/tmp/build/node_modules node scripts/portfolio.js   # 8-page portfolio PDF
+NODE_PATH=/tmp/build/node_modules node scripts/onepager.js    # A4 one-pager PDF
 ```
 
 Deps: `sharp`, `gifenc`, `webm-writer`, `pptxgenjs`, `pdf-lib` + `@pdf-lib/fontkit`; `av` (PyAV) for the MP4 remux.
