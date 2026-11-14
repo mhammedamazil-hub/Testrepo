@@ -113,7 +113,9 @@ key.shadow.bias = -0.0012;
 scene.add(key);
 
 const rim = new THREE.PointLight(0xff7a33, 18, 14, 2);
-rim.position.set(1.5, 1.35, -5.9);
+// centred behind the arch so its light lands as a pool through the doorway,
+// rather than leaking around the wall's edge
+rim.position.set(1.25, 1.15, -5.2);
 scene.add(rim);
 
 const fill = new THREE.DirectionalLight(0xcfd6e0, 0.6);
