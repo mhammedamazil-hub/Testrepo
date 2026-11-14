@@ -1,0 +1,42 @@
+name: craft-sound
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  sound:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: SoundCraft headless audio
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          exec 2>&1
+          OUT="$GITHUB_WORKSPACE/craft-demo"; LOG="$OUT/REPORT-soundcraft.md"
+          echo "# SoundCraft 0.20.1 — headless audio pipeline" > "$LOG"; echo '```' >> "$LOG"
+          cd /tmp; rm -rf sc; mkdir sc; cd sc
+          gh release download v0.20.1 -R storytold/soundcraft -p '*linux-x86_64.tar.gz' -D . >> "$LOG" 2>&1
+          tar xzf ./*.tar.gz >> "$LOG" 2>&1
+          SC=/tmp/sc/soundcraft-0.20.1-linux-x86_64/bin/soundcraft-cli
+          python3 - <<'PYEOF'
+          import math, struct, wave
+          sr=44100; n=sr*2
+          w=wave.open('/tmp/sc/tone.wav','wb'); w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr)
+          frames=b''.join(struct.pack('<h', int(12000*math.sin(2*math.pi*440*i/sr))) for i in range(n))
+          w.writeframes(frames); w.close(); print('wrote 2s 440 Hz wav')
+          PYEOF
+          run () { echo "\$ $*" >> "$LOG"; timeout 200 "$@" >> "$LOG" 2>&1; echo "[exit $?]" >> "$LOG"; }
+          run "$SC" --version
+          run "$SC" info /tmp/sc/tone.wav
+          run "$SC" convert /tmp/sc/tone.wav /tmp/sc/tone.flac
+          run "$SC" convert /tmp/sc/tone.wav "$OUT/soundcraft-tone.mp3"
+          run "$SC" info "$OUT/soundcraft-tone.mp3"
+          run "$SC" commands
+          echo '```' >> "$LOG"
+          ls -l "$OUT" >> "$LOG" 2>&1
+      - name: Commit
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE"; git config user.name craft-demo; git config user.email actions@users.noreply.github.com
+          git add craft-demo && git commit -m "CI: soundcraft audio pipeline" || true; git push || true
