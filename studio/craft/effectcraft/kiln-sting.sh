@@ -32,10 +32,10 @@ npx pi-craft effectcraft exec --empty --save-as "$EC" run \
   prop.addKey '{"layer":"Wordmark","path":"transform/opacity","time":1.0,"value":100}' \
   prop.addKey '{"layer":"Descriptor","path":"transform/opacity","time":1.0,"value":0}' \
   prop.addKey '{"layer":"Descriptor","path":"transform/opacity","time":2.2,"value":100}' \
-  prop.addKey '{"layer":"Rule","path":"shape/size","time":0,"value":[0,3]}' \
-  prop.addKey '{"layer":"Rule","path":"shape/size","time":1.4,"value":[360,3]}' \
-  prop.addKey '{"layer":"Rule","path":"shape/size","time":4.6,"value":[360,3]}' \
-  prop.addKey '{"layer":"Rule","path":"shape/size","time":6.0,"value":[360,3]}' \
+  prop.addKey '{"layer":"Rule","path":"transform/opacity","time":0,"value":0}' \
+  prop.addKey '{"layer":"Rule","path":"transform/opacity","time":1.2,"value":100}' \
+  prop.addKey '{"layer":"Rule","path":"transform/opacity","time":4.6,"value":100}' \
+  prop.addKey '{"layer":"Rule","path":"transform/opacity","time":6.0,"value":0}' \
 
 npx pi-craft effectcraft exec --project "$EC" info > "$OUT/kiln-sting.info.json" || true
 # property paths are not guessable; record what this release calls them

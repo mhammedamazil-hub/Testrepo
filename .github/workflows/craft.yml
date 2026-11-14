@@ -126,6 +126,10 @@ jobs:
             npx pi-craft deckcraft exec commands theme 2>&1 | head -40 || true
             echo "### commands background"
             npx pi-craft deckcraft exec commands background 2>&1 | head -40 || true
+            echo "### commands textBox / text formatting"
+            npx pi-craft deckcraft exec commands text 2>&1 | head -60 || true
+            echo "### commands number"
+            npx pi-craft deckcraft exec commands slideNumber 2>&1 | head -20 || true
           } > studio/craft/logs/deckcraft-schema.txt
           head -40 studio/craft/logs/deckcraft-schema.txt
           exit 0
@@ -155,8 +159,18 @@ jobs:
       - name: Build — EffectCraft
         if: always()
         run: |
-          bash -x studio/craft/effectcraft/kiln-sting.sh 2>&1 | tee studio/craft/out/effectcraft.log
+          set +e
+          mkdir -p studio/craft/out studio/craft/logs
+          bash -x studio/craft/effectcraft/kiln-sting.sh > /tmp/ec.log 2>&1
+          echo "EXIT=$?" >> /tmp/ec.log
+          cp /tmp/ec.log studio/craft/logs/effectcraft.log
+          # dump the shape's real property paths even when the build failed
+          if [ -f studio/craft/out/kiln-sting.ecproj ]; then
+            npx pi-craft effectcraft exec --project studio/craft/out/kiln-sting.ecproj props - Rule --flat 2>&1 | tee -a /tmp/ec.log
+          fi
+          tail -30 /tmp/ec.log
           ls -la studio/craft/out
+          exit 0
 
       - name: Verify the artefacts
         if: always()
