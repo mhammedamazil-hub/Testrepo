@@ -21,8 +21,9 @@ portfolio/plates/    caption-free 3D plates used by the deck + PDF
 portfolio/LUMENFORGE-portfolio.pdf   8-page A4 landscape portfolio
 deck/                LUMENFORGE-pitch-deck.pptx (11 slides, 16:9)
 site/                static site: index + showroom (three.js), self-contained
-docs/                offers, pricing model, one-pager
-copy/                brand book + launch copy (ads, email, social)
+site/shots/          real-browser screenshots, captured in CI (Playwright)
+docs/                offers, pricing model, one-pager, 90-day launch plan
+copy/                brand book + launch copy (ads, email, social, social kit)
 fonts/               subset TTFs for the PDF (converted from the site woff2)
 scripts/             all generators
 ```
@@ -57,6 +58,13 @@ Notes worth keeping:
 - `index.html` — hero (live WebGL forge), three case studies with WebP `<picture>`, "the spot" video section, five-step process, three tiers, mailto contact form.
 - `showroom.html` — live product showroom: orbit / pinch / wheel camera, four finish swatches, FPS + draw-call + triangle readout.
 - Serve locally: `python3 -m http.server 4173 --bind 0.0.0.0` from `site/`.
+
+## Verification
+
+No browser can be downloaded in the agent sandbox, so `.github/workflows/site-shots.yml` serves
+`studio/site`, screenshots it with Playwright at 1440 and 390 wide plus the showroom, logs the live
+three.js render stats (frames / draw calls / triangles) and commits the PNGs to `site/shots/`.
+Re-run it after any `site/` change: `gh workflow run site-shots.yml`.
 
 ## Contacts / facts used consistently everywhere
 
