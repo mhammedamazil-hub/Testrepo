@@ -1,0 +1,7 @@
+EffectCraft 0.24.1 (headless), 763 commands, 308 effects
+project: studio/craft/out/kiln-sting.ecproj
+  item 1  Composition  KILN Sting
+active comp 1 "KILN Sting" 1080x1080 @ 24.0 fps, 6.0 s
+  #1 id 80 Shape      Rule
+  #2 id 41 Text       Descriptor
+  #3 id 2 Text       Wordmark

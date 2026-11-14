@@ -1,0 +1,62 @@
+{
+  "dropped": {},
+  "skippedSlides": [
+    "cover",
+    "problem",
+    "work",
+    "method",
+    "case-5",
+    "case-6",
+    "case-7",
+    "engineering",
+    "studio",
+    "rates",
+    "provenance",
+    "next"
+  ],
+  "failures": {
+    "cover": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "problem": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "work": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "method": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "case-5": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "case-6": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "case-7": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "engineering": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "studio": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "rates": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "provenance": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "next": [
+      "deckcraft-cli: command `shape.insert` is not available right now: no slides"
+    ],
+    "convert": [
+      "deckcraft-cli: nothing to export (no slides in range)"
+    ]
+  },
+  "commands": 147,
+  "slides": 12,
+  "hasDeck": true,
+  "hasPdf": false
+}
