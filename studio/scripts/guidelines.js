@@ -85,9 +85,13 @@ async function main() {
   display(p, 'One arch. Nothing else.', M, 108, 32);
   p.drawImage(await fit(E('mark-512.png'), 150), { x: M, y: H - 330, width: 150, height: 150 });
   body(p, 'The mark is a section through a kiln wall. A 1000-unit block with a 300-unit opening cut through it. The head is a true semicircle: radius equals half the opening, so it springs 120 units above the block centre. The legs run past the foot of the block, because a kiln mouth is a passage, not a window.', M + 190, 176, 250, 9.6);
-  body(p, 'It is the same arch the studio renders and the same arch the studio sells. That is the whole idea, and it is why there is no second mark.', M + 190, 268, 250, 9.6);
-  p.drawImage(await fit(L('kiln-construction.png'), 400), { x: M + 470, y: H - 380, width: 400, height: 234 });
-  T(p, 'CONSTRUCTION SHEET · 1:1', M + 470, 232, 6.4, mono, C.kiln, { characterSpacing: 1.4 });
+  body(p, 'It is the same arch the studio renders and the same arch the studio sells. That is the whole idea, and it is why there is no second mark.', M + 190, 268, 240, 9.6);
+    // crop the sheet to its drawing panel: at 300 px the full sheet is a grey smear
+  const sheet = await sharp(L('kiln-construction.png')).extract({ left: 40, top: 190, width: 760, height: 700 }).png().toBuffer();
+    p.drawImage(await doc.embedPng(await sharp(sheet).resize(220, 203).png().toBuffer()),
+    { x: W - M - 220, y: H - 370, width: 220, height: 203 });
+  T(p, 'CONSTRUCTION SHEET · DETAIL', W - M - 220, 370, 6.4, mono, C.kiln, { characterSpacing: 1.3 });
+  body(p, '300 opening, radius 150, springing 120. White is the block; the ember square is the clear space.', W - M - 220, 384, 220, 7.4, C.kiln);
   rule(p, M, 400, W - M * 2);
   [['Never', 'outline it, glow it, bevel it, or place it on a gradient.'],
    ['Ink field', 'paper door. That is the mark. Paper inverts it exactly.'],
