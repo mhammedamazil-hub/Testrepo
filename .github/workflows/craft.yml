@@ -111,13 +111,16 @@ jobs:
       - name: Build — DeckCraft
         if: always()
         run: |
+          # one subshell: bash -e would otherwise abort the step the moment node
+          # exits non-zero, and the log would never be copied anywhere
+          set +e
           mkdir -p studio/craft/out studio/craft/logs
-          # capture at the shell level: if node dies before its own redirect, we still
-          # have the output
-          { node studio/craft/deckcraft/build.mjs; echo "EXIT=$?"; } > /tmp/deck.log 2>&1
+          node studio/craft/deckcraft/build.mjs > /tmp/deck.log 2>&1
+          echo "EXIT=$?" >> /tmp/deck.log
           cp /tmp/deck.log studio/craft/logs/deckcraft.log
           tail -90 /tmp/deck.log
           ls -la studio/craft/out
+          exit 0
 
       - name: Render deck slides to png
         if: always()
