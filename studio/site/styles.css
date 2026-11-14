@@ -421,7 +421,7 @@ textarea { resize: vertical; min-height: 76px; }
 }
 .craft-item:hover { background: var(--ink-2); }
 .craft-meta {
-  display: block; font: 400 10px/1.6 var(--mono); letter-spacing: .14em;
+  display: block; font: 400 10px/1.6 var(--mono); letter-spacing: .14em; white-space: nowrap;
   text-transform: uppercase; color: var(--smoke);
 }
 .craft-item h3 {
