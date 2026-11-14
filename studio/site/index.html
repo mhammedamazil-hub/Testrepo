@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LUMENFORGE — Interactive 3D websites you can walk through</title>
+<meta name="description" content="LUMENFORGE builds interactive 3D websites with Blender (bpy) asset pipelines, Three.js and React. Launch-ready 3D commerce, real-estate and product sites that load under 2s." />
+<meta property="og:title" content="LUMENFORGE — Websites you can walk through" />
+<meta property="og:description" content="Blender-authored. Three.js-powered. React-native performance." />
+<meta property="og:image" content="assets/hero.webp" />
+<meta name="theme-color" content="#06070B" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="assets/hero.webp" />
+<link rel="canonical" href="https://lumenforge.studio/" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preload" href="fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="grain" aria-hidden="true"></div>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="LUMENFORGE home">
+    <img src="assets/logo-mark-512.png" alt="" width="34" height="34" />
+    <span>LUMEN<em>FORGE</em></span>
+  </a>
+  <nav>
+    <a href="#work">Work</a>
+    <a href="#spot">The spot</a>
+    <a href="#process">Process</a>
+    <a href="#pricing">Pricing</a>
+    <a href="showroom.html" class="nav-demo">Live demo ↗</a>
+  </nav>
+  <a class="btn btn-sm" href="#contact">Book a forge slot</a>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <p class="kicker"><span class="dot"></span>Interactive 3D studio · booking Q1</p>
+    <h1>Websites you can<br /><span class="forge">walk through.</span></h1>
+    <p class="lede">
+      We model your product in <strong>Blender</strong>, bake the geometry with <strong>bpy</strong>,
+      and ship it as a <strong>Three.js + React</strong> site that loads under two seconds on a
+      mid-range phone. Not a video. Not a slideshow. A place.
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="#contact">Book a forge slot</a>
+      <a class="btn ghost" href="showroom.html">Enter the showroom →</a>
+    </div>
+    <dl class="stats">
+      <div><dt>First-load budget</dt><dd>&lt; 2.0 MB</dd></div>
+      <div><dt>Frame rate</dt><dd>60 fps</dd></div>
+      <div><dt>Build time</dt><dd>3–5 weeks</dd></div>
+      <div><dt>Lighthouse</dt><dd>95+</dd></div>
+    </dl>
+    <p class="hint">Move your cursor · scroll to orbit the forge</p>
+  </section>
+
+  <section id="work" class="band">
+    <div class="band-head">
+      <p class="kicker">Selected work</p>
+      <h2>Three rooms, three industries.</h2>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <picture><source srcset="assets/atelier-nova-1800x1200.webp" type="image/webp" /><img src="assets/atelier-nova-1800x1200.png" alt="Atelier Nova 3D commerce case study" loading="lazy" decoding="async" /></picture>
+        <div class="card-body">
+          <p class="tag">3D commerce</p>
+          <h3>Atelier Nova</h3>
+          <p>A flagship store where every piece is a real object you can rotate, place and buy.</p>
+          <ul><li>1.9 MB first load</li><li>+38% add-to-cart</li><li>bpy asset pipeline</li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <picture><source srcset="assets/meridian-towers-1800x1200.webp" type="image/webp" /><img src="assets/meridian-towers-1800x1200.png" alt="Meridian Towers 3D real estate case study" loading="lazy" decoding="async" /></picture>
+        <div class="card-body">
+          <p class="tag">3D real estate</p>
+          <h3>Meridian Towers</h3>
+          <p>48 unit interiors, sun studies computed in Blender, walkable on a phone.</p>
+          <ul><li>3.1× longer sessions</li><li>KTX2 + Draco</li><li>Sun study in bpy</li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <picture><source srcset="assets/kinetic-labs-1800x1200.webp" type="image/webp" /><img src="assets/kinetic-labs-1800x1200.png" alt="Kinetic Labs 3D product launch case study" loading="lazy" decoding="async" /></picture>
+        <div class="card-body">
+          <p class="tag">Product launch</p>
+          <h3>Kinetic Labs</h3>
+          <p>A scroll-driven reveal that turns a spec sheet into a launch moment.</p>
+          <ul><li>2.4M campaign views</li><li>GSAP + R3F</li><li>GLTF + Draco</li></ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="spot" class="band reel">
+    <div class="reel-copy">
+      <p class="kicker">The spot</p>
+      <h2>Six seconds to prove it.</h2>
+      <p class="lede">Every LUMENFORGE build ships with its own launch spot — rendered from the same scene your customers walk through, not reshot in a studio. This one is the studio's own.</p>
+      <ul class="reel-meta">
+        <li><b>20 fps</b> · 1:1 master</li>
+        <li><b>WebM + MP4</b> delivery</li>
+        <li><b>bpy</b> → Three.js → render</li>
+      </ul>
+      <a class="btn ghost" href="#contact">Get a spot for your launch →</a>
+    </div>
+    <figure class="reel-frame">
+      <video id="reel" src="assets/video/reel.mp4" poster="assets/video/poster.webp" autoplay loop muted playsinline preload="none" aria-label="LUMENFORGE motion ad"></video>
+      <figcaption>LUMENFORGE · <span>"The web was flat."</span> · 2026</figcaption>
+    </figure>
+  </section>
+
+  <section id="process" class="band split">
+    <div>
+      <p class="kicker">The forge</p>
+      <h2>From blockout to browser in five moves.</h2>
+      <p class="lede">
+        No mystery. Every stage has an artefact you can open, and a number it has to hit.
+      </p>
+    </div>
+    <ol class="steps">
+      <li><span>01</span><div><h4>Blockout</h4><p>Camera path, scale and light direction locked in Blender before a single texture exists.</p></div></li>
+      <li><span>02</span><div><h4>Forge</h4><p>bpy scripts build the hero assets, bake lighting to lightmaps and export GLTF with LODs.</p></div></li>
+      <li><span>03</span><div><h4>Budget</h4><p>Draco + KTX2 compression against a hard first-load ceiling you approve up front.</p></div></li>
+      <li><span>04</span><div><h4>Wire</h4><p>React Three Fiber scenes, scroll timelines and CMS bindings so marketing can edit copy.</p></div></li>
+      <li><span>05</span><div><h4>Harden</h4><p>Mobile GPU tiers, WebGL fallbacks, SEO-safe HTML underneath and a Lighthouse gate in CI.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="pricing" class="band">
+    <div class="band-head">
+      <p class="kicker">Pricing</p>
+      <h2>Fixed scope. Fixed number.</h2>
+    </div>
+    <div class="tiers">
+      <article class="tier">
+        <h3>Spark</h3>
+        <p class="price">$4,800</p>
+        <p class="tier-note">Landing page with one hero 3D scene.</p>
+        <ul><li>1 walkthrough scene</li><li>3 art-directed stills</li><li>Mobile + WebGL fallback</li><li>2 weeks</li></ul>
+        <a class="btn ghost" href="#contact">Start with Spark</a>
+      </article>
+      <article class="tier featured">
+        <p class="tag">Most booked</p>
+        <h3>Forge</h3>
+        <p class="price">$12,500</p>
+        <p class="tier-note">Full 3D site: up to 5 rooms or products.</p>
+        <ul><li>bpy asset pipeline</li><li>Scroll-driven camera</li><li>CMS + analytics</li><li>Launch campaign kit</li><li>3–5 weeks</li></ul>
+        <a class="btn" href="#contact">Book Forge</a>
+      </article>
+      <article class="tier">
+        <h3>Foundry</h3>
+        <p class="price">$3,900<span>/mo</span></p>
+        <p class="tier-note">Retainer for teams shipping monthly.</p>
+        <ul><li>New scenes each sprint</li><li>Perf budget monitoring</li><li>Asset library upkeep</li></ul>
+        <a class="btn ghost" href="#contact">Talk retainer</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="contact" class="band contact">
+    <div>
+      <p class="kicker">Next step</p>
+      <h2>Send us your product.<br />We'll send back a room.</h2>
+      <p class="lede">Tell us what you sell and who walks in. You get a fixed price, a camera path and a load budget within 48 hours.</p>
+    </div>
+    <form class="form" action="mailto:forge@lumenforge.studio" method="post" enctype="text/plain">
+      <label>Name<input name="name" autocomplete="name" required /></label>
+      <label>Work email<input name="email" type="email" autocomplete="email" required /></label>
+      <label>What are we forging?<textarea name="brief" rows="3" placeholder="A 3D store for 40 ceramic pieces…"></textarea></label>
+      <button class="btn" type="submit">Book a forge slot</button>
+      <p class="fine">Or write to <a href="mailto:forge@lumenforge.studio">forge@lumenforge.studio</a></p>
+    </form>
+  </section>
+</main>
+
+<footer class="foot">
+  <img src="assets/logo-mark-mono-512.png" alt="" width="26" height="26" />
+  <span>LUMENFORGE — Interactive 3D studio · <a href="mailto:forge@lumenforge.studio">forge@lumenforge.studio</a></span>
+  <span class="fine">Blender · bpy · Three.js · React · WebGL</span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

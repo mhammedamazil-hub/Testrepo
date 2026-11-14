@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Showroom — LUMENFORGE</title>
+<meta name="description" content="An interactive 3D showroom demo: orbit a scene, switch materials, walk through the room." />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="showroom.css" />
+</head>
+<body>
+<canvas id="room"></canvas>
+<div id="hud">
+  <a class="back" href="index.html">← LUMENFORGE</a>
+  <div class="panel">
+    <p class="kicker">Showroom / demo scene</p>
+    <h1>Walk it.</h1>
+    <p>Drag to orbit. Scroll to dolly. Pick a finish and the room repaints in real time — the same
+       controls your customers would get.</p>
+    <div class="swatches" role="group" aria-label="Material finish">
+      <button class="sw active" data-finish="bone"><span style="--c:#EDE7DA"></span>Bone</button>
+      <button class="sw" data-finish="forge"><span style="--c:#FF6B2C"></span>Forge</button>
+      <button class="sw" data-finish="arc"><span style="--c:#22E8C8"></span>Arc</button>
+      <button class="sw" data-finish="steel"><span style="--c:#8A93A6"></span>Steel</button>
+    </div>
+    <dl class="readout">
+      <div><dt>Draw calls</dt><dd id="calls">–</dd></div>
+      <div><dt>FPS</dt><dd id="fps">–</dd></div>
+      <div><dt>Triangles</dt><dd id="tris">–</dd></div>
+    </dl>
+    <p class="fine">Everything on this page is generated geometry — no image textures, no external assets.</p>
+  </div>
+</div>
+<script type="module" src="showroom.js"></script>
+</body>
+</html>
