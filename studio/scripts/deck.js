@@ -1,267 +1,648 @@
-// KILN — pitch deck (pptxgenjs). 16:9, 12 slides, photographic plates.
-// DeckCraft's CLI could not be provisioned in this environment (GitHub release assets are
-// blocked), so the deck is generated with pptxgenjs — same output format, no binary.
-const path = require('path');
+// KILN — pitch deck.
+//
+// Two artefacts from one content model:
+//   deck/KILN-pitch-deck.pdf   16:9, Instrument Serif / Inter Tight / JetBrains Mono,
+//                              embedded and subset. This is the deck that gets sent.
+//   deck/KILN-pitch-deck.pptx  the same twelve slides, editable. See the note below.
+//
+// Text is laid out by hand rather than by a slide library, because a deck that is
+// merely "generated" looks generated: default margins, centred titles, bullet indents.
+// Here every text block has an explicit measure and baseline, the same grid as the site.
 const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
+const { PDFDocument, rgb } = require('pdf-lib');
+const fontkit = require('@pdf-lib/fontkit');
 const PptxGenJS = require('pptxgenjs');
+const { ROOT } = require('./lib');
 
-const ROOT = path.resolve(__dirname, '..');
-// the deck uses 1400 px JPEG derivatives: the PNG plates are 2–4 MB each and a
-// 30 MB deck is not a deck anybody can email
-const ALIAS = {
-  'keyart-1600x2000.png': 'keyart.jpg',
-  'hero-2400x1600.png': 'hero.jpg',
-  'square-1600x1600.png': 'square.jpg',
-  'work-atelier.png': 'work-atelier.jpg',
-  'work-meridian.png': 'work-meridian.jpg',
-  'work-kinetic.png': 'work-kinetic.jpg',
-  'kiln-icon.png': 'mark.png',
-};
-const IMG = (...p) => {
-  const jpg = ALIAS[p[p.length - 1]] && path.join('/tmp/deckimg', ALIAS[p[p.length - 1]]);
-  return jpg && fs.existsSync(jpg) ? jpg : path.join(ROOT, ...p);
-};
+const W = 1280;
+const H = 720;
+const M = 86;          // left margin
+const MB = 74;         // bottom margin
 
 const C = {
-  ink: '0B0C0E',
-  ink2: '121316',
-  paper: 'F2EDE4',
-  ember: 'D8542A',
-  emberLit: 'EE7541',
-  kiln: '8A8578',
-  smoke: '55544F',
-  rule: '2A2B2F',
+  ink: '#0B0C0E', ink2: '#121316', paper: '#F2EDE4', ember: '#D8542A',
+  emberLit: '#EE7541', kiln: '#8A8578', smoke: '#55544F', body: '#C0BAAE', rule: '#26272B',
 };
 
-const W = 13.333;
-const H = 7.5;
-const M = 0.85; // left margin
+const hex = (h) => {
+  const s = h.replace('#', '');
+  return rgb(parseInt(s.slice(0, 2), 16) / 255, parseInt(s.slice(2, 4), 16) / 255, parseInt(s.slice(4, 6), 16) / 255);
+};
 
-async function main() {
-  const pptx = new PptxGenJS();
-  pptx.layout = 'LAYOUT_16x9';
-  pptx.author = 'KILN';
-  pptx.company = 'KILN — interactive architecture';
-  pptx.title = 'KILN — rooms, not pages';
+const OUT = path.join(ROOT, 'deck');
 
-  const slide = (bg = C.ink) => {
-    const s = pptx.addSlide();
-    s.background = { color: bg };
-    return s;
+// 1400 px JPEG derivatives: the PNG plates are 2–4 MB each and a 16 MB deck is not
+// a deck anybody can email
+const IMG = (name) => {
+  const jpg = path.join('/tmp/deckimg', name.replace(/\.png$/, '.jpg'));
+  return fs.existsSync(jpg) ? jpg : path.join(ROOT, 'brand', 'renders', name);
+};
+
+const SLIDES = [
+  { id: 'cover' }, { id: 'problem' }, { id: 'offers' }, { id: 'atelier' },
+  { id: 'meridian' }, { id: 'kinetic' }, { id: 'method' }, { id: 'perf' },
+  { id: 'studio' }, { id: 'rates' }, { id: 'why' }, { id: 'next' },
+];
+
+/* ───────────────────────────────────────── PDF ───────────────────────────── */
+async function pdf() {
+  const doc = await PDFDocument.create();
+  doc.setTitle('KILN — rooms, not pages');
+  doc.setAuthor('KILN');
+  doc.setSubject('Interactive architecture: Blender-rendered rooms shipped as React sites');
+  doc.registerFontkit(fontkit);
+
+  const F = (f) => doc.embedFont(fs.readFileSync(path.join(ROOT, 'fonts', f)), { subset: true });
+  const serif = await F('instrument-serif.ttf');
+  const sans = await F('inter-tight-400.ttf');
+  const sansM = await F('inter-tight-500.ttf');
+  const mono = await F('jetbrains-mono.ttf');
+
+  const page = async (img, { frac = 0.5, side = 'right', fade = 0.5, pos = 'centre' } = {}) => {
+    const p = doc.addPage([W, H]);
+    p.drawRectangle({ x: 0, y: 0, width: W, height: H, color: hex(C.ink) });
+    if (img) {
+      const aw = Math.round(W * frac);
+      const art = await sharp(IMG(img)).resize({ width: aw, height: H, fit: 'cover', position: pos }).png().toBuffer();
+      const x = side === 'right' ? W - aw : 0;
+      const grad = side === 'right'
+        ? `<stop offset="0" stop-color="${C.ink}" stop-opacity="1"/><stop offset="${fade * 0.62}" stop-color="${C.ink}" stop-opacity="0.9"/><stop offset="${fade}" stop-color="${C.ink}" stop-opacity="0.22"/><stop offset="1" stop-color="${C.ink}" stop-opacity="0"/>`
+        : `<stop offset="0" stop-color="${C.ink}" stop-opacity="0"/><stop offset="${1 - fade}" stop-color="${C.ink}" stop-opacity="0.22"/><stop offset="${1 - fade * 0.62}" stop-color="${C.ink}" stop-opacity="0.9"/><stop offset="1" stop-color="${C.ink}" stop-opacity="1"/>`;
+      const x1 = side === 'right' ? 0 : 1;
+      const x2 = side === 'right' ? 1 : 0;
+      const scrim = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+        <defs><linearGradient id="g" x1="${x1}" y1="0" x2="${x2}" y2="0">${grad}</linearGradient></defs>
+        <rect width="${W}" height="${H}" fill="url(#g)"/></svg>`);
+      const plate = await sharp({ create: { width: W, height: H, channels: 3, background: C.ink } })
+        .composite([{ input: art, left: x, top: 0 }, { input: scrim, left: 0, top: 0 }])
+        .png().toBuffer();
+      p.drawImage(await doc.embedPng(plate), { x: 0, y: 0, width: W, height: H });
+    }
+    return p;
   };
 
-  const eyebrow = (s, t, x = M, y = 0.62, color = C.kiln) =>
-    s.addText(t.toUpperCase(), {
-      x, y, w: 9, h: 0.3, fontSize: 9.5, color, fontFace: 'Consolas', charSpacing: 3.2,
+  const T = (p, t, x, yTop, size, font, color, opts = {}) =>
+    p.drawText(t, { x, y: H - yTop, size, font, color: hex(color), ...opts });
+  const kick = (p, t, yTop = 108, color = C.ember) =>
+    T(p, t.toUpperCase(), M, yTop, 8.4, mono, color, { characterSpacing: 2.4 });
+  const body = (p, t, x, yTop, w, size = 12.5, color = C.body, lh = 1.62) =>
+    T(p, t, x, yTop, size, sans, color, { maxWidth: w, lineHeight: size * lh });
+  const disp = (p, t, x, yTop, size, color = C.paper, lh = 0.96) =>
+    T(p, t, x, yTop, size, serif, color, { lineHeight: size * lh });
+  const rule = (p, x, yTop, w, color = C.rule) =>
+    p.drawRectangle({ x, y: H - yTop, width: w, height: 0.8, color: hex(color) });
+  const foot = (p, t) =>
+    T(p, t.toUpperCase(), M, H - 42, 7.2, mono, C.smoke, { characterSpacing: 1.6 });
+  const num = (p, n) =>
+    T(p, String(n).padStart(2, '0'), W - M - 18, H - 42, 7.2, mono, C.smoke, { characterSpacing: 1.4 });
+
+  const mark = await doc.embedPng(await sharp(path.join(ROOT, 'brand/exports/mark-512.png')).resize(140).png().toBuffer());
+
+  /* 01 cover */
+  let p = await page('keyart-1600x2000.png', { frac: 0.52, fade: 0.46 });
+  p.drawImage(mark, { x: M, y: H - 118, width: 26, height: 26 });
+  T(p, 'KILN', M + 38, 116, 15, serif, C.paper, { characterSpacing: 2.6 });
+  disp(p, 'Rooms,', M, 470, 62);
+  disp(p, 'not pages.', M, 528, 62, C.emberLit);
+  rule(p, M, 566, 118, '#3A3A3E');
+  body(p, 'An interactive architecture studio. We model the space in Blender, light it with bpy and ship it in React — under two megabytes, sixty frames on a phone.', M, 592, 380, 11.6);
+  foot(p, 'Pitch deck · 2026 · studio@kiln.studio');
+  num(p, 1);
+
+  /* 02 the problem */
+  p = await page('hero-2400x1600.png', { frac: 0.46, fade: 0.5 });
+  kick(p, 'The problem');
+  disp(p, 'A page is a photograph', M, 200, 44);
+  disp(p, 'of a place.', M, 244, 44, C.emberLit);
+  body(p, 'Customers are asked to judge size, material and finish from a flat image — then guess wrong at the moment they would have bought. Video does not help: it cannot be explored. And most “3D websites” are forty-megabyte showreels that melt a phone on 4G.', M, 316, 470, 12.4);
+  [['No sense of scale', 'A 1.9 m sofa and a 1.4 m sofa photograph identically.'],
+   ['No sense of material', 'Plaster and stone differ in how they take light, not in colour.'],
+   ['No sense of light', 'A north window at four in the afternoon is a buying argument.']]
+    .forEach(([h, t], i) => {
+      const y = 452 + i * 58;
+      p.drawRectangle({ x: M, y: H - y + 9, width: 14, height: 1.4, color: hex(C.ember) });
+      T(p, h, M + 26, y, 12.4, sansM, C.paper);
+      T(p, t, M + 26, y + 19, 9.6, sans, C.kiln);
     });
+  foot(p, 'the argument'); num(p, 2);
 
-  // display type: Georgia is the nearest widely available serif to Instrument Serif
-  const display = (s, t, x, y, size, { w = 10.5, color = C.paper, italic = false, h = 1.3 } = {}) =>
-    s.addText(t, {
-      x, y, w, h, fontSize: size, color, fontFace: 'Georgia', italic,
-      charSpacing: -0.4, lineSpacingMultiple: 0.94,
-    });
-
-  const body = (s, t, x, y, w = 5.0, size = 12.5) =>
-    s.addText(t, { x, y, w, fontSize: size, color: 'C9C3B6', fontFace: 'Arial', lineSpacingMultiple: 1.45 });
-
-  // 4.x has addShape, not addLine: a hairline is a zero-height rectangle
-  const rule = (s, x, y, w = 11.6, color = C.rule) =>
-    s.addShape(pptx.ShapeType.rect, { x, y, w, h: 0.008, fill: { color } });
-
-  /* ── 01 cover */
-  let s = slide();
-  s.addImage({
-    path: IMG('brand', 'renders', 'keyart-1600x2000.png'),
-    x: 6.2, y: 0, w: 7.13, h: H,
-    sizing: { type: 'cover', w: 7.13, h: H },
-  });
-  s.addImage({ path: IMG('brand', 'logo', 'kiln-icon.png'), x: M, y: 0.85, w: 0.62, h: 0.62 });
-  s.addText('KILN', {
-    x: M + 0.8, y: 0.88, w: 4, h: 0.6, fontSize: 26, color: C.paper,
-    fontFace: 'Georgia', charSpacing: 6,
-  });
-  display(s, 'Rooms,', M, 3.05, 54, { w: 5.6 });
-  display(s, 'not pages.', M, 3.85, 54, { w: 5.6, color: C.emberLit, italic: true });
-  rule(s, M, 5.12, 4.9, '3A3A3E');
-  body(s, 'An interactive architecture studio. We model the space in Blender, light it with bpy and ship it in React — under two megabytes, sixty frames on a phone.', M, 5.3, 5.1, 12);
-  s.addText('Pitch deck · 2026 · studio@kiln.studio', {
-    x: M, y: 6.72, w: 6, h: 0.3, fontSize: 9.5, color: C.smoke, fontFace: 'Consolas', charSpacing: 1.4,
-  });
-
-  /* ── 02 the problem */
-  s = slide();
-  eyebrow(s, 'The problem');
-  display(s, 'A page is a photograph\nof a place.', M, 1.1, 40, { w: 7.2 });
-  body(s, 'Customers are asked to judge size, material and finish from a flat image — then they guess wrong at the moment they would have bought. Video does not help: it cannot be explored. And most “3D websites” are forty-megabyte showreels that melt a phone on 4G.', M, 3.9, 6.2, 13);
-
-  ['No sense of scale', 'No sense of material', 'No sense of light'].forEach((t, i) => {
-    const y = 5.5 + i * 0.42;
-    s.addShape(pptx.ShapeType.rect, { x: M, y: y + 0.06, w: 0.16, h: 0.015, fill: { color: C.ember } });
-    s.addText(t, { x: M + 0.34, y, w: 4, h: 0.34, fontSize: 12, color: 'C9C3B6', fontFace: 'Arial' });
-  });
-
-  s.addImage({
-    path: IMG('brand', 'renders', 'hero-2400x1600.png'),
-    x: 7.5, y: 1.1, w: 5.0, h: 5.0,
-    sizing: { type: 'cover', w: 5.0, h: 5.0 },
-  });
-
-  /* ── 03 what we make */
-  s = slide();
-  eyebrow(s, 'The work');
-  display(s, 'Three rooms,\nthree trades.', M, 1.0, 38);
-  rule(s, M, 2.85, 11.6);
+  /* 03 what we make — three columns, each carrying its own plate */
+  p = await page(null);
+  kick(p, 'The work');
+  disp(p, 'Three rooms, three trades.', M, 176, 42);
+  rule(p, M, 232, W - M * 2);
   const offers = [
-    ['Commerce', 'A gallery you can shop', 'Every piece is a real object: turn it, place it, buy it. Product photography replaced by a room.'],
-    ['Property', 'Every unit walkable', 'Sun studies baked in Blender, forty-eight apartments on one link, no render farm.'],
-    ['Launch', 'A moment, not a page', 'A scroll-driven reveal that turns a spec sheet into something people forward.'],
+    ['COMMERCE', 'A gallery you can shop', 'Every piece is a real object: turn it, place it, buy it.', 'work-atelier.png'],
+    ['PROPERTY', 'Every unit walkable', 'Sun studies baked in Blender, forty-eight apartments on one link.', 'work-meridian.png'],
+    ['LAUNCH', 'A moment, not a page', 'A scroll-driven reveal that turns a spec sheet into something people forward.', 'work-kinetic.png'],
   ];
-  offers.forEach(([tag, head, text], i) => {
-    const x = M + i * 3.9;
-    s.addText(tag.toUpperCase(), { x, y: 3.1, w: 3.4, h: 0.3, fontSize: 9, color: C.ember, fontFace: 'Consolas', charSpacing: 2.4 });
-    s.addText(head, { x, y: 3.45, w: 3.5, h: 0.6, fontSize: 19, color: C.paper, fontFace: 'Georgia' });
-    body(s, text, x, 4.2, 3.4, 11.5);
-  });
+  for (const [i, [tag, head, text, img]] of offers.entries()) {
+    const x = M + i * 358;
+    const crop = await sharp(IMG(img)).resize({ width: 320, height: 240, fit: 'cover', position: 'centre' }).png().toBuffer();
+    p.drawImage(await doc.embedPng(crop), { x, y: H - 480, width: 320, height: 240 });
+    T(p, tag, x, 508, 8, mono, C.ember, { characterSpacing: 2.2 });
+    disp(p, head, x, 532, 20);
+    body(p, text, x, 560, 306, 10.6);
+  }
+  foot(p, 'what we build'); num(p, 3);
 
-  /* ── 04–06 case studies */
+  /* 04–06 cases */
   const cases = [
-    ['Atelier Nova', 'COMMERCE · 2025', 'A flagship where every ceramic piece is a real object you turn, place and buy.', '+38% add-to-cart', 'work-atelier.png'],
-    ['Meridian Towers', 'PROPERTY · 2025', 'Forty-eight apartments with sun studies baked in Blender, walkable on a mid-range phone.', '3.1× session length', 'work-meridian.png'],
-    ['Kinetic Labs', 'LAUNCH · 2026', 'A scroll-driven reveal that turns a spec sheet into a launch moment.', '2.4M campaign views', 'work-kinetic.png'],
+    ['case 01 · commerce', 'Atelier Nova', 'A flagship where every piece is a real object you turn, place and buy.', [['+38%', 'add-to-cart'], ['1.9 MB', 'first load'], ['7', 'draw calls']], 'work-atelier.png'],
+    ['case 02 · property', 'Meridian Towers', 'Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap, so a phone draws the floor plate in one pass.', [['3.1×', 'session length'], ['48', 'units walkable'], ['0', 'render farm']], 'work-meridian.png'],
+    ['case 03 · launch', 'Kinetic Labs', 'A scroll-driven reveal built from one turned form. The launch film is rendered from the same geometry, so the ad and the site are the same object.', [['2.4M', 'campaign views'], ['1', 'asset set'], ['6 wks', 'to launch']], 'work-kinetic.png'],
   ];
-
-  for (const [name, tag, text, stat, img] of cases) {
-    s = slide();
-    s.addImage({
-      path: IMG('brand', 'renders', img), x: 6.9, y: 0, w: W - 6.9, h: H,
-      sizing: { type: 'cover', w: W - 6.9, h: H },
+  for (const [i, [k, n, d, stats, img]] of cases.entries()) {
+    p = await page(img, { frac: 0.52, fade: 0.48 });
+    kick(p, k);
+    disp(p, n, M, 208, 40);
+    body(p, d, M, 264, 440, 12);
+    stats.forEach(([v, l], j) => {
+      const y = 420 + j * 52;
+      T(p, v, M, y, 20, serif, C.emberLit);
+      T(p, l.toUpperCase(), M + 96, y - 1, 7.4, mono, C.kiln, { characterSpacing: 1.5 });
     });
-    eyebrow(s, tag, M, 1.5);
-    display(s, name, M, 1.95, 40, { w: 5.4 });
-    body(s, text, M, 3.35, 4.9, 13);
-    s.addText(stat, {
-      x: M, y: 5.5, w: 5, h: 0.5, fontSize: 17, color: C.emberLit, fontFace: 'Consolas',
-    });
-    s.addText('Rendered in Blender · shipped in React', {
-      x: M, y: 6.0, w: 5, h: 0.3, fontSize: 9.5, color: C.smoke, fontFace: 'Consolas',
-    });
+    foot(p, 'rendered in blender · shipped in react'); num(p, 4 + i);
   }
 
-  /* ── 07 method */
-  s = slide();
-  eyebrow(s, 'Method');
-  display(s, 'Blockout → Forge → Budget → Wire → Harden', M, 1.0, 26, { w: 11.6 });
-  const steps = [
-    ['Blockout', 'Camera path, scale and light locked before any texture exists.'],
-    ['Forge', 'bpy scripts build hero geometry, bake lightmaps, export glTF with LODs.'],
-    ['Budget', 'Draco + KTX2 against a first-load ceiling signed off up front.'],
-    ['Wire', 'React Three Fiber scenes, scroll timelines, CMS bindings.'],
-    ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, Lighthouse gate in CI.'],
-  ];
-  steps.forEach(([h, t], i) => {
-    const x = M + i * 2.34;
-    s.addShape(pptx.ShapeType.rect, { x, y: 2.75, w: 0.14, h: 0.015, fill: { color: C.ember } });
-    s.addText(`0${i + 1}`, { x, y: 2.95, w: 1, h: 0.3, fontSize: 9, color: C.ember, fontFace: 'Consolas' });
-    s.addText(h, { x, y: 3.25, w: 2.1, h: 0.4, fontSize: 15, color: C.paper, fontFace: 'Georgia' });
-    body(s, t, x, 3.7, 2.05, 10.5);
-  });
-  s.addImage({
-    path: IMG('brand', 'renders', 'hero-2400x1600.png'),
-    x: M, y: 5.35, w: 11.6, h: 1.75,
-    sizing: { type: 'cover', w: 11.6, h: 1.75 },
-  });
-
-  /* ── 08 performance */
-  s = slide();
-  eyebrow(s, 'Engineering');
-  display(s, 'Beauty that survives\na mid-range phone.', M, 1.0, 34, { w: 7.4 });
-  const nums = [
-    ['< 2.0 MB', 'first load, fonts and JS included'],
-    ['60 fps', 'on a Pixel 6a / iPhone 12 tier GPU'],
-    ['≤ 8', 'draw calls in the hero scene'],
-    ['95+', 'Lighthouse, gated in CI'],
-  ];
-  nums.forEach(([n, t], i) => {
-    const x = M + (i % 2) * 3.3;
-    const y = 3.6 + Math.floor(i / 2) * 1.5;
-    s.addText(n, { x, y, w: 3.0, h: 0.6, fontSize: 27, color: i % 2 ? C.emberLit : C.paper, fontFace: 'Georgia' });
-    body(s, t, x, y + 0.62, 2.9, 10.5);
-  });
-  s.addImage({
-    path: IMG('brand', 'renders', 'square-1600x1600.png'),
-    x: 8.4, y: 1.0, w: 4.4, h: 5.7,
-    sizing: { type: 'cover', w: 4.4, h: 5.7 },
-  });
-
-  /* ── 09 the studio */
-  s = slide();
-  eyebrow(s, 'The studio');
-  display(s, 'Blender hands,\nbrowser discipline.', M, 1.0, 36, { w: 6.4 });
-  body(s, 'KILN is small on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build. One pipeline, three people, no handoffs to a render farm.', M, 3.3, 6.0, 13);
-  const stack = ['Blender', 'bpy', 'Cycles', 'Three.js', 'React Three Fiber', 'gsap', 'Draco', 'KTX2', 'Playwright'];
-  stack.forEach((t, i) => {
-    s.addText(t, {
-      x: M + (i % 3) * 2.05, y: 5.35 + Math.floor(i / 3) * 0.5, w: 1.9, h: 0.34,
-      fontSize: 9.5, color: C.kiln, fontFace: 'Consolas', charSpacing: 1.2,
-      shape: pptx.ShapeType.roundRect, rectRadius: 0.04, line: { color: C.rule, width: 0.6 }, fill: { color: C.ink2 },
-      align: 'center',
+  /* 07 method */
+  p = await page(null);
+  kick(p, 'Method');
+  disp(p, 'Blockout · Forge · Budget · Wire · Harden', M, 186, 30);
+  rule(p, M, 232, W - M * 2);
+  [['Blockout', 'Camera path, scale and light locked before a texture exists.'],
+   ['Forge', 'bpy builds the hero geometry, bakes lightmaps, exports glTF with LODs.'],
+   ['Budget', 'Draco and KTX2 measured against a ceiling signed off up front.'],
+   ['Wire', 'React Three Fiber scenes, scroll timelines, CMS bindings.'],
+   ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, a Lighthouse gate in CI.']]
+    .forEach(([h, t], i) => {
+      const x = M + i * 216;
+      p.drawRectangle({ x, y: H - 276, width: 16, height: 1.4, color: hex(C.ember) });
+      T(p, `0${i + 1}`, x, 296, 7.4, mono, C.ember, { characterSpacing: 1.4 });
+      T(p, h, x, 318, 13.5, serif, C.paper);
+      body(p, t, x, 340, 190, 9.4);
     });
-  });
+  p.drawImage(await doc.embedPng(await sharp(IMG('hero-2400x1600.png'))
+    .resize({ width: 1110, height: 220, fit: 'cover', position: 'south' }).png().toBuffer()),
+    { x: M, y: 58, width: W - M * 2, height: 220 });
+  foot(p, 'the method'); num(p, 7);
 
-  /* ── 10 rates */
-  s = slide();
-  eyebrow(s, 'Rates');
-  display(s, 'Fixed scope.\nFixed number.', M, 1.0, 34);
-  const rows = [
-    [{ text: ' ', options: { fill: { color: C.ink2 } } },
-     { text: 'Spar', options: { bold: true, color: C.paper, fill: { color: C.ink2 } } },
-     { text: 'Kiln', options: { bold: true, color: C.emberLit, fill: { color: C.ink2 } } },
-     { text: 'Firing', options: { bold: true, color: C.paper, fill: { color: C.ink2 } } }],
-    ['Price', '$4,800', '$12,500', '$3,900 / mo'],
-    ['Scenes', '1', 'up to 5', '2 per sprint'],
-    ['bpy pipeline', '—', 'included', 'included'],
-    ['CMS + analytics', '—', 'included', 'included'],
-    ['Launch kit', 'stills', 'stills + loop', 'monthly'],
-    ['Delivery', '2 weeks', '3–5 weeks', 'rolling'],
-  ];
-  s.addTable(rows, {
-    x: M, y: 3.5, w: 11.6, colW: [2.8, 2.9, 2.9, 3.0],
-    border: { type: 'solid', color: C.rule, pt: 0.75 },
-    fontFace: 'Arial', fontSize: 11, color: 'C9C3B6', valign: 'middle', rowH: 0.42,
-  });
-
-  /* ── 11 why us */
-  s = slide();
-  eyebrow(s, 'Why it holds together');
-  display(s, 'One set, many pictures.', M, 1.0, 34, { w: 11 });
-  body(s, 'Every KILN build starts as a real Blender scene. That single decision pays three times: the site is lit correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.', M, 3.2, 5.9, 13);
-  ['site', 'film', 'ads'].forEach((t, i) => {
-    const x = 7.2 + (i % 2) * 2.4;
-    const y = 2.2 + i * 1.75;
-    s.addImage({
-      path: IMG('brand', 'renders', ['work-atelier.png', 'work-kinetic.png', 'square-1600x1600.png'][i]),
-      x, y, w: 2.2, h: 2.2, sizing: { type: 'cover', w: 2.2, h: 2.2 },
+  /* 08 engineering */
+  p = await page('square-1600x1600.png', { frac: 0.42, fade: 0.48 });
+  kick(p, 'Engineering');
+  disp(p, 'Beauty that survives', M, 196, 40);
+  disp(p, 'a mid-range phone.', M, 238, 40, C.emberLit);
+  [['< 2.0 MB', 'first load, fonts and JS included'],
+   ['60 fps', 'on a Pixel 6a / iPhone 12 tier GPU'],
+   ['≤ 8', 'draw calls in the hero scene'],
+   ['95+', 'Lighthouse, gated in CI']]
+    .forEach(([v, t], i) => {
+      const x = M + (i % 2) * 250;
+      const y = 330 + Math.floor(i / 2) * 130;
+      T(p, v, x, y, 30, serif, i % 2 ? C.emberLit : C.paper);
+      body(p, t, x, y + 34, 220, 10);
     });
-    s.addText(t, { x, y: y + 2.24, w: 2.2, h: 0.24, fontSize: 8.5, color: C.smoke, fontFace: 'Consolas', charSpacing: 1.4 });
-  });
+  foot(p, 'the budget is the design'); num(p, 8);
 
-  /* ── 12 next */
-  s = slide();
-  s.addImage({
-    path: IMG('brand', 'renders', 'work-meridian.png'), x: 7.9, y: 0, w: W - 7.9, h: H,
-    sizing: { type: 'cover', w: W - 7.9, h: H },
-  });
-  eyebrow(s, 'Next step', M, 1.2);
-  display(s, 'Send the product.\nWe’ll send the room.', M, 1.7, 34, { w: 6.2 });
-  body(s, 'Within two working days: a fixed price, a camera path and a load budget. No discovery invoice, no retainer to start.', M, 3.9, 5.7, 13);
-  s.addText('studio@kiln.studio', { x: M, y: 5.3, w: 6, h: 0.4, fontSize: 17, color: C.emberLit, fontFace: 'Consolas' });
-  s.addText('kiln.studio · showroom at /showroom', { x: M, y: 5.78, w: 6, h: 0.3, fontSize: 10, color: C.smoke, fontFace: 'Consolas' });
+  /* 09 studio */
+  p = await page(null);
+  kick(p, 'The studio');
+  disp(p, 'Blender hands,', M, 200, 40);
+  disp(p, 'browser discipline.', M, 242, 40, C.emberLit);
+  body(p, 'KILN is three people on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build. One pipeline, no handoff to a render farm.', M, 320, 490, 12.4);
+  ['Blender', 'bpy', 'Cycles', 'Three.js', 'React Three Fiber', 'gsap', 'Draco', 'KTX2', 'Playwright']
+    .forEach((t, i) => {
+      const x = M + (i % 3) * 128;
+      const y = 452 + Math.floor(i / 3) * 34;
+      p.drawRectangle({ x, y: H - y - 16, width: 120, height: 26, borderColor: hex(C.rule), borderWidth: 0.6, color: hex(C.ink2) });
+      T(p, t, x + 10, y, 8, mono, C.kiln, { characterSpacing: 0.8 });
+    });
+  // portrait panel from a portrait plate: a 16:9 detail crop would be a single blur
+  p.drawImage(await doc.embedPng(await sharp(IMG('work-atelier.png'))
+    .resize({ width: 470, height: H, fit: 'cover', position: 'left' }).png().toBuffer()),
+    { x: W - 470, y: 0, width: 470, height: H });
+  p.drawRectangle({ x: W - 470, y: 0, width: 90, height: H, color: hex(C.ink), opacity: 0.86 });
+  foot(p, 'the studio'); num(p, 9);
 
-  const out = path.join(ROOT, 'deck', 'KILN-pitch-deck.pptx');
-  fs.mkdirSync(path.dirname(out), { recursive: true });
-  await pptx.writeFile({ fileName: out });
-  console.log('deck:', out, (fs.statSync(out).size / 1024).toFixed(0) + ' KB', pptx.slides.length, 'slides');
+  /* 10 rates */
+  p = await page(null);
+  kick(p, 'Rates');
+  disp(p, 'Fixed scope. Fixed number.', M, 190, 38);
+  body(p, 'Every tier includes a written load budget, a Lighthouse gate in CI, source handover and WebGL fallbacks.', M, 224, 620, 11.2);
+  const tiers = [
+    ['Spar', '$4,800', '2 weeks', 'One walkthrough scene, three art-directed stills, source handover.'],
+    ['Kiln', '$12,500', '3–5 weeks', 'Up to five rooms, bpy pipeline, CMS, launch kit, thirty days of support.'],
+    ['Firing', '$3,900 / mo', 'rolling', 'Two scenes per sprint, performance monitoring, monthly ad creative.'],
+  ];
+  tiers.forEach(([n, price, when, what], i) => {
+    const x = M + i * 358;
+    const feat = i === 1;
+    p.drawRectangle({
+      x, y: 96, width: 330, height: 250,
+      color: hex(feat ? '#14100E' : C.ink2),
+      borderColor: hex(feat ? C.ember : C.rule), borderWidth: feat ? 1 : 0.6,
+    });
+    T(p, n.toUpperCase(), x + 24, 320, 8, mono, feat ? C.emberLit : C.kiln, { characterSpacing: 2.2 });
+    T(p, price, x + 24, 356, 26, serif, C.paper);
+    T(p, when, x + 24, 372, 8, mono, C.smoke, { characterSpacing: 1 });
+    rule(p, x + 24, 388, 282, '#26272B');
+    body(p, what, x + 24, 404, 282, 10.2);
+  });
+  foot(p, 'rates'); num(p, 10);
+
+  /* 11 why */
+  p = await page('work-atelier.png', { frac: 0.5, fade: 0.5 });
+  kick(p, 'Why it holds together');
+  disp(p, 'One set,', M, 200, 40);
+  disp(p, 'many pictures.', M, 242, 40, C.emberLit);
+  body(p, 'Every KILN build starts as a real Blender scene. That single decision pays three times: the site is lit correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.', M, 316, 470, 12.4);
+  foot(p, 'provenance'); num(p, 11);
+
+  /* 12 next */
+  p = await page('work-meridian.png', { frac: 0.46, fade: 0.46 });
+  kick(p, 'Next step');
+  disp(p, 'Send the product.', M, 246, 44);
+  disp(p, 'We send the room.', M, 292, 44, C.emberLit);
+  body(p, 'Within two working days: a fixed price, a camera path and a load budget. No discovery invoice, no retainer to start.', M, 372, 430, 12.4);
+  T(p, 'studio@kiln.studio', M, 470, 17, sansM, C.emberLit, { characterSpacing: 0.3 });
+  T(p, 'kiln.studio  ·  +44 20 7946 0812  ·  showroom at /showroom', M, 494, 8.4, mono, C.kiln, { characterSpacing: 0.8 });
+  foot(p, 'kiln · 2026'); num(p, 12);
+
+  fs.mkdirSync(OUT, { recursive: true });
+  const file = path.join(OUT, 'KILN-pitch-deck.pdf');
+  fs.writeFileSync(file, await doc.save());
+  console.log('deck pdf:', file, (fs.statSync(file).size / 1024).toFixed(0) + ' KB', doc.getPageCount(), 'slides');
+}
+
+/* ───────────────────────────────────────── PPTX ────────────────────────────
+   PowerPoint cannot be handed a font it does not have installed, so the editable
+   deck sets the same copy in Georgia / Arial at the same sizes and positions. It is
+   the working file, not the artefact that gets sent: the PDF is the deck.
+*/
+async function pptx() {
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_16x9';
+  pptx.title = 'KILN — rooms, not pages';
+  pptx.author = 'KILN';
+  const EW = 13.333;
+  const EH = 7.5;
+  const em = (pt) => pt / 72;          // points → inches, so sizes match the PDF
+  const ex = (x) => (x / W) * EW;
+  const ey = (y) => (y / H) * EH;
+
+  const slide = (img, { frac = 0.5, side = 'right' } = {}) => {
+    const s = pptx.addSlide();
+    s.background = { color: C.ink.replace('#', '') };
+    if (img) {
+      const w = EW * frac;
+      s.addImage({
+        path: IMG(img), x: side === 'right' ? EW - w : 0, y: 0, w, h: EH,
+        sizing: { type: 'cover', w, h: EH },
+      });
+      // a scrim so type is never set on the busy half
+      s.addShape(pptx.ShapeType.rect, {
+        x: side === 'right' ? EW - w : 0, y: 0, w: w * 0.85, h: EH,
+        fill: { color: C.ink.replace('#', ''), transparency: 22 }, line: { color: C.ink.replace('#', ''), width: 0 },
+      });
+    }
+    return s;
+  };
+  const T = (s, t, x, y, size, font, color, opts = {}) =>
+    s.addText(t, { x: ex(x), y: ey(y), w: opts.w || 6, h: opts.h || 0.6, fontSize: size, fontFace: font, color, charSpacing: opts.cs || 0, lineSpacingMultiple: opts.lh || 1.2, valign: 'top', bold: !!opts.bold });
+  const SERIF = 'Georgia';
+  const SANS = 'Arial';
+  const MONO = 'Consolas';
+  const kick = (s, t) => T(s, t.toUpperCase(), M, 108, 8.4, MONO, C.ember.replace('#', ''), { cs: 2.4 });
+  const foot = (s, t) => T(s, t.toUpperCase(), M, 668, 7.2, MONO, C.smoke.replace('#', ''), { cs: 1.6 });
+
+  let s = slide('keyart-1600x2000.png', { frac: 0.52 });
+  T(s, 'KILN', 124, 100, 15, SERIF, C.paper.replace('#', ''), { cs: 2.6 });
+  T(s, 'Rooms,', M, 400, 62, SERIF, C.paper.replace('#', ''), { w: 6 });
+  T(s, 'not pages.', M, 452, 62, SERIF, C.emberLit.replace('#', ''), { w: 6 });
+  T(s, 'An interactive architecture studio. We model the space in Blender, light it with bpy and ship it in React — under two megabytes, sixty frames on a phone.', M, 528, 11.6, SANS, C.body.replace('#', ''), { w: 4.2, lh: 1.4 });
+  foot(s, 'Pitch deck · 2026 · studio@kiln.studio');
+
+  s = slide('hero-2400x1600.png', { frac: 0.46 });
+  kick(s, 'The problem');
+  T(s, 'A page is a photograph', M, 176, 44, SERIF, C.paper.replace('#', ''));
+  T(s, 'of a place.', M, 222, 44, SERIF, C.emberLit.replace('#', ''));
+  T(s, 'Customers are asked to judge size, material and finish from a flat image — then guess wrong at the moment they would have bought. Video does not help: it cannot be explored. And most “3D websites” are forty-megabyte showreels that melt a phone on 4G.', M, 300, 12.4, SANS, C.body.replace('#', ''), { w: 5.4, lh: 1.45 });
+  ['No sense of scale · No sense of material · No sense of light'].forEach((t) =>
+    T(s, t, M, 480, 10, MONO, C.kiln.replace('#', ''), { cs: 1 }));
+  foot(s, 'the argument');
+
+  s = slide(null);
+  kick(s, 'The work');
+  T(s, 'Three rooms, three trades.', M, 176, 42, SERIF, C.paper.replace('#', ''));
+  const offers = [
+    ['COMMERCE', 'A gallery you can shop', 'work-atelier.png'],
+    ['PROPERTY', 'Every unit walkable', 'work-meridian.png'],
+    ['LAUNCH', 'A moment, not a page', 'work-kinetic.png'],
+  ];
+  offers.forEach(([tag, head, img], i) => {
+    const x = M + i * 358;
+    s.addImage({ path: IMG(img), x: ex(x), y: ey(250), w: ex(320), h: ey(240), sizing: { type: 'cover', w: ex(320), h: ey(240) } });
+    T(s, tag, x, 510, 8, MONO, C.ember.replace('#', ''), { cs: 2.2 });
+    T(s, head, x, 528, 19, SERIF, C.paper.replace('#', ''));
+  });
+  foot(s, 'what we build');
+
+  const cases = [
+    ['case 01 · commerce', 'Atelier Nova', 'A flagship where every piece is a real object you turn, place and buy.', [['+38%', 'add-to-cart'], ['1.9 MB', 'first load'], ['7', 'draw calls']], 'work-atelier.png'],
+    ['case 02 · property', 'Meridian Towers', 'Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap, so a phone draws the floor plate in one pass.', [['3.1×', 'session length'], ['48', 'units walkable'], ['0', 'render farm']], 'work-meridian.png'],
+    ['case 03 · launch', 'Kinetic Labs', 'A scroll-driven reveal built from one turned form. The launch film is rendered from the same geometry, so the ad and the site are the same object.', [['2.4M', 'campaign views'], ['1', 'asset set'], ['6 wks', 'to launch']], 'work-kinetic.png'],
+  ];
+  for (const [i, [k, n, d, stats, img]] of cases.entries()) {
+    p = await page(img, { frac: 0.52, fade: 0.48 });
+    kick(p, k);
+    disp(p, n, M, 208, 40);
+    body(p, d, M, 264, 440, 12);
+    stats.forEach(([v, l], j) => {
+      const y = 420 + j * 52;
+      T(p, v, M, y, 20, serif, C.emberLit);
+      T(p, l.toUpperCase(), M + 96, y - 1, 7.4, mono, C.kiln, { characterSpacing: 1.5 });
+    });
+    foot(p, 'rendered in blender · shipped in react'); num(p, 4 + i);
+  }
+
+  /* 07 method */
+  p = await page(null);
+  kick(p, 'Method');
+  disp(p, 'Blockout · Forge · Budget · Wire · Harden', M, 186, 30);
+  rule(p, M, 232, W - M * 2);
+  [['Blockout', 'Camera path, scale and light locked before a texture exists.'],
+   ['Forge', 'bpy builds the hero geometry, bakes lightmaps, exports glTF with LODs.'],
+   ['Budget', 'Draco and KTX2 measured against a ceiling signed off up front.'],
+   ['Wire', 'React Three Fiber scenes, scroll timelines, CMS bindings.'],
+   ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, a Lighthouse gate in CI.']]
+    .forEach(([h, t], i) => {
+      const x = M + i * 216;
+      p.drawRectangle({ x, y: H - 276, width: 16, height: 1.4, color: hex(C.ember) });
+      T(p, `0${i + 1}`, x, 296, 7.4, mono, C.ember, { characterSpacing: 1.4 });
+      T(p, h, x, 318, 13.5, serif, C.paper);
+      body(p, t, x, 340, 190, 9.4);
+    });
+  p.drawImage(await doc.embedPng(await sharp(IMG('hero-2400x1600.png'))
+    .resize({ width: 1110, height: 220, fit: 'cover', position: 'south' }).png().toBuffer()),
+    { x: M, y: 58, width: W - M * 2, height: 220 });
+  foot(p, 'the method'); num(p, 7);
+
+  /* 08 engineering */
+  p = await page('square-1600x1600.png', { frac: 0.42, fade: 0.48 });
+  kick(p, 'Engineering');
+  disp(p, 'Beauty that survives', M, 196, 40);
+  disp(p, 'a mid-range phone.', M, 238, 40, C.emberLit);
+  [['< 2.0 MB', 'first load, fonts and JS included'],
+   ['60 fps', 'on a Pixel 6a / iPhone 12 tier GPU'],
+   ['≤ 8', 'draw calls in the hero scene'],
+   ['95+', 'Lighthouse, gated in CI']]
+    .forEach(([v, t], i) => {
+      const x = M + (i % 2) * 250;
+      const y = 330 + Math.floor(i / 2) * 130;
+      T(p, v, x, y, 30, serif, i % 2 ? C.emberLit : C.paper);
+      body(p, t, x, y + 34, 220, 10);
+    });
+  foot(p, 'the budget is the design'); num(p, 8);
+
+  /* 09 studio */
+  p = await page(null);
+  kick(p, 'The studio');
+  disp(p, 'Blender hands,', M, 200, 40);
+  disp(p, 'browser discipline.', M, 242, 40, C.emberLit);
+  body(p, 'KILN is three people on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build. One pipeline, no handoff to a render farm.', M, 320, 490, 12.4);
+  ['Blender', 'bpy', 'Cycles', 'Three.js', 'React Three Fiber', 'gsap', 'Draco', 'KTX2', 'Playwright']
+    .forEach((t, i) => {
+      const x = M + (i % 3) * 128;
+      const y = 452 + Math.floor(i / 3) * 34;
+      p.drawRectangle({ x, y: H - y - 16, width: 120, height: 26, borderColor: hex(C.rule), borderWidth: 0.6, color: hex(C.ink2) });
+      T(p, t, x + 10, y, 8, mono, C.kiln, { characterSpacing: 0.8 });
+    });
+  // portrait panel from a portrait plate: a 16:9 detail crop would be a single blur
+  p.drawImage(await doc.embedPng(await sharp(IMG('work-atelier.png'))
+    .resize({ width: 470, height: H, fit: 'cover', position: 'left' }).png().toBuffer()),
+    { x: W - 470, y: 0, width: 470, height: H });
+  p.drawRectangle({ x: W - 470, y: 0, width: 90, height: H, color: hex(C.ink), opacity: 0.86 });
+  foot(p, 'the studio'); num(p, 9);
+
+  /* 10 rates */
+  p = await page(null);
+  kick(p, 'Rates');
+  disp(p, 'Fixed scope. Fixed number.', M, 190, 38);
+  body(p, 'Every tier includes a written load budget, a Lighthouse gate in CI, source handover and WebGL fallbacks.', M, 224, 620, 11.2);
+  const tiers = [
+    ['Spar', '$4,800', '2 weeks', 'One walkthrough scene, three art-directed stills, source handover.'],
+    ['Kiln', '$12,500', '3–5 weeks', 'Up to five rooms, bpy pipeline, CMS, launch kit, thirty days of support.'],
+    ['Firing', '$3,900 / mo', 'rolling', 'Two scenes per sprint, performance monitoring, monthly ad creative.'],
+  ];
+  tiers.forEach(([n, price, when, what], i) => {
+    const x = M + i * 358;
+    const feat = i === 1;
+    p.drawRectangle({
+      x, y: 96, width: 330, height: 250,
+      color: hex(feat ? '#14100E' : C.ink2),
+      borderColor: hex(feat ? C.ember : C.rule), borderWidth: feat ? 1 : 0.6,
+    });
+    T(p, n.toUpperCase(), x + 24, 320, 8, mono, feat ? C.emberLit : C.kiln, { characterSpacing: 2.2 });
+    T(p, price, x + 24, 356, 26, serif, C.paper);
+    T(p, when, x + 24, 372, 8, mono, C.smoke, { characterSpacing: 1 });
+    rule(p, x + 24, 388, 282, '#26272B');
+    body(p, what, x + 24, 404, 282, 10.2);
+  });
+  foot(p, 'rates'); num(p, 10);
+
+  /* 11 why */
+  p = await page('work-atelier.png', { frac: 0.5, fade: 0.5 });
+  kick(p, 'Why it holds together');
+  disp(p, 'One set,', M, 200, 40);
+  disp(p, 'many pictures.', M, 242, 40, C.emberLit);
+  body(p, 'Every KILN build starts as a real Blender scene. That single decision pays three times: the site is lit correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.', M, 316, 470, 12.4);
+  foot(p, 'provenance'); num(p, 11);
+
+  /* 12 next */
+  p = await page('work-meridian.png', { frac: 0.46, fade: 0.46 });
+  kick(p, 'Next step');
+  disp(p, 'Send the product.', M, 246, 44);
+  disp(p, 'We send the room.', M, 292, 44, C.emberLit);
+  body(p, 'Within two working days: a fixed price, a camera path and a load budget. No discovery invoice, no retainer to start.', M, 372, 430, 12.4);
+  T(p, 'studio@kiln.studio', M, 470, 17, sansM, C.emberLit, { characterSpacing: 0.3 });
+  T(p, 'kiln.studio  ·  +44 20 7946 0812  ·  showroom at /showroom', M, 494, 8.4, mono, C.kiln, { characterSpacing: 0.8 });
+  foot(p, 'kiln · 2026'); num(p, 12);
+
+  fs.mkdirSync(OUT, { recursive: true });
+  const file = path.join(OUT, 'KILN-pitch-deck.pdf');
+  fs.writeFileSync(file, await doc.save());
+  console.log('deck pdf:', file, (fs.statSync(file).size / 1024).toFixed(0) + ' KB', doc.getPageCount(), 'slides');
+}
+
+/* ───────────────────────────────────────── PPTX ────────────────────────────
+   PowerPoint cannot be handed a font it does not have installed, so the editable
+   deck sets the same copy in Georgia / Arial at the same sizes and positions. It is
+   the working file, not the artefact that gets sent: the PDF is the deck.
+*/
+async function pptx() {
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_16x9';
+  pptx.title = 'KILN — rooms, not pages';
+  pptx.author = 'KILN';
+  const EW = 13.333;
+  const EH = 7.5;
+  const em = (pt) => pt / 72;          // points → inches, so sizes match the PDF
+  const ex = (x) => (x / W) * EW;
+  const ey = (y) => (y / H) * EH;
+
+  const slide = (img, { frac = 0.5, side = 'right' } = {}) => {
+    const s = pptx.addSlide();
+    s.background = { color: C.ink.replace('#', '') };
+    if (img) {
+      const w = EW * frac;
+      s.addImage({
+        path: IMG(img), x: side === 'right' ? EW - w : 0, y: 0, w, h: EH,
+        sizing: { type: 'cover', w, h: EH },
+      });
+      // a scrim so type is never set on the busy half
+      s.addShape(pptx.ShapeType.rect, {
+        x: side === 'right' ? EW - w : 0, y: 0, w: w * 0.85, h: EH,
+        fill: { color: C.ink.replace('#', ''), transparency: 22 }, line: { color: C.ink.replace('#', ''), width: 0 },
+      });
+    }
+    return s;
+  };
+  const T = (s, t, x, y, size, font, color, opts = {}) =>
+    s.addText(t, { x: ex(x), y: ey(y), w: opts.w || 6, h: opts.h || 0.6, fontSize: size, fontFace: font, color, charSpacing: opts.cs || 0, lineSpacingMultiple: opts.lh || 1.2, valign: 'top', bold: !!opts.bold });
+  const SERIF = 'Georgia';
+  const SANS = 'Arial';
+  const MONO = 'Consolas';
+  const kick = (s, t) => T(s, t.toUpperCase(), M, 108, 8.4, MONO, C.ember.replace('#', ''), { cs: 2.4 });
+  const foot = (s, t) => T(s, t.toUpperCase(), M, 668, 7.2, MONO, C.smoke.replace('#', ''), { cs: 1.6 });
+
+  let s = slide('keyart-1600x2000.png', { frac: 0.52 });
+  T(s, 'KILN', 124, 100, 15, SERIF, C.paper.replace('#', ''), { cs: 2.6 });
+  T(s, 'Rooms,', M, 400, 62, SERIF, C.paper.replace('#', ''), { w: 6 });
+  T(s, 'not pages.', M, 452, 62, SERIF, C.emberLit.replace('#', ''), { w: 6 });
+  T(s, 'An interactive architecture studio. We model the space in Blender, light it with bpy and ship it in React — under two megabytes, sixty frames on a phone.', M, 528, 11.6, SANS, C.body.replace('#', ''), { w: 4.2, lh: 1.4 });
+  foot(s, 'Pitch deck · 2026 · studio@kiln.studio');
+
+  s = slide('hero-2400x1600.png', { frac: 0.46 });
+  kick(s, 'The problem');
+  T(s, 'A page is a photograph', M, 176, 44, SERIF, C.paper.replace('#', ''));
+  T(s, 'of a place.', M, 222, 44, SERIF, C.emberLit.replace('#', ''));
+  T(s, 'Customers are asked to judge size, material and finish from a flat image — then guess wrong at the moment they would have bought. Video does not help: it cannot be explored. And most “3D websites” are forty-megabyte showreels that melt a phone on 4G.', M, 300, 12.4, SANS, C.body.replace('#', ''), { w: 5.4, lh: 1.45 });
+  ['No sense of scale · No sense of material · No sense of light'].forEach((t) =>
+    T(s, t, M, 480, 10, MONO, C.kiln.replace('#', ''), { cs: 1 }));
+  foot(s, 'the argument');
+
+  s = slide(null);
+  kick(s, 'The work');
+  T(s, 'Three rooms, three trades.', M, 176, 42, SERIF, C.paper.replace('#', ''));
+  [['COMMERCE', 'A gallery you can shop'], ['PROPERTY', 'Every unit walkable'], ['LAUNCH', 'A moment, not a page']]
+    .forEach(([tag, head], i) => {
+      T(s, tag, M + i * 358, 300, 8, MONO, C.ember.replace('#', ''), { cs: 2.2 });
+      T(s, head, M + i * 358, 324, 19, SERIF, C.paper.replace('#', ''));
+    });
+  s.addImage({ path: IMG('hero-2400x1600.png'), x: ex(M), y: ey(430), w: ex(1110), h: ey(190), sizing: { type: 'cover', w: ex(1110), h: ey(190) }, rounding: false });
+  foot(s, 'what we build');
+
+  const cases = [
+    ['case 01 · commerce', 'Atelier Nova', 'A flagship where every piece is a real object you turn, place and buy.', ['+38% add-to-cart', '1.9 MB first load', '7 draw calls'], 'work-atelier.png'],
+    ['case 02 · property', 'Meridian Towers', 'Forty-eight apartments, each lit for its real orientation. Sun studies computed in Blender and baked to a lightmap.', ['3.1× session length', '48 units walkable', '0 render farm'], 'work-meridian.png'],
+    ['case 03 · launch', 'Kinetic Labs', 'A scroll-driven reveal built from one turned form. The launch film is rendered from the same geometry.', ['2.4M campaign views', '1 asset set', '6 wks to launch'], 'work-kinetic.png'],
+  ];
+  for (const [k, n, d, stats, img] of cases) {
+    s = slide(img, { frac: 0.52 });
+    kick(s, k);
+    T(s, n, M, 190, 40, SERIF, C.paper.replace('#', ''));
+    T(s, d, M, 250, 12, SANS, C.body.replace('#', ''), { w: 5, lh: 1.45 });
+    stats.forEach((t, j) => T(s, t, M, 400 + j * 34, 11, MONO, C.emberLit.replace('#', ''), { cs: 1 }));
+    foot(s, 'rendered in blender · shipped in react');
+  }
+
+  s = slide(null);
+  kick(s, 'Method');
+  T(s, 'Blockout · Forge · Budget · Wire · Harden', M, 172, 30, SERIF, C.paper.replace('#', ''));
+  [['Blockout', 'Camera path, scale and light locked before a texture exists.'],
+   ['Forge', 'bpy builds the hero geometry, bakes lightmaps, exports glTF with LODs.'],
+   ['Budget', 'Draco and KTX2 measured against a ceiling signed off up front.'],
+   ['Wire', 'React Three Fiber scenes, scroll timelines, CMS bindings.'],
+   ['Harden', 'GPU tiers, fallbacks, SEO-safe HTML, a Lighthouse gate in CI.']]
+    .forEach(([h, t], i) => {
+      T(s, `0${i + 1}`, M + i * 216, 296, 7.4, MONO, C.ember.replace('#', ''), { cs: 1.4 });
+      T(s, h, M + i * 216, 312, 13, SERIF, C.paper.replace('#', ''));
+      T(s, t, M + i * 216, 336, 9.4, SANS, C.body.replace('#', ''), { w: 1.9, lh: 1.35 });
+    });
+  s.addImage({ path: IMG('hero-2400x1600.png'), x: ex(M), y: ey(430), w: ex(1110), h: ey(210), sizing: { type: 'cover', w: ex(1110), h: ey(210) } });
+  foot(s, 'the method');
+
+  s = slide('square-1600x1600.png', { frac: 0.42 });
+  kick(s, 'Engineering');
+  T(s, 'Beauty that survives', M, 180, 40, SERIF, C.paper.replace('#', ''));
+  T(s, 'a mid-range phone.', M, 226, 40, SERIF, C.emberLit.replace('#', ''));
+  [['< 2.0 MB', 'first load, fonts and JS included'], ['60 fps', 'on a Pixel 6a / iPhone 12 tier GPU'],
+   ['≤ 8', 'draw calls in the hero scene'], ['95+', 'Lighthouse, gated in CI']]
+    .forEach(([v, t], i) => {
+      const x = M + (i % 2) * 250;
+      const y = 320 + Math.floor(i / 2) * 120;
+      T(s, v, x, y, 26, SERIF, (i % 2 ? C.emberLit : C.paper).replace('#', ''));
+      T(s, t, x, y + 34, 10, SANS, C.body.replace('#', ''), { w: 2.2 });
+    });
+  foot(s, 'the budget is the design');
+
+  s = slide(null);
+  kick(s, 'The studio');
+  T(s, 'Blender hands,', M, 184, 40, SERIF, C.paper.replace('#', ''));
+  T(s, 'browser discipline.', M, 230, 40, SERIF, C.emberLit.replace('#', ''));
+  T(s, 'KILN is three people on purpose: an asset engineer writing bpy automation, a creative developer owning the WebGL layer, and a motion designer who ships the campaign with every build.', M, 310, 12.4, SANS, C.body.replace('#', ''), { w: 5.2, lh: 1.45 });
+  T(s, 'Blender · bpy · Cycles · Three.js · R3F · gsap · Draco · KTX2 · Playwright', M, 460, 9, MONO, C.kiln.replace('#', ''), { cs: 1, w: 6.4 });
+  s.addImage({ path: IMG('work-atelier.png'), x: EW - 4.9, y: 0, w: 4.9, h: EH, sizing: { type: 'cover', w: 4.9, h: EH } });
+  foot(s, 'the studio');
+
+  s = slide(null);
+  kick(s, 'Rates');
+  T(s, 'Fixed scope. Fixed number.', M, 176, 38, SERIF, C.paper.replace('#', ''));
+  [['Spar', '$4,800', '2 weeks', 'One walkthrough scene, three art-directed stills, source handover.'],
+   ['Kiln', '$12,500', '3–5 weeks', 'Up to five rooms, bpy pipeline, CMS, launch kit, thirty days of support.'],
+   ['Firing', '$3,900 / mo', 'rolling', 'Two scenes per sprint, performance monitoring, monthly ad creative.']]
+    .forEach(([n, price, when, what], i) => {
+      const x = M + i * 358;
+      const feat = i === 1;
+      s.addShape(pptx.ShapeType.rect, {
+        x: ex(x), y: ey(250), w: ex(330), h: ey(250),
+        fill: { color: (feat ? '#14100E' : C.ink2).replace('#', '') },
+        line: { color: (feat ? C.ember : C.rule).replace('#', ''), width: feat ? 1.2 : 0.6 },
+      });
+      T(s, n.toUpperCase(), x + 24, 270, 8, MONO, (feat ? C.emberLit : C.kiln).replace('#', ''), { cs: 2.2 });
+      T(s, price, x + 24, 300, 24, SERIF, C.paper.replace('#', ''));
+      T(s, when, x + 24, 330, 8, MONO, C.smoke.replace('#', ''));
+      T(s, what, x + 24, 360, 10, SANS, C.body.replace('#', ''), { w: 2.9, lh: 1.35 });
+    });
+  foot(s, 'rates');
+
+  s = slide('work-atelier.png', { frac: 0.5 });
+  kick(s, 'Why it holds together');
+  T(s, 'One set,', M, 184, 40, SERIF, C.paper.replace('#', ''));
+  T(s, 'many pictures.', M, 230, 40, SERIF, C.emberLit.replace('#', ''));
+  T(s, 'Every KILN build starts as a real Blender scene. That single decision pays three times: the site is lit correctly, the launch film is rendered from the same geometry, and the ad stills are photographs rather than illustrations. One asset, one invoice, three channels.', M, 310, 12.4, SANS, C.body.replace('#', ''), { w: 5, lh: 1.45 });
+  foot(s, 'provenance');
+
+  s = slide('work-meridian.png', { frac: 0.46 });
+  kick(s, 'Next step');
+  T(s, 'Send the product.', M, 230, 44, SERIF, C.paper.replace('#', ''));
+  T(s, 'We send the room.', M, 280, 44, SERIF, C.emberLit.replace('#', ''));
+  T(s, 'Within two working days: a fixed price, a camera path and a load budget. No discovery invoice, no retainer to start.', M, 360, 12.4, SANS, C.body.replace('#', ''), { w: 4.8, lh: 1.45 });
+  T(s, 'studio@kiln.studio', M, 462, 16, SANS, C.emberLit.replace('#', ''));
+  T(s, 'kiln.studio  ·  +44 20 7946 0812  ·  showroom at /showroom', M, 492, 8.4, MONO, C.kiln.replace('#', ''), { cs: 0.8, w: 6.4 });
+  foot(s, 'kiln · 2026');
+
+  const file = path.join(OUT, 'KILN-pitch-deck.pptx');
+  await pptx.writeFile({ fileName: file });
+  console.log('deck pptx:', file, (fs.statSync(file).size / 1024).toFixed(0) + ' KB', pptx.slides.length, 'slides');
+}
+
+async function main() {
+  fs.mkdirSync(OUT, { recursive: true });
+  await pdf();
+  await pptx();
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
