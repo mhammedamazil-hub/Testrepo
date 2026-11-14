@@ -1,236 +1,54 @@
 name: craft-sizes
 on: workflow_dispatch
+permissions:
+  contents: write
 jobs:
-  photocraft:
+  sizes:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
-      - name: Measure photocraft CLI payload
+      - uses: actions/checkout@v4
+      - name: Measure every CLI payload
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.23.1 -R storytold/photocraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  vectorcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure vectorcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          exec 2>&1
+          REP="$GITHUB_WORKSPACE/craft-sizes.md"
+          echo "| app | tag | tarball | bin/* files | file size | gzip -9 size |" > "$REP"
+          echo "|---|---|---|---|---|---|" >> "$REP"
+          set +e
+          for pair in             "photocraft v0.23.1" \
+            "vectorcraft v0.24.1" \
+            "filmcraft v0.20.1" \
+            "lightcraft v0.21.1" \
+            "pdfcraft v0.21.1" \
+            "effectcraft v0.24.1" \
+            "designcraft v0.20.1" \
+            "figcraft v0.18.1" \
+            "wordcraft v0.18.1" \
+            "soundcraft v0.20.1" \
+            "deckcraft v0.18.1" \
+            "cadcraft v0.20.1" \
+            "gridcraft v0.19.1"
+          do
+            set -- $pair; app=$1; tag=$2
+            rm -rf /tmp/w; mkdir -p /tmp/w; cd /tmp/w
+            gh release download "$tag" -R "storytold/$app" -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
+            tb=$(ls *.tar.gz 2>/dev/null | head -1)
+            tbsz=$(stat -c%s "$tb" 2>/dev/null)
+            for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
+            files=""
+            for b in $(find . -path '*/bin/*' -type f | sort); do
+              sz=$(stat -c%s "$b"); gz=$(gzip -9 -c "$b" | wc -c)
+              files="$files<br>$(basename $b) ($sz B / gz $gz B)"
+            done
+            echo "| $app | $tag | $tb ($tbsz) | $files | - | - |" >> "$REP"
+            cd /tmp
+          done
+          cat "$REP"
+      - name: Commit sizes report
+        if: always()
         run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.24.1 -R storytold/vectorcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  filmcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure filmcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.20.1 -R storytold/filmcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  lightcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure lightcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.21.1 -R storytold/lightcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  pdfcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure pdfcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.21.1 -R storytold/pdfcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  effectcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure effectcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.24.1 -R storytold/effectcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  designcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure designcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.20.1 -R storytold/designcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  figcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure figcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.18.1 -R storytold/figcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  wordcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure wordcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.18.1 -R storytold/wordcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  soundcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure soundcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.20.1 -R storytold/soundcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  deckcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure deckcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.18.1 -R storytold/deckcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  cadcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure cadcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.20.1 -R storytold/cadcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
-
-  gridcraft:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Measure gridcraft CLI payload
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd /tmp; mkdir w; cd w
-          gh release download v0.19.1 -R storytold/gridcraft -p '*linux-x86_64.tar.gz' -D . 2>/dev/null
-          echo "asset sizes:"; ls -l *.tar.gz | awk '{print $5, $9}'
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar tzf "$f" | grep -E 'bin/[^/]*$' ; done
-          echo "--- extract only bin/ ---"
-          for f in *.tar.gz; do case "$f" in *server*) continue;; esac; tar xzf "$f" --wildcards '*/bin/*' 2>/dev/null; done
-          find . -path '*/bin/*' -type f -exec ls -l {} \; | awk '{print $5, $9}' | sort -n
-          echo "--- cli only, gzipped size ---"
-          for b in $(find . -path '*/bin/*-cli' -type f); do cp "$b" /tmp/cli_$(basename "$b"); gzip -9 -c "$b" | wc -c | xargs echo "$(basename $b) gz_bytes:"; done
+          cd "$GITHUB_WORKSPACE"; git config user.name craft-sizes; git config user.email actions@users.noreply.github.com
+          git pull --rebase || true
+          git add craft-sizes.md && git commit -m "CI: CLI payload sizes" || true; git push || true
