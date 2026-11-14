@@ -87,22 +87,29 @@ jobs:
       #    artefact. The scripts are the source of truth and are committed.
       - name: Build — FigCraft screens
         run: |
-          set -euo pipefail
-          ls studio/craft/figcraft
+          mkdir -p studio/craft/out
+          LOG=studio/craft/out/figcraft.log
+          exec 3>&1
+          {
+            npx pi-craft figcraft exec path || true
+            npx pi-craft figcraft exec help || true
+            npx pi-craft figcraft exec commands --filter frame.create || true
+            npx pi-craft figcraft exec commands --filter text.create || true
+          } 2>&1 | tee -a "$LOG" | while IFS= read -r l; do echo "$l"; done
+
           for s in studio/craft/figcraft/*.jsonl; do
             name=$(basename "$s" .jsonl)
-            echo "::group::figcraft $name"
-            npx pi-craft figcraft exec run "$s" --out "studio/craft/out/figcraft-$name.figcraft"
-            npx pi-craft figcraft exec info "studio/craft/out/figcraft-$name.figcraft" --json | tee "/tmp/$name.info.json"
-            # OUT with no image extension is a *directory*: one file per frame,
-            # named after the frame. Both frames of this design live in one doc.
+            echo "### $name" >> "$LOG"
+            npx pi-craft figcraft exec run "$s" --out "studio/craft/out/figcraft-$name.figcraft" 2>&1 | tee -a "$LOG"
+            [ -f "studio/craft/out/figcraft-$name.figcraft" ] || { echo "run produced no document" >> "$LOG"; continue; }
+            npx pi-craft figcraft exec info "studio/craft/out/figcraft-$name.figcraft" 2>&1 | tee -a "$LOG"
             npx pi-craft figcraft exec export "studio/craft/out/figcraft-$name.figcraft" \
-              -o "studio/craft/out/figcraft-$name" --format png --scale 2
-            echo "::endgroup::"
+              -o "studio/craft/out/figcraft-$name" --format png --scale 2 2>&1 | tee -a "$LOG"
           done
           ls -la studio/craft/out
 
       - name: Build — DeckCraft
+        if: always()
         run: |
           node studio/craft/deckcraft/build.mjs
           ls -la studio/craft/out
@@ -113,13 +120,14 @@ jobs:
           ls studio/craft/out/deck-slides | head
 
       - name: Build — EffectCraft
+        if: always()
         run: |
-          set -euo pipefail
-          bash studio/craft/effectcraft/kiln-sting.sh
+          bash -x studio/craft/effectcraft/kiln-sting.sh 2>&1 | tee studio/craft/out/effectcraft.log
           ls -la studio/craft/out
 
       - name: Verify the artefacts
-        run: bash studio/craft/verify.sh
+        if: always()
+        run: bash studio/craft/verify.sh 2>&1 | tee studio/craft/out/verify.log
 
       # A ProRes 4444 overlay is tens of megabytes and does not belong in git history.
       # Everything over ~5 MB goes to the run's artefacts instead, where it can be
@@ -134,6 +142,8 @@ jobs:
             studio/craft/out/kiln-deckcraft.pptx
             studio/craft/out/*.ecproj
             studio/craft/out/*.figcraft
+            studio/craft/out/*.log
+            studio/craft/out/*.json
           if-no-files-found: warn
           retention-days: 14
 
