@@ -1,0 +1,40 @@
+layer 80 "Rule" (Shape) at 0.0 s
+  contents/group/blend                         enum     0
+  contents/group/contents/rect/direction       enum     0
+  contents/group/contents/rect/size            vec2     [360.0,3.0]
+  contents/group/contents/rect/position        vec2     [0.0,0.0]
+  contents/group/contents/rect/roundness       scalar   0.0
+  contents/group/contents/rect/perCorner       bool     false
+  contents/group/contents/rect/topLeftRoundness scalar   0.0
+  contents/group/contents/rect/topRightRoundness scalar   0.0
+  contents/group/contents/rect/bottomRightRoundness scalar   0.0
+  contents/group/contents/rect/bottomLeftRoundness scalar   0.0
+  contents/group/contents/fill/blend           enum     0
+  contents/group/contents/fill/composite       enum     0 (Below Previous in Same Group)
+  contents/group/contents/fill/rule            enum     0 (Non-Zero Winding)
+  contents/group/contents/fill/color           color    [0.8470588326454163,0.3294117748737335,0.16470588743686676,1.0]
+  contents/group/contents/fill/opacity         scalar   100.0
+  contents/group/transform/anchor              vec2     [0.0,0.0]
+  contents/group/transform/position            vec2     [0.0,0.0]
+  contents/group/transform/scale               vec2     [100.0,100.0]
+  contents/group/transform/skew                scalar   0.0
+  contents/group/transform/skewAxis            scalar   0.0
+  contents/group/transform/rotation            scalar   0.0
+  contents/group/transform/opacity             scalar   100.0
+  transform/anchor                             vec3     [0.0,0.0,0.0]
+  transform/position                           vec3     [360.0,646.0,0.0]
+  transform/scale                              vec3     [100.0,100.0,100.0]
+  transform/orientation                        vec3     [0.0,0.0,0.0]
+  transform/rotationX                          scalar   0.0
+  transform/rotationY                          scalar   0.0
+  transform/rotation                           scalar   0.0
+  transform/opacity                            scalar   0.0  [4 keys]
+  materialOptions/castsShadows                 enum     0 (Off)
+  materialOptions/lightTransmission            scalar   0.0
+  materialOptions/acceptsShadows               enum     1 (On)
+  materialOptions/acceptsLights                bool     true
+  materialOptions/ambient                      scalar   100.0
+  materialOptions/diffuse                      scalar   50.0
+  materialOptions/specularIntensity            scalar   50.0
+  materialOptions/specularShininess            scalar   5.0
+  materialOptions/metal                        scalar   100.0

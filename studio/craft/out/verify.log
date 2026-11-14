@@ -2,6 +2,9 @@
   PASS  deck pdf · 12 pages
   INFO  deck pptx 40K
 ── EffectCraft
+  PASS  sting alpha · 1080², 6 s, has alpha
+  PASS  sting mp4 · 1080², 6 s
+  PASS  sting poster · 1080²
 ── FigCraft
 
-verify: 1 passed, 0 failed, 0 skipped
+verify: 4 passed, 0 failed, 0 skipped
