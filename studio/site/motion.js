@@ -82,6 +82,14 @@
 
     revealables.forEach((el) => io.observe(el));
     document.querySelectorAll('[data-split]').forEach((el) => io.observe(el));
+
+    /* Failsafe: if anything goes wrong with the observer, or the page is captured
+       or printed without scrolling, everything becomes visible after four seconds.
+       A reveal must never be the reason a visitor cannot read the page. */
+    setTimeout(() => {
+      revealables.forEach((el) => el.classList.add('in'));
+      document.querySelectorAll('[data-split]').forEach((el) => el.classList.add('in'));
+    }, 4000);
   }
 
   /* ── scroll: the hero plate drifts, the nav condenses ───────────────────
