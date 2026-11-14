@@ -88,3 +88,42 @@ design.themes — Theme Gallery → themes, colour schemes, font schemes and eff
 picture.removeBackground — Remove Background: {tolerance?: 0..100 (how different a colour may be from the edge's, default 20), ids?}
 design.background — Format Background: {color? | gradient? | picture?: base64 | pattern? | style?: 1..12 | reset?, all?: bool, index?, transparency?: 0..1, pictureProps?: {tile?, offsetX?, offsetY?: pt, scaleX?, scaleY?: 0.01..10, align?, mirror?, stretch?: [l,t,r,b], rotateWithShape?}, copy?: bool}
 design.hideBackgroundGraphics — Hide Background Graphics: {hide?: bool}
+### commands textBox / text formatting
+edit.pasteText — Paste and Match Formatting: {text?}
+insert.textBox — Text Box: {rect?: [x,y,w,h], text?: string}
+smartArt.nodes — Text Pane: {id?} → {id, kind, nodes: [{text, level}]} (id: the SmartArt group or one of its shapes; default the selection)
+smartArt.setNodes — Edit SmartArt Text: {id?, nodes?: [{text, level}], lines?: [string] (leading tabs set the level), index?, text?, title?} (index + text edits one node; title: its Name and Title box)
+smartArt.fromText — Convert to SmartArt: {id?, kind?} → {id} (a text box or placeholder becomes a SmartArt graphic in its place: one node per paragraph, indent levels kept)
+smartArt.toText — Convert to Text: {id?} → {id} (the graphic becomes a text box of its outline, bulleted by level)
+shape.altText — Alt Text: {text, decorative?: bool, ids?}
+text.edit — Edit Text: {id?, at?: [paragraph, char], end?: bool, cell?: [row, col], notes?: bool}
+text.exit — Stop Editing Text
+text.autocorrect — AutoCorrect Options: {on?, twoInitials?, sentenceCaps?, days?, capsLock?, fractions?, ordinals?, lists?: bool, add?: [from, to], remove?: from} → the options and the replacement list
+text.insert — Type Text: {text} (\n = new paragraph, \u000b = line break)
+text.compose — Compose Text: {text, active?: [start, end]} — an input method's composition (preedit) at the insertion point; empty text cancels it
+text.commit — Commit Composition: {text} — the input method's result replaces its composition, as one undo step
+text.delete — Delete Text: {dir?: backward|forward|wordBackward|wordForward} — the word directions are Ctrl+Backspace/Delete: they work from the start of a selection without deleting it
+text.deleteSurrounding — Delete Surrounding Text: {before, after, bytes?: bool}
+text.move — Move Insertion Point: {to: left|right|up|down|wordLeft|wordRight|lineStart|lineEnd|paraStart|paraEnd|paraUp|paraDown|start|end, extend?: bool} — left/right are on screen: in a right-to-left paragraph left goes forward
+text.select — Select Text: {anchor: [p, c], caret: [p, c]}
+text.selectAll — Select All Text
+text.selectWord — Select Word: {at?: [p, c]}
+text.selectParagraph — Select Paragraph: {at?: [p, c]}
+text.set — Set Text: {id?, text, cell?: [r, c]} — replaces the whole text, keeping the first run's formatting
+text.get — Get Text: {id?} → {text, paragraphs}
+format.textTransparency — Text Transparency: {value: 0..1} — 0 opaque, 1 invisible; keeps the text's colour (inherited colours included)
+format.languageAll — Language for All Text: {lang?, noProof?: bool} (proofing language of every text in the presentation: slides, tables, notes, masters and layouts, and the default for new text; one undo step)
+format.highlight — Text Highlight Color: {color? (absent = none)}
+format.textShadow — Text Shadow: {on?: bool}
+format.textOutline — Text Outline: {color?, width?: pt} (no color = none)
+format.textWarp — Text Transform: {preset: a prstTxWarp name or none, adj?: [finite raw guide values, at most 8]} — none clears the transform; omitted adj uses the preset's defaults
+format.rtl — Right-to-Left Text Direction: {on?: bool} (off = left-to-right; switching mirrors left/right alignment)
+format.anchor — Align Text: {anchor: top|middle|bottom}
+format.direction — Text Direction: {dir: horizontal|rotate90|rotate270|stacked}
+format.wrap — Wrap Text in Shape: {on: bool}
+format.margins — Text Box Margins: {left?: pt, top?: pt, right?: pt, bottom?: pt}
+table.cellAlign — Align Cell Text: {anchor?: top|middle|bottom (vertical; top when neither anchor nor align is given), align?: left|center|right|justify (horizontal, applied to every paragraph of the cells), cells?, id?}
+text.find — Find: {text, matchCase?: bool, wholeWords?: bool} → [{slide, shape (null = notes), cell?: [row, col], para, start, end}] (char offsets in the paragraph)
+text.replace — Replace: {text, with, matchCase?, wholeWords?, at?: a text.find match (replace just that one; default: replace all)} → {replaced}
+### commands number
+insert.slideNumber — Slide Number
