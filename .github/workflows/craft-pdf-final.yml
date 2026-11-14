@@ -1,8 +1,8 @@
 name: craft-pdf-final
 on:
-  workflow_dispatch:
   push:
     paths: ["craft-trigger.txt"]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -11,13 +11,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: PdfCraft CLI: merge + inspect real PDFs
+      - name: PdfCraft headless merge and inspect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           exec 2>&1
           OUT="$GITHUB_WORKSPACE/craft-suite"; LOG="$OUT/REPORT-pdfcraft.md"
-          echo "# PdfCraft 0.21.1 — headless merge/inspect" > "$LOG"; echo '```' >> "$LOG"
+          echo "# PdfCraft 0.21.1 headless merge and inspect" > "$LOG"; echo '```' >> "$LOG"
           cd /tmp; rm -rf pd; mkdir pd; cd pd
           gh release download v0.21.1 -R storytold/pdfcraft -p '*linux-x86_64.tar.gz' -D . >> "$LOG" 2>&1
           for f in *.tar.gz; do case "$f" in pdfcraft-cli-*) tar xzf "$f" >> "$LOG" 2>&1;; esac; done
