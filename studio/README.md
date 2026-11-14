@@ -31,7 +31,7 @@ ads/set/             social set 1:1, 4:5, 16:9
 ads/video/           identity sting: mp4, webm, gif, poster
 ads/avatars/         profile avatars + cover banner
 portfolio/           KILN-portfolio.pdf (9 pp, A4 landscape)
-deck/                KILN-pitch-deck.pdf (12 slides, 16:9) + an editable .pptx
+deck/                KILN-pitch-deck.pdf (12 slides, 16:9)
 docs/                KILN-one-pager.pdf, offers, pricing model, launch plan
 copy/                brand book + launch copy
 site/                static site: index + showroom, self-contained, no CDN

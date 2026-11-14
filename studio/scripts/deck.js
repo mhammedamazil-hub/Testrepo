@@ -1,9 +1,13 @@
 // KILN — pitch deck.
 //
-// Two artefacts from one content model:
-//   deck/KILN-pitch-deck.pdf   16:9, Instrument Serif / Inter Tight / JetBrains Mono,
-//                              embedded and subset. This is the deck that gets sent.
-//   deck/KILN-pitch-deck.pptx  the same twelve slides, editable. See the note below.
+// deck/KILN-pitch-deck.pdf — 16:9, 1280×720, Instrument Serif / Inter Tight /
+// JetBrains Mono, embedded and subset.
+//
+// A .pptx version was built and is deliberately not shipped: PowerPoint can only use
+// fonts installed on the viewer's machine, so every slide would fall back to Georgia
+// and Consolas at the same measures — the type would reflow and the deck would look
+// like the default template it was trying not to be. A deck that cannot set its own
+// type should not pretend to.
 //
 // Text is laid out by hand rather than by a slide library, because a deck that is
 // merely "generated" looks generated: default margins, centred titles, bullet indents.
@@ -277,9 +281,8 @@ async function pdf() {
 }
 
 /* ───────────────────────────────────────── PPTX ────────────────────────────
-   PowerPoint cannot be handed a font it does not have installed, so the editable
-   deck sets the same copy in Georgia / Arial at the same sizes and positions. It is
-   the working file, not the artefact that gets sent: the PDF is the deck.
+   Kept behind a flag for anyone who needs to edit the copy in PowerPoint and accepts
+   the font substitution. Not run by default, not committed.
 */
 async function pptx() {
   const pptx = new PptxGenJS();
@@ -477,9 +480,8 @@ async function pptx() {
 }
 
 /* ───────────────────────────────────────── PPTX ────────────────────────────
-   PowerPoint cannot be handed a font it does not have installed, so the editable
-   deck sets the same copy in Georgia / Arial at the same sizes and positions. It is
-   the working file, not the artefact that gets sent: the PDF is the deck.
+   Kept behind a flag for anyone who needs to edit the copy in PowerPoint and accepts
+   the font substitution. Not run by default, not committed.
 */
 async function pptx() {
   const pptx = new PptxGenJS();
@@ -642,7 +644,7 @@ async function pptx() {
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   await pdf();
-  await pptx();
+  if (process.argv.includes('--pptx')) await pptx();
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

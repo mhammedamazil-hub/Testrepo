@@ -11,7 +11,7 @@ Every asset in this repo is generated. Nothing is hand-drawn, and nothing is a m
 | `kiln_motion.py` | the 6 s identity sting (mp4, webm, gif, poster) | frame-by-frame from the same plate and geometry |
 | `portfolio.js` | `portfolio/KILN-portfolio.pdf` (9 pp, A4 landscape) | pdf-lib + embedded fonts |
 | `onepager.js` | `docs/KILN-one-pager.pdf` | same |
-| `deck.js` | `deck/KILN-pitch-deck.pdf` + an editable `.pptx` (12 slides) | pdf-lib, then pptxgenjs |
+| `deck.js` | `deck/KILN-pitch-deck.pdf` (12 slides) | pdf-lib + embedded fonts |
 | `lib.js` | shared palette and font paths | — |
 
 ## Running
