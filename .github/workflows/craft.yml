@@ -158,7 +158,8 @@ jobs:
           SCRIPT=studio/craft/out/kiln-deck.script.txt
           if [ ! -f "$SCRIPT" ]; then echo "no layout script produced"; exit 0; fi
           head -5 "$SCRIPT"
-          java studio/craft/console/DeckWriter.java "$SCRIPT" studio/craft/out/kiln-deck.pptx 2>&1 | tail -20
+          java studio/craft/console/DeckWriter.java "$SCRIPT" studio/craft/out/kiln-deck.pptx > studio/craft/logs/deckwriter.log 2>&1 || true
+          cat studio/craft/logs/deckwriter.log | tail -30
           ls -la studio/craft/out/kiln-deck.pptx 2>/dev/null || echo "DeckWriter produced nothing"
           exit 0
 
