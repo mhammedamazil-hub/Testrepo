@@ -65,14 +65,23 @@ function cmd(id, params = {}) {
 // across releases. Ask the CLI before drawing anything.
 let RECT = 'rect';
 try {
-  console.log('--- describe shape.insert ---');
-  try { console.log(craft(['describe', 'shape.insert'])); } catch (e) { console.log('describe failed'); }
-  const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
-  const names = [...out.matchAll(/"([a-zA-Z0-9 _-]+)"/g)].map((m) => m[1]);
-  console.log('shape presets seen:', names.slice(0, 40).join(', '));
-  const pick = names.find((n) => /^(rect|rectangle|square|box)$/i.test(n))
-    || names.find((n) => /rect|square|box/i.test(n));
+  // `describe` prints the authoritative enum, which is cheaper than parsing
+  // shape.presets output (it is a tree, with ids and labels side by side).
+  const d = craft(['describe', 'shape.insert']);
+  const m = d.match(/preset\s+([A-Za-z0-9|_-]+)/);
+  const enumList = m ? m[1].split('|').filter(Boolean) : [];
+  console.log('preset enum:', enumList.join(' '));
+  const pick = enumList.find((n) => /^(rect|rectangle)$/i.test(n))
+    || enumList.find((n) => /rect/i.test(n));
   if (pick) RECT = pick;
+  else {
+    // fall back to the presets tree: take the entry whose NAME is the id, not the label
+    const out = craft(['run', '--cmd', 'slide.new={"layout":"blank"}', '--cmd', 'shape.presets={}', '--print']);
+    const ids = [...out.matchAll(/"name"\s*:\s*"([a-zA-Z0-9_-]+)"/g)].map((x) => x[1]);
+    console.log('preset names:', ids.join(' '));
+    const alt = ids.find((n) => /^(rect|rectangle)$/i.test(n)) || ids.find((n) => /rect/i.test(n));
+    if (alt) RECT = alt;
+  }
 } catch (e) {
   console.warn('preset discovery failed, using', RECT, String(e.stderr || e.message).slice(0, 300));
 }
