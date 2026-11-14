@@ -99,6 +99,33 @@ async function poster({ out, W = 1600, H = 2000, scene, overlay, bgColor = '#050
 const chip = (x, y, text, color = TW.arc, size = 22, pad = 18) =>
   `<g transform="translate(${x},${y})"><rect x="0" y="0" rx="${size * 0.9}" width="${text.length * size * 0.62 + pad * 2}" height="${size * 1.9}" fill="none" stroke="${color}" stroke-opacity=".55"/><text x="${pad}" y="${size * 1.3}" font-family="m4" font-size="${size}" letter-spacing="${size * 0.18}" fill="${color}">${text}</text></g>`;
 
+// wrap + lay out body copy so nothing ever runs past the canvas edge
+const wrap = (text, maxChars) => {
+  const out = [];
+  let line = '';
+  for (const w of text.split(' ')) {
+    if (!line) line = w;
+    else if ((line + ' ' + w).length <= maxChars) line += ' ' + w;
+    else { out.push(line); line = w; }
+  }
+  if (line) out.push(line);
+  return out;
+};
+
+const block = (x, y, text, { size = 36, maxChars = 46, fill = TW.mut, font = 'i4', lh = 1.35 } = {}) =>
+  wrap(text, maxChars)
+    .map((l, i) => `<text x="${x}" y="${Math.round(y + i * size * lh)}" font-family="${font}" font-size="${size}" fill="${fill}">${l}</text>`)
+    .join('');
+
+// bottom-up scrim so type stays legible over the render
+const scrim = (W, H, from = 0.52, op = 0.9, id = 'sc') =>
+  `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0" stop-color="#04050A" stop-opacity="0"/>
+     <stop offset="0.55" stop-color="#04050A" stop-opacity="${(op * 0.55).toFixed(2)}"/>
+     <stop offset="1" stop-color="#04050A" stop-opacity="${op}"/>
+   </linearGradient></defs>
+   <rect x="0" y="${Math.round(H * from)}" width="${W}" height="${Math.round(H * (1 - from))}" fill="url(#${id})"/>`;
+
 const logoTag = (x, y, size = 40, light = true) =>
   `<g transform="translate(${x},${y}) scale(${size / 512})">${mark({ size: 512, glow: true }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '')}</g>`;
 
@@ -118,8 +145,7 @@ async function main() {
         <text x="96" y="1330" font-family="g7" font-size="150" letter-spacing="6" fill="${TW.bone}">LUMEN<tspan fill="${TW.forge}">FORGE</tspan></text>
         <text x="100" y="1410" font-family="m4" font-size="34" letter-spacing="14" fill="${TW.arc}">WEBSITES YOU CAN WALK THROUGH</text>
         <line x1="96" y1="1470" x2="1504" y2="1470" stroke="${TW.bone}" stroke-opacity=".14"/>
-        <text x="96" y="1552" font-family="i4" font-size="42" fill="${TW.mut}">Blender bpy pipelines · Three.js · React</text>
-        <text x="96" y="1612" font-family="i4" font-size="42" fill="${TW.mut}">Launch-ready 3D commerce, real-estate and product sites.</text>
+        ${block(96, 1548, 'Blender bpy pipelines · Three.js · React — launch-ready 3D commerce, real-estate and product sites.', { size: 38, maxChars: 46, lh: 1.4 })}
         ${chip(96, 1680, '3D COMMERCE')}${chip(430, 1680, 'REAL ESTATE')}${chip(760, 1680, 'WEBGL PRODUCT')}
         <text x="96" y="1900" font-family="m4" font-size="26" letter-spacing="6" fill="${TW.mut}">60FPS · MOBILE FIRST · SEO SAFE · LIGHTHOUSE 95+</text>`
     })
@@ -155,7 +181,18 @@ async function main() {
       camera: { eye: [3.2, 2.2, 11.4], target: [-0.35, 0.1, 0], fov: 30 },
       glow: { x: 0.62, y: 0.42, r: 0.6, color: C.forge, strength: 0.34 },
     });
-    const big = v.head.map((t, i) => `<text x="80" y="${v.H - 520 + i * (k === 'story' ? 150 : 170)}" font-family="g7" font-size="${k === 'wide' ? 132 : 124}" letter-spacing="2" fill="${TW.bone}">${t}</text>`).join('');
+    // bottom-anchored stack: CTA fixed, then body copy, then the headline above it
+    const headSize = k === 'story' ? 112 : k === 'wide' ? 104 : 108;
+    const lead = Math.round(headSize * 1.16);
+    const subChars = k === 'wide' ? 46 : k === 'story' ? 32 : 40;
+    const subSize = k === 'wide' ? 38 : 36;
+    const subLines = wrap(v.sub, subChars).length;
+    const subY = v.H - 186 - (subLines - 1) * Math.round(subSize * 1.34);
+    const headBottom = subY - 74;
+    const headTop = headBottom - (v.head.length - 1) * lead;
+    const big = v.head
+      .map((t, i) => `<text x="80" y="${headTop + i * lead}" font-family="g7" font-size="${headSize}" letter-spacing="2" fill="${i === v.head.length - 1 && k !== 'wide' ? TW.forge : TW.bone}">${t}</text>`)
+      .join('');
     out.push(
       await poster({
         out: `ads/set/lumenforge-${k}-${v.W}x${v.H}.png`,
@@ -163,10 +200,11 @@ async function main() {
         H: v.H,
         scene,
         overlay: `
+          ${scrim(v.W, v.H, k === 'wide' ? 0.34 : 0.46, 0.94)}
           ${logoTag(72, 64, 120)}
           <text x="208" y="146" font-family="g7" font-size="52" letter-spacing="4" fill="${TW.bone}">LUMEN<tspan fill="${TW.forge}">FORGE</tspan></text>
           ${big}
-          <text x="84" y="${v.H - 230}" font-family="i4" font-size="${k === 'wide' ? 40 : 38}" fill="${TW.mut}">${v.sub}</text>
+          ${block(84, subY, v.sub, { size: subSize, maxChars: subChars, lh: 1.34 })}
           <g transform="translate(${v.W - 80 - 470},${v.H - 110})">
             <rect rx="46" width="470" height="76" fill="${TW.forge}"/>
             <text x="235" y="50" text-anchor="middle" font-family="g7" font-size="28" letter-spacing="4" fill="#0A0503">${v.cta}</text>
@@ -182,16 +220,16 @@ async function main() {
       W: 1200,
       H: 1600,
       overlay: `
+        ${scrim(1200, 1600, 0.0, 0.62, 'mf')}
+        <rect x="0" y="0" width="1200" height="1600" fill="#04050A" opacity=".22"/>
         ${logoTag(72, 72, 132)}
         <text x="72" y="330" font-family="m4" font-size="26" letter-spacing="12" fill="${TW.arc}">MANIFESTO / 001</text>
-        <text x="72" y="470" font-family="g7" font-size="112" fill="${TW.bone}">THE WEB</text>
-        <text x="72" y="586" font-family="g7" font-size="112" fill="${TW.bone}">WAS FLAT.</text>
-        <text x="72" y="702" font-family="g7" font-size="112" fill="${TW.forge}">WE FORGED</text>
-        <text x="72" y="818" font-family="g7" font-size="112" fill="${TW.forge}">IT SOLID.</text>
-        <line x1="72" y1="880" x2="1128" y2="880" stroke="${TW.bone}" stroke-opacity=".16"/>
-        <text x="72" y="960" font-family="i4" font-size="34" fill="${TW.mut}">Every LUMENFORGE build starts as geometry in Blender,</text>
-        <text x="72" y="1010" font-family="i4" font-size="34" fill="${TW.mut}">gets its physics in Three.js, and ships as a React app your</text>
-        <text x="72" y="1060" font-family="i4" font-size="34" fill="${TW.mut}">customers can walk through — on a phone, on 4G.</text>
+        <text x="72" y="470" font-family="g7" font-size="100" fill="${TW.bone}">THE WEB</text>
+        <text x="72" y="576" font-family="g7" font-size="100" fill="${TW.bone}">WAS FLAT.</text>
+        <text x="72" y="682" font-family="g7" font-size="100" fill="${TW.forge}">WE FORGED</text>
+        <text x="72" y="788" font-family="g7" font-size="100" fill="${TW.forge}">IT SOLID.</text>
+        <line x1="72" y1="860" x2="1128" y2="860" stroke="${TW.bone}" stroke-opacity=".16"/>
+        ${block(72, 940, 'Every LUMENFORGE build starts as geometry in Blender, gets its physics in Three.js, and ships as a React app your customers can walk through — on a phone, on 4G.', { size: 32, maxChars: 48, lh: 1.45 })}
         <text x="72" y="1500" font-family="m4" font-size="24" letter-spacing="8" fill="${TW.mut}">LUMENFORGE.STUDIO · INTERACTIVE 3D STUDIO</text>`,
     },
     {
@@ -211,10 +249,11 @@ async function main() {
         glow: { x: 0.4, y: 0.55, r: 0.62, color: C.forge, strength: 0.3 },
       }),
       overlay: `
+        ${scrim(1200, 1600, 0.60, 0.92, 'tw')}
         <text x="72" y="180" font-family="m4" font-size="26" letter-spacing="12" fill="${TW.arc}">CASE / ATELIER NOVA</text>
-        <text x="72" y="1320" font-family="g7" font-size="120" fill="${TW.bone}">A FLAGSHIP</text>
-        <text x="72" y="1436" font-family="g7" font-size="120" fill="${TW.forge}">YOU CAN ENTER.</text>
-        <text x="72" y="1500" font-family="i4" font-size="32" fill="${TW.mut}">3D flagship store · 1.9 MB budget · 58 FPS on a Pixel 6a</text>`,
+        <text x="72" y="1240" font-family="g7" font-size="104" fill="${TW.bone}">A FLAGSHIP</text>
+        <text x="72" y="1350" font-family="g7" font-size="104" fill="${TW.forge}">YOU CAN ENTER.</text>
+        ${block(72, 1430, '3D flagship store · 1.9 MB budget · 58 FPS on a Pixel 6a', { size: 30, maxChars: 54, lh: 1.3 })}`,
     },
     {
       out: 'ads/posters/poster-hiring-1200x1600.png',
@@ -225,13 +264,14 @@ async function main() {
         glow: { x: 0.5, y: 0.35, r: 0.7, color: C.arc, strength: 0.18 },
       }),
       overlay: `
+        ${scrim(1200, 1600, 0.40, 0.9, 'hr')}
+        <rect x="0" y="0" width="1200" height="1600" fill="#04050A" opacity=".18"/>
         ${logoTag(72, 72, 132)}
         <text x="72" y="360" font-family="m4" font-size="26" letter-spacing="12" fill="${TW.arc}">NOW FORGING</text>
-        <text x="72" y="520" font-family="g7" font-size="132" fill="${TW.bone}">WE NEED</text>
-        <text x="72" y="656" font-family="g7" font-size="132" fill="${TW.bone}">A BLENDER</text>
-        <text x="72" y="792" font-family="g7" font-size="132" fill="${TW.forge}">WIZARD.</text>
-        <text x="72" y="900" font-family="i4" font-size="36" fill="${TW.mut}">bpy automation · glTF budgets · shader restraint.</text>
-        <text x="72" y="956" font-family="i4" font-size="36" fill="${TW.mut}">Remote. Paid per build. Portfolio over CV.</text>
+        <text x="72" y="510" font-family="g7" font-size="116" fill="${TW.bone}">WE NEED</text>
+        <text x="72" y="632" font-family="g7" font-size="116" fill="${TW.bone}">A BLENDER</text>
+        <text x="72" y="754" font-family="g7" font-size="116" fill="${TW.forge}">WIZARD.</text>
+        ${block(72, 872, 'bpy automation · glTF budgets · shader restraint. Remote. Paid per build. Portfolio over CV.', { size: 32, maxChars: 46, lh: 1.45 })}
         <text x="72" y="1480" font-family="m4" font-size="26" letter-spacing="6" fill="${TW.arc}">JOBS@LUMENFORGE.STUDIO</text>`,
     },
   ];
