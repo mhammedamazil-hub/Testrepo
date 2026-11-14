@@ -13,6 +13,7 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import sharp from 'sharp';
 
 process.on('uncaughtException', (e) => {
   console.error('FATAL', e && e.stack || e);
@@ -125,10 +126,23 @@ const slideNew = (name) => {
 };
 const ink = () => cmd('shape.insert', { preset: RECT, rect: [0, 0, 960, 540], fill: `#${C.ink}` });
 const rule = (y) => cmd('shape.insert', { preset: RECT, rect: [72, y, 816, 1], fill: '#26272B' });
+// DeckWriter embeds the file as given; a 2400x1600 master inside a 440 pt frame is
+// 20 MB of deck for no visible gain, so each plate is pre-sized to its frame at 2x.
+const sized = new Map();
+const resizes = [];
 const pic = (p, rect) => {
   // a missing file is silent in DeckCraft, so say it out loud
   if (!fs.existsSync(p)) { console.log('  ! missing plate', p); return null; }
-  rec(`pic ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${p}`);
+  const key = `${p}@${rect[2]}x${rect[3]}`;
+  if (!sized.has(key)) {
+    const out = path.join(OUT, 'plates', `${path.basename(p, '.png')}-${rect[2]}x${rect[3]}.jpg`);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    resizes.push(sharp(p)
+      .resize({ width: Math.round(rect[2] * 2), height: Math.round(rect[3] * 2), fit: 'cover' })
+      .jpeg({ quality: 88 }).toFile(out).catch(() => null));
+    sized.set(key, out);
+  }
+  rec(`pic ${rect[0]} ${rect[1]} ${rect[2]} ${rect[3]} ${sized.get(key)}`);
   return cmd('insert.picture', { path: path.resolve(p), rect });
 };
 
@@ -383,6 +397,9 @@ for (const k of Object.keys(report.dropped)) report.dropped[k] = [...report.drop
 report.slides = slides.length;
 report.hasDeck = fs.existsSync(PPTX);
 report.hasPdf = fs.existsSync(PDF);
+// let every plate finish writing before the script names them
+await Promise.all(resizes);
+
 // the same layout, as a script for DeckWriter (Java). DeckCraft cannot set type on a
 // box it has created, so the shipped .pptx is written by DeckWriter from these lines.
 fs.writeFileSync(path.join(OUT, 'kiln-deck.script.txt'),

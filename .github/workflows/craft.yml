@@ -44,7 +44,7 @@ jobs:
       - name: Install pi-craft
         run: |
           npm init -y >/dev/null 2>&1 || true
-          npm i @blackbelt-technology/pi-dashboard-craft-apps@0.11.0 --no-audit --no-fund
+          npm i @blackbelt-technology/pi-dashboard-craft-apps@0.11.0 sharp@0.33.5 --no-audit --no-fund
           npx pi-craft status --json
 
       # ffprobe/pdftoppm back `pi-craft verify`; without them every media assertion
@@ -166,6 +166,8 @@ jobs:
             rm -rf studio/craft/out/shipped-slides
             npx pi-craft deckcraft exec render studio/craft/out/kiln-deck.pptx --all studio/craft/out/shipped-slides --scale 1 > studio/craft/logs/shipped-render.log 2>&1 || true
             npx pi-craft deckcraft exec convert studio/craft/out/kiln-deck.pptx studio/craft/out/kiln-deck.pdf >> studio/craft/logs/shipped-render.log 2>&1 || true
+            # 20 MB of PNG plates in a pptx is not something to carry in git history
+            npx pi-craft verify studio/craft/out/kiln-deck.pdf --pages 12 >/dev/null 2>&1 || true
             tail -5 studio/craft/logs/shipped-render.log
           fi
           exit 0
@@ -226,10 +228,8 @@ jobs:
           # web-weight files only; sources and masters stay in craft/out or the artefacts
           find studio/craft/out -maxdepth 2 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webm' -o -name '*.mp4' -o -name '*.pdf' \) \
             -size -4M -exec cp -v {} studio/site/assets/craft/ \;
-          # the shipped deck: pdf for humans, pptx for editors
-          for f in kiln-deck.pdf kiln-deck.pptx; do
-            [ -f "studio/craft/out/$f" ] && cp "studio/craft/out/$f" "studio/site/assets/craft/$f" || true
-          done
+          # the written deck stays out of site/ (20 MB pptx, 9 MB pdf); the site shows
+          # its rendered slides and the light craft artefacts instead
           du -sh studio/site/assets/craft
 
       # Logs and JSON reports are the only way to read a failed run from a sandbox
