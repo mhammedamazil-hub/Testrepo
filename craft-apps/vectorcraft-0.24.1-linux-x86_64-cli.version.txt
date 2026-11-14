@@ -1,0 +1,1 @@
+vectorcraft-cli 0.24.1

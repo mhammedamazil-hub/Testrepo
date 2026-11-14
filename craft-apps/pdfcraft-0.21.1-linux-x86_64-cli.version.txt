@@ -1,0 +1,4 @@
+pdfcraft-cli 0.21.1
+Discord: https://discord.gg/artcraft  (help and feedback)
+Web:     https://getartcraft.com/apps/pdfcraft
+Source:  https://github.com/storytold/pdfcraft

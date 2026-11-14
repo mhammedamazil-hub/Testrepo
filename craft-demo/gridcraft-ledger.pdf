@@ -1,0 +1,168 @@
+%PDF-1.7
+%����
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Producer (GridCraft PDF) /Creator (GridCraft) /Title (ledger.xlsx) >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 1267 >>
+stream
+q
+50.4 648 192 90 re W n
+q
+50.4 723 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 51.9 726.92 Tm
+/F1 11 Tf
+(item) Tj
+ET
+Q
+q
+98.4 723 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 99.9 726.92 Tm
+/F1 11 Tf
+(qty) Tj
+ET
+Q
+q
+146.4 723 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 147.9 726.92 Tm
+/F1 11 Tf
+(price) Tj
+ET
+Q
+q
+194.4 723 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 195.9 726.92 Tm
+/F1 11 Tf
+(total) Tj
+ET
+Q
+q
+50.4 708 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 51.9 711.92 Tm
+/F1 11 Tf
+(bolt) Tj
+ET
+Q
+q
+98.4 708 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 132.668 711.92 Tm
+/F1 11 Tf
+(12) Tj
+ET
+Q
+q
+146.4 708 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 177.61 711.92 Tm
+/F1 11 Tf
+(0.5) Tj
+ET
+Q
+q
+194.4 708 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 195.9 711.92 Tm
+/F1 11 Tf
+(=B2*C2) Tj
+ET
+Q
+q
+50.4 693 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 51.9 696.92 Tm
+/F1 11 Tf
+(nut) Tj
+ET
+Q
+q
+98.4 693 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 138.784 696.92 Tm
+/F1 11 Tf
+(7) Tj
+ET
+Q
+q
+146.4 693 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 171.494 696.92 Tm
+/F1 11 Tf
+(0.25) Tj
+ET
+Q
+q
+194.4 693 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 195.9 696.92 Tm
+/F1 11 Tf
+(=B3*C3) Tj
+ET
+Q
+q
+50.4 648 96 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 51.9 651.92 Tm
+/F1 11 Tf
+(grand total) Tj
+ET
+Q
+q
+194.4 648 48 15 re W n
+BT
+0 0 0 rg
+1 0 0 1 195.9 651.92 Tm
+/F1 11 Tf
+(=SUM\(D2:D3\)) Tj
+ET
+Q
+Q
+q
+50.4 648 192 90 re W n
+Q
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /ProcSet [/PDF /Text /ImageB /ImageC] /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000210 00000 n 
+0000000307 00000 n 
+0000001625 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R /Info 3 0 R >>
+startxref
+1789
+%%EOF

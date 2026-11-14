@@ -1,0 +1,1 @@
+figcraft-cli 0.18.1
