@@ -96,8 +96,15 @@ jobs:
           JS
       - name: Commit shots
         run: |
-          git config user.name "lumenforge-ci"
-          git config user.email "forge@lumenforge.studio"
+          git config user.name "kiln-ci"
+          git config user.email "studio@kiln.studio"
           git add studio/site/shots
-          git diff --cached --quiet || git commit -m "site: refresh screenshots from CI"
-          git push
+          git diff --cached --quiet && { echo "no shot changes"; exit 0; }
+          git commit -m "site: refresh screenshots from CI"
+          # the craft workflow pushes to the same branch; rebase rather than fail
+          for i in 1 2 3; do
+            git push && break
+            echo "push rejected, rebasing onto $(git rev-parse --abbrev-ref @{u})"
+            git pull --rebase --autostash || true
+            sleep $((i * 3))
+          done
