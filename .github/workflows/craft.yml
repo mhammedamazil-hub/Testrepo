@@ -141,6 +141,8 @@ jobs:
           # exits non-zero, and the log would never be copied anywhere
           set +e
           mkdir -p studio/craft/out studio/craft/logs
+          # build.mjs imports sharp; it is installed at the repo root by the pi-craft step
+          export NODE_PATH="$PWD/node_modules:$NODE_PATH"
           node studio/craft/deckcraft/build.mjs > /tmp/deck.log 2>&1
           echo "EXIT=$?" >> /tmp/deck.log
           cp /tmp/deck.log studio/craft/logs/deckcraft.log

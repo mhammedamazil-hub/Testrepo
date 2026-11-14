@@ -13,7 +13,15 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import sharp from 'sharp';
+// sharp is optional: without it the plates are embedded at source resolution and
+// the deck is heavy, but the layout is unchanged.
+let sharp = null;
+try {
+  // createRequire honours NODE_PATH, a bare dynamic import does not
+  const { createRequire } = await import('node:module');
+  const req = createRequire(import.meta.url);
+  sharp = req('sharp');
+} catch { console.log('sharp not available; embedding full-size plates'); }
 
 process.on('uncaughtException', (e) => {
   console.error('FATAL', e && e.stack || e);
@@ -137,7 +145,7 @@ const pic = (p, rect) => {
   if (!sized.has(key)) {
     const out = path.join(OUT, 'plates', `${path.basename(p, '.png')}-${rect[2]}x${rect[3]}.jpg`);
     fs.mkdirSync(path.dirname(out), { recursive: true });
-    resizes.push(sharp(p)
+    if (sharp) resizes.push(sharp(p)
       .resize({ width: Math.round(rect[2] * 2), height: Math.round(rect[3] * 2), fit: 'cover' })
       .jpeg({ quality: 88 }).toFile(out).catch(() => null));
     sized.set(key, out);
