@@ -2,6 +2,11 @@
 import json
 import subprocess
 import sys
+import os
+
+_repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
 
 
 def mpc_msg(method, params=None, mid=1):

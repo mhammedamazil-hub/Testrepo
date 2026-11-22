@@ -2,7 +2,12 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'blender-addon'))
+# Add repo root and blender-addon to path
+_repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_blender_addon_path = os.path.join(_repo_root, 'blender-addon')
+for p in (_repo_root, _blender_addon_path):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from reality_engine_studio import bl_info
 from reality_engine_studio.panels import _classes
