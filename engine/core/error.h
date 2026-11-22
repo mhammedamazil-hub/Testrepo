@@ -27,8 +27,6 @@ enum class ErrorCode : uint16_t {
     ENTITY_NOT_FOUND = 15,
     COMPONENT_NOT_FOUND = 16,
     UNSUPPORTED = 17,
-    INIT_FAILED = 18,
-    INVALID_PARAMETER = 19,
 };
 
 struct Error {

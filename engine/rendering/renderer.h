@@ -9,8 +9,6 @@ struct DrawCall {
     std::string mesh_id;
     std::string material_id;
     float transform[16];  // 4x4 matrix
-    uint32_t index_count = 0;
-    uint32_t vertex_count = 0;
 };
 
 class Renderer {
@@ -36,7 +34,6 @@ public:
     // Get stats
     struct Stats {
         uint32_t draw_calls = 0;
-        uint32_t render_calls = 0;
         uint32_t triangles = 0;
         double frame_time_ms = 0.0;
     };

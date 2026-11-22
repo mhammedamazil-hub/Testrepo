@@ -23,17 +23,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
 endif()
 
-# Vulkan configuration
-set(VULKAN_HEADERS_DIR "${CMAKE_SOURCE_DIR}/../third_party/Vulkan-Headers" CACHE PATH "Path to Vulkan-Headers")
-set(VULKAN_LOADER_DIR "${CMAKE_SOURCE_DIR}/../third_party/Vulkan-Loader" CACHE PATH "Path to Vulkan-Loader")
-
-if(EXISTS "${VULKAN_HEADERS_DIR}/include/vulkan/vulkan.h")
-    add_compile_definitions(REALITY_HAS_VULKAN)
-    message(STATUS "Vulkan headers found - REALITY_HAS_VULKAN defined")
-else()
-    message(STATUS "Vulkan headers not found - Vulkan renderer will not be compiled")
-endif()
-
 set(JOLT_PHYSICS_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../jolt-physics" CACHE PATH "Path to Jolt Physics source directory")
 set(JOLT_PHYSICS_BUILD_DIR "${CMAKE_SOURCE_DIR}/../jolt-physics/Build" CACHE PATH "Path to Jolt Physics build directory")
 if(EXISTS "${JOLT_PHYSICS_BUILD_DIR}/CMakeLists.txt")

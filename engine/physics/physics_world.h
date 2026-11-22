@@ -152,20 +152,8 @@ private:
     double gravity_ = -9.81;
     PhysicsStats stats_;
     std::vector<ContactEvent> contacts_;
-
-#ifdef REALITY_HAS_JOLT
     std::map<Entity, JPH::BodyID> entity_to_body_id_;  // entity -> Jolt BodyID
     std::map<JPH::BodyID, Entity> body_id_to_entity_;  // Jolt BodyID -> entity
-#else
-    // Fallback body ID type when Jolt is not available
-    struct BodyIDFallback {
-        uint64_t value = 0;
-        bool operator<(const BodyIDFallback& other) const { return value < other.value; }
-        bool operator==(const BodyIDFallback& other) const { return value == other.value; }
-    };
-    std::map<Entity, BodyIDFallback> entity_to_body_id_;  // entity -> fallback BodyID
-    std::map<BodyIDFallback, Entity> body_id_to_entity_;  // fallback BodyID -> entity
-#endif
 
 #ifdef REALITY_HAS_JOLT
     // Collision layers

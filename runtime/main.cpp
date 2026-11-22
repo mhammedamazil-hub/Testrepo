@@ -3,7 +3,6 @@
 #include <chrono>
 #include <thread>
 #include <cstring>
-#include <memory>
 
 #include "core/application.h"
 #include "core/logging.h"
@@ -12,7 +11,6 @@
 #include "physics/physics_world.h"
 #include "physics/physics_body.h"
 #include "rendering/headless_renderer.h"
-#include "rendering/vulkan/vulkan_renderer.h"
 #include "assets/asset_manager.h"
 #include "diagnostics/diagnostics.h"
 #include "platform/platform.h"
@@ -20,14 +18,12 @@
 using namespace reality;
 
 static void print_usage() {
-    std::cout << "Reality Engine Runtime v0.1.0-phase2\n";
+    std::cout << "Reality Engine Runtime v0.1.0-phase1\n";
     std::cout << "Usage: reality_runtime <project_path> [options]\n";
     std::cout << "Options:\n";
     std::cout << "  --scene <name>     Scene to load (default: first scene)\n";
     std::cout << "  --frames <N>       Number of frames to simulate (default: 120)\n";
-    std::cout << "  --renderer <name>  Renderer: headless (default) or vulkan\n";
-    std::cout << "  --headless         Run in headless mode (same as --renderer headless)\n";
-    std::cout << "  --vulkan           Run with Vulkan renderer\n";
+    std::cout << "  --headless         Run in headless mode (default)\n";
     std::cout << "  --diagnostics      Output diagnostics JSON on exit\n";
     std::cout << "  --help             Show this help\n";
 }
@@ -42,7 +38,6 @@ int main(int argc, char* argv[]) {
     std::string scene_name;
     int num_frames = 120;
     bool output_diagnostics = false;
-    std::string renderer_name = "headless";
 
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
@@ -56,11 +51,6 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--diagnostics") {
             output_diagnostics = true;
         } else if (arg == "--headless") {
-            renderer_name = "headless";
-        } else if (arg == "--vulkan") {
-            renderer_name = "vulkan";
-        } else if (arg == "--renderer" && i + 1 < argc) {
-            renderer_name = argv[++i];
         } else if (arg[0] != '-') {
             project_path = arg;
         }
@@ -104,20 +94,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::unique_ptr<Renderer> renderer;
-    if (renderer_name == "vulkan") {
-#ifdef REALITY_HAS_VULKAN
-        renderer = std::make_unique<VulkanRenderer>();
-        REALITY_LOG(INFO, "Using Vulkan renderer");
-#else
-        REALITY_LOG(WARN, "Vulkan renderer requested but REALITY_HAS_VULKAN not defined - falling back to headless");
-        renderer = std::make_unique<HeadlessRenderer>();
-#endif
-    } else {
-        renderer = std::make_unique<HeadlessRenderer>();
-        REALITY_LOG(INFO, "Using headless renderer");
-    }
-    auto rresult = renderer->init();
+    HeadlessRenderer renderer;
+    auto rresult = renderer.init();
     if (!rresult.ok()) {
         REALITY_LOG(ERROR, "Renderer init failed: " + rresult.error().message);
         return 1;
@@ -222,8 +200,8 @@ int main(int argc, char* argv[]) {
     for (int frame = 0; frame < num_frames; frame++) {
         physics.step(fixed_dt);
         physics.sync_transforms(world.registry());
-        renderer->clear();
-        renderer->render(fixed_dt);
+        renderer.clear();
+        renderer.render(fixed_dt);
 
         if ((frame + 1) % 30 == 0) {
             REALITY_LOG(INFO, "Frame " + std::to_string(frame + 1) + "/" +
@@ -241,7 +219,7 @@ int main(int argc, char* argv[]) {
     diag.set_physics_time(physics.get_stats().simulation_time_ms);
     diag.set_entity_count(world.entity_count());
     diag.set_physics_body_count(physics.get_stats().body_count);
-    diag.set_draw_call_count(renderer->get_stats().draw_calls);
+    diag.set_draw_call_count(renderer.get_stats().draw_calls);
     diag.add_custom_metric("physics_backend",
 #ifdef REALITY_HAS_JOLT
                            "jolt"
@@ -249,7 +227,7 @@ int main(int argc, char* argv[]) {
                            "stub"
 #endif
                            );
-    diag.add_custom_metric("renderer", renderer_name);
+    diag.add_custom_metric("renderer", "headless");
     diag.add_custom_metric("scene", scene_path);
 
     REALITY_LOG(INFO, "=== Entity States After Simulation ===");
@@ -266,7 +244,7 @@ int main(int argc, char* argv[]) {
         std::cout << diag.to_json() << std::endl;
     }
 
-    renderer->shutdown();
+    renderer.shutdown();
     physics.shutdown();
     scene.shutdown();
     world.shutdown();

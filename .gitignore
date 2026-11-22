@@ -22,13 +22,4 @@ tools/
 # Blender source code (cloned locally, too large for git)
 blender-source/
 jolt-physics
-
-# Build directories
-/build/
 /engine/build/
-
-# Third-party dependencies (cloned, too large for git)
-/third_party/
-
-# Vulkan SDK artifacts
-*.spv
