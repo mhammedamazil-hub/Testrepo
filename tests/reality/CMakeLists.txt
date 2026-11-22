@@ -1,3 +1,4 @@
+message(STATUS "Processing tests/reality/CMakeLists.txt")
 # Reality Engine Phase 1 Tests
 add_executable(test_ecs
     test_ecs.cpp
@@ -66,7 +67,10 @@ target_include_directories(test_jolt_physics PRIVATE
 add_test(NAME test_jolt_physics COMMAND test_jolt_physics)
 
 # Vulkan execution test - requires Vulkan headers
-if(EXISTS "${CMAKE_SOURCE_DIR}/../../third_party/Vulkan-Headers/include/vulkan/vulkan.h")
+set(VULKAN_TEST_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/Vulkan-Headers/include/vulkan/vulkan.h")
+message(STATUS "Vulkan test header check: ${VULKAN_TEST_HEADERS}")
+if(EXISTS "${VULKAN_TEST_HEADERS}")
+    message(STATUS "Vulkan headers found - adding test_vulkan_execution")
     add_executable(test_vulkan_execution
         test_vulkan_execution.cpp
     )
@@ -75,12 +79,14 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/../../third_party/Vulkan-Headers/include/vulkan/v
         reality_core
     )
     target_include_directories(test_vulkan_execution PRIVATE
-        ${CMAKE_SOURCE_DIR}/../../engine/core
-        ${CMAKE_SOURCE_DIR}/../../engine/rendering
-        ${CMAKE_SOURCE_DIR}/../../engine/rendering/vulkan
-        ${CMAKE_SOURCE_DIR}/../../third_party/Vulkan-Headers/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../engine/core
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../engine/rendering
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../engine/rendering/vulkan
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/Vulkan-Headers/include
     )
     add_test(NAME test_vulkan_execution COMMAND test_vulkan_execution)
     set_tests_properties(test_vulkan_execution PROPERTIES
         ENVIRONMENT "VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json")
+else()
+    message(STATUS "Vulkan headers not found - skipping test_vulkan_execution")
 endif()
