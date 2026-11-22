@@ -65,8 +65,8 @@ target_include_directories(test_jolt_physics PRIVATE
 )
 add_test(NAME test_jolt_physics COMMAND test_jolt_physics)
 
-# Vulkan execution test - requires Vulkan ICD
-if(REALITY_HAS_VULKAN)
+# Vulkan execution test - requires Vulkan headers
+if(EXISTS "${CMAKE_SOURCE_DIR}/../../third_party/Vulkan-Headers/include/vulkan/vulkan.h")
     add_executable(test_vulkan_execution
         test_vulkan_execution.cpp
     )
@@ -78,6 +78,7 @@ if(REALITY_HAS_VULKAN)
         ${CMAKE_SOURCE_DIR}/../../engine/core
         ${CMAKE_SOURCE_DIR}/../../engine/rendering
         ${CMAKE_SOURCE_DIR}/../../engine/rendering/vulkan
+        ${CMAKE_SOURCE_DIR}/../../third_party/Vulkan-Headers/include
     )
     add_test(NAME test_vulkan_execution COMMAND test_vulkan_execution)
     set_tests_properties(test_vulkan_execution PROPERTIES
