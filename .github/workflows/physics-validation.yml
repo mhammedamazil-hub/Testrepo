@@ -1,0 +1,65 @@
+name: Reality Engine - Physics Validation
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+
+jobs:
+  validate-physics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clone Jolt Physics
+        run: |
+          git clone --depth 1 https://github.com/jrouwe/JoltPhysics.git jolt-physics
+
+      - name: Build Jolt Physics
+        working-directory: ./jolt-physics/Build
+        run: |
+          cmake . -DCMAKE_BUILD_TYPE=Release -DJPH_BUILD_SHARED_LIBS=OFF -DUSE_ASSERTS=OFF -DENABLE_ALL_WARNINGS=OFF
+          make -j$(nproc)
+
+      - name: Build Reality Engine
+        run: |
+          mkdir -p engine/build
+          cd engine/build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DJOLT_PHYSICS_BUILD_DIR=${{ github.workspace }}/jolt-physics/Build
+          make -j$(nproc)
+
+      - name: Run comprehensive physics validation
+        run: |
+          cd engine/build
+          ./bin/test_jolt_physics
+
+      - name: Run runtime physics demonstration
+        run: |
+          ./engine/build/bin/reality_runtime /tmp/reality_physics_ci --frames 300 --diagnostics
+
+      - name: Validate Jolt backend is used (not stub)
+        run: |
+          output=$(./engine/build/bin/reality_runtime /tmp/reality_physics_ci --frames 10 --diagnostics 2>&1 || true)
+          echo "$output" | grep -q '"physics_backend":"jolt"' && echo "PASS: Jolt backend confirmed" || { echo "FAIL: Jolt backend not found in output"; exit 1; }
+
+      - name: Upload physics validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: physics-validation-results
+          path: |
+            engine/build/bin/test_jolt_physics
+          retention-days: 3
