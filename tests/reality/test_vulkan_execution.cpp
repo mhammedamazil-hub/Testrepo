@@ -317,7 +317,7 @@ int main() {
     auto vkAllocateMemory = (PFN_vkAllocateMemory)load_dev_func("vkAllocateMemory");
     auto vkBindBufferMemory = (PFN_vkBindBufferMemory)load_dev_func("vkBindBufferMemory");
     auto vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)
-        g_vkGetInstanceProcAddr(physical_device, "vkGetPhysicalDeviceMemoryProperties");
+        g_vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties");
     auto vkMapMemory = (PFN_vkMapMemory)load_dev_func("vkMapMemory");
     auto vkUnmapMemory = (PFN_vkUnmapMemory)load_dev_func("vkUnmapMemory");
 
