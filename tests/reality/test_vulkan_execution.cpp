@@ -24,6 +24,7 @@
 #include <string>
 #include <cstdlib>
 #include <cassert>
+#include <cstdint>
 #if !defined(_WIN32)
 #include <dlfcn.h>
 #endif
