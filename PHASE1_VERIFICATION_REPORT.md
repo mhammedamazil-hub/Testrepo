@@ -210,24 +210,44 @@ All 16 `reality_*` MCP tools tested with:
 
 ---
 
-## 9. GitHub Actions CI Workflows
+## 9. GitHub Actions CI Workflows — ACTUAL EXECUTION RESULTS
 
-**Status:** IMPLEMENTED_AND_VERIFIED
+**Status:** 5 of 6 workflows VERIFIED via actual execution; 1 workflow (Windows) has MinGW+Jolt compatibility issue
 
-| Workflow | Status |
-|----------|--------|
-| `.github/workflows/engine-linux.yml` | IMPLEMENTED_AND_VERIFIED |
-| `.github/workflows/engine-windows.yml` | IMPLEMENTED_AND_VERIFIED |
-| `.github/workflows/engine-macos.yml` | IMPLEMENTED_AND_VERIFIED |
-| `.github/workflows/blender-addon.yml` | IMPLEMENTED_AND_VERIFIED |
-| `.github/workflows/physics-validation.yml` | IMPLEMENTED_AND_VERIFIED |
-| `.github/workflows/mcp-integration.yml` | IMPLEMENTED_AND_VERIFIED |
+### Workflow Execution Results (from `gh run list`)
 
-All workflows:
-- Actually compile and execute tests (no placeholder success messages)
-- Use caching where appropriate
-- Upload build logs, test reports, and binaries
-- Run on push and pull_request to `arena/67bc2899-testrepo` and `main`
+| Workflow | Run ID | Status | Duration | Key Result |
+|----------|--------|--------|----------|------------|
+| engine-linux.yml | 45016786060 | SUCCESS | 3m13s | Built engine, ran 5 C++ tests, ran Jolt physics test, ran standalone runtime |
+| engine-macos.yml | 45016786057 | SUCCESS | 2m37s | Built engine, ran 5 C++ tests, ran Jolt physics test |
+| physics-validation.yml | 45016786198 | SUCCESS | 3m15s | Validated Jolt backend (not stub), 300-frame simulation, runtime demo |
+| blender-addon.yml | 45016786095 | SUCCESS | 29s | Addon structure: 8 panels + 16 operators, Blender registration test |
+| mcp-integration.yml | 45016786052 | SUCCESS | 13s | 16 reality_* tools registered, all execute real operations |
+| engine-windows.yml | 45016786061 | FAILURE | 4m48s | MinGW + Jolt Physics compatibility issue at "Build Reality Engine" step |
+
+**Workflow fixes applied:**
+- `engine-build` directory created before CMake (was missing, gitignored)
+- Blender downloaded from official FTP instead of unavailable `juanpablobg/blender-installer-action`
+- Blender addon registration uses `bpy.utils.register_class()` instead of `cls.register()`
+- MCP integration test moved from inline Python to test script file
+- Physics validation grep pattern made flexible for JSON spacing
+- CMakeLists.txt: `-lstdc++fs` conditional on GNU compiler only
+
+**Artifacts uploaded:**
+- `reality-engine-linux-binaries` — `engine/build/bin/reality_runtime`, `engine/build/bin/test_*`
+- `physics-validation-results` — `engine/build/bin/test_jolt_physics`
+- `blender-addon-test-results` — `blender-addon/` source
+- `mcp-integration-results` — `/tmp/ci_mcp_test/`
+
+All workflows run on push and pull_request to `arena/67bc2899-testrepo` and `main`.
+
+**GitHub Actions URLs:**
+- Linux: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786060
+- macOS: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786057
+- Physics Validation: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786198
+- Blender Addon: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786095
+- MCP Integration: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786052
+- Windows: https://github.com/mhammedamazil-hub/Testrepo/actions/runs/45016786061
 
 ---
 
@@ -244,7 +264,7 @@ All workflows:
 | Blender addon (8 panels) | IMPLEMENTED_AND_VERIFIED | `blender-addon/reality_engine_studio/` |
 | C++ unit tests (5 tests) | IMPLEMENTED_AND_VERIFIED | `tests/reality/` + ctest |
 | Data integrity tests | IMPLEMENTED_AND_VERIFIED | `tests/reality/test_data_integrity.py` |
-| GitHub Actions CI (6 workflows) | IMPLEMENTED_AND_VERIFIED | `.github/workflows/*.yml` |
+| GitHub Actions CI (6 workflows) | 5/6 VERIFIED | Linux, macOS, Physics Validation, Blender Addon, MCP Integration all passing. Windows has MinGW+Jolt compatibility issue. |
 | Acceptance demo (end-to-end) | IMPLEMENTED_AND_VERIFIED | Verified via CLI |
 
 ---
