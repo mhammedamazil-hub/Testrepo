@@ -40,8 +40,8 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake ../engine -DCMAKE_BUILD_TYPE=Release 2>&1
-          cmake --build . -j2 2>&1
+          cmake ../engine -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --target reality_rendering test_vulkan_execution test_jolt_physics reality_runtime -j2
 
       - name: Compile GLSL shaders to SPIR-V
         run: |
