@@ -36,38 +36,36 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
 
-      - name: Build Reality Rendering
+      - name: Build Reality Engine (full project with Vulkan)
         run: |
-          mkdir -p engine/build
-          cd engine/build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DREALITY_BUILD_VULKAN=ON
-          make -j$(nproc) reality_rendering
+          mkdir -p build
+          cd build
+          cmake ../engine -DCMAKE_BUILD_TYPE=Release \
+            -DVULKAN_HEADERS_DIR=../third_party/Vulkan-Headers \
+            -DVULKAN_LOADER_DIR=../third_party/Vulkan-Loader
+          make -j$(nproc)
 
       - name: Compile GLSL shaders to SPIR-V
         run: |
-          python3 scripts/compile_shaders.py /usr/bin/glslangValidator || true
+          python3 scripts/compile_shaders.py /usr/bin/glslangValidator
 
       - name: Validate SPIR-V with spirv-val
         run: |
-          if command -v spirv-val &>/dev/null; then
-            echo "Validating vertex shader SPIR-V..."
-            spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv && echo "Vertex shader SPIR-V valid"
-            echo "Validating fragment shader SPIR-V..."
-            spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv && echo "Fragment shader SPIR-V valid"
-          else
-            echo "spirv-val not available, skipping SPIR-V validation"
-          fi
-        continue-on-error: true
+          echo "Validating vertex shader SPIR-V..."
+          spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv && echo "Vertex shader SPIR-V valid"
+          echo "Validating fragment shader SPIR-V..."
+          spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv && echo "Fragment shader SPIR-V valid"
 
-      - name: Run headless Vulkan validation (software Vulkan via Mesa lavapipe)
+      - name: Run Vulkan execution test (software Vulkan via Mesa lavapipe)
         run: |
           export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
           echo "Checking Vulkan ICD..."
-          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || echo "No ICD directory"
+          ls -la /usr/share/vulkan/icd.d/
           echo "Checking vulkaninfo..."
-          vulkaninfo --summary 2>&1 | head -30 || echo "vulkaninfo not available"
-          echo "Verifying rendering library..."
-          test -f engine/build/lib/libreality_rendering.a && echo "Rendering library built" || echo "Rendering library not found"
+          vulkaninfo --summary 2>&1 | head -30
+          echo "Running Vulkan execution test..."
+          cd build
+          ./bin/test_vulkan_execution
 
       - name: Upload build artifacts
         if: always()
@@ -75,6 +73,7 @@ jobs:
         with:
           name: reality-renderer-linux
           path: |
-            engine/build/lib/libreality_rendering.a
+            build/lib/libreality_rendering.a
+            build/bin/test_vulkan_execution
             engine/rendering/vulkan/shaders/*.spv
           retention-days: 3
