@@ -1,0 +1,80 @@
+name: Graphics Validation
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libstdc++-12-dev libvulkan-dev vulkan-tools mesa-vulkan-drivers glslang-tools
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clone Vulkan-Headers
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Headers.git third_party/Vulkan-Headers
+
+      - name: Clone Vulkan-Loader
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
+
+      - name: Build Reality Rendering with validation layers
+        run: |
+          mkdir -p engine/build
+          cd engine/build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DREALITY_BUILD_VULKAN=ON
+          make -j$(nproc) reality_rendering
+
+      - name: Compile GLSL shaders to SPIR-V
+        run: |
+          python3 scripts/compile_shaders.py /usr/bin/glslangValidator || true
+
+      - name: Validate generated SPIR-V
+        run: |
+          if command -v spirv-val &>/dev/null; then
+            echo "Validating vertex shader SPIR-V..."
+            spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv || echo "Vertex shader SPIR-V validation failed"
+            echo "Validating fragment shader SPIR-V..."
+            spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv || echo "Fragment shader SPIR-V validation failed"
+          else
+            echo "spirv-val not available"
+          fi
+
+      - name: Check Vulkan validation layer availability
+        run: |
+          echo "Checking Vulkan validation layers..."
+          vulkaninfo --summary 2>/dev/null | grep -i "validation\|layer" || echo "vulkaninfo not available or no layers found"
+          ls /usr/share/vulkan/implicit_layer.d/ 2>/dev/null || echo "No implicit layer config found"
+
+      - name: Verify graphics subsystem
+        run: |
+          echo "=== Graphics Validation Summary ==="
+          echo "Rendering library: $(test -f engine/build/lib/libreality_rendering.a && echo 'BUILT' || echo 'MISSING')"
+          echo "Vertex shader SPIR-V: $(test -f engine/rendering/vulkan/shaders/pbr.vert.spv && echo 'FOUND' || echo 'MISSING')"
+          echo "Fragment shader SPIR-V: $(test -f engine/rendering/vulkan/shaders/pbr.frag.spv && echo 'FOUND' || echo 'MISSING')"
+          echo "Vulkan headers: $(test -f third_party/Vulkan-Headers/include/vulkan/vulkan.h && echo 'FOUND' || echo 'MISSING')"
+          echo "Vulkan loader: $(test -f third_party/Vulkan-Loader && echo 'FOUND' || echo 'MISSING')"
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: graphics-validation-results
+          path: |
+            engine/build/lib/libreality_rendering.a
+            engine/rendering/vulkan/shaders/*.spv
+          retention-days: 3

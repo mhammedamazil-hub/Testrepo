@@ -1,0 +1,47 @@
+name: Reality Engine Studio - Blender Addon Test
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+
+jobs:
+  test-addon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          wget -q https://download.blender.org/release/Blender4.0/blender-4.0.0-linux-x64.tar.xz
+          tar -xf blender-4.0.0-linux-x64.tar.xz
+          echo "BLENDER_PATH=$PWD/blender-4.0.0-linux-x64" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: |
+          pip install --quiet pytest
+
+      - name: Test addon registration (headless)
+        run: |
+          python tests/reality/test_blender_addon_headless.py
+
+      - name: Test Blender addon installation
+        run: |
+          $BLENDER_PATH/blender --background --python tests/reality/test_blender_addon_bpy.py
+
+      - name: Upload addon test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-addon-test-results
+          path: |
+            blender-addon/
+          retention-days: 1
