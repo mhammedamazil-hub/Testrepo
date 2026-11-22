@@ -36,6 +36,12 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
 
+      - name: Verify source files
+        run: |
+          ls -la tests/reality/test_vulkan_execution.cpp
+          ls -la third_party/Vulkan-Headers/include/vulkan/vulkan.h
+          ls -la engine/CMakeLists.txt
+
       - name: Build Reality Engine
         run: |
           set -x
