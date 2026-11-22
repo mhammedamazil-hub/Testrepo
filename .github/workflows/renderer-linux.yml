@@ -40,8 +40,12 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake ../engine -DCMAKE_BUILD_TYPE=Release
-          make -j2 test_vulkan_execution
+          cmake ../engine -DCMAKE_BUILD_TYPE=Release 2>&1 | tee cmake_config.log
+          make -j2 test_vulkan_execution 2>&1 | tee make_build.log || true
+          echo "=== cmake_config.log ==="
+          cat cmake_config.log
+          echo "=== make_build.log ==="
+          cat make_build.log
 
       - name: Compile GLSL shaders to SPIR-V
         run: |
