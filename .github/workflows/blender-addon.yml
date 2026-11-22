@@ -15,9 +15,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Blender
-        uses: panderoz/setup-blender@v1
-        with:
-          blender-version: 4.0.0
+        run: |
+          wget -q https://download.blender.org/release/Blender4.0/blender-4.0.0-linux-x64.tar.xz
+          tar -xf blender-4.0.0-linux-x64.tar.xz
+          echo "BLENDER_PATH=$PWD/blender-4.0.0-linux-x64" >> $GITHUB_ENV
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,62 +31,11 @@ jobs:
 
       - name: Test addon registration (headless)
         run: |
-          python -c "
-import sys
-sys.path.insert(0, 'blender-addon')
-from reality_engine_studio import bl_info
-print('Addon name:', bl_info['name'])
-print('Addon version:', bl_info['version'])
-from reality_engine_studio.panels import _classes
-panel_count = sum(1 for c in _classes if c.__name__.startswith('RES_PT'))
-operator_count = sum(1 for c in _classes if c.__name__.startswith('RES_OT'))
-print(f'Panels: {panel_count}, Operators: {operator_count}')
-assert panel_count == 8, f'Expected 8 panels, got {panel_count}'
-assert operator_count == 16, f'Expected 16 operators, got {operator_count}'
-print('Addon structure verified: 8 panels, 16 operators')
-          "
+          python tests/reality/test_blender_addon_headless.py
 
       - name: Test Blender addon installation
         run: |
-          cat > /tmp/test_addon.py << 'PYEOF'
-import sys
-sys.path.append('blender-addon')
-import bpy
-
-try:
-    from reality_engine_studio import register, unregister
-    print('Addon imported successfully')
-
-    # Register
-    register()
-    print('Addon registered successfully')
-
-    # Check panels are registered
-    expected_panels = [
-        'RES_PT_project_panel',
-        'RES_PT_scene_panel',
-        'RES_PT_entity_panel',
-        'RES_PT_component_panel',
-        'RES_PT_physics_panel',
-        'RES_PT_runtime_panel',
-        'RES_PT_export_panel',
-        'RES_PT_diagnostics_panel',
-    ]
-    for panel_id in expected_panels:
-        if hasattr(bpy.types, panel_id):
-            print(f'  Panel {panel_id}: registered')
-        else:
-            print(f'  Panel {panel_id}: NOT FOUND')
-
-    # Unregister
-    unregister()
-    print('Addon unregistered successfully')
-
-except Exception as e:
-    print(f'Addon test failed: {e}')
-    sys.exit(1)
-PYEOF
-          blender --background --python /tmp/test_addon.py
+          $BLENDER_PATH/blender --background --python tests/reality/test_blender_addon_bpy.py
 
       - name: Upload addon test results
         if: always()

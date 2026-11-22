@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --quiet scons  # needed for Godot source builds if ever required
+          pip install --quiet scons
 
       - name: Run unit tests
         run: |
@@ -44,25 +44,7 @@ jobs:
 
       - name: Run MCP server smoke test
         run: |
-          python3 -c "
-import json, subprocess, sys
-def mpc_msg(method, params=None, mid=1):
-    m = {'jsonrpc': '2.0', 'id': mid, 'method': method}
-    if params is not None:
-        m['params'] = params
-    s = json.dumps(m)
-    return f'Content-Length: {len(s)}\r\n\r\n{s}'.encode()
-data = b''.join([
-    mpc_msg('initialize', {}, 1),
-    mpc_msg('tools/list', {}, 2),
-])
-proc = subprocess.run([sys.executable, '-m', 'universal_engine.mcp_server'], input=data, capture_output=True, timeout=15)
-assert proc.returncode == 0, proc.stderr
-assert b'project_create' in proc.stdout
-assert b'scene_create' in proc.stdout
-assert b'game_create' in proc.stdout
-print('MCP smoke test passed')
-"
+          python tests/reality/test_mcp_smoke.py
 
       - name: Upload test results
         if: always()
