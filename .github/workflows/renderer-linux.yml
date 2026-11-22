@@ -38,10 +38,14 @@ jobs:
 
       - name: Build Reality Engine
         run: |
+          set -x
           mkdir -p build
           cd build
+          echo "=== CMake configure ==="
           cmake ../engine -DCMAKE_BUILD_TYPE=Release
+          echo "=== CMake build ==="
           cmake --build . -j2
+          echo "=== Build complete ==="
 
       - name: Compile GLSL shaders to SPIR-V
         run: |
