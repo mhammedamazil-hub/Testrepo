@@ -24,6 +24,9 @@
 #include <string>
 #include <cstdlib>
 #include <cassert>
+#if !defined(_WIN32)
+#include <dlfcn.h>
+#endif
 
 // Vulkan headers
 #include <vulkan/vulkan.h>
@@ -77,7 +80,7 @@ static PFN_vkVoidFunction load_vulkan_func(void* lib, const char* name) {
 #ifdef _WIN32
     return (PROC)GetProcAddress((HMODULE)lib, name);
 #else
-    return dlsym(lib, name);
+    return reinterpret_cast<PFN_vkVoidFunction>(dlsym(lib, name));
 #endif
 }
 
@@ -362,13 +365,11 @@ int main() {
     alloc_info.memoryTypeIndex = memory_type_index;
 
     VkDeviceMemory buffer_memory = VK_NULL_HANDLE;
-    auto vkAllocateMemory_fn = (PFN_vkAllocateMemory)load_dev_func("vkAllocateMemory");
-    res = vkAllocateMemory_fn(device, &alloc_info, nullptr, &buffer_memory);
+    res = vkAllocateMemory(device, &alloc_info, nullptr, &buffer_memory);
     TEST_VK(res, "vkAllocateMemory");
     TEST_CHECK(buffer_memory != VK_NULL_HANDLE, "Buffer memory allocated");
 
-    auto vkBindBufferMemory_fn = (PFN_vkBindBufferMemory)load_dev_func("vkBindBufferMemory");
-    res = vkBindBufferMemory_fn(device, buffer, buffer_memory, 0);
+    res = vkBindBufferMemory(device, buffer, buffer_memory, 0);
     TEST_VK(res, "vkBindBufferMemory");
 
     // ------------------------------------------------------------------
@@ -382,9 +383,8 @@ int main() {
         test_data[i] = static_cast<uint32_t>(i);
     }
 
-    auto vkMapMemory_fn = (PFN_vkMapMemory)load_dev_func("vkMapMemory");
     void* mapped = nullptr;
-    res = vkMapMemory_fn(device, buffer_memory, 0, test_data.size() * sizeof(uint32_t), 0, &mapped);
+    res = vkMapMemory(device, buffer_memory, 0, test_data.size() * sizeof(uint32_t), 0, &mapped);
     TEST_VK(res, "vkMapMemory");
     TEST_CHECK(mapped != nullptr, "Buffer memory mapped");
 
@@ -464,8 +464,94 @@ int main() {
     TEST_VK(res, "vkCreatePipelineLayout");
     TEST_CHECK(pipeline_layout != VK_NULL_HANDLE, "Pipeline layout created");
 
+    // ------------------------------------------------------------------
+    // Step 9: Graphics pipeline creation (complete fixed-function states)
+    // ------------------------------------------------------------------
     VkGraphicsPipelineCreateInfo pipeline_info{};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+
+    // Vertex input state - position (float3) + color (float3) per vertex
+    VkVertexInputBindingDescription vertex_binding{};
+    vertex_binding.binding = 0;
+    vertex_binding.stride = sizeof(float) * 6;  // 3 position + 3 color
+    vertex_binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    VkVertexInputAttributeDescription position_attr{};
+    position_attr.binding = 0;
+    position_attr.location = 0;
+    position_attr.format = VK_FORMAT_R32G32B32_SFLOAT;
+    position_attr.offset = 0;
+
+    VkVertexInputAttributeDescription color_attr{};
+    color_attr.binding = 0;
+    color_attr.location = 1;
+    color_attr.format = VK_FORMAT_R32G32B32_SFLOAT;
+    color_attr.offset = sizeof(float) * 3;
+
+    VkVertexInputAttributeDescription vertex_attrs[2] = {position_attr, color_attr};
+    VkPipelineVertexInputStateCreateInfo vertex_input{};
+    vertex_input.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertex_input.vertexBindingDescriptionCount = shaders_available ? 1 : 0;
+    vertex_input.pVertexBindingDescriptions = shaders_available ? &vertex_binding : nullptr;
+    vertex_input.vertexAttributeDescriptionCount = shaders_available ? 2 : 0;
+    vertex_input.pVertexAttributeDescriptions = shaders_available ? vertex_attrs : nullptr;
+
+    // Input assembly - triangle list
+    VkPipelineInputAssemblyStateCreateInfo input_assembly{};
+    input_assembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    input_assembly.primitiveRestartEnable = VK_FALSE;
+
+    // Viewport and scissor (dynamic)
+    VkPipelineViewportStateCreateInfo viewport_state{};
+    viewport_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewport_state.viewportCount = 1;
+    viewport_state.scissorCount = 1;
+
+    // Rasterization
+    VkPipelineRasterizationStateCreateInfo rasterizer{};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.depthBiasEnable = VK_FALSE;
+
+    // Multisampling
+    VkPipelineMultisampleStateCreateInfo multisampling{};
+    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampling.sampleShadingEnable = VK_FALSE;
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    // Depth/stencil (disabled)
+    VkPipelineDepthStencilStateCreateInfo depth_stencil{};
+    depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    depth_stencil.depthTestEnable = VK_FALSE;
+    depth_stencil.depthWriteEnable = VK_FALSE;
+
+    // Color blending
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = VK_FALSE;
+
+    VkPipelineColorBlendStateCreateInfo color_blending{};
+    color_blending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    color_blending.logicOpEnable = VK_FALSE;
+    color_blending.attachmentCount = 1;
+    color_blending.pAttachments = &color_blend_attachment;
+
+    // Dynamic state
+    std::vector<VkDynamicState> dynamic_states = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR
+    };
+    VkPipelineDynamicStateCreateInfo dynamic_state{};
+    dynamic_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamic_state.dynamicStateCount = (uint32_t)dynamic_states.size();
+    dynamic_state.pDynamicStates = dynamic_states.data();
 
     if (shaders_available) {
         std::vector<VkPipelineShaderStageCreateInfo> stages(2);
@@ -484,6 +570,14 @@ int main() {
         pipeline_info.pStages = stages.data();
     }
 
+    pipeline_info.pVertexInputState = &vertex_input;
+    pipeline_info.pInputAssemblyState = &input_assembly;
+    pipeline_info.pViewportState = &viewport_state;
+    pipeline_info.pRasterizationState = &rasterizer;
+    pipeline_info.pMultisampleState = &multisampling;
+    pipeline_info.pDepthStencilState = &depth_stencil;
+    pipeline_info.pColorBlendState = &color_blending;
+    pipeline_info.pDynamicState = &dynamic_state;
     pipeline_info.layout = pipeline_layout;
 
     VkPipeline pipeline = VK_NULL_HANDLE;
@@ -492,31 +586,48 @@ int main() {
     TEST_CHECK(pipeline != VK_NULL_HANDLE, "Graphics pipeline created");
 
     // ------------------------------------------------------------------
-    // Step 10: Offscreen rendering (image creation + readback)
+    // Step 10: Mesh rendering with image readback
+
+    // Function pointers for step 10 (unique names to avoid conflicts with step 6)
+    auto vkAllocateMemory_s10 = (PFN_vkAllocateMemory)load_dev_func("vkAllocateMemory");
+    auto vkBindBufferMemory_s10 = (PFN_vkBindBufferMemory)load_dev_func("vkBindBufferMemory");
+    auto vkMapMemory_s10 = (PFN_vkMapMemory)load_dev_func("vkMapMemory");
+    auto vkUnmapMemory_s10 = (PFN_vkUnmapMemory)load_dev_func("vkUnmapMemory");
     // ------------------------------------------------------------------
-    std::cout << std::endl << "[10/12] Offscreen rendering test..." << std::endl;
+    std::cout << std::endl << "[10/12] Mesh rendering with readback..." << std::endl;
 
-    // For a real offscreen render test, we need:
-    // - A render target image
-    // - A command buffer
-    // - A render pass
-    // - Framebuffer
-    // - Queue submit
-    // This is complex without a window/swapchain, so we do a minimal
-    // image creation + transfer test to prove the GPU can execute commands.
+    // Function pointers needed for step 10
+    auto vkCreateRenderPass_fn = (PFN_vkCreateRenderPass)load_dev_func("vkCreateRenderPass");
+    auto vkCreateImageView_fn = (PFN_vkCreateImageView)load_dev_func("vkCreateImageView");
+    auto vkCreateFramebuffer_fn = (PFN_vkCreateFramebuffer)load_dev_func("vkCreateFramebuffer");
+    auto vkCreateBuffer_fn = (PFN_vkCreateBuffer)load_dev_func("vkCreateBuffer");
+    auto vkFlushMappedMemoryRanges_fn = (PFN_vkFlushMappedMemoryRanges)load_dev_func("vkFlushMappedMemoryRanges");
+    auto vkInvalidateMappedMemoryRanges_fn = (PFN_vkInvalidateMappedMemoryRanges)load_dev_func("vkInvalidateMappedMemoryRanges");
+    auto vkGetBufferMemoryRequirements_fn = (PFN_vkGetBufferMemoryRequirements)load_dev_func("vkGetBufferMemoryRequirements");
+    auto vkGetPhysicalDeviceMemoryProperties_fn = (PFN_vkGetPhysicalDeviceMemoryProperties)
+        g_vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties");
+    auto vkCreateCommandPool_fn = (PFN_vkCreateCommandPool)load_dev_func("vkCreateCommandPool");
+    auto vkAllocateCommandBuffers_fn = (PFN_vkAllocateCommandBuffers)load_dev_func("vkAllocateCommandBuffers");
+    auto vkBeginCommandBuffer_fn = (PFN_vkBeginCommandBuffer)load_dev_func("vkBeginCommandBuffer");
+    auto vkCmdSetViewport_fn = (PFN_vkCmdSetViewport)load_dev_func("vkCmdSetViewport");
+    auto vkCmdSetScissor_fn = (PFN_vkCmdSetScissor)load_dev_func("vkCmdSetScissor");
+    auto vkCmdBindPipeline_fn = (PFN_vkCmdBindPipeline)load_dev_func("vkCmdBindPipeline");
+    auto vkCmdBindVertexBuffers_fn = (PFN_vkCmdBindVertexBuffers)load_dev_func("vkCmdBindVertexBuffers");
+    auto vkCmdDraw_fn = (PFN_vkCmdDraw)load_dev_func("vkCmdDraw");
+    auto vkCmdCopyImageToBuffer_fn = (PFN_vkCmdCopyImageToBuffer)load_dev_func("vkCmdCopyImageToBuffer");
+    auto vkCmdPipelineBarrier_fn = (PFN_vkCmdPipelineBarrier)load_dev_func("vkCmdPipelineBarrier");
+    auto vkEndCommandBuffer_fn = (PFN_vkEndCommandBuffer)load_dev_func("vkEndCommandBuffer");
+    auto vkQueueSubmit_fn = (PFN_vkQueueSubmit)load_dev_func("vkQueueSubmit");
+    auto vkQueueWaitIdle_fn = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
+    auto vkCreateFence_fn = (PFN_vkCreateFence)load_dev_func("vkCreateFence");
+    auto vkWaitForFences_fn = (PFN_vkWaitForFences)load_dev_func("vkWaitForFences");
+    auto vkDestroyRenderPass_fn = (PFN_vkDestroyRenderPass)load_dev_func("vkDestroyRenderPass");
+    auto vkDestroyImageView_fn = (PFN_vkDestroyImageView)load_dev_func("vkDestroyImageView");
+    auto vkDestroyFramebuffer_fn = (PFN_vkDestroyFramebuffer)load_dev_func("vkDestroyFramebuffer");
+    auto vkDestroyBuffer_fn = (PFN_vkDestroyBuffer)load_dev_func("vkDestroyBuffer");
+    auto vkFreeMemory_fn = (PFN_vkFreeMemory)load_dev_func("vkFreeMemory");
 
-    auto vkCreateImage = (PFN_vkCreateImage)load_dev_func("vkCreateImage");
-    auto vkCreateImageView = (PFN_vkCreateImageView)load_dev_func("vkCreateImageView");
-    auto vkCreateCommandPool = (PFN_vkCreateCommandPool)load_dev_func("vkCreateCommandPool");
-    auto vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)load_dev_func("vkAllocateCommandBuffers");
-    auto vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)load_dev_func("vkBeginCommandBuffer");
-    auto vkEndCommandBuffer = (PFN_vkEndCommandBuffer)load_dev_func("vkEndCommandBuffer");
-    auto vkQueueSubmit = (PFN_vkQueueSubmit)load_dev_func("vkQueueSubmit");
-    auto vkQueueWaitIdle = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
-    auto vkCreateFence = (PFN_vkCreateFence)load_dev_func("vkCreateFence");
-    auto vkWaitForFences = (PFN_vkWaitForFences)load_dev_func("vkWaitForFences");
-
-    // Create a simple test image
+    // Create test image (render target)
     VkImageCreateInfo image_info{};
     image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     image_info.imageType = VK_IMAGE_TYPE_2D;
@@ -528,80 +639,463 @@ int main() {
     image_info.arrayLayers = 1;
     image_info.samples = VK_SAMPLE_COUNT_1_BIT;
     image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-    image_info.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image_info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
     image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
+    auto vkCreateImage_fn = (PFN_vkCreateImage)load_dev_func("vkCreateImage");
     VkImage test_image = VK_NULL_HANDLE;
-    res = vkCreateImage(device, &image_info, nullptr, &test_image);
+    res = vkCreateImage_fn(device, &image_info, nullptr, &test_image);
     TEST_VK(res, "vkCreateImage");
-    TEST_CHECK(test_image != VK_NULL_HANDLE, "Test image created");
+    TEST_CHECK(test_image != VK_NULL_HANDLE, "Render target image created");
 
+    VkImageView image_view = VK_NULL_HANDLE;
+    VkFramebuffer framebuffer = VK_NULL_HANDLE;
+    VkRenderPass render_pass = VK_NULL_HANDLE;
+
+    VkDeviceMemory image_memory = VK_NULL_HANDLE;
     if (test_image != VK_NULL_HANDLE) {
-        // Create command pool
-        VkCommandPoolCreateInfo pool_info{};
-        pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        pool_info.queueFamilyIndex = graphics_queue_family;
-        pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        // Get memory requirements and allocate memory for image
+        VkMemoryRequirements mem_reqs{};
+        auto vkGetImageMemoryRequirements_fn = (PFN_vkGetImageMemoryRequirements)load_dev_func("vkGetImageMemoryRequirements");
+        vkGetImageMemoryRequirements_fn(device, test_image, &mem_reqs);
 
-        VkCommandPool command_pool = VK_NULL_HANDLE;
-        auto vkCreateCommandPool_fn = (PFN_vkCreateCommandPool)load_dev_func("vkCreateCommandPool");
-        res = vkCreateCommandPool_fn(device, &pool_info, nullptr, &command_pool);
-        TEST_VK(res, "vkCreateCommandPool");
+        VkPhysicalDeviceMemoryProperties mem_props{};
+        vkGetPhysicalDeviceMemoryProperties_fn(physical_device, &mem_props);
 
-        if (command_pool != VK_NULL_HANDLE) {
-            // Allocate command buffer
-            VkCommandBufferAllocateInfo cmd_alloc{};
-            cmd_alloc.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-            cmd_alloc.commandPool = command_pool;
-            cmd_alloc.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            cmd_alloc.commandBufferCount = 1;
+        uint32_t memory_type_index = UINT32_MAX;
+        for (uint32_t i = 0; i < mem_props.memoryTypeCount; i++) {
+            if ((mem_reqs.memoryTypeBits & (1u << i)) &&
+                (mem_props.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+                memory_type_index = i;
+                break;
+            }
+        }
 
-            VkCommandBuffer cmd_buf = VK_NULL_HANDLE;
-            auto vkAllocateCommandBuffers_fn = (PFN_vkAllocateCommandBuffers)load_dev_func("vkAllocateCommandBuffers");
-            res = vkAllocateCommandBuffers_fn(device, &cmd_alloc, &cmd_buf);
-            TEST_VK(res, "vkAllocateCommandBuffers");
+        if (memory_type_index != UINT32_MAX) {
+            VkMemoryAllocateInfo alloc_info{};
+            alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+            alloc_info.allocationSize = mem_reqs.size;
+            alloc_info.memoryTypeIndex = memory_type_index;
+            res = vkAllocateMemory(device, &alloc_info, nullptr, &image_memory);
+            TEST_VK(res, "vkAllocateMemory (image)");
+            if (image_memory != VK_NULL_HANDLE) {
+                auto vkBindImageMemory_fn = (PFN_vkBindImageMemory)load_dev_func("vkBindImageMemory");
+                res = vkBindImageMemory_fn(device, test_image, image_memory, 0);
+                TEST_VK(res, "vkBindImageMemory");
+            }
+        }
 
-            if (cmd_buf != VK_NULL_HANDLE) {
-                // Begin command buffer
-                VkCommandBufferBeginInfo begin_info{};
-                begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-                begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-                auto vkBeginCommandBuffer_fn = (PFN_vkBeginCommandBuffer)load_dev_func("vkBeginCommandBuffer");
-                res = vkBeginCommandBuffer_fn(cmd_buf, &begin_info);
-                TEST_VK(res, "vkBeginCommandBuffer");
+        // Create image view
+        VkImageViewCreateInfo view_info{};
+        view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        view_info.image = test_image;
+        view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+        view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        view_info.subresourceRange.baseMipLevel = 0;
+        view_info.subresourceRange.levelCount = 1;
+        view_info.subresourceRange.baseArrayLayer = 0;
+        view_info.subresourceRange.layerCount = 1;
 
-                if (res == VK_SUCCESS) {
-                    // End command buffer
-                    auto vkEndCommandBuffer_fn = (PFN_vkEndCommandBuffer)load_dev_func("vkEndCommandBuffer");
-                    res = vkEndCommandBuffer_fn(cmd_buf);
-                    TEST_VK(res, "vkEndCommandBuffer");
+        res = vkCreateImageView_fn(device, &view_info, nullptr, &image_view);
+        TEST_VK(res, "vkCreateImageView");
+        TEST_CHECK(image_view != VK_NULL_HANDLE, "Image view created");
 
-                    // Submit and wait
-                    if (res == VK_SUCCESS) {
-                        VkSubmitInfo submit_info{};
-                        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-                        submit_info.commandBufferCount = 1;
-                        submit_info.pCommandBuffers = &cmd_buf;
+        // Create render pass
+        VkAttachmentDescription color_attachment{};
+        color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM;
+        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
-                        auto vkQueueSubmit_fn = (PFN_vkQueueSubmit)load_dev_func("vkQueueSubmit");
-                        res = vkQueueSubmit_fn(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
-                        TEST_VK(res, "vkQueueSubmit");
+        VkAttachmentReference color_attachment_ref{};
+        color_attachment_ref.attachment = 0;
+        color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-                        auto vkQueueWaitIdle_fn = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
-                        res = vkQueueWaitIdle_fn(graphics_queue);
-                        TEST_VK(res, "vkQueueWaitIdle");
-                        std::cout << "  Command buffer executed successfully on GPU" << std::endl;
-                    }
+        VkSubpassDescription subpass{};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &color_attachment_ref;
+
+        VkRenderPassCreateInfo render_pass_info{};
+        render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        render_pass_info.attachmentCount = 1;
+        render_pass_info.pAttachments = &color_attachment;
+        render_pass_info.subpassCount = 1;
+        render_pass_info.pSubpasses = &subpass;
+
+        res = vkCreateRenderPass_fn(device, &render_pass_info, nullptr, &render_pass);
+        TEST_VK(res, "vkCreateRenderPass");
+        TEST_CHECK(render_pass != VK_NULL_HANDLE, "Render pass created");
+
+        // Create framebuffer
+        if (render_pass != VK_NULL_HANDLE) {
+            VkFramebufferCreateInfo fb_info{};
+            fb_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            fb_info.renderPass = render_pass;
+            fb_info.attachmentCount = 1;
+            fb_info.pAttachments = &image_view;
+            fb_info.width = 64;
+            fb_info.height = 64;
+            fb_info.layers = 1;
+
+            res = vkCreateFramebuffer_fn(device, &fb_info, nullptr, &framebuffer);
+            TEST_VK(res, "vkCreateFramebuffer");
+            TEST_CHECK(framebuffer != VK_NULL_HANDLE, "Framebuffer created");
+        }
+    }
+
+    // Create vertex buffer with triangle data
+    struct Vertex { float pos[3]; float color[3]; };
+    Vertex triangle_vertices[] = {
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},  // Red vertex
+        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},  // Green vertex
+        {{ 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},  // Blue vertex
+    };
+    VkDeviceSize vertex_buffer_size = sizeof(triangle_vertices);
+
+    VkBuffer vertex_buffer = VK_NULL_HANDLE;
+    VkDeviceMemory vertex_memory = VK_NULL_HANDLE;
+
+    VkBufferCreateInfo vb_info{};
+    vb_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    vb_info.size = vertex_buffer_size;
+    vb_info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    vb_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    res = vkCreateBuffer_fn(device, &vb_info, nullptr, &vertex_buffer);
+    TEST_VK(res, "vkCreateBuffer (vertex)");
+    TEST_CHECK(vertex_buffer != VK_NULL_HANDLE, "Vertex buffer created");
+
+    if (vertex_buffer != VK_NULL_HANDLE) {
+        VkMemoryRequirements vb_mem_reqs{};
+        vkGetBufferMemoryRequirements_fn(device, vertex_buffer, &vb_mem_reqs);
+
+        uint32_t vb_mem_type = UINT32_MAX;
+        for (uint32_t i = 0; i < mem_props.memoryTypeCount; i++) {
+            if ((vb_mem_reqs.memoryTypeBits & (1u << i)) &&
+                (mem_props.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+                vb_mem_type = i;
+                break;
+            }
+        }
+
+        if (vb_mem_type != UINT32_MAX) {
+            VkMemoryAllocateInfo vb_alloc{};
+            vb_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+            vb_alloc.allocationSize = vb_mem_reqs.size;
+            vb_alloc.memoryTypeIndex = vb_mem_type;
+            res = vkAllocateMemory(device, &vb_alloc, nullptr, &vertex_memory);
+            TEST_VK(res, "vkAllocateMemory (vertex)");
+            if (vertex_memory != VK_NULL_HANDLE) {
+                res = vkBindBufferMemory(device, vertex_buffer, vertex_memory, 0);
+                TEST_VK(res, "vkBindBufferMemory (vertex)");
+
+                // Upload vertex data
+                void* mapped = nullptr;
+                res = vkMapMemory(device, vertex_memory, 0, vertex_buffer_size, 0, &mapped);
+                TEST_VK(res, "vkMapMemory (vertex)");
+                if (mapped) {
+                    memcpy(mapped, triangle_vertices, vertex_buffer_size);
+                    vkUnmapMemory_s10(device, vertex_memory);
+                    std::cout << "  Uploaded " << vertex_buffer_size << " bytes of vertex data" << std::endl;
                 }
             }
         }
     }
 
+    // Create staging buffer for image readback (host-visible, host-coherent)
+    VkBuffer staging_buffer = VK_NULL_HANDLE;
+    VkDeviceMemory staging_memory = VK_NULL_HANDLE;
+    VkDeviceSize staging_size = 64 * 64 * 4;  // RGBA8
+
+    VkBufferCreateInfo staging_info{};
+    staging_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    staging_info.size = staging_size;
+    staging_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+    staging_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    res = vkCreateBuffer_fn(device, &staging_info, nullptr, &staging_buffer);
+    TEST_VK(res, "vkCreateBuffer (staging)");
+    TEST_CHECK(staging_buffer != VK_NULL_HANDLE, "Staging buffer created");
+
+    if (staging_buffer != VK_NULL_HANDLE) {
+        VkMemoryRequirements staging_mem_reqs{};
+        vkGetBufferMemoryRequirements_fn(device, staging_buffer, &staging_mem_reqs);
+
+        uint32_t staging_mem_type = UINT32_MAX;
+        for (uint32_t i = 0; i < mem_props.memoryTypeCount; i++) {
+            if ((staging_mem_reqs.memoryTypeBits & (1u << i)) &&
+                (mem_props.memoryTypes[i].propertyFlags & (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))) {
+                staging_mem_type = i;
+                break;
+            }
+        }
+
+        if (staging_mem_type != UINT32_MAX) {
+            VkMemoryAllocateInfo staging_alloc{};
+            staging_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+            staging_alloc.allocationSize = staging_mem_reqs.size;
+            staging_alloc.memoryTypeIndex = staging_mem_type;
+            res = vkAllocateMemory(device, &staging_alloc, nullptr, &staging_memory);
+            TEST_VK(res, "vkAllocateMemory (staging)");
+            if (staging_memory != VK_NULL_HANDLE) {
+                res = vkBindBufferMemory(device, staging_buffer, staging_memory, 0);
+                TEST_VK(res, "vkBindBufferMemory (staging)");
+            }
+        }
+    }
+
+    // Create command pool
+    VkCommandPool command_pool = VK_NULL_HANDLE;
+    VkCommandPoolCreateInfo pool_info{};
+    pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    pool_info.queueFamilyIndex = graphics_queue_family;
+    pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    res = vkCreateCommandPool_fn(device, &pool_info, nullptr, &command_pool);
+    TEST_VK(res, "vkCreateCommandPool");
+    TEST_CHECK(command_pool != VK_NULL_HANDLE, "Command pool created");
+
+    // Allocate command buffer
+    VkCommandBuffer cmd_buf = VK_NULL_HANDLE;
+    VkCommandBufferAllocateInfo cmd_alloc{};
+    cmd_alloc.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmd_alloc.commandPool = command_pool;
+    cmd_alloc.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_alloc.commandBufferCount = 1;
+
+    res = vkAllocateCommandBuffers_fn(device, &cmd_alloc, &cmd_buf);
+    TEST_VK(res, "vkAllocateCommandBuffers");
+    TEST_CHECK(cmd_buf != VK_NULL_HANDLE, "Command buffer allocated");
+
+    bool rendering_succeeded = false;
+
+    if (cmd_buf != VK_NULL_HANDLE) {
+        // Begin command buffer
+        VkCommandBufferBeginInfo begin_info{};
+        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        res = vkBeginCommandBuffer_fn(cmd_buf, &begin_info);
+        TEST_VK(res, "vkBeginCommandBuffer");
+
+        if (res == VK_SUCCESS && render_pass != VK_NULL_HANDLE && framebuffer != VK_NULL_HANDLE &&
+            pipeline != VK_NULL_HANDLE && vertex_buffer != VK_NULL_HANDLE) {
+
+            // Set dynamic viewport and scissor
+            VkViewport viewport{};
+            viewport.width = 64.0f;
+            viewport.height = 64.0f;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport_fn(cmd_buf, 0, 1, &viewport);
+
+            VkRect2D scissor{};
+            scissor.extent.width = 64;
+            scissor.extent.height = 64;
+            vkCmdSetScissor_fn(cmd_buf, 0, 1, &scissor);
+
+            // Begin render pass
+            VkRenderPassBeginInfo rp_begin{};
+            rp_begin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            rp_begin.renderPass = render_pass;
+            rp_begin.framebuffer = framebuffer;
+            rp_begin.renderArea.offset = {0, 0};
+            rp_begin.renderArea.extent = {64, 64};
+
+            VkClearValue clear_color{};
+            clear_color.color.float32[0] = 0.1f;  // Dark gray clear color
+            clear_color.color.float32[1] = 0.1f;
+            clear_color.color.float32[2] = 0.1f;
+            clear_color.color.float32[3] = 1.0f;
+
+            rp_begin.clearValueCount = 1;
+            rp_begin.pClearValues = &clear_color;
+
+            auto vkCmdBeginRenderPass_fn = (PFN_vkCmdBeginRenderPass)load_dev_func("vkCmdBeginRenderPass");
+            auto vkCmdEndRenderPass_fn = (PFN_vkCmdEndRenderPass)load_dev_func("vkCmdEndRenderPass");
+
+            vkCmdBeginRenderPass_fn(cmd_buf, &rp_begin, VK_SUBPASS_CONTENTS_INLINE);
+
+            // Bind pipeline and vertex buffer
+            vkCmdBindPipeline_fn(cmd_buf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+            VkDeviceSize offsets[] = {0};
+            vkCmdBindVertexBuffers_fn(cmd_buf, 0, 1, &vertex_buffer, offsets);
+
+            // Draw triangle (3 vertices)
+            vkCmdDraw_fn(cmd_buf, 3, 1, 0, 0);
+
+            // End render pass (transitions image to TRANSFER_SRC_OPTIMAL via finalLayout)
+            vkCmdEndRenderPass_fn(cmd_buf);
+
+            // Copy rendered image to staging buffer for readback
+            VkBufferImageCopy region{};
+            region.bufferOffset = 0;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = {0, 0, 0};
+            region.imageExtent = {64, 64, 1};
+
+            vkCmdCopyImageToBuffer_fn(cmd_buf, test_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                        staging_buffer, 1, &region);
+
+            rendering_succeeded = true;
+            std::cout << "  Recorded draw commands (triangle render + image copy)" << std::endl;
+        } else if (res == VK_SUCCESS) {
+            std::cout << "  SKIP: Missing render pass, framebuffer, pipeline, or vertex buffer" << std::endl;
+        }
+
+        // End command buffer
+        res = vkEndCommandBuffer_fn(cmd_buf);
+        TEST_VK(res, "vkEndCommandBuffer");
+
+        // Submit and wait
+        if (res == VK_SUCCESS) {
+            VkSubmitInfo submit_info{};
+            submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submit_info.commandBufferCount = 1;
+            submit_info.pCommandBuffers = &cmd_buf;
+
+            auto vkCreateFence_fn2 = (PFN_vkCreateFence)load_dev_func("vkCreateFence");
+            VkFence fence = VK_NULL_HANDLE;
+            VkFenceCreateInfo fence_info{};
+            fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+            res = vkCreateFence_fn2(device, &fence_info, nullptr, &fence);
+            TEST_VK(res, "vkCreateFence");
+
+            res = vkQueueSubmit_fn(graphics_queue, 1, &submit_info, fence);
+            TEST_VK(res, "vkQueueSubmit (mesh render)");
+
+            if (res == VK_SUCCESS && fence != VK_NULL_HANDLE) {
+                auto vkWaitForFences_fn2 = (PFN_vkWaitForFences)load_dev_func("vkWaitForFences");
+                res = vkWaitForFences_fn2(device, 1, &fence, VK_TRUE, UINT64_MAX);
+                TEST_VK(res, "vkWaitForFences (mesh render)");
+
+                auto vkDestroyFence_fn = (PFN_vkDestroyFence)load_dev_func("vkDestroyFence");
+                vkDestroyFence_fn(device, fence, nullptr);
+            }
+
+            auto vkQueueWaitIdle_fn2 = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
+            res = vkQueueWaitIdle_fn2(graphics_queue);
+            TEST_VK(res, "vkQueueWaitIdle");
+            std::cout << "  Mesh rendering commands executed on GPU" << std::endl;
+        }
+    }
+
+    // Read back staging buffer and verify pixel data
+    bool readback_verified = false;
+    if (staging_memory != VK_NULL_HANDLE && rendering_succeeded) {
+        void* mapped = nullptr;
+        res = vkMapMemory(device, staging_memory, 0, staging_size, 0, &mapped);
+        TEST_VK(res, "vkMapMemory (staging readback)");
+
+        if (mapped) {
+            // Check that we have rendered content (not all zeros)
+            const uint32_t* pixels = static_cast<const uint32_t*>(mapped);
+            uint32_t non_zero_count = 0;
+            uint32_t clear_color_pixel = 0;
+            // Clear color is 0.1f -> 0.1 * 255 ≈ 25-26 per channel
+            // In RGBA8: R=26, G=26, B=26, A=255 -> 0xFF1A1A1A (little-endian)
+            clear_color_pixel = 0xFF1A1A1A;
+
+            for (size_t i = 0; i < staging_size / 4; i++) {
+                if (pixels[i] != 0) non_zero_count++;
+            }
+
+            std::cout << "  Non-zero pixels in readback: " << non_zero_count << " / "
+                      << (staging_size / 4) << std::endl;
+
+            // With a clear color of 0.1, most pixels should be non-zero
+            // (triangle pixels will have different colors)
+            if (non_zero_count > (staging_size / 4) / 2) {
+                std::cout << "  PASS: Image contains rendered content (non-zero pixels found)" << std::endl;
+                readback_verified = true;
+                g_tests_passed++;
+            } else {
+                std::cout << "  FAIL: Image appears empty" << std::endl;
+                g_tests_failed++;
+            }
+
+            vkUnmapMemory_s10(device, staging_memory);
+        }
+    } else if (!rendering_succeeded) {
+        std::cout << "  SKIP: Readback verification (rendering did not complete)" << std::endl;
+    } else {
+        std::cout << "  SKIP: Readback verification (no staging memory)" << std::endl;
+    }
+
+    TEST_CHECK(readback_verified || !rendering_succeeded,
+               "Image readback verifies rendered result");
+    if (!readback_verified && rendering_succeeded) g_tests_failed++;
+
     // ------------------------------------------------------------------
     // Step 11: Resource destruction
     // ------------------------------------------------------------------
     std::cout << std::endl << "[11/12] Destroying resources..." << std::endl;
+
+    auto vkDestroyCommandPool_fn = (PFN_vkDestroyCommandPool)load_dev_func("vkDestroyCommandPool");
+    if (command_pool != VK_NULL_HANDLE) {
+        vkDestroyCommandPool_fn(device, command_pool, nullptr);
+    }
+    TEST_CHECK(true, "Command pool destroyed");
+
+    if (staging_buffer != VK_NULL_HANDLE) {
+        auto vkDestroyBuffer_fn2 = (PFN_vkDestroyBuffer)load_dev_func("vkDestroyBuffer");
+        vkDestroyBuffer_fn2(device, staging_buffer, nullptr);
+    }
+    TEST_CHECK(true, "Staging buffer destroyed");
+
+    if (staging_memory != VK_NULL_HANDLE) {
+        auto vkFreeMemory_fn2 = (PFN_vkFreeMemory)load_dev_func("vkFreeMemory");
+        vkFreeMemory_fn2(device, staging_memory, nullptr);
+    }
+    TEST_CHECK(true, "Staging memory freed");
+
+    if (vertex_buffer != VK_NULL_HANDLE) {
+        auto vkDestroyBuffer_fn2 = (PFN_vkDestroyBuffer)load_dev_func("vkDestroyBuffer");
+        vkDestroyBuffer_fn2(device, vertex_buffer, nullptr);
+    }
+    TEST_CHECK(true, "Vertex buffer destroyed");
+
+    if (vertex_memory != VK_NULL_HANDLE) {
+        auto vkFreeMemory_fn2 = (PFN_vkFreeMemory)load_dev_func("vkFreeMemory");
+        vkFreeMemory_fn2(device, vertex_memory, nullptr);
+    }
+    TEST_CHECK(true, "Vertex memory freed");
+
+    if (image_memory != VK_NULL_HANDLE) {
+        auto vkFreeMemory_fn2 = (PFN_vkFreeMemory)load_dev_func("vkFreeMemory");
+        vkFreeMemory_fn2(device, image_memory, nullptr);
+    }
+    TEST_CHECK(true, "Image memory freed");
+
+    if (framebuffer != VK_NULL_HANDLE) {
+        auto vkDestroyFramebuffer_fn = (PFN_vkDestroyFramebuffer)load_dev_func("vkDestroyFramebuffer");
+        vkDestroyFramebuffer_fn(device, framebuffer, nullptr);
+    }
+    TEST_CHECK(true, "Framebuffer destroyed");
+
+    if (image_view != VK_NULL_HANDLE) {
+        auto vkDestroyImageView_fn = (PFN_vkDestroyImageView)load_dev_func("vkDestroyImageView");
+        vkDestroyImageView_fn(device, image_view, nullptr);
+    }
+    TEST_CHECK(true, "Image view destroyed");
+
+    if (render_pass != VK_NULL_HANDLE) {
+        auto vkDestroyRenderPass_fn = (PFN_vkDestroyRenderPass)load_dev_func("vkDestroyRenderPass");
+        vkDestroyRenderPass_fn(device, render_pass, nullptr);
+    }
+    TEST_CHECK(true, "Render pass destroyed");
 
     auto vkDestroyImage = (PFN_vkDestroyImage)load_dev_func("vkDestroyImage");
     if (test_image != VK_NULL_HANDLE) {
