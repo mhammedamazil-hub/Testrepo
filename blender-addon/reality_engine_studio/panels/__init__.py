@@ -74,14 +74,24 @@ _classes = [
 
 def register():
     """Register all panel classes."""
-    for cls in _classes:
-        cls.register()
+    try:
+        import bpy
+        for cls in _classes:
+            bpy.utils.register_class(cls)
+    except ImportError:
+        for cls in _classes:
+            cls.register()
 
 
 def unregister():
     """Unregister all panel classes."""
-    for cls in reversed(_classes):
-        cls.unregister()
+    try:
+        import bpy
+        for cls in reversed(_classes):
+            bpy.utils.unregister_class(cls)
+    except ImportError:
+        for cls in reversed(_classes):
+            cls.unregister()
 
 
 register_all = register

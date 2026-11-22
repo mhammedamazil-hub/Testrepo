@@ -19,7 +19,9 @@ endif()
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
+endif()
 
 set(JOLT_PHYSICS_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../jolt-physics" CACHE PATH "Path to Jolt Physics source directory")
 set(JOLT_PHYSICS_BUILD_DIR "${CMAKE_SOURCE_DIR}/../jolt-physics/Build" CACHE PATH "Path to Jolt Physics build directory")

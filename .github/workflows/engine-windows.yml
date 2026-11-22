@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install system dependencies
+        shell: bash
         run: |
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=SYSTEM' -y
           choco install mingw -y
@@ -25,23 +26,27 @@ jobs:
           python-version: "3.11"
 
       - name: Clone Jolt Physics
+        shell: bash
         run: |
           git clone --depth 1 https://github.com/jrouwe/JoltPhysics.git jolt-physics
 
       - name: Build Jolt Physics
+        shell: bash
         working-directory: ./jolt-physics/Build
         run: |
           cmake . -DCMAKE_BUILD_TYPE=Release -DJPH_BUILD_SHARED_LIBS=OFF -DUSE_ASSERTS=OFF -DENABLE_ALL_WARNINGS=OFF -DCPP_EXCEPTIONS_ENABLED=ON -DCPP_RTTI_ENABLED=ON -DOVERRIDE_CXX_FLAGS=OFF -DINTERPROCEDURAL_OPTIMIZATION=OFF -G "MinGW Makefiles"
-          make -j$(nproc)
+          make -j4
 
       - name: Build Reality Engine
+        shell: bash
         run: |
           mkdir -p engine/build
           cd engine/build
           cmake .. -DCMAKE_BUILD_TYPE=Release -DJOLT_PHYSICS_BUILD_DIR=${{ github.workspace }}/jolt-physics/Build -G "MinGW Makefiles"
-          make -j$(nproc)
+          make -j4
 
       - name: Run C++ unit tests
+        shell: bash
         run: |
           cd engine/build
           ctest --output-on-failure

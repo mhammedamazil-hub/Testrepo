@@ -53,7 +53,7 @@ jobs:
       - name: Validate Jolt backend is used (not stub)
         run: |
           output=$(./engine/build/bin/reality_runtime /tmp/reality_physics_ci --frames 10 --diagnostics 2>&1 || true)
-          echo "$output" | grep -q '"physics_backend":"jolt"' && echo "PASS: Jolt backend confirmed" || { echo "FAIL: Jolt backend not found in output"; exit 1; }
+          echo "$output" | grep -Eq '"physics_backend"\s*:\s*"jolt"' && echo "PASS: Jolt backend confirmed" || { echo "FAIL: Jolt backend not found in output"; exit 1; }
 
       - name: Upload physics validation results
         if: always()
