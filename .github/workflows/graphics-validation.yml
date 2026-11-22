@@ -18,7 +18,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake build-essential libstdc++-12-dev libvulkan-dev vulkan-tools mesa-vulkan-drivers glslang-tools
+          sudo apt-get install -y cmake build-essential libstdc++-12-dev \
+            libvulkan-dev vulkan-tools mesa-vulkan-drivers \
+            glslang-tools spirv-tools libgl1-mesa-dev libx11-dev \
+            xvfb libxi-dev libglvnd-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -48,17 +51,22 @@ jobs:
         run: |
           if command -v spirv-val &>/dev/null; then
             echo "Validating vertex shader SPIR-V..."
-            spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv || echo "Vertex shader SPIR-V validation failed"
+            spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv && echo "Vertex shader SPIR-V valid"
             echo "Validating fragment shader SPIR-V..."
-            spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv || echo "Fragment shader SPIR-V validation failed"
+            spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv && echo "Fragment shader SPIR-V valid"
           else
             echo "spirv-val not available"
           fi
+        continue-on-error: true
 
       - name: Check Vulkan validation layer availability
         run: |
-          echo "Checking Vulkan validation layers..."
-          vulkaninfo --summary 2>/dev/null | grep -i "validation\|layer" || echo "vulkaninfo not available or no layers found"
+          export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
+          echo "Checking Vulkan ICD..."
+          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || echo "No ICD directory"
+          echo "Checking vulkaninfo with lavapipe..."
+          vulkaninfo --summary 2>&1 | head -40 || echo "vulkaninfo not available"
+          echo "Checking validation layers..."
           ls /usr/share/vulkan/implicit_layer.d/ 2>/dev/null || echo "No implicit layer config found"
 
       - name: Verify graphics subsystem
@@ -68,7 +76,7 @@ jobs:
           echo "Vertex shader SPIR-V: $(test -f engine/rendering/vulkan/shaders/pbr.vert.spv && echo 'FOUND' || echo 'MISSING')"
           echo "Fragment shader SPIR-V: $(test -f engine/rendering/vulkan/shaders/pbr.frag.spv && echo 'FOUND' || echo 'MISSING')"
           echo "Vulkan headers: $(test -f third_party/Vulkan-Headers/include/vulkan/vulkan.h && echo 'FOUND' || echo 'MISSING')"
-          echo "Vulkan loader: $(test -f third_party/Vulkan-Loader && echo 'FOUND' || echo 'MISSING')"
+          echo "Vulkan loader: $(test -d third_party/Vulkan-Loader && echo 'FOUND' || echo 'MISSING')"
 
       - name: Upload validation artifacts
         if: always()
