@@ -36,12 +36,12 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
 
-      - name: Build Reality Engine
+      - name: Build Reality Engine and Vulkan test
         run: |
           mkdir -p build
           cd build
           cmake ../engine -DCMAKE_BUILD_TYPE=Release
-          make -j2
+          make -j2 test_vulkan_execution
 
       - name: Compile GLSL shaders to SPIR-V
         run: |
