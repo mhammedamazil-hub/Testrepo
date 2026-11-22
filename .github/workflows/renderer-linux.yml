@@ -38,14 +38,9 @@ jobs:
 
       - name: Build Reality Engine (full project with Vulkan)
         run: |
-          set -x
-          pwd
-          ls -la
           mkdir -p build
           cd build
-          cmake ../engine -DCMAKE_BUILD_TYPE=Release \
-            -DVULKAN_HEADERS_DIR=../third_party/Vulkan-Headers \
-            -DVULKAN_LOADER_DIR=../third_party/Vulkan-Loader 2>&1
+          cmake ../engine -DCMAKE_BUILD_TYPE=Release 2>&1
           cmake --build . -j2 2>&1
 
       - name: Compile GLSL shaders to SPIR-V
