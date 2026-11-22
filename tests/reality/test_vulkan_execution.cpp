@@ -280,6 +280,15 @@ int main() {
     TEST_VK(res, "vkCreateDevice");
     TEST_CHECK(device != VK_NULL_HANDLE, "Logical device handle is valid");
 
+    // Get device-level function pointer loader
+    auto vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)g_vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr");
+    TEST_CHECK(vkGetDeviceProcAddr != nullptr, "vkGetDeviceProcAddr loaded");
+
+    // Helper lambda for device-level functions
+    auto load_dev_func = [&](const char* name) -> PFN_vkVoidFunction {
+        return vkGetDeviceProcAddr(device, name);
+    };
+
     if (device == VK_NULL_HANDLE) {
         // Cleanup
         auto vkDestroyInstance = (PFN_vkDestroyInstance)g_vkGetInstanceProcAddr(instance, "vkDestroyInstance");
@@ -292,7 +301,7 @@ int main() {
     // ------------------------------------------------------------------
     std::cout << std::endl << "[5/12] Retrieving queues..." << std::endl;
 
-    auto vkGetDeviceQueue = (PFN_vkGetDeviceQueue)g_vkGetInstanceProcAddr(device, "vkGetDeviceQueue");
+    auto vkGetDeviceQueue = (PFN_vkGetDeviceQueue)load_dev_func("vkGetDeviceQueue");
     VkQueue graphics_queue = VK_NULL_HANDLE;
     vkGetDeviceQueue(device, graphics_queue_family, 0, &graphics_queue);
     TEST_CHECK(graphics_queue != VK_NULL_HANDLE, "Graphics queue retrieved");
@@ -302,15 +311,15 @@ int main() {
     // ------------------------------------------------------------------
     std::cout << std::endl << "[6/12] Creating buffer and allocating memory..." << std::endl;
 
-    auto vkCreateBuffer = (PFN_vkCreateBuffer)g_vkGetInstanceProcAddr(device, "vkCreateBuffer");
+    auto vkCreateBuffer = (PFN_vkCreateBuffer)load_dev_func("vkCreateBuffer");
     auto vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)
-        g_vkGetInstanceProcAddr(device, "vkGetBufferMemoryRequirements");
-    auto vkAllocateMemory = (PFN_vkAllocateMemory)g_vkGetInstanceProcAddr(device, "vkAllocateMemory");
-    auto vkBindBufferMemory = (PFN_vkBindBufferMemory)g_vkGetInstanceProcAddr(device, "vkBindBufferMemory");
+        load_dev_func("vkGetBufferMemoryRequirements");
+    auto vkAllocateMemory = (PFN_vkAllocateMemory)load_dev_func("vkAllocateMemory");
+    auto vkBindBufferMemory = (PFN_vkBindBufferMemory)load_dev_func("vkBindBufferMemory");
     auto vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)
         g_vkGetInstanceProcAddr(physical_device, "vkGetPhysicalDeviceMemoryProperties");
-    auto vkMapMemory = (PFN_vkMapMemory)g_vkGetInstanceProcAddr(device, "vkMapMemory");
-    auto vkUnmapMemory = (PFN_vkUnmapMemory)g_vkGetInstanceProcAddr(device, "vkUnmapMemory");
+    auto vkMapMemory = (PFN_vkMapMemory)load_dev_func("vkMapMemory");
+    auto vkUnmapMemory = (PFN_vkUnmapMemory)load_dev_func("vkUnmapMemory");
 
     const VkDeviceSize buffer_size = 1024 * 1024; // 1 MB
 
@@ -353,12 +362,12 @@ int main() {
     alloc_info.memoryTypeIndex = memory_type_index;
 
     VkDeviceMemory buffer_memory = VK_NULL_HANDLE;
-    auto vkAllocateMemory_fn = (PFN_vkAllocateMemory)g_vkGetInstanceProcAddr(device, "vkAllocateMemory");
+    auto vkAllocateMemory_fn = (PFN_vkAllocateMemory)load_dev_func("vkAllocateMemory");
     res = vkAllocateMemory_fn(device, &alloc_info, nullptr, &buffer_memory);
     TEST_VK(res, "vkAllocateMemory");
     TEST_CHECK(buffer_memory != VK_NULL_HANDLE, "Buffer memory allocated");
 
-    auto vkBindBufferMemory_fn = (PFN_vkBindBufferMemory)g_vkGetInstanceProcAddr(device, "vkBindBufferMemory");
+    auto vkBindBufferMemory_fn = (PFN_vkBindBufferMemory)load_dev_func("vkBindBufferMemory");
     res = vkBindBufferMemory_fn(device, buffer, buffer_memory, 0);
     TEST_VK(res, "vkBindBufferMemory");
 
@@ -373,7 +382,7 @@ int main() {
         test_data[i] = static_cast<uint32_t>(i);
     }
 
-    auto vkMapMemory_fn = (PFN_vkMapMemory)g_vkGetInstanceProcAddr(device, "vkMapMemory");
+    auto vkMapMemory_fn = (PFN_vkMapMemory)load_dev_func("vkMapMemory");
     void* mapped = nullptr;
     res = vkMapMemory_fn(device, buffer_memory, 0, test_data.size() * sizeof(uint32_t), 0, &mapped);
     TEST_VK(res, "vkMapMemory");
@@ -381,7 +390,7 @@ int main() {
 
     if (mapped) {
         memcpy(mapped, test_data.data(), test_data.size() * sizeof(uint32_t));
-        auto vkUnmapMemory_fn = (PFN_vkUnmapMemory)g_vkGetInstanceProcAddr(device, "vkUnmapMemory");
+        auto vkUnmapMemory_fn = (PFN_vkUnmapMemory)load_dev_func("vkUnmapMemory");
         vkUnmapMemory_fn(device, buffer_memory);
         std::cout << "  Uploaded " << test_data.size() * sizeof(uint32_t) << " bytes to buffer" << std::endl;
     }
@@ -415,7 +424,7 @@ int main() {
     std::cout << "  Vertex SPIR-V: " << (vert_spirv.empty() ? "MISSING" : std::to_string(vert_spirv.size()) + " words") << std::endl;
     std::cout << "  Fragment SPIR-V: " << (frag_spirv.empty() ? "MISSING" : std::to_string(frag_spirv.size()) + " words") << std::endl;
 
-    auto vkCreateShaderModule = (PFN_vkCreateShaderModule)g_vkGetInstanceProcAddr(device, "vkCreateShaderModule");
+    auto vkCreateShaderModule = (PFN_vkCreateShaderModule)load_dev_func("vkCreateShaderModule");
 
     VkShaderModule vert_module = VK_NULL_HANDLE;
     VkShaderModule frag_module = VK_NULL_HANDLE;
@@ -443,8 +452,8 @@ int main() {
     // ------------------------------------------------------------------
     std::cout << std::endl << "[9/12] Creating graphics pipeline..." << std::endl;
 
-    auto vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)g_vkGetInstanceProcAddr(device, "vkCreatePipelineLayout");
-    auto vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)g_vkGetInstanceProcAddr(device, "vkCreateGraphicsPipelines");
+    auto vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)load_dev_func("vkCreatePipelineLayout");
+    auto vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)load_dev_func("vkCreateGraphicsPipelines");
 
     VkPipelineLayout pipeline_layout = VK_NULL_HANDLE;
     VkPipelineLayoutCreateInfo layout_info{};
@@ -496,16 +505,16 @@ int main() {
     // This is complex without a window/swapchain, so we do a minimal
     // image creation + transfer test to prove the GPU can execute commands.
 
-    auto vkCreateImage = (PFN_vkCreateImage)g_vkGetInstanceProcAddr(device, "vkCreateImage");
-    auto vkCreateImageView = (PFN_vkCreateImageView)g_vkGetInstanceProcAddr(device, "vkCreateImageView");
-    auto vkCreateCommandPool = (PFN_vkCreateCommandPool)g_vkGetInstanceProcAddr(device, "vkCreateCommandPool");
-    auto vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)g_vkGetInstanceProcAddr(device, "vkAllocateCommandBuffers");
-    auto vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)g_vkGetInstanceProcAddr(device, "vkBeginCommandBuffer");
-    auto vkEndCommandBuffer = (PFN_vkEndCommandBuffer)g_vkGetInstanceProcAddr(device, "vkEndCommandBuffer");
-    auto vkQueueSubmit = (PFN_vkQueueSubmit)g_vkGetInstanceProcAddr(device, "vkQueueSubmit");
-    auto vkQueueWaitIdle = (PFN_vkQueueWaitIdle)g_vkGetInstanceProcAddr(device, "vkQueueWaitIdle");
-    auto vkCreateFence = (PFN_vkCreateFence)g_vkGetInstanceProcAddr(device, "vkCreateFence");
-    auto vkWaitForFences = (PFN_vkWaitForFences)g_vkGetInstanceProcAddr(device, "vkWaitForFences");
+    auto vkCreateImage = (PFN_vkCreateImage)load_dev_func("vkCreateImage");
+    auto vkCreateImageView = (PFN_vkCreateImageView)load_dev_func("vkCreateImageView");
+    auto vkCreateCommandPool = (PFN_vkCreateCommandPool)load_dev_func("vkCreateCommandPool");
+    auto vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)load_dev_func("vkAllocateCommandBuffers");
+    auto vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)load_dev_func("vkBeginCommandBuffer");
+    auto vkEndCommandBuffer = (PFN_vkEndCommandBuffer)load_dev_func("vkEndCommandBuffer");
+    auto vkQueueSubmit = (PFN_vkQueueSubmit)load_dev_func("vkQueueSubmit");
+    auto vkQueueWaitIdle = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
+    auto vkCreateFence = (PFN_vkCreateFence)load_dev_func("vkCreateFence");
+    auto vkWaitForFences = (PFN_vkWaitForFences)load_dev_func("vkWaitForFences");
 
     // Create a simple test image
     VkImageCreateInfo image_info{};
@@ -536,7 +545,7 @@ int main() {
         pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         VkCommandPool command_pool = VK_NULL_HANDLE;
-        auto vkCreateCommandPool_fn = (PFN_vkCreateCommandPool)g_vkGetInstanceProcAddr(device, "vkCreateCommandPool");
+        auto vkCreateCommandPool_fn = (PFN_vkCreateCommandPool)load_dev_func("vkCreateCommandPool");
         res = vkCreateCommandPool_fn(device, &pool_info, nullptr, &command_pool);
         TEST_VK(res, "vkCreateCommandPool");
 
@@ -549,7 +558,7 @@ int main() {
             cmd_alloc.commandBufferCount = 1;
 
             VkCommandBuffer cmd_buf = VK_NULL_HANDLE;
-            auto vkAllocateCommandBuffers_fn = (PFN_vkAllocateCommandBuffers)g_vkGetInstanceProcAddr(device, "vkAllocateCommandBuffers");
+            auto vkAllocateCommandBuffers_fn = (PFN_vkAllocateCommandBuffers)load_dev_func("vkAllocateCommandBuffers");
             res = vkAllocateCommandBuffers_fn(device, &cmd_alloc, &cmd_buf);
             TEST_VK(res, "vkAllocateCommandBuffers");
 
@@ -558,13 +567,13 @@ int main() {
                 VkCommandBufferBeginInfo begin_info{};
                 begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                 begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-                auto vkBeginCommandBuffer_fn = (PFN_vkBeginCommandBuffer)g_vkGetInstanceProcAddr(device, "vkBeginCommandBuffer");
+                auto vkBeginCommandBuffer_fn = (PFN_vkBeginCommandBuffer)load_dev_func("vkBeginCommandBuffer");
                 res = vkBeginCommandBuffer_fn(cmd_buf, &begin_info);
                 TEST_VK(res, "vkBeginCommandBuffer");
 
                 if (res == VK_SUCCESS) {
                     // End command buffer
-                    auto vkEndCommandBuffer_fn = (PFN_vkEndCommandBuffer)g_vkGetInstanceProcAddr(device, "vkEndCommandBuffer");
+                    auto vkEndCommandBuffer_fn = (PFN_vkEndCommandBuffer)load_dev_func("vkEndCommandBuffer");
                     res = vkEndCommandBuffer_fn(cmd_buf);
                     TEST_VK(res, "vkEndCommandBuffer");
 
@@ -575,11 +584,11 @@ int main() {
                         submit_info.commandBufferCount = 1;
                         submit_info.pCommandBuffers = &cmd_buf;
 
-                        auto vkQueueSubmit_fn = (PFN_vkQueueSubmit)g_vkGetInstanceProcAddr(device, "vkQueueSubmit");
+                        auto vkQueueSubmit_fn = (PFN_vkQueueSubmit)load_dev_func("vkQueueSubmit");
                         res = vkQueueSubmit_fn(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
                         TEST_VK(res, "vkQueueSubmit");
 
-                        auto vkQueueWaitIdle_fn = (PFN_vkQueueWaitIdle)g_vkGetInstanceProcAddr(device, "vkQueueWaitIdle");
+                        auto vkQueueWaitIdle_fn = (PFN_vkQueueWaitIdle)load_dev_func("vkQueueWaitIdle");
                         res = vkQueueWaitIdle_fn(graphics_queue);
                         TEST_VK(res, "vkQueueWaitIdle");
                         std::cout << "  Command buffer executed successfully on GPU" << std::endl;
@@ -594,49 +603,49 @@ int main() {
     // ------------------------------------------------------------------
     std::cout << std::endl << "[11/12] Destroying resources..." << std::endl;
 
-    auto vkDestroyImage = (PFN_vkDestroyImage)g_vkGetInstanceProcAddr(device, "vkDestroyImage");
+    auto vkDestroyImage = (PFN_vkDestroyImage)load_dev_func("vkDestroyImage");
     if (test_image != VK_NULL_HANDLE) {
         vkDestroyImage(device, test_image, nullptr);
     }
     TEST_CHECK(true, "Image destroyed");
 
     if (pipeline != VK_NULL_HANDLE) {
-        auto vkDestroyPipeline = (PFN_vkDestroyPipeline)g_vkGetInstanceProcAddr(device, "vkDestroyPipeline");
+        auto vkDestroyPipeline = (PFN_vkDestroyPipeline)load_dev_func("vkDestroyPipeline");
         vkDestroyPipeline(device, pipeline, nullptr);
     }
     TEST_CHECK(true, "Pipeline destroyed");
 
     if (pipeline_layout != VK_NULL_HANDLE) {
-        auto vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)g_vkGetInstanceProcAddr(device, "vkDestroyPipelineLayout");
+        auto vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)load_dev_func("vkDestroyPipelineLayout");
         vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
     }
     TEST_CHECK(true, "Pipeline layout destroyed");
 
     if (vert_module != VK_NULL_HANDLE) {
-        auto vkDestroyShaderModule = (PFN_vkDestroyShaderModule)g_vkGetInstanceProcAddr(device, "vkDestroyShaderModule");
+        auto vkDestroyShaderModule = (PFN_vkDestroyShaderModule)load_dev_func("vkDestroyShaderModule");
         vkDestroyShaderModule(device, vert_module, nullptr);
     }
     TEST_CHECK(true, "Vertex shader module destroyed");
 
     if (frag_module != VK_NULL_HANDLE) {
-        auto vkDestroyShaderModule = (PFN_vkDestroyShaderModule)g_vkGetInstanceProcAddr(device, "vkDestroyShaderModule");
+        auto vkDestroyShaderModule = (PFN_vkDestroyShaderModule)load_dev_func("vkDestroyShaderModule");
         vkDestroyShaderModule(device, frag_module, nullptr);
     }
     TEST_CHECK(true, "Fragment shader module destroyed");
 
     if (buffer_memory != VK_NULL_HANDLE) {
-        auto vkFreeMemory = (PFN_vkFreeMemory)g_vkGetInstanceProcAddr(device, "vkFreeMemory");
+        auto vkFreeMemory = (PFN_vkFreeMemory)load_dev_func("vkFreeMemory");
         vkFreeMemory(device, buffer_memory, nullptr);
     }
     TEST_CHECK(true, "Buffer memory freed");
 
     if (buffer != VK_NULL_HANDLE) {
-        auto vkDestroyBuffer = (PFN_vkDestroyBuffer)g_vkGetInstanceProcAddr(device, "vkDestroyBuffer");
+        auto vkDestroyBuffer = (PFN_vkDestroyBuffer)load_dev_func("vkDestroyBuffer");
         vkDestroyBuffer(device, buffer, nullptr);
     }
     TEST_CHECK(true, "Buffer destroyed");
 
-    auto vkDestroyDevice = (PFN_vkDestroyDevice)g_vkGetInstanceProcAddr(device, "vkDestroyDevice");
+    auto vkDestroyDevice = (PFN_vkDestroyDevice)load_dev_func("vkDestroyDevice");
     vkDestroyDevice(device, nullptr);
     TEST_CHECK(true, "Logical device destroyed");
 
