@@ -31,6 +31,16 @@ else()
     message(WARNING "Jolt Physics CMake not found at ${JOLT_PHYSICS_BUILD_DIR}. Physics module will be stubbed.")
 endif()
 
+# Vulkan configuration
+set(VULKAN_HEADERS_DIR "${CMAKE_SOURCE_DIR}/../third_party/Vulkan-Headers" CACHE PATH "Path to Vulkan-Headers")
+set(VULKAN_LOADER_DIR "${CMAKE_SOURCE_DIR}/../third_party/Vulkan-Loader" CACHE PATH "Path to Vulkan-Loader")
+if(EXISTS "${VULKAN_HEADERS_DIR}/include/vulkan/vulkan.h")
+    add_compile_definitions(REALITY_HAS_VULKAN)
+    message(STATUS "Vulkan headers found - REALITY_HAS_VULKAN defined")
+else()
+    message(STATUS "Vulkan headers not found - Vulkan renderer will not be compiled")
+endif()
+
 add_subdirectory(core)
 add_subdirectory(ecs)
 add_subdirectory(world)
