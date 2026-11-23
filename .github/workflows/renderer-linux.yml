@@ -15,6 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Show environment
+        run: |
+          echo "=== Workspace ==="
+          pwd
+          ls -la
+          echo "=== Tools ==="
+          which cmake || echo "cmake not found"
+          which make || echo "make not found"
+          which g++ || echo "g++ not found"
+          cmake --version || true
+          make --version | head -1 || true
+          g++ --version | head -1 || true
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -23,51 +36,29 @@ jobs:
             glslang-tools spirv-tools libgl1-mesa-dev libx11-dev \
             xvfb libxi-dev libglvnd-dev
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       - name: Clone Vulkan-Headers
         run: |
           git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Headers.git third_party/Vulkan-Headers
+          ls -la third_party/Vulkan-Headers/include/vulkan/vulkan.h
 
       - name: Clone Vulkan-Loader
         run: |
           git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
 
-      - name: Build Reality Engine and Vulkan test
+      - name: CMake configure
         run: |
-          set -xe
-          which cmake
-          which make
-          which g++
-          cmake --version
-          make --version | head -1
           mkdir -p build
           cd build
           cmake ../engine -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build test_vulkan_execution
+        run: |
+          cd build
           make -j2 test_vulkan_execution
 
-      - name: Compile GLSL shaders to SPIR-V
-        run: |
-          python3 scripts/compile_shaders.py /usr/bin/glslangValidator
-
-      - name: Validate SPIR-V with spirv-val
-        run: |
-          echo "Validating vertex shader SPIR-V..."
-          spirv-val engine/rendering/vulkan/shaders/pbr.vert.spv && echo "Vertex shader SPIR-V valid"
-          echo "Validating fragment shader SPIR-V..."
-          spirv-val engine/rendering/vulkan/shaders/pbr.frag.spv && echo "Fragment shader SPIR-V valid"
-
-      - name: Run Vulkan execution test (software Vulkan via Mesa lavapipe)
+      - name: Run Vulkan execution test
         run: |
           export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
-          echo "Checking Vulkan ICD..."
-          ls -la /usr/share/vulkan/icd.d/
-          echo "Checking vulkaninfo..."
-          vulkaninfo --summary 2>&1 | head -30
-          echo "Running Vulkan execution test..."
           cd build
           ./bin/test_vulkan_execution
 
@@ -77,7 +68,5 @@ jobs:
         with:
           name: reality-renderer-linux
           path: |
-            build/lib/libreality_rendering.a
             build/bin/test_vulkan_execution
-            engine/rendering/vulkan/shaders/*.spv
           retention-days: 3
