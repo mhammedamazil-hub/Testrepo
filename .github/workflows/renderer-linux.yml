@@ -59,14 +59,14 @@ jobs:
       - name: Run Vulkan execution test
         run: |
           echo "=== Vulkan ICD files ==="
-          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || echo "No ICD directory"
+          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || true
           echo "=== Vulkan libs ==="
-          ldconfig -p | grep vulkan || echo "No vulkan in ldconfig"
+          ldconfig -p | grep vulkan || true
           echo "=== Finding lavapipe ICD ==="
-          find /usr -name "*lvp*" -o -name "*lavapipe*" 2>/dev/null || echo "No lavapipe found"
+          find /usr -name "*lvp*" -o -name "*lavapipe*" 2>/dev/null || true
           export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
           if [ ! -f "$VK_ICD_FILENAMES" ]; then
-            export VK_ICD_FILENAMES=$(find /usr/share/vulkan/icd.d/ -name "*.json" 2>/dev/null | head -1)
+            export VK_ICD_FILENAMES=$(find /usr/share/vulkan/icd.d/ -name "*.json" 2>/dev/null | head -1 || echo "")
             echo "Using fallback ICD: $VK_ICD_FILENAMES"
           fi
           echo "Using VK_ICD_FILENAMES=$VK_ICD_FILENAMES"
