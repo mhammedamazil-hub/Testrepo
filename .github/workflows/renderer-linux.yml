@@ -59,12 +59,11 @@ jobs:
       - name: Run Vulkan execution test
         run: |
           echo "=== Vulkan ICD files ==="
-          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || true
-          echo "=== Vulkan libs ==="
-          ldconfig -p | grep vulkan || true
-          echo "=== Finding lavapipe ICD ==="
-          find /usr -name "*lvp*" -o -name "*lavapipe*" 2>/dev/null || true
-          echo "=== Running with auto-detected ICD ==="
+          ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || echo "No ICD directory"
+          echo "=== vulkaninfo ==="
+          vulkaninfo --summary 2>&1 | head -20 || echo "vulkaninfo failed"
+          echo "=== Running test with lavapipe ICD ==="
+          export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
           cd build
           ./bin/test_vulkan_execution
 
