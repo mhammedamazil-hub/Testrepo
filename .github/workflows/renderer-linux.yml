@@ -33,8 +33,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake build-essential libstdc++-12-dev \
             libvulkan1 libvulkan-dev vulkan-tools mesa-vulkan-drivers \
-            vulkan-validationlayers-dev glslang-tools spirv-tools \
-            libgl1-mesa-dev libx11-dev xvfb libxi-dev libglvnd-dev
+            glslang-tools spirv-tools libgl1-mesa-dev libx11-dev \
+            xvfb libxi-dev libglvnd-dev
 
       - name: Clone Vulkan-Headers
         run: |
