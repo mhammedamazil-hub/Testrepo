@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake build-essential libstdc++-12-dev \
-            libvulkan-dev vulkan-tools mesa-vulkan-drivers \
+            libvulkan1 libvulkan-dev vulkan-tools mesa-vulkan-drivers \
             glslang-tools spirv-tools libgl1-mesa-dev libx11-dev \
             xvfb libxi-dev libglvnd-dev
 
@@ -64,12 +64,7 @@ jobs:
           ldconfig -p | grep vulkan || true
           echo "=== Finding lavapipe ICD ==="
           find /usr -name "*lvp*" -o -name "*lavapipe*" 2>/dev/null || true
-          export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
-          if [ ! -f "$VK_ICD_FILENAMES" ]; then
-            export VK_ICD_FILENAMES=$(find /usr/share/vulkan/icd.d/ -name "*.json" 2>/dev/null | head -1 || echo "")
-            echo "Using fallback ICD: $VK_ICD_FILENAMES"
-          fi
-          echo "Using VK_ICD_FILENAMES=$VK_ICD_FILENAMES"
+          echo "=== Running with auto-detected ICD ==="
           cd build
           ./bin/test_vulkan_execution
 
