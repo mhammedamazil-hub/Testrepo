@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake build-essential libstdc++-12-dev \
-            libvulkan-dev vulkan-tools mesa-vulkan-drivers \
+            libvulkan1 libvulkan-dev vulkan-tools mesa-vulkan-drivers \
             glslang-tools spirv-tools libgl1-mesa-dev libx11-dev \
             xvfb libxi-dev libglvnd-dev
 
@@ -60,11 +60,11 @@ jobs:
         continue-on-error: true
 
       - name: Check Vulkan validation layer availability
+        continue-on-error: true
         run: |
-          export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
           echo "Checking Vulkan ICD..."
           ls -la /usr/share/vulkan/icd.d/ 2>/dev/null || echo "No ICD directory"
-          echo "Checking vulkaninfo with lavapipe..."
+          echo "Checking vulkaninfo..."
           vulkaninfo --summary 2>&1 | head -40 || echo "vulkaninfo not available"
           echo "Checking validation layers..."
           ls /usr/share/vulkan/implicit_layer.d/ 2>/dev/null || echo "No implicit layer config found"
