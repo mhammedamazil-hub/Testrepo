@@ -38,7 +38,12 @@ jobs:
 
       - name: Build Reality Engine and Vulkan test
         run: |
-          set -e
+          set -xe
+          which cmake
+          which make
+          which g++
+          cmake --version
+          make --version | head -1
           mkdir -p build
           cd build
           cmake ../engine -DCMAKE_BUILD_TYPE=Release
