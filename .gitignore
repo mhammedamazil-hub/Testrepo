@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# Project artifacts created by the CLI (samples/tests)
+MyGame/
+MCPGame/
+ci-test-project/
+ci-game/
+godot-game/
+release-game/
+
+# Godot binary (downloaded by GitHub Actions, not committed)
+tools/
+
+# OS
+.DS_Store
+
+# Blender source code (cloned locally, too large for git)
+blender-source/
+jolt-physics
+/engine/build/

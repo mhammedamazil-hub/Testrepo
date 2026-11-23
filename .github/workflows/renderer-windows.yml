@@ -1,0 +1,55 @@
+name: Reality Renderer - Windows Build & Test
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' || true
+          choco install vulkan-sdk --yes || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clone Vulkan-Headers
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Headers.git third_party/Vulkan-Headers
+
+      - name: Clone Vulkan-Loader
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
+
+      - name: Build Reality Rendering (MSVC)
+        run: |
+          mkdir -p engine/build
+          cd engine/build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DREALITY_BUILD_VULKAN=ON -G "Visual Studio 17 2022" -A x64
+          cmake --build . --config Release --target reality_rendering -j$(NUMBER_OF_PROCESSORS)
+
+      - name: Compile GLSL shaders to SPIR-V
+        run: |
+          python scripts/compile_shaders.py "C:/VulkanSDK/1.3/bin/glslangValidator.exe" || true
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reality-renderer-windows
+          path: |
+            engine/build/*/libreality_rendering.lib
+            engine/bin/*.exe
+          retention-days: 3

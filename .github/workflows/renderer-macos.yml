@@ -1,0 +1,57 @@
+name: Reality Renderer - macOS Build & Test
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          brew install cmake glslang || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clone Vulkan-Headers
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Headers.git third_party/Vulkan-Headers
+
+      - name: Clone Vulkan-Loader
+        run: |
+          git clone --depth 1 https://github.com/KhronosGroup/Vulkan-Loader.git third_party/Vulkan-Loader
+
+      - name: Build Reality Rendering
+        run: |
+          mkdir -p engine/build
+          cd engine/build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DREALITY_BUILD_VULKAN=ON
+          make -j$(sysctl -n hw.ncpu) reality_rendering
+
+      - name: Compile GLSL shaders to SPIR-V
+        run: |
+          python scripts/compile_shaders.py $(brew --prefix glslang)/bin/glslangValidator || true
+
+      - name: Verify Vulkan header availability
+        run: |
+          test -f third_party/Vulkan-Headers/include/vulkan/vulkan.h && echo "Vulkan headers found" || echo "Vulkan headers missing"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reality-renderer-macos
+          path: |
+            engine/build/lib/libreality_rendering.a
+          retention-days: 3

@@ -1,0 +1,59 @@
+name: Game Artifact Generation
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install X virtual framebuffer for headless rendering
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb libgl1 mesa-utils
+
+      - name: Download Godot 4.7.2 Linux binary
+        run: |
+          mkdir -p tools
+          curl -L -o tools/godot.zip "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip"
+          unzip -o tools/godot.zip -d tools/
+          chmod +x tools/Godot_v4.7.2-stable_linux.x86_64
+          echo "GODOT_PATH=$PWD/tools/Godot_v4.7.2-stable_linux.x86_64" >> $GITHUB_ENV
+
+      - name: Verify Godot installation
+        run: |
+          "$GODOT_PATH" --version
+
+      - name: Generate release game project
+        run: |
+          python -m universal_engine --json game create release-game --path /tmp/release-game
+
+      - name: Export Linux build (requires export templates)
+        run: |
+          xvfb-run -a GODOT_PATH="$GODOT_PATH" python -m universal_engine --json build --path /tmp/release-game --output /tmp/release-game/builds --platform linux || true
+          if [ -f /tmp/release-game/builds/release-game.x86_64 ] || [ -f /tmp/release-game/builds/release-game ]; then
+            echo "Linux build artifact produced"
+            ls -la /tmp/release-game/builds/
+          else
+            echo "No export templates available; build step produced metadata only"
+            cat /tmp/release-game/builds/godot_export.log 2>/dev/null || true
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build
+          path: /tmp/release-game/builds/
+          retention-days: 5

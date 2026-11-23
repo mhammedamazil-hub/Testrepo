@@ -1,0 +1,61 @@
+name: Reality Engine - macOS Build & Test
+
+on:
+  push:
+    branches: [arena/67bc2899-testrepo, main]
+  pull_request:
+    branches: [arena/67bc2899-testrepo, main]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          brew install cmake
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Clone Jolt Physics
+        run: |
+          git clone --depth 1 https://github.com/jrouwe/JoltPhysics.git jolt-physics
+
+      - name: Build Jolt Physics
+        working-directory: ./jolt-physics/Build
+        run: |
+          cmake . -DCMAKE_BUILD_TYPE=Release -DJPH_BUILD_SHARED_LIBS=OFF -DUSE_ASSERTS=OFF -DENABLE_ALL_WARNINGS=OFF -DCPP_EXCEPTIONS_ENABLED=ON -DCPP_RTTI_ENABLED=ON -DOVERRIDE_CXX_FLAGS=OFF -DINTERPROCEDURAL_OPTIMIZATION=OFF
+          make -j$(sysctl -n hw.ncpu)
+
+      - name: Build Reality Engine
+        run: |
+          mkdir -p engine/build
+          cd engine/build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DJOLT_PHYSICS_BUILD_DIR=${{ github.workspace }}/jolt-physics/Build
+          make -j$(sysctl -n hw.ncpu)
+
+      - name: Run C++ unit tests
+        run: |
+          cd engine/build
+          ctest --output-on-failure
+
+      - name: Run Jolt physics verification test
+        run: |
+          cd engine/build
+          ./bin/test_jolt_physics
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reality-engine-macos-binaries
+          path: |
+            engine/build/bin/reality_runtime
+            engine/build/bin/test_*
+          retention-days: 3
